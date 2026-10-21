@@ -7,7 +7,7 @@
 | `backup/project-files/UPGRADE-NOTES.md` | 673 | 8b037b053616 |
 | `backup/project-files/design-system/20261008-4.2-remote-control-qr-handoff.md` | 5515 | c2e55a8399ee |
 | `backup/project-files/design-system/20261008-claude-ui-workflow-playbook.md` | 16891 | 233d10795a50 |
-| `backup/project-files/design-system/20261008-library-change-log.md` | 154165 | c558526d5179 |
+| `backup/project-files/design-system/20261008-library-change-log.md` | 155119 | 363363e05b21 |
 | `backup/project-files/design-system/20261008-token-audit-and-proposal.md` | 7910 | 98d5e7ef1d89 |
 | `backup/project-files/design-system/20261008-typography-audit-and-proposal.md` | 6029 | ccecd32e8beb |
 | `backup/project-files/design-system/20261008-xrcc-design-system-study.md` | 28329 | ae09047815fd |
@@ -244,7 +244,7 @@
 | `backup/project-files/xrcc-user-flow/20261012-xrcc-user-flow.html` | 189363 | ed3435dd2ab7 |
 | `backup/project-files/xrcc-user-flow/20261012-xrcc-user-flow.json` | 2218 | 6ab597ddcd6d |
 | `backup/team-memory/.memory-sync` | 67 | 0d2ad1e163e1 |
-| `backup/team-memory/.memory-sync-basis` | 3079 | ab9cfe3ecaf0 |
+| `backup/team-memory/.memory-sync-basis` | 3079 | d22c74f90fe2 |
 | `backup/team-memory/MEMORY.md` | 6091 | c82d0e1676c4 |
 | `backup/team-memory/feedback-icon-colour-follows-text-token.md` | 1751 | 2ee6e97b0378 |
 | `backup/team-memory/feedback-library-edits-no-asking.md` | 711 | 6f9ce534c77f |
