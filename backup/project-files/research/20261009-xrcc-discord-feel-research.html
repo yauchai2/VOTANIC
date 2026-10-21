@@ -1,0 +1,387 @@
+<title>XRCC Discord Feel Research</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: single reading column (max 980px) with a sticky section index on wide screens; evidence tags (fact / judgement / assumption) carry the epistemic status of every claim. */
+:root{
+  /* dark-first, purple-tinted neutrals to echo XRCC without claiming Library tokens */
+  --bg:#17161b; --surface:#201e27; --surface-2:#2a2531; --line:#37323f;
+  --fg:#ebe8f1; --muted:#a9a3b8; --accent:#b89afa; --accent-soft:#392e52;
+  --citrus:#f29a3a; --ok:#6fcf97; --warn:#e9b44c; --bad:#e86a6a;
+  --fact:#6cc4d9; --judge:#b89afa; --assume:#e9b44c;
+  --f-display:"Bricolage Grotesque","Noto Sans TC",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans","Noto Sans TC",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,monospace;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){
+  --bg:#f7f5fb; --surface:#ffffff; --surface-2:#efebf7; --line:#d9d3e6;
+  --fg:#221f2b; --muted:#625b73; --accent:#6a43c9; --accent-soft:#e6dcfa;
+  --citrus:#b8620a; --ok:#1d7a4a; --warn:#8a5f00; --bad:#b32d2d;
+  --fact:#0d6f86; --judge:#6a43c9; --assume:#8a5f00; color-scheme:light}}
+:root[data-theme="light"]{
+  --bg:#f7f5fb; --surface:#ffffff; --surface-2:#efebf7; --line:#d9d3e6;
+  --fg:#221f2b; --muted:#625b73; --accent:#6a43c9; --accent-soft:#e6dcfa;
+  --citrus:#b8620a; --ok:#1d7a4a; --warn:#8a5f00; --bad:#b32d2d;
+  --fact:#0d6f86; --judge:#6a43c9; --assume:#8a5f00; color-scheme:light}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font:400 16px/1.7 var(--f-body);padding-inline:clamp(16px,4vw,32px);padding-block:40px 96px}
+.wrap{max-width:980px;margin-inline:auto;display:flex;flex-direction:column;gap:72px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(2.2rem,6vw,3.6rem);font-weight:700;letter-spacing:-.02em}
+h2{font-size:clamp(1.55rem,3.6vw,2.15rem);font-weight:700;letter-spacing:-.01em}
+h3{font-size:1.15rem;font-weight:700}
+p{margin:0;max-width:68ch}
+a{color:var(--accent)}
+.eyebrow{font:500 .75rem/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--citrus)}
+.lead{font-size:1.15rem;color:var(--fg);max-width:62ch}
+.muted{color:var(--muted)}
+.sec{display:flex;flex-direction:column;gap:24px;scroll-margin-top:24px}
+.sec-head{display:flex;flex-direction:column;gap:10px}
+.tag{display:inline-block;font:500 .68rem/1 var(--f-mono);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:4px;border:1px solid currentColor;vertical-align:2px;white-space:nowrap}
+.t-fact{color:var(--fact)} .t-judge{color:var(--judge)} .t-assume{color:var(--assume)}
+.legend{display:flex;flex-wrap:wrap;gap:12px 24px;padding:16px 20px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.legend div{display:flex;gap:10px;align-items:baseline;min-width:0;flex:1 1 240px;font-size:.92rem;color:var(--muted)}
+.grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card h3{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.card p{font-size:.95rem}
+.card .src{font-size:.82rem;color:var(--muted)}
+.rows{display:flex;flex-direction:column}
+.row{display:grid;grid-template-columns:minmax(0,200px) minmax(0,1fr);gap:8px 28px;padding:20px 0;border-top:1px solid var(--line)}
+.row:last-child{border-bottom:1px solid var(--line)}
+.row h3{font-size:1.05rem}
+.row .body{display:flex;flex-direction:column;gap:10px;min-width:0}
+.row .body p{font-size:.97rem}
+@media(max-width:640px){.row{grid-template-columns:1fr}}
+.pull{border-left:3px solid var(--citrus);padding:4px 0 4px 20px;font:500 1.25rem/1.45 var(--f-display);max-width:44ch}
+.tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.92rem}
+th,td{text-align:left;vertical-align:top;padding:12px 16px;border-bottom:1px solid var(--line)}
+th{font:500 .72rem/1.2 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--surface-2)}
+tr:last-child td{border-bottom:0}
+td strong{font-weight:600}
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:.78rem;font-weight:500;border:1px solid var(--line);background:var(--surface-2);white-space:nowrap}
+.p-hi{color:var(--ok);border-color:currentColor;background:transparent}
+.p-mid{color:var(--warn);border-color:currentColor;background:transparent}
+.p-lo{color:var(--muted)}
+.copy{font:400 .88rem/1.5 var(--f-mono);background:var(--surface-2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:flex;flex-direction:column;gap:2px;overflow-wrap:anywhere}
+.copy .b{color:var(--bad)} .copy .a{color:var(--ok)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:16px}
+figure{margin:0;display:flex;flex-direction:column;gap:10px}
+figcaption{font-size:.85rem;color:var(--muted);max-width:70ch}
+.svgbox{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;overflow-x:auto}
+.svgbox svg{display:block;width:100%;height:auto;min-width:560px}
+svg text{font-family:var(--f-body);fill:var(--fg);font-size:13px}
+svg .m{fill:var(--muted);font-size:11px}
+svg .h{font-weight:600;font-size:13px}
+svg .box{fill:var(--surface-2);stroke:var(--line)}
+svg .hl{fill:var(--accent-soft);stroke:var(--accent)}
+svg .ln{stroke:var(--muted);stroke-width:1.2;fill:none}
+svg .dot-ok{fill:var(--ok)} svg .dot-warn{fill:var(--warn)} svg .dot-c{fill:var(--citrus)}
+.list{margin:0;padding-left:1.1em;display:flex;flex-direction:column;gap:6px;font-size:.95rem}
+.list li::marker{color:var(--citrus)}
+.steps{display:grid;gap:12px}
+.step{display:grid;grid-template-columns:auto 1fr;gap:16px;padding:16px 20px;background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.step b{font:700 1.4rem/1 var(--f-display);color:var(--accent)}
+.step p{font-size:.95rem}
+nav.toc{display:flex;flex-wrap:wrap;gap:8px}
+nav.toc a{font:500 .8rem/1 var(--f-mono);text-decoration:none;color:var(--muted);padding:8px 12px;border:1px solid var(--line);border-radius:99px;background:var(--surface)}
+nav.toc a:hover,nav.toc a:focus-visible{color:var(--fg);border-color:var(--accent);outline:none}
+ul.src-list{margin:0;padding-left:1.1em;font-size:.88rem;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+ul.src-list li{overflow-wrap:anywhere}
+@media(prefers-reduced-motion:no-preference){nav.toc a{transition:border-color .15s,color .15s}}
+</style>
+
+<main class="wrap">
+
+<header class="sec" style="gap:20px">
+  <span class="eyebrow">XRCC UI/UX research · 2026-10-09</span>
+  <h1>Discord 咁有「地方感」,但 XRCC 唔好變社交 App</h1>
+  <p class="lead">Alan 想 XRCC 有 Discord 嗰種活、有身份感、唔悶嘅感覺。呢份報告拆解 Discord 點解成功,對照 Linear、Arc、Figma、Raycast、Duolingo、Slack,再落返 XRCC 現有畫面,講邊啲可以借、邊啲唔應該借。</p>
+  <nav class="toc" aria-label="Sections">
+    <a href="#summary">結論</a><a href="#discord">Discord 解構</a><a href="#others">對照產品</a><a href="#principles">設計原則</a><a href="#fit">借鑑 / 不借</a><a href="#ui">具體 UI 建議</a><a href="#copy">文案</a><a href="#risks">風險</a><a href="#next">下一步</a><a href="#sources">來源</a>
+  </nav>
+  <div class="legend" role="note">
+    <div><span class="tag t-fact">Fact</span><span>公開資料可查,附來源。</span></div>
+    <div><span class="tag t-judge">Judgement</span><span>我嘅 UX 判斷,冇外部數據證明。</span></div>
+    <div><span class="tag t-assume">Assumption</span><span>要同 Alan / Tobey / 工程驗證先算數。</span></div>
+  </div>
+  <p class="muted" style="font-size:.88rem">研究只用公開資料,冇將 Votanic 內部內容帶入外部搜尋。XRCC 現況取自項目內知識庫同 visual language study。所有建議只用現有 Library token,冇提議新 token。</p>
+</header>
+
+<section class="sec" id="summary">
+  <div class="sec-head"><span class="eyebrow">結論</span><h2>Discord 嘅感覺,主要來自五樣嘢</h2></div>
+  <p class="pull">佢令你覺得自己「身處一個地方,而且有人喺度」,而唔係「用緊一個工具」。</p>
+  <div class="grid">
+    <div class="card"><h3>1 · 地方,唔係頁面</h3><p>左邊 server、中間 channel、右邊人,位置永遠唔變,所以用幾耐都唔迷路。<span class="tag t-judge">Judgement</span></p></div>
+    <div class="card"><h3>2 · 到處都有一粒「活」嘅訊號</h3><p>狀態點、朋友而家做緊乜、誰喺語音房。細,但令介面似有生命。<span class="tag t-fact">Fact</span></p></div>
+    <div class="card"><h3>3 · 身份可以自己揀</h3><p>個人檔案顏色、簡介、自訂狀態、server 圖示。你嘅位有你嘅味。<span class="tag t-fact">Fact</span></p></div>
+    <div class="card"><h3>4 · 低門檻、非正式做預設</h3><p>入語音房唔使約人,正式活動(Stage)先加結構。<span class="tag t-fact">Fact</span></p></div>
+    <div class="card"><h3>5 · 核心控件規矩,邊位先放玩味</h3><p>個性集中喺品牌、onboarding、emoji、空狀態,導航同設定仍然傳統清楚。<span class="tag t-judge">Judgement</span></p></div>
+  </div>
+  <div class="card" style="border-color:var(--accent)">
+    <h3>對 XRCC 嘅建議方向:「Studio feel」</h3>
+    <p>XRCC 係創作者工具,唔係聊天室。所以唔抄 channel / 訊息流,而係抄佢嘅<strong>地方感、presence、身份感、文案聲線</strong>。落到 XRCC 就係:Launcher 變成有穩定位置嘅「工作室」,裝置同連線用 presence 點顯示「誰/咩喺度、準備好未」,項目有自己嘅面孔同「最近發生咩」,每個動作回應得似真人。</p>
+    <p class="muted">最值得即刻試嘅三樣(詳見 <a href="#next">下一步</a>):Launcher rail 嘅狀態點、「Nearby」裝置區、全 UI 嘅文案聲線統一。</p>
+  </div>
+</section>
+
+<section class="sec" id="discord">
+  <div class="sec-head"><span class="eyebrow">Discord 解構</span><h2>Discord 點解成功:九個鏡頭</h2>
+  <p class="muted">每個鏡頭先講公開事實,再講我嘅判斷。冇來源嘅「三欄結構、Quick Switcher」呢類眾所周知嘅產品行為,我標為 Judgement(一般產品知識,未逐項引用)。</p></div>
+
+  <figure>
+    <div class="svgbox">
+      <svg viewBox="0 0 900 300" role="img" aria-label="Discord 三區結構對照 XRCC Launcher 建議結構">
+        <text class="h" x="10" y="20">Discord(一般產品知識)</text>
+        <rect class="box" x="10" y="32" width="46" height="240" rx="8"/>
+        <circle class="hl" cx="33" cy="58" r="14"/><circle class="box" cx="33" cy="94" r="14"/><circle class="box" cx="33" cy="130" r="14"/><circle class="box" cx="33" cy="166" r="14"/>
+        <text class="m" x="10" y="292">Servers</text>
+        <rect class="box" x="64" y="32" width="150" height="240" rx="8"/>
+        <text class="m" x="76" y="56">CHANNELS</text>
+        <rect class="hl" x="72" y="66" width="134" height="22" rx="5"/><text x="82" y="82">general</text>
+        <text x="82" y="108" class="m"># ideas</text><text x="82" y="130" class="m"># feedback</text>
+        <text class="m" x="76" y="162">VOICE</text><circle class="dot-ok" cx="86" cy="178" r="4"/><text x="98" y="182">Ada</text><circle class="dot-ok" cx="86" cy="198" r="4"/><text x="98" y="202">Ben</text>
+        <text class="m" x="64" y="292">Where you are</text>
+        <rect class="box" x="222" y="32" width="190" height="240" rx="8"/><text class="m" x="234" y="56">Content</text>
+        <rect class="box" x="420" y="32" width="70" height="240" rx="8"/><text class="m" x="430" y="56">Who</text>
+        <circle class="dot-ok" cx="436" cy="76" r="4"/><circle class="dot-warn" cx="436" cy="98" r="4"/>
+        <line class="ln" x1="500" y1="152" x2="560" y2="152" marker-end="url(#ar)"/>
+        <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L7,4 L0,8 z" fill="var(--muted)"/></marker></defs>
+        <text class="h" x="580" y="20">XRCC Launcher 建議(Judgement)</text>
+        <rect class="box" x="580" y="32" width="56" height="240" rx="8"/>
+        <rect class="hl" x="586" y="48" width="44" height="30" rx="5"/><text x="592" y="68" style="font-size:11px">Proj</text><circle class="dot-c" cx="624" cy="52" r="4"/>
+        <text class="m" x="590" y="104" style="font-size:11px">Lib</text><text class="m" x="590" y="132" style="font-size:11px">Pkg</text>
+        <text class="m" x="590" y="160" style="font-size:11px">Conn</text><circle class="dot-warn" cx="624" cy="150" r="4"/>
+        <text class="m" x="580" y="292">Places + status dots</text>
+        <rect class="box" x="644" y="32" width="170" height="240" rx="8"/><text class="m" x="656" y="56">Projects · recent</text>
+        <rect class="box" x="652" y="66" width="154" height="44" rx="6"/><text x="662" y="86" style="font-size:12px">Museum Tour</text><text class="m" x="662" y="102" style="font-size:10px">Played on Quest · 2h ago</text>
+        <rect class="box" x="652" y="118" width="154" height="44" rx="6"/>
+        <rect class="box" x="822" y="32" width="68" height="240" rx="8"/><text class="m" x="830" y="56">Nearby</text>
+        <circle class="dot-ok" cx="834" cy="76" r="4"/><text x="844" y="80" style="font-size:10px">Quest</text>
+        <circle class="dot-warn" cx="834" cy="98" r="4"/><text x="844" y="102" style="font-size:10px">micro:bit</text>
+      </svg>
+    </div>
+    <figcaption>左:Discord 嘅「邊度 / 呢度有咩 / 邊個喺度」三區。右:XRCC Launcher 可以借用嘅對應(rail 做地方、主面板做內容、右側 Nearby 做 presence)。純示意,唔係 Figma 稿。</figcaption>
+  </figure>
+
+  <div class="rows">
+    <div class="row"><h3>① 空間記憶</h3><div class="body">
+      <p><span class="tag t-fact">Fact</span> Discord 2023 年重做手機版時,試過橫向 dock,但<strong>保留 server 垂直靠左</strong>,因為好多用戶要頻繁切換多個 server,垂直欄一次顯示最多。同年 overlay 重做亦<strong>沿用桌面版嘅慣例</strong>(垂直 server 列)減少重新學習。</p>
+      <p><span class="tag t-judge">Judgement</span> 結構穩定令用家建立「肌肉記憶」。呢種穩定本身就係親切感嘅來源。XRCC 嘅 Launcher 已經有左 rail,值得守住位置唔變。</p></div></div>
+    <div class="row"><h3>② Presence</h3><div class="body">
+      <p><span class="tag t-fact">Fact</span> 標準狀態有 Online / Idle / Do Not Disturb / Invisible,可加自訂文字同 emoji,並揀幾耐後自動清除。手機版 Messages 頂部有區塊顯示朋友而家做緊乜,方便直接加入。</p>
+      <p><span class="tag t-judge">Judgement</span> 重點唔係「社交」,而係<strong>一粒點 + 一句話就令介面有生命</strong>,同埋降低「加入」嘅成本。XRCC 嘅裝置、連線、下載、測試場次都係天然嘅 presence 資料。</p></div></div>
+    <div class="row"><h3>③ 低門檻入場</h3><div class="body">
+      <p><span class="tag t-fact">Fact</span> 語音房可以隨時入出,唔使打電話或邀請;Stage Channel 係疫情期間觀察到新行為後,為有主持、有講者嘅活動而加,而且被視為新用戶進入社群嘅入口。</p>
+      <p><span class="tag t-judge">Judgement</span> 「非正式做預設,結構做選項」同 XRCC 嘅「zero-code、漸進披露」同一方向,例如 Data Analytics 預設 Protected 路徑,External 先係進階。</p></div></div>
+    <div class="row"><h3>④ 身份表達</h3><div class="body">
+      <p><span class="tag t-fact">Fact</span> 個人檔案可自訂簡介(190 字內)同顏色,付費用戶有動態 banner;2021 年 rebrand 令 blurple 更亮更飽和,目標係更大膽同玩味。</p>
+      <p><span class="tag t-judge">Judgement</span> 身份唔一定係頭像。對 XRCC 嚟講,<strong>項目</strong>先係創作者嘅「身份載體」:封面、顏色、最近一次玩咗咩。</p></div></div>
+    <div class="row"><h3>⑤ 密度與暖度</h3><div class="body">
+      <p><span class="tag t-judge">Judgement</span> Discord 列表行密而細,但有大量圓形頭像、emoji 同顏色令畫面唔冷。XRCC 已經有類似特質(縮圖主導、橙色小點綴),問題只係部分畫面(例如 table 型、純灰兩行字空狀態)退回咗「工具味」。</p></div></div>
+    <div class="row"><h3>⑥ 共同語言</h3><div class="body">
+      <p><span class="tag t-fact">Fact</span> 自訂 emoji、貼圖、soundboard 令每個 server 有自己嘅內部笑話。(來源多為愛好者文章,證據弱。)</p>
+      <p><span class="tag t-judge">Judgement</span> XRCC 唔需要 soundboard。可借嘅係<strong>術語同吉祥物表情</strong>:章魚太空人已經存在,可以成為「共同語言」嘅一部分。</p></div></div>
+    <div class="row"><h3>⑦ Onboarding</h3><div class="body">
+      <p><span class="tag t-fact">Fact</span> Community Onboarding 要新成員喺發言前完成幾條問題,答案決定佢見到嘅 channel 同 role;問題陳述係新人容易被各社群自訂嘅驗證搞到混亂或離開。Discord 官方文章冇公佈量化成效。</p>
+      <p><span class="tag t-judge">Judgement</span> 原理可用:<strong>用幾條簡單問題換一個量身嘅起點</strong>。XRCC 已有 Wizard(P8),可以加「你想做咩?」分流,但唔好強制。</p></div></div>
+    <div class="row"><h3>⑧ 品牌聲線</h3><div class="body">
+      <p><span class="tag t-fact">Fact</span> 2021 rebrand 報道:Clyde 加咗多種表情,Wumpus 出現喺現實場景,方向係「友善、玩味」。我搵唔到 Discord 官方嘅 UI 文案準則,呢部分只可作旁證。</p>
+      <p><span class="tag t-judge">Judgement</span> 個性集中喺邊緣位(onboarding、空狀態、成功時刻),而核心動作按鈕仍然直白。</p></div></div>
+    <div class="row"><h3>⑨ 複雜度代價</h3><div class="body">
+      <p><span class="tag t-fact">Fact</span> Discord 產品經理公開講:手機版要重組,因為 app 能做嘅嘢「exponentially」增加;2025 年桌面外觀更新後,支援論壇有用戶投訴 server 圖示變細、難認。</p>
+      <p><span class="tag t-judge">Judgement</span> 呢個係警號:Discord 嘅「好玩」會隨功能增加變成「亂」。XRCC 有約 600 個行為節點同 30 多類別,更加要靠結構而唔係靠裝飾。</p></div></div>
+  </div>
+</section>
+
+<section class="sec" id="others">
+  <div class="sec-head"><span class="eyebrow">對照產品</span><h2>其他「有趣而唔悶」嘅產品教咗咩</h2>
+  <p class="muted">Linear、Duolingo、Slack 有官方或接近官方來源;Arc、Raycast、Figma 部分來自二手分析,可信度較低,已標明。Spotify、Notion 今次未研究,唔列。</p></div>
+  <div class="tablewrap"><table>
+    <thead><tr><th>產品</th><th>公開事實</th><th>可借嘅一點</th><th>XRCC 注意</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Linear</strong></td><td><span class="tag t-fact">Fact</span> 2024 重做 UI 嘅原則:「Don't compete for attention you haven't earned」「Structure should be felt not seen」;側欄調暗、減少邊線、色彩由 98 個變數收斂到 3 個(base / accent / contrast)。</td><td>導航退後,內容發光;用更少邊線;色彩生成有系統。</td><td>XRCC 深色底已經收斂。重點係 rail 唔好比主面板搶眼。</td></tr>
+      <tr><td><strong>Arc</strong></td><td><span class="tag t-fact">Fact</span>(二手)用垂直側欄代替橫向 tab,Spaces 分隔不同情境。評論指出「缺少清晰的 why」。</td><td>「Spaces」= 按情境分組,有各自色彩。</td><td>XRCC 項目可有個別顏色/封面。警惕:新鮮感唔等於留存。</td></tr>
+      <tr><td><strong>Figma</strong></td><td><span class="tag t-fact">Fact</span>(二手)有名字、有顏色嘅多人游標,令協作有即時感。</td><td>Presence 取代明示分享;游標帶個性。</td><td>只適用多人 / 多裝置連線場景(XRCC 有可選 multiplayer)。<span class="tag t-assume">Assumption</span></td></tr>
+      <tr><td><strong>Raycast</strong></td><td><span class="tag t-fact">Fact</span>(二手,偏自動生成摘要)command palette 係核心;紅色強調色「點到即止」。</td><td>鍵盤優先嘅快速跳轉;單一強調色克制使用。</td><td>600 個節點 + 多面板,快速跳轉價值高。</td></tr>
+      <tr><td><strong>Duolingo</strong></td><td><span class="tag t-fact">Fact</span> 用 Rive State Machine 令角色按狀態變換動畫;角色(如 Lily)靠鮮明個性成為品牌核心。</td><td>角色有「狀態」(閒置、思考、慶祝),唔只係靜態插圖。</td><td>只用喺空狀態/成功時刻,絕對唔可以出現喺高壓操作中。</td></tr>
+      <tr><td><strong>Slack</strong></td><td><span class="tag t-fact">Fact</span>(會議筆記)語音聲線定位「clear, concise, human」,載入訊息用人話,錯誤訊息帶同理心。</td><td>一把聲線貫穿;邊緣位置多啲人味。</td><td>XRCC 已有良好文案基礎(見 <a href="#copy">文案</a>)。</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section class="sec" id="principles">
+  <div class="sec-head"><span class="eyebrow">設計原則</span><h2>八條可以轉化落 XRCC 嘅原則</h2>
+  <p class="muted">全部係 Judgement:由上面事實歸納,未經用家驗證。</p></div>
+  <div class="grid">
+    <div class="card"><h3>P1 做「地方」,唔做「頁面」</h3><p>Launcher 同 Editor 各自有固定嘅位置模型。Rail 位置、次序、名稱唔隨版本亂變。</p></div>
+    <div class="card"><h3>P2 細而誠實嘅 presence</h3><p>用一粒點加一句人話,顯示裝置、連線、下載、測試場次嘅真實狀態。唔推斷、唔扮活。</p></div>
+    <div class="card"><h3>P3 Chrome 退後,內容發光</h3><p>Rail、標題條用較暗嘅紫調;縮圖、預覽、3D 渲染做主角(借 Linear)。</p></div>
+    <div class="card"><h3>P4 非正式做預設,結構做選項</h3><p>新手見到最短路徑;進階設定摺埋(XRCC 已有摺疊摘要行 P14)。</p></div>
+    <div class="card"><h3>P5 俾項目一個面孔</h3><p>封面、色調、最近活動。項目就係創作者嘅「server」。</p></div>
+    <div class="card"><h3>P6 一把聲線</h3><p>同人講嘢咁:先講發生咩,再講點做。高風險位置(刪除、資料)收斂語氣。</p></div>
+    <div class="card"><h3>P7 邊緣玩味,核心規矩</h3><p>空狀態、第一次成功、onboarding 可以玩;刪除、授權、資料匯出要直白。</p></div>
+    <div class="card"><h3>P8 誠實狀態大過好玩狀態</h3><p>Data Analytics 已定案「唔推斷」(例如只顯示 "No Finish recorded")。Presence 點必須遵守同一規則。</p></div>
+  </div>
+</section>
+
+<section class="sec" id="fit">
+  <div class="sec-head"><span class="eyebrow">XRCC 對照</span><h2>邊啲借、邊啲改、邊啲唔好</h2>
+  <p class="muted">背景:XRCC 係 Unity 零代碼 XR 內容創作工具,PC editor(uGUI)、Launcher(UI Toolkit)、XR world-space 面板;用家包括創作者、教學/培訓人員、操作員。來源:項目知識庫。</p></div>
+  <div class="two">
+    <div class="card"><h3 style="color:var(--ok)">直接借</h3>
+      <ul class="list">
+        <li>穩定的左 rail + 主面板 + 右側狀態區</li>
+        <li>Presence 點 + 一句狀態人話</li>
+        <li>Quick Switcher / command palette(Ctrl+K)</li>
+        <li>項目「最近活動」一行(類 rich presence)</li>
+        <li>聲線統一、邊緣位多啲人味</li>
+        <li>導航退後(Linear 思路)</li></ul></div>
+    <div class="card"><h3 style="color:var(--warn)">改造後借</h3>
+      <ul class="list">
+        <li>Onboarding 問題分流 → 改成可跳過嘅「你想做咩?」</li>
+        <li>身份表達 → 由用家頭像改成項目封面/色調</li>
+        <li>多人游標 → 只喺多裝置 / multiplayer 測試時用</li>
+        <li>角色狀態動畫 → 只喺空狀態同成功時刻</li>
+        <li>Stage 式活動結構 → 對應 Operator / Trainer 場次(需符合 Data Analytics 決策)</li></ul></div>
+    <div class="card"><h3 style="color:var(--bad)">唔好借</h3>
+      <ul class="list">
+        <li>Channel / 訊息流作主體:XRCC 唔係聊天</li>
+        <li>大量圓形 server 圖示欄:項目數量唔係重點</li>
+        <li>通知紅點泛濫、付費升級提示</li>
+        <li>連續登入、徽章等遊戲化壓力</li>
+        <li>公開顯示用戶狀態:企業/學校環境有私隱顧慮</li>
+        <li>高飽和 blurple 大面積:XRCC 有自己嘅深紫 + 橙小點綴</li></ul></div>
+  </div>
+  <div class="card"><h3>XRCC 獨有嘅限制,Discord 冇</h3>
+    <ul class="list">
+      <li><span class="tag t-fact">Fact</span> XR 面板係 world-space,單一 active panel,要大點擊目標;Discord 式細密列表唔可以直接搬去 XR。</li>
+      <li><span class="tag t-fact">Fact</span> 客戶包括教學機構與企業項目,信任感同專業感同樣重要;「好玩」唔可以削弱「可靠」。</li>
+      <li><span class="tag t-fact">Fact</span> Data Analytics 4.2 已定案:狀態只用 Accepted / Saved locally / Queued / Delivered / Failed,無 pass/fail,無推斷 abandoned。Presence 設計必須在呢個框內。</li>
+    </ul></div>
+</section>
+
+<section class="sec" id="ui">
+  <div class="sec-head"><span class="eyebrow">具體 UI 建議</span><h2>按 XRCC 現有畫面對應</h2>
+  <p class="muted">畫面編號 P1 至 P16 取自 visual language study 嘅模式目錄。每項標示成本:是否需要新 token(全部「否」)、是否需要新 component、需要的資料是否待驗證。優先度係我嘅判斷。</p></div>
+
+  <div class="tablewrap"><table>
+    <thead><tr><th>#</th><th>畫面</th><th>建議</th><th>借自</th><th>成本</th><th>優先</th></tr></thead>
+    <tbody>
+      <tr><td>A</td><td><strong>Launcher 左 rail</strong><br><span class="muted">P7</span></td><td>Active 用已定案嘅紫 tint + 左豎條。每個地方(Projects / Library / Packages / Profiles / Connections)可帶一粒狀態點或計數,例如缺 Poe key 時 Connections 出琥珀點;下載中 Packages 出進度環。Rail 底色比主面板更暗一級。</td><td>Discord 位置穩定 + 狀態點;Linear 導航退後</td><td>無新 token。狀態點可用現有成功/警告/錯誤色。可能需要細 component。</td><td><span class="pill p-hi">高</span></td></tr>
+      <tr><td>B</td><td><strong>Launcher 右側「Nearby」區</strong><br><span class="muted">P5 / Connections</span></td><td>將「附近 VR 裝置、micro:bit、Remote Control」做成一個細列表:點 + 名 + 一句狀態,例如 "Quest 3 · Ready to launch"。一鍵「Launch on this headset」。冇裝置時用章魚空狀態:"No headsets nearby. Plug one in or wake it up, we'll keep looking."</td><td>Discord 朋友活動區、語音房成員</td><td>無新 token。新 component:Presence row(28/36 高)。<span class="tag t-assume">Assumption</span> 需確認 Launcher 可持續偵測裝置。</td><td><span class="pill p-hi">高</span></td></tr>
+      <tr><td>C</td><td><strong>Project card</strong></td><td>加一行「最近活動」:"Played on Quest · 2h ago"、"Edited today · 14 objects"。封面可由用家揀縮圖。保持三個獨立維度(Form / Protection / Connections)不混入。</td><td>Discord rich presence;server 圖示作身份</td><td>無新 token。<span class="tag t-assume">Assumption</span> 需有「最近播放」資料。</td><td><span class="pill p-mid">中</span></td></tr>
+      <tr><td>D</td><td><strong>Quick Switcher</strong><br><span class="muted">Launcher + Editor</span></td><td>Ctrl+K 打開浮層:跳去項目、資產、行為節點、設定、最近檔案。結果行帶圖示 + 分類標籤,支援模糊搜尋。浮層沿用 P4 dialog 外觀。</td><td>Discord Quick Switcher;Raycast</td><td>無新 token。新 component:Command palette。需工程評估(uGUI)。</td><td><span class="pill p-hi">高</span></td></tr>
+      <tr><td>E</td><td><strong>Editor project bar</strong><br><span class="muted">P1</span></td><td>多人/多裝置測試時,喺 project bar 右邊出小 chip 顯示已連線嘅測試者或裝置,點擊可跟隨或查看。唔做常駐頭像欄。</td><td>Figma 多人 presence</td><td>無新 token。<span class="tag t-assume">Assumption</span> 只適用 multiplayer / 多裝置情境。</td><td><span class="pill p-lo">低</span></td></tr>
+      <tr><td>F</td><td><strong>Operator panel / Data Browser</strong><br><span class="muted">4.2</span></td><td>將場次列表做成「房間成員」式:每行一粒狀態點 + 狀態字,<strong>只對應已確認嘅五種狀態</strong>,例如 "Saved locally"、"Queued"。顏色:成功綠、失敗紅、其餘中性。唔用「活躍」「放棄」等推斷字眼。</td><td>Discord 語音房成員列</td><td>無新 token。風險:Discord 式「在線/離線」會誤導,必須對齊 D-16、D-22。</td><td><span class="pill p-mid">中</span></td></tr>
+      <tr><td>G</td><td><strong>Asset panel / Library</strong><br><span class="muted">P3</span></td><td>維持縮圖三欄。加入 hover 預覽(聲音可播、3D 輕旋轉)同「Pinned」一行。Rail 計數保留。</td><td>Discord 快速預覽;Linear 密度控制</td><td>無新 token。Hover 預覽需工程評估。</td><td><span class="pill p-mid">中</span></td></tr>
+      <tr><td>H</td><td><strong>空狀態同成功時刻</strong><br><span class="muted">P10 / P6</span></td><td>統一用「章魚線稿 + 粗標題 + 一句人話 + 一個行動」。章魚可有 3 個表情(閒置 / 搵緊 / 慶祝),只用於空狀態、第一次成功。唔用於錯誤或刪除。</td><td>Duolingo 角色狀態;Discord Clyde 表情</td><td>無新 token。需要插畫資產,屬新素材。</td><td><span class="pill p-mid">中</span></td></tr>
+      <tr><td>I</td><td><strong>Onboarding Wizard</strong><br><span class="muted">P8</span></td><td>第一步加一條可跳過嘅問題:"What are you making first?" 選項:A guided tour / A training scene / A quick demo / Just let me in。答案只決定預設範本同提示,不鎖功能。</td><td>Discord Community Onboarding</td><td>無新 token。<span class="tag t-assume">Assumption</span> 需有對應範本。</td><td><span class="pill p-mid">中</span></td></tr>
+      <tr><td>J</td><td><strong>Runtime Debug Panel</strong><br><span class="muted">P16</span></td><td>唔加玩味。只借「presence 點」概念:Watch / Log / Warnings 嘅琥珀點已經足夠。保持鍵盤優先。</td><td>(刻意不借)</td><td>無。</td><td><span class="pill p-lo">維持</span></td></tr>
+    </tbody>
+  </table></div>
+
+  <figure>
+    <div class="svgbox">
+      <svg viewBox="0 0 700 360" role="img" aria-label="影響力對成本矩陣">
+        <rect class="box" x="60" y="20" width="620" height="290" rx="8"/>
+        <line class="ln" x1="370" y1="20" x2="370" y2="310"/><line class="ln" x1="60" y1="165" x2="680" y2="165"/>
+        <text class="m" x="70" y="38">高影響 · 低成本</text><text class="m" x="380" y="38">高影響 · 高成本</text>
+        <text class="m" x="70" y="296">低影響 · 低成本</text><text class="m" x="380" y="296">低影響 · 高成本</text>
+        <text class="m" x="60" y="338">成本 → 低 ... 高</text><text class="m" x="2" y="170" transform="rotate(-90 12 170)">影響 ↑</text>
+        <circle class="hl" cx="150" cy="80" r="16"/><text class="h" x="145" y="85">A</text>
+        <circle class="hl" cx="250" cy="110" r="16"/><text class="h" x="245" y="115">H</text>
+        <circle class="hl" cx="190" cy="130" r="16"/><text class="h" x="185" y="135">文案</text>
+        <circle class="hl" cx="440" cy="75" r="16"/><text class="h" x="436" y="80">D</text>
+        <circle class="hl" cx="410" cy="125" r="16"/><text class="h" x="406" y="130">B</text>
+        <circle class="hl" cx="300" cy="225" r="16"/><text class="h" x="295" y="230">C</text>
+        <circle class="hl" cx="500" cy="215" r="16"/><text class="h" x="495" y="220">F</text>
+        <circle class="hl" cx="560" cy="255" r="16"/><text class="h" x="556" y="260">E</text>
+        <circle class="hl" cx="470" cy="190" r="16"/><text class="h" x="466" y="195">G</text>
+        <circle class="hl" cx="330" cy="180" r="16"/><text class="h" x="327" y="185">I</text>
+      </svg>
+    </div>
+    <figcaption>位置係我嘅粗略判斷(Judgement),未同工程對過。「文案」指下一節嘅聲線統一。</figcaption>
+  </figure>
+</section>
+
+<section class="sec" id="copy">
+  <div class="sec-head"><span class="eyebrow">文案聲線</span><h2>最平、最快見效:同人講嘢</h2>
+  <p class="muted"><span class="tag t-judge">Judgement</span> XRCC 現有文案已經好(例如 "You're up to date!"),方向係延伸而唔係重寫。UI 文案維持英文為主。以下係風格示範,唔代表已有字串。</p></div>
+  <div class="two">
+    <div class="card"><h3>空狀態</h3>
+      <div class="copy"><span class="b">- No projects found.</span><span class="a">+ Nothing here yet. Start with a template, or drop in a .ccdata file.</span></div>
+      <div class="copy"><span class="b">- No devices.</span><span class="a">+ No headsets nearby. Wake one up and we'll find it.</span></div></div>
+    <div class="card"><h3>狀態</h3>
+      <div class="copy"><span class="b">- Connected.</span><span class="a">+ Quest 3 · Ready to launch</span></div>
+      <div class="copy"><span class="b">- Pending.</span><span class="a">+ Queued. We'll send it as soon as the connection is back.</span></div></div>
+    <div class="card"><h3>成功</h3>
+      <div class="copy"><span class="b">- Operation completed.</span><span class="a">+ Project saved</span></div>
+      <div class="copy"><span class="b">- Import successful.</span><span class="a">+ 12 assets are in. Ready when you are.</span></div></div>
+    <div class="card"><h3>錯誤</h3>
+      <div class="copy"><span class="b">- Something went wrong.</span><span class="a">+ Couldn't reach Poe. Check your key, then try again.</span></div>
+      <p class="src">高風險位置(刪除、授權、資料)保持直白,不加玩笑。</p></div>
+  </div>
+  <p class="muted" style="font-size:.9rem">原則:先講發生咩,再講點做;唔責怪;按鈕用動詞;玩味只放喺低風險位置。</p>
+</section>
+
+<section class="sec" id="risks">
+  <div class="sec-head"><span class="eyebrow">風險同取捨</span><h2>幾個要預先承認嘅問題</h2></div>
+  <div class="tablewrap"><table>
+    <thead><tr><th>風險</th><th>點解重要</th><th>減低方法</th></tr></thead>
+    <tbody>
+      <tr><td><strong>玩味削弱專業信任</strong></td><td>客戶包括教學同企業項目。</td><td>玩味只放邊緣位置;核心動作與資料畫面保持直白。</td></tr>
+      <tr><td><strong>Presence 誤導</strong></td><td>「在線」點可能被理解成確認咗嘅狀態。</td><td>只顯示真實、可驗證嘅狀態;與 Data Analytics 決策對齊。</td></tr>
+      <tr><td><strong>為 presence 要持續偵測 / 輪詢</strong></td><td>可能影響效能或電量,亦涉及工程。</td><td><span class="tag t-assume">Assumption</span> 先確認 Launcher 現有偵測能力,再定範圍。</td></tr>
+      <tr><td><strong>多一個 component 就多一份維護</strong></td><td>Library 未完成,新增要發佈。</td><td>Feature 專屬 component 放該 feature 檔案,共用嘅(Presence row、Command palette)才進 Library。</td></tr>
+      <tr><td><strong>資料隱私</strong></td><td>顯示「誰做緊乜」係敏感資訊。</td><td>只顯示本機/本人裝置;唔做跨用戶公開 presence。</td></tr>
+      <tr><td><strong>XR 不適用</strong></td><td>小字、細點喺 XR 難點中。</td><td>本輪只針對 PC;XR 版另行設計大目標版本。</td></tr>
+      <tr><td><strong>證據偏弱</strong></td><td>部分來源係二手分析;Discord 官方 UI 準則搵唔到。</td><td>原則作為假設,用小型測試驗證,唔當定論。</td></tr>
+    </tbody>
+  </table></div>
+  <div class="card"><h3>需要驗證嘅假設</h3>
+    <ul class="list">
+      <li><span class="tag t-assume">Assumption</span> 創作者真係想喺 Launcher 見到「最近活動」同 Nearby,而唔係嫌嘈。</li>
+      <li><span class="tag t-assume">Assumption</span> Launcher 技術上可以持續偵測裝置同連線狀態(需 Steven / 工程確認)。</li>
+      <li><span class="tag t-assume">Assumption</span> PC editor(uGUI)做得到 command palette 同 hover 預覽。</li>
+      <li><span class="tag t-assume">Assumption</span> 教學/培訓用戶(Operator、Trainer)接受 presence 式列表,而唔會誤讀。</li>
+    </ul></div>
+</section>
+
+<section class="sec" id="next">
+  <div class="sec-head"><span class="eyebrow">建議下一步</span><h2>等 Alan 決定</h2>
+  <p class="muted">呢輪冇改 Figma。以下係我建議嘅試驗次序,每項都可以喺 Workbench 檔做細稿。</p></div>
+  <div class="steps">
+    <div class="step"><b>1</b><p><strong>Launcher 外殼試稿(A + B)。</strong>用現有 token 做一個窄 / 預設 / 闊三個 frame,rail 帶狀態點,右側 Nearby。睇吓有冇「Discord 嗰種活」同會唔會太嘈。</p></div>
+    <div class="step"><b>2</b><p><strong>文案聲線一輪(最平)。</strong>揀 Launcher + Connections 約 20 條字串,按上面模板重寫,放入稿內睇感覺。</p></div>
+    <div class="step"><b>3</b><p><strong>Quick Switcher 概念稿(D)。</strong>同 Tobey 或工程傾可行性,再決定係咪入 Library。</p></div>
+    <div class="step"><b>4</b><p><strong>小型驗證。</strong>搵 3 至 5 位內部創作者或培訓同事睇原型,問「邊度似有人喺度」「邊度太嘈」。</p></div>
+  </div>
+  <div class="card"><h3>想你決定嘅一件事</h3><p>你想先試邊個:<strong>A. Launcher 外殼(建議)</strong>、B. 只做文案聲線、C. Quick Switcher。我建議 A + 文案一齊做,因為最快睇到整體感覺差異,而且唔使新 token。</p></div>
+</section>
+
+<section class="sec" id="sources">
+  <div class="sec-head"><span class="eyebrow">來源</span><h2>公開資料</h2>
+  <p class="muted">標「二手」嘅可信度較低。未能核實嘅內容已在正文標示。</p></div>
+  <ul class="src-list">
+    <li>TechCrunch,Discord 手機版重新設計(2023-12-05):<a href="https://techcrunch.com/2023/12/05/discord-app-redesign-mobile">techcrunch.com/2023/12/05/discord-app-redesign-mobile</a></li>
+    <li>Discord Blog,Redesigning the Discord Overlay:<a href="https://discord.com/blog/redesigning-the-discord-overlay">discord.com/blog/redesigning-the-discord-overlay</a></li>
+    <li>Discord Blog,Community Onboarding:<a href="https://discord.com/blog/community-onboarding-welcome-your-new-members">discord.com/blog/community-onboarding-welcome-your-new-members</a></li>
+    <li>Discord Support,Community Onboarding 說明:<a href="https://support.discord.com/hc/en-us/articles/11074987197975">support.discord.com/hc/en-us/articles/11074987197975</a></li>
+    <li>Discord Support 社群論壇,桌面版新外觀意見(用戶意見,非官方立場):<a href="https://support.discord.com/hc/ru/community/posts/30934449955479-New-desktop-design-feedback">support.discord.com 社群帖</a></li>
+    <li>PocketGamer.biz,Discord 2021 rebrand(二手報道):<a href="https://www.pocketgamer.biz/discords-new-branding-is-friendlier-than-ever">pocketgamer.biz</a></li>
+    <li>TechCrunch,Stage Channels:<a href="https://techcrunch.com/2021/03/31/discord-stage-channels-voice-events/">techcrunch.com/2021/03/31/discord-stage-channels-voice-events</a></li>
+    <li>Linear,Behind the latest design refresh:<a href="https://linear.app/now/behind-the-latest-design-refresh">linear.app/now/behind-the-latest-design-refresh</a>;How we redesigned the Linear UI:<a href="https://linear.app/now/how-we-redesigned-the-linear-ui">linear.app/now/how-we-redesigned-the-linear-ui</a></li>
+    <li>Duolingo Blog,World character visemes:<a href="https://blog.duolingo.com/world-character-visemes">blog.duolingo.com</a>;Rive,Duolingo Lily:<a href="https://rive.app/blog/duolingo-s-ai-powered-video-call-brings-lily-to-life">rive.app/blog</a></li>
+    <li>Slack 聲線(會議筆記,二手):<a href="https://bradfrost.com/blog/post/clarity-conf-being-human-being-slack/">bradfrost.com/blog/post/clarity-conf-being-human-being-slack</a>;<a href="https://conffab.com/presentation/many-hands-one-voice/">conffab.com</a></li>
+    <li>Arc 分析(二手):<a href="https://blakecrosley.com/blog/design-study-arc">blakecrosley.com/blog/design-study-arc</a>;<a href="https://productsalon.substack.com/p/piece-no-1-arc-browser">productsalon.substack.com</a></li>
+    <li>Figma 多人游標(二手):<a href="https://builtformars.com/ux-bites/a-dynamic-cursor">builtformars.com/ux-bites/a-dynamic-cursor</a></li>
+    <li>Raycast 設計分析(二手、偏自動生成):<a href="https://opendesigner.io/design-systems/raycast">opendesigner.io</a></li>
+    <li>內部資料(非公開,未外傳):項目知識庫與 XRCC UI visual language study。</li>
+  </ul>
+</section>
+
+</main>
