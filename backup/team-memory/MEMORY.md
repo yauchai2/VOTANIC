@@ -21,3 +21,4 @@
 - Punctuation (Alan, 2026-10-14, applies everywhere): English comma + space, Chinese full-width punctuation: [[punctuation-rule-zh-en]].
 - XRCC Claude Design system package (2026-10-15): [[xrcc-claude-design-system]]; Alan uploads it to claude.ai himself.
 - Daily VOTANIC memory backup routine (Alan, 2026-10-25, "批准，照做。之後都唔使我批准照做"): standing approval for the daily backup to scan for secrets (and skip/redact any found) and copy files into the GitHub backup branch and Drive. Backup threads should just proceed without asking; never write secrets into the backup. Alan also said (2026-10-25) the backup is not needed on Saturday and Sunday (HK time), so weekend runs can skip.
+- Before adding screens to the Runtime Debug page read [[debug-feature-new-boards-rules]] (own Section, bind all tokens, prototype, don't resize lanes).

@@ -906,3 +906,25 @@ Page Button, Library file. Three sets: `Button / Dark / 40px` (17463:54657, Stat
 - (2026-10-21，Alan:「所有呢啲 close btn 用 Library 嘅 component」) XRCC-Claude-Workbench 檔入面，Debug Panel（268:1285）22 個同 Project Variable（667:5566）31 個 40×40 嘅 Close Button，由舊 `Button / Dark / 40px` 換成 Library 嘅 `Button / Dark / Button Square`（Size=40px, State=Default），Icon 設為 `icon/outline/close`，名稱統一為 Close Button。位置同尺寸維持 40×40；冇加新 token，icon 顏色用 Library 元件本身綁定嘅 token。未處理：(Test) Data Analytics & Connections 頁 6 個舊 16/20px `icon/close`（唔係 40×40 掣）。
 
 - 2026-10-21 follow-up: 65 arrows in the new section "Variable Configuration · set Watch and Log per variable" (Config 1 to 9, copies made after the 12×12 change) sat at x=24 in the 24×24 end slot, so they looked pushed past the right edge. Re-centred to x=6, y=6. Audit: 176 of 176 12×12 arrows in end slots are now centred. No other elements moved.
+
+## 2026-10-27 - Runtime Debug Log tab: 重複數據合併（Alan:「同一類數據重複太多，User 要 scroll 好耐」）
+- File: XRCC Claude Workbench（ZBOB48n4eLsZABCTnhh5kk）。冇改 XRCC (PC) Library，冇新增 token，全部 Dark，唔使 Publish。冇刪 / 改任何現有 board（7 至 9 原樣）。
+- 新增 feature 專屬元件（Components page，Runtime Debug · Manage debug items section）：
+  - Debug Log Group（795:13081）：State = Default / Hover / Expanded；屬性 name / meta / time / range / count。由 Debug Log Entry 複製再改，加 chevron、Library Badge（neutral faded small）顯示 x 次數、時間欄加「from 00:02:18」。
+  - Debug Log Sample（799:458）：展開後嘅單條取樣，屬性 change / time。
+  - Debug Log Group Footer（799:461）：「Showing latest 5 of 312」+ Show more + Mute this variable（Tertiary Small）。
+- 新增 Boards（Log tab section，451:2652，第二行以下）：7a 預設合併（Timer elapsed x312、Visitor count x24 合併，其他單條照舊）、7b 展開一組、7c 暫停（Resume + 「37 new updates」banner）加 Timer 已 mute（Muted · 1 chip + 底部 Unmute）、7d 搜尋冇結果。Toolbar = Search + Pause，下面 chips：Group repeats / Pinned / Muted + 總數。
+- 用到嘅 Library 元件：Button Secondary / Primary / Tertiary、Tag（Filled / Outline, Small Pill）、Badge、Form Text Input（Search）、icon/outline/arrow-down、arrow-right、info-circle、search。Token 全部 bind 現有（surface/faded、surface/accent-muted、border/subtle、text/primary、text/secondary）。
+- 已知：Pinned chip 只示意位置，未出 Pinned 畫面；暫停 banner 用 surface/accent-muted（偏紫，想低調可換 surface/faded）；窄寬（380）Summary 會斷行。
+- 還原：刪除 7a 至 7d 同三個元件即可，原有畫面冇動。
+
+- (2026-10-27 更正，Alan:「你好似唔記得哂啲記憶」) 第一次做嘅時候我將 7a 至 7d 放入 Log tab lane Section 並加高咗佢，令 lane 同下面 Warnings tab 重疊，亦用咗 raw 間距。已更正：Log tab lane 還原 2600×1056；7a 至 7d 搬入新 Section「Log tab · repeat grouping (proposal)」（Runtime Debug · Manage debug items 主 Section 左邊空位，-1100, 1000）；自砌 frame 嘅間距 / 內距 / 圓角全部 bind spacing/* 同 radius/md（Toolbar、Filters、Paused banner、Muted strip、Group 的 title / when、Sample、Footer）；三個元件補 description；加 prototype：Timer 組 ⇄ 展開、Pause → 7c、Resume → 7a、Search → 7d、Clear search → 7a。
+- (2026-10-27 簡化，Alan:「Pause 同 Group repeats 有咩用？唔係加箭頭 dropdown 就得？」) 同意核心係合併行加展開箭咀。已移走 Pause / Resume、Group repeats / Pinned / Muted chips、暫停 banner、Muted strip，同 7c、7d（皆係我自己嘅 board）。新 Section 只剩 7a（預設合併）、7b（展開）；Debug Log Group Footer 移走 Mute 掣，只留 Show more。Prototype：Timer 組 ⇄ 展開。
+- (2026-10-27 全面檢查，Alan:「UI好怪」) 7a / 7b 修正：(1) Search 變高（76）同闊度唔夠：我搬出 toolbar 時留低 layoutGrow，已改 Fill 闊 / Hug 高 36，Body 還原 590。(2) Debug Log Group 嘅 chevron 由最左改到 count badge 右邊（Default / Hover 向下，Expanded 向上），名稱同其他行對齊；chevron 顏色 bind 同名稱一樣嘅 text/primary。(3) Sample 同 Footer 內縮改用 spacing/24。(4) 7b footer instance 壞咗（隱藏、冇內容），已重建。(5) 重建兩個 board 內嘅 Group instance，清走舊 chevron 殘留。
+- (2026-10-27，Alan:「加 scroll bar 就得」) 7b 展開改為固定高度 160 嘅滾動區（Samples (scroll)，clip + 右邊 scrollbar thumb，綁 border/strong、radius/xs），取樣由 5 條增至 8 條示意；移走 Show more 同 Debug Log Group Footer instance（元件 799:461 保留未用，可刪）。合併行「首值 → 尾值」改為首值同箭咀 text/subtle、尾值 text/primary，同單條行一致。
+- 2026-10-27 Locate icon 變「<」(Alan 將 Log rows 搬去 Runtime Debug Panel 5888:29914)：原因係我砌 Debug Log Group 時，內嵌 Button Square 嘅 Icon property (Icon#18013:9) 留喺預設 arrow-left (494:3938)；Workbench 內睇到 target 只因為舊版 override 喺 icon 圖層上，搬去用已發佈 Library 嘅檔案就消失。Debug Log Entry 一直係用 property 設 target，所以冇事（同 2026-10-15 規則一致）。修正：Workbench 內 Debug Log Group 三個 variant 嘅 Icon property 直接設 icon/outline/target；Runtime Debug Panel 嘅兩個 Group instance 暫時用 property override 設返 target。待 Alan：Workbench Publish，再喺 Runtime Debug Panel Update library。規則：自砌元件內嵌 Button Square 要用 Icon property 設 icon，唔好用圖層 swap。
+
+## 2026-10-27 Debug Log Group Locate icon: real cause and fix
+- Cause: published Debug Log Group (remote component in Runtime Debug Panel file) still has Button Square Icon property at default arrow-left (494:3938). Layer-level overrides do not survive; only the property does.
+- Workbench source already fixed (Icon property = target on all variants). Needs Alan: Publish library, then Update library in Runtime Debug Panel file.
+- Stopgap: set Icon property to target (5300:20954) on all 4 Group instances (5888:29936, 29951, 29990, 30015) in the Runtime Debug Panel file.
