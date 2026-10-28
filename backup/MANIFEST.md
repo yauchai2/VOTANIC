@@ -1,4 +1,4 @@
-# 備份清單 (generated 2026-10-27 UTC)
+# 備份清單 (generated 2026-10-28 UTC)
 
 | 路徑 | bytes | sha256 (前 12 位) |
 |---|---|---|
@@ -263,7 +263,7 @@
 | `backup/project-files/xrcc-user-flow/20261012-xrcc-user-flow.html` | 189363 | ed3435dd2ab7 |
 | `backup/project-files/xrcc-user-flow/20261012-xrcc-user-flow.json` | 2218 | 6ab597ddcd6d |
 | `backup/team-memory/.memory-sync` | 67 | 0d2ad1e163e1 |
-| `backup/team-memory/.memory-sync-basis` | 3359 | 8adb370a84c6 |
+| `backup/team-memory/.memory-sync-basis` | 3359 | 8af41ff44a90 |
 | `backup/team-memory/MEMORY.md` | 6698 | 1ee386f2968f |
 | `backup/team-memory/backup-routine-approval-and-weekdays.md` | 935 | cb5143e803aa |
 | `backup/team-memory/debug-feature-new-boards-rules.md` | 1799 | 3fb92943b711 |
