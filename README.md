@@ -1,2 +1,5 @@
 # VOTANIC
+
 VOTANIC
+
+工作流程（Branch、Commit、PR）請睇 [CONTRIBUTING.md](CONTRIBUTING.md)。
