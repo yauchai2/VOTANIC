@@ -13,3 +13,8 @@ Alan (2026-10-27, after the Log repeat-grouping thread): "你好似唔記得哂�
 - Feature-specific components go on the Components page (85:1541) in the Runtime Debug section, with descriptions; reuse Debug Log Entry / Debug Warning Entry patterns (Warnings already has an xN repeat count badge, so keep Log grouping consistent).
 - Wire prototype links like the rest (tabs navigate, Smart animate / Ease out / 0.1 s), add change-log entry, English UI copy, Dark only, check narrow/default/wide.
 - Open dev questions already flagged: Log limit 500, Warnings limit 100, whether Remove clears Log history; mention if a design touches them. See design-system/20261014-debug-panel-flow-handoff.md.
+
+**Added 2026-10-29 (Other-scene W/L disabled thread):**
+- Cloning a board copies its flowStartingPoints entry and all prototype reactions: remove the copied starting points, clear row hover CHANGE_TO reactions on rows whose toggles are Disabled (else hover re-enables them), and clear reactions behind a scrim on dialog boards.
+- Alan: when copying other UI screens delete irrelevant annotations; boards must be placed inside the main Section (422:12694) with Flow lines/labels (trunk pattern like Manage lane) and prototype links, not dropped loose. Disabled toggle = Debug Toggle State=Disabled + Library "New Tooltips" text "Only for the current scene". Open: older boards still show other-scene W/L enabled; filter chip counts for disabled items.
+- 2026-10-29: Alan approved updating the older boards too: all other-scene (non-Lobby) rows on Boards 1, 2, 3, 6, 13 to 16, 18, 19, 21 now use Debug Toggle State=Disabled. Filter chip counts still include disabled items (default, not contradicted). Board 20 tooltip list not yet updated with "Only for the current scene".
