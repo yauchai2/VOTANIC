@@ -1,78 +1,186 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Voyage 360 · Asset Panel Prototype</title>
+<title>Voyage 360 Prototype</title>
 <style>
-:root{--bg:#0d0d10;--panel:#17171c;--line:#2a2a33;--text:#e9e9ee;--mut:#8b8b98;--accent:#7b3fc4}
-*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.4 Roboto,system-ui,sans-serif}
+:root{--header:#241b38;--band:#6429a0;--surf:#0e0d0d;--stroke:#545454;--txt:#e5e5e5;--lav:#d9b0fd;--dis:#818181;--blue:#3686a0;--del:#c92e5f;--amber:#ffb02e;--purple:#7b2fc4;
+ --bg:#0d0d10;--line:#2a2a33;--mut:#8b8b98}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--txt);font:13px/1.4 Roboto,system-ui,sans-serif;overflow:hidden}
 #app{display:flex;height:100%}
-aside{width:248px;flex:none;background:var(--panel);border-right:1px solid var(--line);overflow:auto;padding:16px 12px}
-aside h1{font-size:14px;margin:0 4px 2px}aside p{color:var(--mut);margin:0 4px 14px}
+aside{width:236px;flex:none;background:#17171c;border-right:1px solid var(--line);padding:16px 12px;overflow:auto}
+aside h1{font-size:14px;margin:0 4px 2px}aside p{color:var(--mut);margin:0 4px 12px}
 aside h2{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:16px 4px 6px}
-aside button.s{display:block;width:100%;text-align:left;background:none;border:0;color:var(--text);padding:6px 8px;border-radius:6px;cursor:pointer;font:inherit}
-aside button.s:hover{background:#23232b}aside button.s.on{background:var(--accent)}
-aside label{display:flex;gap:8px;align-items:center;padding:4px 8px;color:var(--mut);cursor:pointer}
-main{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
-#stage{width:1920px;height:1080px;position:absolute;left:50%;top:50%;transform-origin:center;background:#000}
-#stage img{position:absolute;inset:0;width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none}
-.hs{position:absolute;cursor:pointer;border-radius:8px}
-.show .hs{outline:2px dashed #ffb02e;background:rgba(255,176,46,.18)}
-#hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(20,20,26,.9);border:1px solid var(--line);padding:6px 12px;border-radius:999px;color:var(--mut);pointer-events:none;white-space:nowrap}
+aside button,aside label{display:block;width:100%;text-align:left;background:none;border:0;color:var(--txt);padding:6px 8px;border-radius:6px;font:inherit;cursor:pointer}
+aside button:hover{background:#23232b}aside label{display:flex;gap:8px;align-items:center;color:var(--mut)}
+main{flex:1;position:relative;overflow:hidden}
+#stage{width:1920px;height:1080px;position:absolute;left:50%;top:50%;transform-origin:center;background:#000 url(img/bg.jpg) 0 0/100% 100%;overflow:hidden;font-family:Inter,Roboto,system-ui,sans-serif}
+#reopen{position:absolute;left:1580px;top:44px;width:20px;height:36px;opacity:0}
+/* panel */
+#panel{position:absolute;left:664px;top:250px;width:592px;height:580px;border-radius:20px 0 20px 20px;background:var(--surf);overflow:hidden;box-shadow:8px 10px 25px rgba(0,0,0,.25);transition:opacity .15s}
+#panel.hide{opacity:0;pointer-events:none}
+.hdr{height:40px;background:var(--header);display:flex;align-items:center;padding-left:24px;gap:16px;color:var(--lav);font-weight:600;font-size:16px}
+.hdr .t{flex:1}.hdr .x{width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.opt{height:47px;background:var(--header);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:relative}
+.loc{display:flex;align-self:flex-end}
+.loc .tag{height:32px;min-width:120px;padding:4px 16px;display:flex;gap:8px;align-items:center;border-radius:10px 10px 0 0;font-size:14px;cursor:pointer}
+.loc .tag.on{background:var(--band);color:var(--lav);font-weight:600}
+.tools{display:flex;gap:8px;align-items:center}
+.btn{height:32px;border:0;border-radius:8px;padding:4px 16px;font:600 14px Inter,system-ui;color:#fff;display:flex;align-items:center;gap:8px;cursor:pointer}
+.btn img{width:24px;height:24px}
+.btn.imp{background:var(--blue)}.btn.sq{width:32px;padding:4px;justify-content:center}.btn.del{background:var(--del)}.btn.pur{background:var(--purple)}
+.btn.sq.undo{background:var(--purple)}
+.btn[disabled],.dim{opacity:.4;pointer-events:none}
+.bar{height:6px;background:var(--band)}
+.body{height:487px;position:relative;padding:24px;display:flex;flex-direction:column;gap:16px}
+.cats{display:flex;gap:4px}.cats div{padding:4px 12px;border-radius:8px;font-size:16px;cursor:pointer}
+.cats div.on{background:var(--band);color:var(--lav);font-weight:600}
+.srow{display:flex;gap:8px}
+.search{flex:1;height:35px;border:1px solid var(--stroke);border-radius:8px;display:flex;align-items:center;padding:0 8px;gap:4px}
+.search:focus-within{border-color:var(--lav)}
+.search img{width:16px;height:16px}.search input{flex:1;background:none;border:0;outline:0;color:var(--txt);font:13px Roboto,system-ui,sans-serif;letter-spacing:.39px}
+.search input::placeholder{color:var(--dis)}
+.drop{width:160px;height:35px;border:1px solid var(--stroke);border-radius:8px;display:flex;align-items:center;justify-content:space-between;padding:0 12px;font:600 16px Inter;position:relative;cursor:pointer}
+.drop .menu{position:absolute;top:38px;left:0;right:0;background:#1b1b1f;border:1px solid var(--stroke);border-radius:8px;z-index:5;overflow:hidden}
+.drop .menu div{padding:8px 12px;font-weight:400}.drop .menu div:hover{background:var(--header)}
+.scroll{flex:1;overflow-y:auto;margin-right:-12px;padding-right:12px;scrollbar-width:thin;scrollbar-color:#d9d9d9 var(--stroke)}
+.scroll::-webkit-scrollbar{width:4px}.scroll::-webkit-scrollbar-thumb{background:#d9d9d9;border-radius:4px}.scroll::-webkit-scrollbar-track{background:var(--stroke);border-radius:4px}
+.grid.icons{display:flex;flex-wrap:wrap;gap:4px;width:544px}
+.ic{width:64px;height:64px;border-radius:8px;display:flex;align-items:center;justify-content:center;position:relative;cursor:pointer;border:2px solid transparent}
+.ic:hover{background:#1c1c20}.ic.sel{border-color:var(--amber);background:none}
+.ic img{max-width:32px;max-height:32px}
+.grid.imgs{display:grid;grid-template-columns:repeat(3,176px);gap:8px;width:544px}
+.im{height:145px;border-radius:8px;padding:8px;border:1px solid transparent;position:relative;cursor:pointer;display:flex;flex-direction:column;gap:6px}
+.im .th{height:90px;border-radius:2px;overflow:hidden;background:#000;display:flex;justify-content:center}
+.im .th img{height:90px;width:auto;max-width:100%;object-fit:cover}
+.im span{font:16px Inter;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.im:hover{background:#1c1c20}
+.chk{position:absolute;top:12px;right:12px;width:24px;height:24px;border-radius:4px;border:1px solid var(--lav);background:rgba(36,27,56,.6);display:none;align-items:center;justify-content:center}
+.sm .chk{display:flex}.sm .im.sel{border-color:var(--lav);background:rgba(100,41,160,.18)}
+.sm .im.sel .chk,.sm .ic.sel .chk{background:var(--band)}
+.sm .ic.sel{border-color:transparent}
+.ic .chk{top:-2px;right:-2px;width:22px;height:22px}
+.chk svg{display:none}.sel .chk svg{display:block}
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--dis);font-size:16px;padding-bottom:20px}
+.foot{position:absolute;left:0;right:0;bottom:0;height:62px;background:var(--header);display:flex;align-items:center;padding:0 16px;gap:8px;transform:translateY(100%);transition:transform .15s;z-index:4}
+.foot.on{transform:none}.foot .l{flex:1;font:16px Inter;color:var(--txt);display:flex;align-items:center;gap:16px}
+.foot .l img{width:80px;height:44px;border-radius:4px}.foot .btn{font-size:14px}
+#panel.sm .opt .tag,#panel.sm .opt .imp{opacity:.45;pointer-events:none}
+#panel.sm .hdr,#panel.sm .opt,#panel.sm .bar{filter:brightness(.9)}
+.dim .loc .tag.on{background:#2a2142}
+.tip{position:absolute;right:12px;top:41px;background:#0e0d0d;border-radius:4px;padding:4px 8px;font:14px Inter;z-index:8;pointer-events:none}
+.veil{position:absolute;inset:0;background:rgba(14,13,13,.78);z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;font:16px Inter}
+.spin{width:32px;height:32px;border:2px solid #444;border-top-color:var(--lav);border-radius:50%;animation:s .8s linear infinite}@keyframes s{to{transform:rotate(360deg)}}
+.dlgwrap{position:absolute;inset:0;z-index:9;background:rgba(0,0,0,.45);border-radius:20px 0 20px 20px}
+.dlg{position:absolute;left:42px;top:185px;width:508px;border-radius:20px 20px 20px 0;overflow:hidden;background:var(--surf);box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.dlg .h{height:40px;background:var(--header);display:flex;align-items:center;gap:8px;padding:0 16px;font:600 16px Inter;color:var(--lav)}
+.dlg .h .xx{margin-left:auto;cursor:pointer}
+.dlg .m{height:120px;display:flex;align-items:center;gap:32px;padding:0 48px;font:16px/1.2 Inter}
+.dlg .m img{width:76px;height:81px}
+.dlg .f{height:48px;background:var(--header);display:flex;justify-content:flex-end;align-items:center;gap:8px;padding:0 24px}
+.dlg .f .btn{height:33px;font-size:14px}.btn.out{background:none;border:1px solid var(--lav);color:var(--txt);font-weight:500}
+.toast{position:absolute;left:152px;bottom:24px;width:287px;height:68px;border-radius:8px;background:var(--header);overflow:hidden;z-index:10;display:flex;align-items:center;gap:8px;padding:0 16px;color:var(--lav);font:16px Inter}
+.toast .pb{position:absolute;left:0;bottom:0;height:8px;background:var(--amber);width:100%;animation:pb 3s linear forwards}@keyframes pb{to{width:0}}
+.toast .xx{margin-left:auto;cursor:pointer}
+#hint{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);background:rgba(20,20,26,.92);border:1px solid var(--line);padding:5px 12px;border-radius:999px;color:var(--mut);pointer-events:none;white-space:nowrap}
 </style></head><body>
 <div id="app">
 <aside>
-<h1>Voyage 360</h1><p>Asset Panel · Icons tab and Clear unused assets</p>
-<h2>Start from</h2><div id="starts"></div>
-<h2>All screens</h2><div id="all"></div>
-<h2>Options</h2>
-<label><input type="checkbox" id="optHot"> Show hotspots (H)</label>
-<label><input type="checkbox" id="optFail"> Make deletion fail</label>
-<label><input type="checkbox" id="optEmpty"> Scan finds nothing</label>
+<h1>Voyage 360</h1><p>Asset Panel · live prototype</p>
+<h2>Open as</h2>
+<button id="mAsset">Asset Panel</button><button id="mChoose">Choose Asset (Icons)</button>
+<h2>Simulate</h2>
+<label><input type="checkbox" id="oFail"> Deletion fails</label>
+<label><input type="checkbox" id="oNone"> No unused images</label>
+<h2>Try</h2><p>Search “star”, pick icons, use the bin to select and delete, or hover the sparkle-bin button to clear unused images.</p>
 </aside>
-<main><div id="stage"></div><div id="hint"></div></main>
+<main><div id="stage"><div id="reopen" title="Reopen panel"></div><div id="panel"></div></div></main>
 </div>
 <script>
-// Hotspots: [x,y,w,h,target] taken from Figma. Target may be a screen id or a function name.
-const S={
-A1:{n:'A1 · Icons tab — Default',h:[[872,461,176,145,'A2'],[1200,297.5,32,32,'A3'],[688,410,544,35,'A6']]},
-A2:{n:'A2 · Icon selected',h:[[1200,297.5,32,32,'A3']]},
-A3:{n:'A3 · Delete mode',h:[[1200,297.5,32,32,'A2'],[929,783.5,145,32,'A4']]},
-A4:{n:'A4 · Select all',h:[[929,783.5,145,32,'A3'],[1082,783.5,158,32,'A5']]},
-A5:{n:'A5 · Empty',h:[]},
-A6:{n:'A6 · No search result',h:[[688,410,544,35,'A1']]},
-A7:{n:'A7 · Choose Asset — Icons',h:[[872,461,176,145,'A8']]},
-A8:{n:'A8 · Icon selected',h:[]},
-B1a:{n:'B1a · Clear unused — Entry',h:[[1160,297.5,32,32,'B1b']],hover:[[1160,297.5,32,32,'B1b']]},
-B1b:{n:'B1b · Hover tooltip',h:[[1160,297.5,32,32,'B2']],leave:'B1a'},
-B2:{n:'B2 · Scanning',h:[],auto:['scan',1800]},
-B3:{n:'B3 · Review',h:[[929,783.5,145,32,'B1a'],[1082,783.5,158,32,'B4']]},
-B7:{n:'B7 · Nothing to clear',h:[[1137,604,53,33,'B1a']]},
-B4:{n:'B4 · Confirm',h:[[1026,604,80,33,'B3'],[1114,604,76,33,'B5']]},
-B5:{n:'B5 · Deleting',h:[],auto:['del',1800]},
-B6:{n:'B6 · Done',h:[],auto:['B1a',2600]},
-B8:{n:'B8 · Failed',h:[[1033,604,80,33,'B3'],[1121,604,69,33,'B5']]}};
-const stage=document.getElementById('stage'),hint=document.getElementById('hint');
-let cur,timer;
-const $=id=>document.getElementById(id);
-function go(id){
-  if(!S[id])return;clearTimeout(timer);cur=id;const s=S[id];
-  stage.innerHTML='<img src="img/'+id+'.jpg" alt="'+s.n+'">';
-  const mk=(h,hov)=>{const d=document.createElement('div');d.className='hs';
-    d.style.cssText=`left:${h[0]}px;top:${h[1]}px;width:${h[2]}px;height:${h[3]}px`;
-    if(hov)d.onmouseenter=()=>go(h[4]);else d.onclick=()=>go(h[4]);stage.appendChild(d);return d};
-  (s.hover||[]).forEach(h=>mk(h,true));
-  if(!s.hover)s.h.forEach(h=>mk(h));
-  if(s.leave){const d=stage.querySelector('.hs');d&&(d.onmouseleave=()=>go(s.leave))}
-  if(s.auto){const[t,ms]=s.auto;timer=setTimeout(()=>{
-    go(t==='scan'?($('optEmpty').checked?'B7':'B3'):t==='del'?($('optFail').checked?'B8':'B6'):t)},ms)}
-  document.querySelectorAll('aside button.s').forEach(b=>b.classList.toggle('on',b.dataset.id===id));
-  hint.textContent=s.n+(s.auto?' — advances automatically':'');
+const $=s=>document.querySelector(s);
+const ICONS=[['waypoint1','Waypoint 1'],['waypoint2','Waypoint 2'],['circle','Circle'],['circle-f','Circle Filled'],['gps-f','GPS'],['flag','Flag'],['flag-f','Flag Filled'],['cloud','Cloud'],['cloud-f','Cloud Filled'],['add','Add Circle'],['add-f','Add Circle Filled'],['cross','Cross Circle'],['cross-f','Cross Circle Filled'],['star1','Star'],['star1-f','Star Filled'],['star2','Sparkle'],['star2-f','Sparkle Filled'],['info','Info'],['info-f','Info Filled'],['arrow-c','Arrow Circle'],['arrow-c-f','Arrow Circle Filled'],['question','Question'],['question-f','Question Filled'],['arrow1','Arrow Left'],['arrow2','Arrow Back'],['home','Home'],['search','Search'],['touch','Touch'],['eye','Eye'],['camera','Camera'],['image','Image'],['video','Video'],['headset','Headset'],['book','Book'],['textsms','Chat'],['people','People'],['car','Car'],['sailing','Sailing'],['food','Food'],['moon','Moon']].map(([f,n])=>({id:'i'+f,f,n}));
+const NAMES=['Creative Visuals','Night Sky Photography','Urban Adventures','Festivals and Celebrations','Underwater Marvels','Cultural Heritage','Mountain Escapes','Coastal Dreams','Street Food Stories','Winter Wonderland','Golden Hour Portraits','Desert Silence','Forest Trails','City Lights'];
+const IMGS=NAMES.map((n,i)=>({id:'m'+i,n,t:(i%6)+1,used:i>=12}));
+let S;
+function init(choose){S={choose:!!choose,tab:'Local',cat:choose?'Icons':'Images',q:'',filter:'All',mode:null,sel:new Set(),icons:ICONS.slice(),imgs:IMGS.slice(),pick:null,dlg:null,veil:null,tip:false,toast:null,dd:false,open:true};render()}
+const el=(h)=>{const t=document.createElement('template');t.innerHTML=h.trim();return t.content.firstChild};
+const CHK='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#d9b0fd" stroke-width="2"><path d="M2 7.5l3.2 3L12 3.5"/></svg>';
+function visible(){const q=S.q.trim().toLowerCase();
+  if(S.cat==='Icons')return S.icons.filter(i=>!q||i.n.toLowerCase().includes(q));
+  if(S.cat==='Images')return S.imgs.filter(i=>(!q||i.n.toLowerCase().includes(q))&&(S.filter==='All'||(S.filter==='Unused')===!i.used));
+  return []}
+function render(){
+  const p=$('#panel'),v=visible(),busy=!!(S.veil||S.dlg);
+  p.className=(S.open?'':'hide ')+(S.mode?'sm':'')+(busy?' dim-all':'');
+  const del=S.mode==='delete'||S.mode==='clean';
+  const cats=S.choose?['Images','Icons']:['Images','Icons','Videos','Audio'];
+  let tools='';
+  if(S.choose)tools='<button class="btn imp"><img src="icons/upload.svg">Import</button>';
+  else if(del)tools='<button class="btn imp dim"><img src="icons/upload.svg">Import</button><button class="btn sq undo" id="undo" title="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M18 8H9a5 5 0 000 10h4M6 5L3 8l3 3" transform="translate(1 1)"/></svg></button>';
+  else tools='<button class="btn imp"><img src="icons/upload.svg">Import</button>'+(S.cat==='Images'?'<button class="btn sq pur" id="clean"><img src="img/clean.png" style="width:32px;height:32px;border-radius:8px"></button>':'')+'<button class="btn sq del" id="bin"><img src="icons/bin.svg"></button>';
+  let main='';
+  if(S.cat==='Videos'||S.cat==='Audio')main='<div class="empty"><img src="img/empty.png" width="160" style="opacity:.6"><div>No '+S.cat.toLowerCase()+' yet</div></div>';
+  else if(!v.length)main='<div class="empty"><img src="img/empty.png"><div>No Search Result</div></div>';
+  else if(S.cat==='Icons')main='<div class="scroll"><div class="grid icons">'+v.map(i=>`<div class="ic${S.sel.has(i.id)||S.pick===i.id?' sel':''}" data-id="${i.id}" title="${i.n}"><img src="icons/${i.f}.svg" alt="${i.n}"><div class="chk">${CHK}</div></div>`).join('')+'</div></div>';
+  else main='<div class="scroll"><div class="grid imgs">'+v.map(i=>`<div class="im${S.sel.has(i.id)?' sel':''}" data-id="${i.id}"><div class="th"><img src="img/t${i.t}.jpg"></div><span>${i.n}</span><div class="chk">${CHK}</div></div>`).join('')+'</div></div>';
+  const drop=S.cat==='Images'?`<div class="drop" id="drop">${S.filter}<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#e5e5e5" stroke-width="1.5"><path d="M3 6l5 5 5-5"/></svg>${S.dd?'<div class="menu">'+['All','Used','Unused'].map(o=>`<div data-f="${o}">${o}</div>`).join('')+'</div>':''}</div>`:'';
+  let foot='',n=S.sel.size;
+  if(S.mode==='delete')foot=`<div class="l">${n?n+' Items Selected':'Select Items'}</div><button class="btn pur" id="selall">${n&&n===v.length?'Cancel Selection':'Select All'}</button><button class="btn del" id="doDel" ${n?'':'disabled'}><img src="icons/bin.svg" width="24">Delete Assets</button>`;
+  else if(S.mode==='clean')foot=`<div class="l">${n} Unused Items Selected</div><button class="btn pur" id="cancelSel">Cancel Selection</button><button class="btn del" id="doDel" ${n?'':'disabled'}><img src="icons/bin.svg" width="24">Delete Assets</button>`;
+  else if(S.pick){const ic=S.icons.find(i=>i.id===S.pick);foot=`<div class="l"><img src="img/ph.png"><span>${ic?ic.n:''}</span></div><button class="btn pur" id="addScene">${S.choose?'Confirm':'Add to Scene'}</button>`}
+  p.innerHTML=`<div class="hdr"><img src="icons/media.svg" width="24"><span class="t">${S.choose?'Choose Asset':'Asset Panel'}</span><div class="x" id="close"><img src="icons/close.svg" width="16"></div></div>
+  <div class="opt${del?' dim2':''}"><div class="loc">${['Local','Online'].map(t=>`<div class="tag${S.tab===t?' on':''}" data-tab="${t}"><img src="icons/computer.svg" width="24">${t}</div>`).join('')}</div><div class="tools">${tools}</div>${S.tip?'<div class="tip">Clear unused assets</div>':''}</div>
+  <div class="bar"></div>
+  <div class="body"><div class="cats">${cats.map(c=>`<div class="${S.cat===c?'on':''}" data-cat="${c}">${c}</div>`).join('')}</div>
+  <div class="srow"><div class="search"><img src="icons/magnifier.svg"><input id="q" placeholder="Search media..." value="${S.q.replace(/"/g,'&quot;')}"></div>${drop}</div>${main}
+  <div class="foot${foot?' on':''}">${foot}</div></div>
+  ${S.veil?`<div class="veil"><div class="spin"></div>${S.veil}</div>`:''}
+  ${S.dlg?dialog():''}${S.toast?`<div class="toast"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#d9b0fd" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 3v6h8V3M8 21v-6h8v6"/></svg><span>${S.toast}</span><span class="xx" id="tx"><img src="icons/close.svg" width="14"></span><div class="pb"></div></div>`:''}`;
+  const q=$('#q');if(S._focus){q.focus();q.setSelectionRange(q.value.length,q.value.length);S._focus=0}
+  
 }
-function fit(){const m=document.querySelector('main'),k=Math.min(m.clientWidth/1920,(m.clientHeight-8)/1080);
-  stage.style.transform=`translate(-50%,-50%) scale(${k})`}
-const mkb=(box,id,label)=>{const b=document.createElement('button');b.className='s';b.dataset.id=id;b.textContent=label;b.onclick=()=>go(id);$(box).appendChild(b)};
-[['A1','Icons tab (Local)'],['A7','Choose Asset — Icons'],['B1a','Clear unused assets']].forEach(([i,l])=>mkb('starts',i,l));
-Object.keys(S).forEach(i=>mkb('all',i,S[i].n));
-$('optHot').onchange=e=>document.querySelector('main').classList.toggle('show',e.target.checked);
-addEventListener('keydown',e=>{if(e.key==='h'||e.key==='H'){$('optHot').click()}});
-addEventListener('resize',fit);fit();go('A1');
+function dialog(){const d=S.dlg;
+  const m={confirm:['Warning','dlg-warn',`Are you sure you want to delete ${S.sel.size}<br>unused images?<br>They aren't used in any scene.`,'<button class="btn out" id="dCancel">Cancel</button><button class="btn del" id="dDelete">Delete</button>'],
+   none:['Info','dlg-ok','No unused images found.<br>Every image here is used in a scene.','<button class="btn pur" id="dOk">OK</button>'],
+   fail:['Warning','dlg-warn',"Couldn't delete the unused images.<br>Please try again.",'<button class="btn out" id="dCancel">Cancel</button><button class="btn pur" id="dRetry">Retry</button>']}[d];
+  return `<div class="dlgwrap"><div class="dlg"><div class="h"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#d9b0fd" stroke-width="1.5"><circle cx="10" cy="10" r="8"/><path d="M10 9v5M10 6v1"/></svg>${m[0]}<span class="xx" id="dX"><img src="icons/close.svg" width="14"></span></div><div class="m"><img src="img/${m[1]}.png"><div>${m[2]}</div></div><div class="f">${m[3]}</div></div></div>`}
+function hint(){return S.mode==='delete'?'Delete mode — tick items, then Delete Assets':S.mode==='clean'?'Review unused images before deleting':S.veil?'Working…':'Asset Panel prototype'}
+function toast(t){S.toast=t;render();clearTimeout(S._tt);S._tt=setTimeout(()=>{S.toast=null;render()},3000)}
+function exit(){S.mode=null;S.sel.clear();render()}
+function doDelete(){S.dlg=null;S.veil='Deleting…';render();setTimeout(()=>{S.veil=null;
+  if($('#oFail').checked){S.dlg='fail';render();return}
+  const n=S.sel.size;const wasClean=S.mode==='clean';
+  if(S.cat==='Icons')S.icons=S.icons.filter(i=>!S.sel.has(i.id));else S.imgs=S.imgs.filter(i=>!S.sel.has(i.id));
+  S.sel.clear();S.mode=null;render();toast(wasClean?n+' unused assets deleted':n+' assets deleted')},1600)}
+document.addEventListener('click',e=>{
+  const t=e.target.closest('[id],[data-id],[data-tab],[data-cat],[data-f]');if(!t){if(S.dd){S.dd=false;render()}return}
+  const id=t.id;
+  if(t.dataset.f){S.filter=t.dataset.f;S.dd=false;return render()}
+  if(id==='drop'){S.dd=!S.dd;return render()}
+  if(S.dd&&!t.dataset.f){S.dd=false}
+  if(t.dataset.tab){S.tab=t.dataset.tab;return render()}
+  if(t.dataset.cat&&!S.mode){S.cat=t.dataset.cat;S.q='';S.pick=null;return render()}
+  if(t.dataset.id){const i=t.dataset.id;if(S.mode){S.sel.has(i)?S.sel.delete(i):S.sel.add(i)}else if(S.cat==='Icons')S.pick=S.pick===i?null:i;return render()}
+  switch(id){
+   case'close':S.open=false;return render();
+   case'reopen':S.open=true;return render();
+   case'bin':S.mode='delete';S.sel.clear();S.pick=null;return render();
+   case'undo':case'cancelSel':return exit();
+   case'selall':{const v=visible();S.sel=S.sel.size===v.length?new Set():new Set(v.map(x=>x.id));return render()}
+   case'doDel':S.dlg='confirm';return render();
+   case'dDelete':case'dRetry':return doDelete();
+   case'dCancel':case'dX':S.dlg=null;return render();
+   case'dOk':S.dlg=null;return render();
+   case'tx':S.toast=null;return render();
+   case'addScene':toast(S.choose?'Asset confirmed':'Added to scene');S.pick=null;return render();
+   case'clean':S.veil='Checking which images are in use...';S.tip=false;render();
+     return setTimeout(()=>{S.veil=null;const un=S.imgs.filter(i=>!i.used);
+       if($('#oNone').checked||!un.length){S.dlg='none';return render()}
+       S.mode='clean';S.sel=new Set(un.map(i=>i.id));S.cat='Images';render()},1800)}
+});
+document.addEventListener('mouseover',e=>{const c=e.target.closest('#clean');if(c&&!S.tip&&!S.veil){S.tip=true;render()}});
+document.addEventListener('mouseout',e=>{if(e.target.closest('#clean')&&S.tip){S.tip=false;render()}});
+document.addEventListener('input',e=>{if(e.target.id==='q'){S.q=e.target.value;S._focus=1;render()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(S.dlg){S.dlg=null}else if(S.mode)S.mode=null,S.sel.clear();else S.open=false;render()}});
+$('#mAsset').onclick=()=>init(false);$('#mChoose').onclick=()=>init(true);
+function fit(){const m=$('main'),k=Math.min(m.clientWidth/1920,m.clientHeight/1080);$('#stage').style.transform=`translate(-50%,-50%) scale(${k})`}
+addEventListener('resize',fit);fit();init(false);
 </script></body></html>
