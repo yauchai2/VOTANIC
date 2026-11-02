@@ -13,7 +13,13 @@ aside button,aside label{display:block;width:100%;text-align:left;background:non
 aside button:hover{background:#23232b}aside label{display:flex;gap:8px;align-items:center;color:var(--mut)}
 main{flex:1;position:relative;overflow:hidden}
 #stage{width:1920px;height:1080px;position:absolute;left:50%;top:50%;transform-origin:center;background:#000 url(img/bg.jpg) 0 0/100% 100%;overflow:hidden;font-family:Inter,Roboto,system-ui,sans-serif}
-#reopen{position:absolute;left:1580px;top:44px;width:20px;height:36px;opacity:0}
+#reopen{position:absolute;left:1573px;top:44px;width:36px;height:36px;border-radius:6px;cursor:pointer;z-index:3}
+#reopen:hover{background:rgba(255,255,255,.14)}
+.closed #reopen{outline:2px solid var(--amber);outline-offset:2px;animation:pu 1.6s ease-in-out infinite}@keyframes pu{50%{outline-color:transparent}}
+.scroll{padding-top:28px!important;margin-top:-28px;padding-left:24px;margin-left:-24px}
+.ic .nm{position:absolute;left:50%;top:-26px;transform:translateX(-50%);font:14px Inter;color:#e5e5e5;background:#0e0d0d;padding:2px 6px;border-radius:4px;white-space:nowrap;pointer-events:none;display:none;z-index:7}.ic:hover .nm{display:block}
+.cats div.dm{opacity:.5;cursor:default}
+.foot .pv{width:80px;height:44px;border-radius:4px;background:#2a2a2e;display:flex;align-items:center;justify-content:center}.foot .pv img{width:32px;height:32px}
 /* panel */
 #panel{position:absolute;left:664px;top:250px;width:592px;height:580px;border-radius:20px 0 20px 20px;background:var(--surf);overflow:hidden;box-shadow:8px 10px 25px rgba(0,0,0,.25);transition:opacity .15s}
 #panel.hide{opacity:0;pointer-events:none}
@@ -90,7 +96,7 @@ main{flex:1;position:relative;overflow:hidden}
 <h2>Simulate</h2>
 <label><input type="checkbox" id="oFail"> Deletion fails</label>
 <label><input type="checkbox" id="oNone"> No unused images</label>
-<h2>Try</h2><p>Search “star”, pick icons, use the bin to select and delete, or hover the sparkle-bin button to clear unused images.</p>
+<h2>Try</h2><p>Click the pulsing Asset Panel button in the top toolbar. Hover icons for names, search “star”, pick an icon, use the bin to select and delete, or use the sparkle-bin to clear unused images.</p>
 </aside>
 <main><div id="stage"><div id="reopen" title="Reopen panel"></div><div id="panel"></div></div></main>
 </div>
@@ -103,33 +109,34 @@ let S;
 function init(choose){S={choose:!!choose,tab:'Local',cat:choose?'Icons':'Images',q:'',filter:'All',mode:null,sel:new Set(),icons:ICONS.slice(),imgs:IMGS.slice(),pick:null,dlg:null,veil:null,tip:false,toast:null,dd:false,open:true};render()}
 const el=(h)=>{const t=document.createElement('template');t.innerHTML=h.trim();return t.content.firstChild};
 const CHK='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#d9b0fd" stroke-width="2"><path d="M2 7.5l3.2 3L12 3.5"/></svg>';
+function count(){return S.cat==='Icons'?S.icons.length:S.cat==='Images'?S.imgs.length:0}
 function visible(){const q=S.q.trim().toLowerCase();
   if(S.cat==='Icons')return S.icons.filter(i=>!q||i.n.toLowerCase().includes(q));
   if(S.cat==='Images')return S.imgs.filter(i=>(!q||i.n.toLowerCase().includes(q))&&(S.filter==='All'||(S.filter==='Unused')===!i.used));
   return []}
 function render(){
   const p=$('#panel'),v=visible(),busy=!!(S.veil||S.dlg);
-  p.className=(S.open?'':'hide ')+(S.mode?'sm':'')+(busy?' dim-all':'');
+  $('#stage').classList.toggle('closed',!S.open);p.className=(S.open?'':'hide ')+(S.mode?'sm':'')+(busy?' dim-all':'');
   const del=S.mode==='delete'||S.mode==='clean';
   const cats=S.choose?['Images','Icons']:['Images','Icons','Videos','Audio'];
   let tools='';
   if(S.choose)tools='<button class="btn imp"><img src="icons/upload.svg">Import</button>';
   else if(del)tools='<button class="btn imp dim"><img src="icons/upload.svg">Import</button><button class="btn sq undo" id="undo" title="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M18 8H9a5 5 0 000 10h4M6 5L3 8l3 3" transform="translate(1 1)"/></svg></button>';
-  else tools='<button class="btn imp"><img src="icons/upload.svg">Import</button>'+(S.cat==='Images'?'<button class="btn sq pur" id="clean"><img src="img/clean.png" style="width:32px;height:32px;border-radius:8px"></button>':'')+'<button class="btn sq del" id="bin"><img src="icons/bin.svg"></button>';
+  else tools='<button class="btn imp"><img src="icons/upload.svg">Import</button>'+'<button class="btn sq pur'+(count()?'':' dim')+'" id="clean"><img src="img/clean.png" style="width:32px;height:32px;border-radius:8px"></button>'+'<button class="btn sq del" id="bin"><img src="icons/bin.svg"></button>';
   let main='';
   if(S.cat==='Videos'||S.cat==='Audio')main='<div class="empty"><img src="img/empty.png" width="160" style="opacity:.6"><div>No '+S.cat.toLowerCase()+' yet</div></div>';
   else if(!v.length)main='<div class="empty"><img src="img/empty.png"><div>No Search Result</div></div>';
-  else if(S.cat==='Icons')main='<div class="scroll"><div class="grid icons">'+v.map(i=>`<div class="ic${S.sel.has(i.id)||S.pick===i.id?' sel':''}" data-id="${i.id}" title="${i.n}"><img src="icons/${i.f}.svg" alt="${i.n}"><div class="chk">${CHK}</div></div>`).join('')+'</div></div>';
+  else if(S.cat==='Icons')main='<div class="scroll"><div class="grid icons">'+v.map(i=>`<div class="ic${S.sel.has(i.id)||S.pick===i.id?' sel':''}" data-id="${i.id}" ><span class="nm">${i.n}</span><img src="icons/${i.f}.svg" alt="${i.n}"><div class="chk">${CHK}</div></div>`).join('')+'</div></div>';
   else main='<div class="scroll"><div class="grid imgs">'+v.map(i=>`<div class="im${S.sel.has(i.id)?' sel':''}" data-id="${i.id}"><div class="th"><img src="img/t${i.t}.jpg"></div><span>${i.n}</span><div class="chk">${CHK}</div></div>`).join('')+'</div></div>';
   const drop=S.cat==='Images'?`<div class="drop" id="drop">${S.filter}<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#e5e5e5" stroke-width="1.5"><path d="M3 6l5 5 5-5"/></svg>${S.dd?'<div class="menu">'+['All','Used','Unused'].map(o=>`<div data-f="${o}">${o}</div>`).join('')+'</div>':''}</div>`:'';
   let foot='',n=S.sel.size;
   if(S.mode==='delete')foot=`<div class="l">${n?n+' Items Selected':'Select Items'}</div><button class="btn pur" id="selall">${n&&n===v.length?'Cancel Selection':'Select All'}</button><button class="btn del" id="doDel" ${n?'':'disabled'}><img src="icons/bin.svg" width="24">Delete Assets</button>`;
   else if(S.mode==='clean')foot=`<div class="l">${n} Unused Items Selected</div><button class="btn pur" id="cancelSel">Cancel Selection</button><button class="btn del" id="doDel" ${n?'':'disabled'}><img src="icons/bin.svg" width="24">Delete Assets</button>`;
-  else if(S.pick){const ic=S.icons.find(i=>i.id===S.pick);foot=`<div class="l"><img src="img/ph.png"><span>${ic?ic.n:''}</span></div><button class="btn pur" id="addScene">${S.choose?'Confirm':'Add to Scene'}</button>`}
+  else if(S.pick){const ic=S.icons.find(i=>i.id===S.pick);foot=`<div class="l"><div class="pv"><img src="icons/${ic?ic.f:'image'}.svg"></div><span>${ic?ic.n:''}</span></div><button class="btn pur" id="addScene">${S.choose?'Confirm':'Add to Scene'}</button>`}
   p.innerHTML=`<div class="hdr"><img src="icons/media.svg" width="24"><span class="t">${S.choose?'Choose Asset':'Asset Panel'}</span><div class="x" id="close"><img src="icons/close.svg" width="16"></div></div>
   <div class="opt${del?' dim2':''}"><div class="loc">${['Local','Online'].map(t=>`<div class="tag${S.tab===t?' on':''}" data-tab="${t}"><img src="icons/computer.svg" width="24">${t}</div>`).join('')}</div><div class="tools">${tools}</div>${S.tip?'<div class="tip">Clear unused assets</div>':''}</div>
   <div class="bar"></div>
-  <div class="body"><div class="cats">${cats.map(c=>`<div class="${S.cat===c?'on':''}" data-cat="${c}">${c}</div>`).join('')}</div>
+  <div class="body"><div class="cats">${cats.map(c=>`<div class="${S.cat===c?'on':(S.mode?'dm':'')}" data-cat="${c}">${c}</div>`).join('')}</div>
   <div class="srow"><div class="search"><img src="icons/magnifier.svg"><input id="q" placeholder="Search media..." value="${S.q.replace(/"/g,'&quot;')}"></div>${drop}</div>${main}
   <div class="foot${foot?' on':''}">${foot}</div></div>
   ${S.veil?`<div class="veil"><div class="spin"></div>${S.veil}</div>`:''}
@@ -138,8 +145,8 @@ function render(){
   
 }
 function dialog(){const d=S.dlg;
-  const m={confirm:['Warning','dlg-warn',`Are you sure you want to delete ${S.sel.size}<br>unused images?<br>They aren't used in any scene.`,'<button class="btn out" id="dCancel">Cancel</button><button class="btn del" id="dDelete">Delete</button>'],
-   none:['Info','dlg-ok','No unused images found.<br>Every image here is used in a scene.','<button class="btn pur" id="dOk">OK</button>'],
+  const m={confirm:['Warning','dlg-warn',S.mode==='clean'?`Are you sure you want to delete ${S.sel.size}<br>unused images?<br>They aren't used in any scene.`:`Are you sure you want to delete ${S.sel.size} items?`,'<button class="btn out" id="dCancel">Cancel</button><button class="btn del" id="dDelete">Delete</button>'],
+   none:['Info','dlg-ok',`No unused ${S.cat.toLowerCase()} found.<br>Every ${S.cat==='Icons'?'icon':S.cat==='Images'?'image':'item'} here is used in a scene.`,'<button class="btn pur" id="dOk">OK</button>'],
    fail:['Warning','dlg-warn',"Couldn't delete the unused images.<br>Please try again.",'<button class="btn out" id="dCancel">Cancel</button><button class="btn pur" id="dRetry">Retry</button>']}[d];
   return `<div class="dlgwrap"><div class="dlg"><div class="h"><svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="#d9b0fd" stroke-width="1.5"><circle cx="10" cy="10" r="8"/><path d="M10 9v5M10 6v1"/></svg>${m[0]}<span class="xx" id="dX"><img src="icons/close.svg" width="14"></span></div><div class="m"><img src="img/${m[1]}.png"><div>${m[2]}</div></div><div class="f">${m[3]}</div></div></div>`}
 function hint(){return S.mode==='delete'?'Delete mode — tick items, then Delete Assets':S.mode==='clean'?'Review unused images before deleting':S.veil?'Working…':'Asset Panel prototype'}
@@ -171,16 +178,16 @@ document.addEventListener('click',e=>{
    case'dOk':S.dlg=null;return render();
    case'tx':S.toast=null;return render();
    case'addScene':toast(S.choose?'Asset confirmed':'Added to scene');S.pick=null;return render();
-   case'clean':S.veil='Checking which images are in use...';S.tip=false;render();
-     return setTimeout(()=>{S.veil=null;const un=S.imgs.filter(i=>!i.used);
+   case'clean':if(!count())return;S.veil='Checking which '+S.cat.toLowerCase()+' are in use...';S.tip=false;render();
+     return setTimeout(()=>{S.veil=null;const un=S.cat==='Images'?S.imgs.filter(i=>!i.used):[];
        if($('#oNone').checked||!un.length){S.dlg='none';return render()}
-       S.mode='clean';S.sel=new Set(un.map(i=>i.id));S.cat='Images';render()},1800)}
+       S.mode='clean';S.sel=new Set(un.map(i=>i.id));render()},1800)}
 });
 document.addEventListener('mouseover',e=>{const c=e.target.closest('#clean');if(c&&!S.tip&&!S.veil){S.tip=true;render()}});
 document.addEventListener('mouseout',e=>{if(e.target.closest('#clean')&&S.tip){S.tip=false;render()}});
 document.addEventListener('input',e=>{if(e.target.id==='q'){S.q=e.target.value;S._focus=1;render()}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(S.dlg){S.dlg=null}else if(S.mode)S.mode=null,S.sel.clear();else S.open=false;render()}});
-$('#mAsset').onclick=()=>init(false);$('#mChoose').onclick=()=>init(true);
+$('#mAsset').onclick=()=>{init(false);S.open=false;render()};$('#mChoose').onclick=()=>init(true);
 function fit(){const m=$('main'),k=Math.min(m.clientWidth/1920,m.clientHeight/1080);$('#stage').style.transform=`translate(-50%,-50%) scale(${k})`}
-addEventListener('resize',fit);fit();init(false);
+addEventListener('resize',fit);fit();init(false);S.open=false;render();
 </script></body></html>
