@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Voyage 360 Loading Enhancement</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div id="viewport"><div id="stage">
+
+<!-- S1 Opening project -->
+<section class="screen" id="s1" data-screen="s1">
+  <div class="menubar" data-menubar></div>
+  <div class="splash" id="s1click" style="cursor:pointer">
+    <div class="splash-content s1">
+      <div class="loadlogo"><img alt="" src="assets/logo.png"></div>
+      <p class="status">Opening project</p>
+    </div>
+  </div>
+</section>
+
+<!-- S2 Loading first scene -->
+<section class="screen" id="s2" data-screen="s2">
+  <div class="menubar" data-menubar></div>
+  <div class="splash">
+    <div class="splash-content">
+      <div class="loadlogo"><img alt="" src="assets/logo.png"></div>
+      <p class="status">Loading Lobby</p>
+      <div class="bar"><i id="s2bar"></i></div>
+    </div>
+  </div>
+</section>
+
+<!-- S3 First scene failed -->
+<section class="screen" id="s3" data-screen="s3">
+  <div class="menubar" data-menubar></div>
+  <div class="splash">
+    <div class="splash-content">
+      <div class="loadlogo"><img alt="" src="assets/logo.png"></div>
+      <h3>Lobby didn’t load</h3>
+      <p class="file">LSC_1_1.jpg</p>
+      <p class="desc">The file may be missing or damaged. You can try again, or open the project and fix it from the scene strip.</p>
+      <div class="actions">
+        <button class="sbtn pri" id="s3retry"><img alt="" src="assets/rotate.svg">Try again</button>
+        <button class="sbtn sec" id="s3skip">Open without Lobby</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Editor -->
+<section class="screen" id="editor" data-screen="editor">
+  <div class="scene" id="canvas"></div>
+  <div class="menubar" data-menubar></div>
+  <div class="hdr">
+    <div class="fname">File Name-123456789</div>
+    <div class="hdr-r">
+      <div class="ibtn"><img alt="" src="assets/media.svg"></div>
+      <div class="ibtn"><img alt="" src="assets/playsetting.svg"></div>
+      <div class="play" id="playBtn" tabindex="0" role="button" aria-disabled="true" aria-describedby="tipPlay">
+        <div class="a"><img alt="" src="assets/play.svg"><span>Play</span></div>
+        <div class="b"><img alt="" src="assets/arrowdown.svg"></div>
+      </div>
+      <button class="save" id="saveBtn" aria-disabled="true" aria-describedby="tipPlay"><img alt="" src="assets/save.svg"><span>Save*</span></button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="group">
+      <div class="strip"><div class="row" id="row"></div><div class="sbar"><i></i></div></div>
+      <a class="newcard" id="newScene" tabindex="0" role="button"><div class="bg"></div><img alt="" src="assets/plus.svg"><span>New scene</span></a>
+    </div>
+    <div class="modes">
+      <div class="map"><img alt="" src="assets/map.svg">Scene Map</div>
+      <div class="list">Scene Outline<img alt="" src="assets/arrowup.svg"></div>
+    </div>
+  </div>
+  <div class="footer" id="footer"></div>
+
+  <div id="loader"></div>
+  <div class="tip below" id="tipPlay"><p>Play and Save unlock after all 36 scenes load.</p><p>28 scenes are still loading. Open any ready scene to keep editing.</p></div>
+  <div class="tip above" id="tipNew"><p>New scene unlocks after loading.</p><p>28 scenes are still loading. You can add scene 37 as soon as they finish.</p></div>
+</section>
+
+</div></div>
+
+<div id="chrome" aria-label="Prototype controls">
+  <span>Editor:</span>
+  <kbd>F</kbd> fail <kbd>N</kbd> offline <kbd>A</kbd> all ready
+  <button data-go="s1">Restart</button>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
