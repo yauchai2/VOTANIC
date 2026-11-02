@@ -1,0 +1,18 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="icon_Close_24" clip-path="url(#clip0_0_391)">
+<g id="Vector">
+<use xlink:href="#stroke0_0_391" fill="#E5E5E5"/>
+<mask id="stroke1_0_391" maskUnits="userSpaceOnUse" x="-1.89949" y="-2.08088" width="19.799" height="19.799" fill="black">
+<rect fill="white" x="-1.89949" y="-2.08088" width="19.799" height="19.799"/>
+<use xlink:href="#stroke0_0_391"/>
+</mask>
+<path d="M12.6222 3.95556L12.0444 3.37778L8 7.42222L3.95556 3.37778L3.37778 3.95556L7.42222 8L3.37778 12.0444L3.95556 12.6222L8 8.57778L12.0444 12.6222L12.6222 12.0444L8.57778 8L12.6222 3.95556Z" stroke-width="0.4" stroke="#E5E5E5" mask="url(#stroke1_0_391)"/>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_0_391">
+<rect width="16" height="16" fill="white"/>
+</clipPath>
+<path id="stroke0_0_391" d="M12.6222 3.95556L12.0444 3.37778L8 7.42222L3.95556 3.37778L3.37778 3.95556L7.42222 8L3.37778 12.0444L3.95556 12.6222L8 8.57778L12.0444 12.6222L12.6222 12.0444L8.57778 8L12.6222 3.95556Z"/>
+</defs>
+</svg>
