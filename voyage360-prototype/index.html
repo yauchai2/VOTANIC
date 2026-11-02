@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Voyage 360 · Asset Panel Prototype</title>
+<style>
+:root{--bg:#0d0d10;--panel:#17171c;--line:#2a2a33;--text:#e9e9ee;--mut:#8b8b98;--accent:#7b3fc4}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font:13px/1.4 Roboto,system-ui,sans-serif}
+#app{display:flex;height:100%}
+aside{width:248px;flex:none;background:var(--panel);border-right:1px solid var(--line);overflow:auto;padding:16px 12px}
+aside h1{font-size:14px;margin:0 4px 2px}aside p{color:var(--mut);margin:0 4px 14px}
+aside h2{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--mut);margin:16px 4px 6px}
+aside button.s{display:block;width:100%;text-align:left;background:none;border:0;color:var(--text);padding:6px 8px;border-radius:6px;cursor:pointer;font:inherit}
+aside button.s:hover{background:#23232b}aside button.s.on{background:var(--accent)}
+aside label{display:flex;gap:8px;align-items:center;padding:4px 8px;color:var(--mut);cursor:pointer}
+main{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+#stage{width:1920px;height:1080px;position:absolute;left:50%;top:50%;transform-origin:center;background:#000}
+#stage img{position:absolute;inset:0;width:100%;height:100%;display:block;user-select:none;-webkit-user-drag:none}
+.hs{position:absolute;cursor:pointer;border-radius:8px}
+.show .hs{outline:2px dashed #ffb02e;background:rgba(255,176,46,.18)}
+#hint{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(20,20,26,.9);border:1px solid var(--line);padding:6px 12px;border-radius:999px;color:var(--mut);pointer-events:none;white-space:nowrap}
+</style></head><body>
+<div id="app">
+<aside>
+<h1>Voyage 360</h1><p>Asset Panel · Icons tab and Clear unused assets</p>
+<h2>Start from</h2><div id="starts"></div>
+<h2>All screens</h2><div id="all"></div>
+<h2>Options</h2>
+<label><input type="checkbox" id="optHot"> Show hotspots (H)</label>
+<label><input type="checkbox" id="optFail"> Make deletion fail</label>
+<label><input type="checkbox" id="optEmpty"> Scan finds nothing</label>
+</aside>
+<main><div id="stage"></div><div id="hint"></div></main>
+</div>
+<script>
+// Hotspots: [x,y,w,h,target] taken from Figma. Target may be a screen id or a function name.
+const S={
+A1:{n:'A1 · Icons tab — Default',h:[[872,461,176,145,'A2'],[1200,297.5,32,32,'A3'],[688,410,544,35,'A6']]},
+A2:{n:'A2 · Icon selected',h:[[1200,297.5,32,32,'A3']]},
+A3:{n:'A3 · Delete mode',h:[[1200,297.5,32,32,'A2'],[929,783.5,145,32,'A4']]},
+A4:{n:'A4 · Select all',h:[[929,783.5,145,32,'A3'],[1082,783.5,158,32,'A5']]},
+A5:{n:'A5 · Empty',h:[]},
+A6:{n:'A6 · No search result',h:[[688,410,544,35,'A1']]},
+A7:{n:'A7 · Choose Asset — Icons',h:[[872,461,176,145,'A8']]},
+A8:{n:'A8 · Icon selected',h:[]},
+B1a:{n:'B1a · Clear unused — Entry',h:[[1160,297.5,32,32,'B1b']],hover:[[1160,297.5,32,32,'B1b']]},
+B1b:{n:'B1b · Hover tooltip',h:[[1160,297.5,32,32,'B2']],leave:'B1a'},
+B2:{n:'B2 · Scanning',h:[],auto:['scan',1800]},
+B3:{n:'B3 · Review',h:[[929,783.5,145,32,'B1a'],[1082,783.5,158,32,'B4']]},
+B7:{n:'B7 · Nothing to clear',h:[[1137,604,53,33,'B1a']]},
+B4:{n:'B4 · Confirm',h:[[1026,604,80,33,'B3'],[1114,604,76,33,'B5']]},
+B5:{n:'B5 · Deleting',h:[],auto:['del',1800]},
+B6:{n:'B6 · Done',h:[],auto:['B1a',2600]},
+B8:{n:'B8 · Failed',h:[[1033,604,80,33,'B3'],[1121,604,69,33,'B5']]}};
+const stage=document.getElementById('stage'),hint=document.getElementById('hint');
+let cur,timer;
+const $=id=>document.getElementById(id);
+function go(id){
+  if(!S[id])return;clearTimeout(timer);cur=id;const s=S[id];
+  stage.innerHTML='<img src="img/'+id+'.jpg" alt="'+s.n+'">';
+  const mk=(h,hov)=>{const d=document.createElement('div');d.className='hs';
+    d.style.cssText=`left:${h[0]}px;top:${h[1]}px;width:${h[2]}px;height:${h[3]}px`;
+    if(hov)d.onmouseenter=()=>go(h[4]);else d.onclick=()=>go(h[4]);stage.appendChild(d);return d};
+  (s.hover||[]).forEach(h=>mk(h,true));
+  if(!s.hover)s.h.forEach(h=>mk(h));
+  if(s.leave){const d=stage.querySelector('.hs');d&&(d.onmouseleave=()=>go(s.leave))}
+  if(s.auto){const[t,ms]=s.auto;timer=setTimeout(()=>{
+    go(t==='scan'?($('optEmpty').checked?'B7':'B3'):t==='del'?($('optFail').checked?'B8':'B6'):t)},ms)}
+  document.querySelectorAll('aside button.s').forEach(b=>b.classList.toggle('on',b.dataset.id===id));
+  hint.textContent=s.n+(s.auto?' — advances automatically':'');
+}
+function fit(){const m=document.querySelector('main'),k=Math.min(m.clientWidth/1920,(m.clientHeight-8)/1080);
+  stage.style.transform=`translate(-50%,-50%) scale(${k})`}
+const mkb=(box,id,label)=>{const b=document.createElement('button');b.className='s';b.dataset.id=id;b.textContent=label;b.onclick=()=>go(id);$(box).appendChild(b)};
+[['A1','Icons tab (Local)'],['A7','Choose Asset — Icons'],['B1a','Clear unused assets']].forEach(([i,l])=>mkb('starts',i,l));
+Object.keys(S).forEach(i=>mkb('all',i,S[i].n));
+$('optHot').onchange=e=>document.querySelector('main').classList.toggle('show',e.target.checked);
+addEventListener('keydown',e=>{if(e.key==='h'||e.key==='H'){$('optHot').click()}});
+addEventListener('resize',fit);fit();go('A1');
+</script></body></html>
