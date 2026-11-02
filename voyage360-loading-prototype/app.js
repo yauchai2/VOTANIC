@@ -127,8 +127,8 @@ function renderLoader() {
   if (m === "ready") { L.innerHTML = ""; return; }
   if (!S.open) {
     if (m === "loading") h = '<a class="pill" data-act="toggle"><img class="spin" alt="" src="' + A + 'load2.svg"><span id="pillTxt">Loading ' + r + "/" + TOTAL + '</span><span class="mini"><i id="pillBar" style="width:' + Math.round(48 * r / TOTAL) + 'px"></i></span>' + chev(false) + "</a>";
-    if (m === "failed") h = '<a class="pill err" data-act="toggle"><img alt="" src="' + A + 'warn.svg"><span>' + plural(f, "scene") + ' failed</span><span class="link" data-act="retry">Retry</span>' + chev(false) + "</a>";
-    if (m === "offline") h = '<a class="pill" data-act="toggle"><img alt="" src="' + A + 'warn.svg"><span>Paused · offline</span><span class="link" data-act="retryNow">Retry</span>' + chev(false) + "</a>";
+    if (m === "failed") h = '<a class="pill err" data-act="toggle"><img alt="" src="' + A + 'warn.svg"><span>' + plural(f, "scene") + ' failed</span><span class="link">Retry</span>' + chev(false) + "</a>";
+    if (m === "offline") h = '<a class="pill" data-act="toggle"><img alt="" src="' + A + 'warn.svg"><span>Paused · offline</span><span class="link">Retry</span>' + chev(false) + "</a>";
   } else {
     var count_ = '<div class="cnt"><b id="cPct">' + pct + '%</b><span id="cOf">' + r + " of " + TOTAL + ' scenes ready</span></div><div class="track"><i id="cBar" style="width:' + pct + '%"></i></div>';
     if (m === "loading") h = '<div class="lcard"><div class="head" data-act="toggle"><img class="spin" alt="" src="' + A + 'load.svg"><span>Loading scenes</span>' + chev(true) + "</div>" + count_ +
