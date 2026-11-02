@@ -131,11 +131,11 @@ function renderLoader() {
     if (m === "offline") h = '<a class="pill" data-act="toggle"><img alt="" src="' + A + 'warn.svg"><span>Paused · offline</span><span class="link" data-act="retryNow">Retry</span>' + chev(false) + "</a>";
   } else {
     var count_ = '<div class="cnt"><b id="cPct">' + pct + '%</b><span id="cOf">' + r + " of " + TOTAL + ' scenes ready</span></div><div class="track"><i id="cBar" style="width:' + pct + '%"></i></div>';
-    if (m === "loading") h = '<div class="lcard"><div class="head"><img class="spin" alt="" src="' + A + 'load.svg"><span>Loading scenes</span>' + chev(true) + "</div>" + count_ +
+    if (m === "loading") h = '<div class="lcard"><div class="head" data-act="toggle"><img class="spin" alt="" src="' + A + 'load.svg"><span>Loading scenes</span>' + chev(true) + "</div>" + count_ +
       '<p class="note" id="cNote">Now loading ' + nameOf(currentLoading() || r + 1) + ". Play and Save unlock when all scenes are ready.</p></div>";
-    if (m === "failed") h = '<div class="lcard"><div class="head"><img alt="" src="' + A + 'warn.svg"><span>' + plural(f, "scene") + " didn’t load</span>" + chev(true) + "</div>" + count_ +
+    if (m === "failed") h = '<div class="lcard"><div class="head" data-act="toggle"><img alt="" src="' + A + 'warn.svg"><span>' + plural(f, "scene") + " didn’t load</span>" + chev(true) + "</div>" + count_ +
       '<div class="rule err"><span>' + plural(f, "scene") + ' timed out. Play and Save stay locked until they load or you skip them.</span></div><div class="btns"><a class="cbtn pri" data-act="retry">Retry ' + plural(f, "scene") + '</a><a class="cbtn sec" data-act="skip">Skip for now</a></div></div>';
-    if (m === "offline") h = '<div class="lcard"><div class="head"><img alt="" src="' + A + 'warn.svg"><span>Connection lost</span>' + chev(true) + "</div>" + count_ +
+    if (m === "offline") h = '<div class="lcard"><div class="head" data-act="toggle"><img alt="" src="' + A + 'warn.svg"><span>Connection lost</span>' + chev(true) + "</div>" + count_ +
       '<div class="rule info"><span>Loading is paused and resumes when you are back online.</span></div><div class="btns off"><a class="cbtn pri" data-act="retryNow">Retry now</a><small id="cd">Checking again in ' + S.countdown + " s</small></div></div>";
   }
   L.innerHTML = h;
