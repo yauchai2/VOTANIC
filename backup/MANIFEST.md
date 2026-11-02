@@ -1,4 +1,4 @@
-# 備份清單 (generated 2026-10-30 UTC)
+# 備份清單 (generated 2026-11-02 UTC)
 
 | 路徑 | bytes | sha256 (前 12 位) |
 |---|---|---|
@@ -205,6 +205,7 @@
 | `backup/project-files/uploads/hearth/94eee12f-cd9c-4694-baf3-8e6eff7060ce` | 175946 | e84a1223a6a5 |
 | `backup/project-files/uploads/hearth/962ba8f5-2602-4913-8517-fac5bcf0f89b` | 4112 | ae3fe86d07a0 |
 | `backup/project-files/uploads/hearth/9685bced-9f97-4d08-8032-3c4520338e86` | 2749 | ed27b40e5bf5 |
+| `backup/project-files/uploads/hearth/989a9ff6-be43-461d-a523-50f1ff819950` | 2796600 | 666a63f20bff |
 | `backup/project-files/uploads/hearth/989ff090-8d32-4db7-98ae-74d72c81cf4d` | 5167 | 3f95983f1bfe |
 | `backup/project-files/uploads/hearth/98d426b3-062b-4261-8790-e364b6d18b25` | 61200 | f0370cbf5435 |
 | `backup/project-files/uploads/hearth/992a098c-67d2-42b1-ba97-c01ae629eedc` | 4426 | 73d8b38b6349 |
@@ -278,7 +279,7 @@
 | `backup/project-files/xrcc-user-flow/20261012-xrcc-user-flow.html` | 189363 | ed3435dd2ab7 |
 | `backup/project-files/xrcc-user-flow/20261012-xrcc-user-flow.json` | 2218 | 6ab597ddcd6d |
 | `backup/team-memory/.memory-sync` | 67 | 0d2ad1e163e1 |
-| `backup/team-memory/.memory-sync-basis` | 3811 | 85e9863fc2e0 |
+| `backup/team-memory/.memory-sync-basis` | 3811 | 73317c6a4c43 |
 | `backup/team-memory/MEMORY.md` | 7009 | cc0020be7e98 |
 | `backup/team-memory/backup-routine-approval-and-weekdays.md` | 935 | cb5143e803aa |
 | `backup/team-memory/debug-feature-new-boards-rules.md` | 2873 | 8b65c2b1213f |
