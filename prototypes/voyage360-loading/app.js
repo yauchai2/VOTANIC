@@ -30,7 +30,7 @@ var nameOf = function (n) { return NAMES[n] || "Scene " + n; };
 /* ---------- state ---------- */
 var S = {
   screen: "s1",
-  mode: "loading",          /* loading | failed | skipped | empty | ready */
+  mode: "loading",          /* loading | failed | skipped | ready */
   open: false,              /* loader card expanded */
   scenes: [],               /* {st:'ready'|'loading'|'queue'|'failed', p:0..1} */
   scroll: 0,
@@ -112,21 +112,19 @@ function footerText() {
   var r = count("ready");
   if (S.mode === "ready") return "All " + TOTAL + " assets ready";
   if (S.mode === "skipped") return plural(failedList().length, "scene") + " skipped. Play, Edit and Save unlock when they load or are removed.";
-  if (S.mode === "empty") return "No scenes yet";
   if (S.mode === "failed") return plural(failedList().length, "scene") + " didn’t load. " + r + " of " + TOTAL + " assets ready";
   return "Loading assets… " + r + " of " + TOTAL + " ready";
 }
 function updateFooter() { $("#footer").textContent = footerText(); }
 function updateTips() {
   var left = TOTAL - count("ready");
-  if (S.mode === "empty") $("#tipPlay").innerHTML = "<p>Add a scene to play, edit and save.</p>";
-  else $("#tipPlay").innerHTML = "<p>Finish loading to play, edit and save.</p><p>" + (S.mode === "skipped" || S.mode === "failed" ? plural(failedList().length, "scene") + " can’t load. Retry them or remove them from the strip." : plural(left, "asset") + (left === 1 ? " is" : " are") + " still loading. Open any ready scene to keep browsing.") + "</p>";
+  $("#tipPlay").innerHTML = "<p>Finish loading to play, edit and save.</p><p>" + (S.mode === "skipped" || S.mode === "failed" ? plural(failedList().length, "scene") + " can’t load. Retry them or remove them from the strip." : plural(left, "asset") + (left === 1 ? " is" : " are") + " still loading. Open any ready scene to keep browsing.") + "</p>";
   $("#tipNew").innerHTML = "<p>New scene unlocks after loading.</p><p>" + plural(left, "asset") + (left === 1 ? " is" : " are") + " still loading. You can add a scene as soon as they finish.</p>";
 }
 function chev(up) { return '<span class="chev" data-act="toggle"><img alt="" src="' + A + (up ? "chevup" : "chevron") + '.svg"></span>'; }
 function renderLoader() {
   var m = S.mode, L = $("#loader"), h = "", r = count("ready"), pct = Math.round(r / TOTAL * 100), f = failedList().length;
-  if (m === "ready" || m === "empty") { L.innerHTML = ""; return; }
+  if (m === "ready") { L.innerHTML = ""; return; }
   if (!S.open) {
     if (m === "loading") h = '<a class="pill" data-act="toggle"><img class="spin" alt="" src="' + A + 'load2.svg"><span id="pillTxt">Loading ' + r + "/" + TOTAL + '</span><span class="mini"><i id="pillBar" style="width:' + Math.round(48 * r / TOTAL) + 'px"></i></span>' + chev(false) + "</a>";
     if (m === "failed" || m === "skipped") h = '<a class="pill err" data-act="toggle"><img alt="" src="' + A + 'warn.svg"><span>' + plural(f, "scene") + ' failed</span><span class="link">Retry</span>' + chev(false) + "</a>";
@@ -153,10 +151,9 @@ function updateLoaderLive() {
 }
 function renderAll() {
   var ed = $("#editor"), m = S.mode;
-  var lock = m === "loading" || m === "failed" || m === "skipped" || m === "empty";
+  var lock = m === "loading" || m === "failed" || m === "skipped";
   ed.classList.toggle("locked", lock); ed.classList.toggle("playlocked", lock); ed.classList.toggle("ready", !lock);
-  ed.classList.toggle("empty", m === "empty");
-  $("#playBtn").setAttribute("aria-disabled", lock); $("#saveBtn").setAttribute("aria-disabled", lock);
+    $("#playBtn").setAttribute("aria-disabled", lock); $("#saveBtn").setAttribute("aria-disabled", lock);
   renderRow(); updateFooter(); updateTips(); renderLoader(); hideTips();
 }
 
@@ -176,7 +173,6 @@ Array.prototype.slice.call(document.querySelectorAll("#playBtn,#saveBtn,.hdr .ib
 var ns = $("#newScene");
 ns.addEventListener("click", function (ev) {
   ev.stopPropagation();
-  if (S.mode === "empty") { addFirstScene(); return; }
   if (S.mode === "loading") { $("#tipNew").classList.add("show"); setTimeout(function () { $("#tipNew").classList.remove("show"); }, 3000); }
 });
 ns.addEventListener("mouseleave", function () { $("#tipNew").classList.remove("show"); });
@@ -207,8 +203,6 @@ $(".strip").addEventListener("wheel", function (ev) {
 
 
 /* ---------- simulated events (keys F / N / A) ---------- */
-function enterEmpty() { S.mode = "empty"; S.open = false; S.scenes = []; S.scroll = 0; show("editor"); }
-function addFirstScene() { S.scenes = freshScenes(); S.scenes.forEach(function (s) { s.st = "ready"; s.p = 1; }); S.mode = "ready"; S.open = false; renderAll(); }
 function simulate(kind) {
   if (S.screen !== "editor") return;
   stopEngine(); S.open = false;
@@ -224,8 +218,7 @@ function simulate(kind) {
     S.scenes[3].st = "failed"; S.scenes[4].st = "failed";
     S.mode = "skipped";
   }
-  if (kind === "empty") { S.scenes = []; S.mode = "empty"; }
-  if (kind === "ready") { if (!S.scenes.length) S.scenes = freshScenes(); S.scenes.forEach(function (s) { s.st = "ready"; s.p = 1; }); S.mode = "ready"; }
+  if (kind === "ready") { S.scenes.forEach(function (s) { s.st = "ready"; s.p = 1; }); S.mode = "ready"; }
   renderAll();
 }
 document.addEventListener("keydown", function (ev) {
@@ -235,15 +228,13 @@ document.addEventListener("keydown", function (ev) {
   if (k === "f") simulate("failed");
   if (k === "a") simulate("ready");
   if (k === "s") simulate("skipped");
-  if (k === "e") simulate("empty");
 });
 
 /* ---------- navigation ---------- */
 $("#s1click").addEventListener("click", function () { show("s2"); });
 $("#s2").addEventListener("click", function () { clearTimeout(S.auto); enterEditor(); });
 $("#s3retry").addEventListener("click", function () { show("s2"); });
-$("#s3skip").addEventListener("click", function () { enterEmpty(); });
-$("#addScene").addEventListener("click", function (ev) { ev.stopPropagation(); addFirstScene(); });
+$("#s3skip").addEventListener("click", function () { enterEditor(); });
 $("#canvas").addEventListener("click", function () { if (S.mode === "ready") show("s1"); });
 $('[data-go="s1"]').addEventListener("click", function () { show("s1"); });
 
