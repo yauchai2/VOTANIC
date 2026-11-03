@@ -84,7 +84,7 @@ main{flex:1;position:relative;overflow:hidden}
 .tip{position:absolute;right:20px;top:43px;background:#1e1e21;border:1px solid #5c4e7b;border-radius:6px;padding:3px 10px;font:14px/20px Roboto,system-ui,sans-serif;color:#c8c8c8;z-index:8;pointer-events:none;white-space:nowrap}.tip::after{right:10px;top:-5px;border-bottom:0;border-right:0}
 .veil{position:absolute;inset:0;background:rgba(14,13,13,.78);z-index:6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;font:16px Inter}
 .spin{width:32px;height:32px;border:2px solid #444;border-top-color:var(--lav);border-radius:50%;animation:s .8s linear infinite}@keyframes s{to{transform:rotate(360deg)}}
-.dlgwrap{position:absolute;inset:0;z-index:9;background:rgba(0,0,0,.45);border-radius:20px 0 20px 20px}
+.dlgwrap{position:absolute;inset:0;z-index:9;background:rgba(0,0,0,.65);border-radius:20px 0 20px 20px}
 .dlg{position:absolute;left:42px;top:185px;width:508px;border-radius:20px 20px 20px 0;overflow:hidden;background:var(--surf);box-shadow:0 10px 30px rgba(0,0,0,.5)}
 .dlg .h{height:40px;background:var(--header);display:flex;align-items:center;gap:8px;padding:0 16px;font:600 16px Inter;color:var(--lav)}
 .dlg .h .xx{margin-left:auto;cursor:pointer}
@@ -117,10 +117,11 @@ const IMGS=NAMES.map((n,i)=>({id:'m'+i,n,t:(i%6)+1,used:i>=12}));
 let S;
 function init(choose){S={choose:!!choose,tab:'Local',cat:choose?'Icons':'Images',q:'',filter:'All',mode:null,sel:new Set(),icons:ICONS.slice(),imgs:IMGS.slice(),pick:null,dlg:null,veil:null,tip:false,toast:null,dd:false,open:true};render()}
 const el=(h)=>{const t=document.createElement('template');t.innerHTML=h.trim();return t.content.firstChild};
+const TABIC={Local:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e5e5e5" stroke-width="1.4"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg>',Online:'<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#e5e5e5" stroke-width="1.4"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c-3 3.5-3 13.5 0 17M12 3.5c3 3.5 3 13.5 0 17"/></svg>'};
 const CHK='<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="#d9b0fd" stroke-width="2"><path d="M2 7.5l3.2 3L12 3.5"/></svg>';
 function count(){return S.cat==='Icons'?S.icons.length:S.cat==='Images'?S.imgs.length:0}
 function visible(){const q=S.q.trim().toLowerCase();
-  if(S.cat==='Icons')return S.icons.filter(i=>!q||i.n.toLowerCase().includes(q));
+  if(S.cat==='Icons')return S.icons.filter(i=>(!q||i.n.toLowerCase().includes(q))&&(S.filter==='All'||(S.filter==='Unused')===!i.used));
   if(S.cat==='Images')return S.imgs.filter(i=>(!q||i.n.toLowerCase().includes(q))&&(S.filter==='All'||(S.filter==='Unused')===!i.used));
   return []}
 function render(){
@@ -137,13 +138,13 @@ function render(){
   else if(!v.length)main='<div class="empty"><img src="img/empty.png"><div>No Search Result</div></div>';
   else if(S.cat==='Icons')main='<div class="scroll"><div class="grid icons">'+v.map(i=>`<div class="ic${S.sel.has(i.id)||S.pick===i.id?' sel':''}" data-id="${i.id}" ><span class="nm">${i.n}</span><img src="icons/${i.f}.svg" alt="${i.n}"><div class="chk">${CHK}</div></div>`).join('')+'</div></div>';
   else main='<div class="scroll"><div class="grid imgs">'+v.map(i=>`<div class="im${S.sel.has(i.id)?' sel':''}" data-id="${i.id}"><div class="th"><img src="img/t${i.t}.jpg"></div><span>${i.n}</span><div class="chk">${CHK}</div></div>`).join('')+'</div></div>';
-  const drop=S.cat==='Images'?`<div class="drop" id="drop">${S.filter}<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#e5e5e5" stroke-width="1.5"><path d="M3 6l5 5 5-5"/></svg>${S.dd?'<div class="menu">'+['All','Used','Unused'].map(o=>`<div data-f="${o}">${o}</div>`).join('')+'</div>':''}</div>`:'';
+  const drop=(S.cat==='Images'||S.cat==='Icons')?`<div class="drop" id="drop">${S.filter}<svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#e5e5e5" stroke-width="1.5"><path d="M3 6l5 5 5-5"/></svg>${S.dd?'<div class="menu">'+['All','Used','Unused'].map(o=>`<div data-f="${o}">${o}</div>`).join('')+'</div>':''}</div>`:'';
   let foot='',n=S.sel.size;
   if(S.mode==='delete')foot=`<div class="l">${n?n+' Items Selected':'Select Items'}</div><button class="btn pur" id="selall">${n&&n===v.length?'Cancel Selection':'Select All'}</button><button class="btn del" id="doDel" ${n?'':'disabled'}><img src="icons/bin.svg" width="24">Delete Assets</button>`;
   else if(S.mode==='clean')foot=`<div class="l">${n} Unused Items Selected</div><button class="btn pur" id="cancelSel">Cancel Selection</button><button class="btn del" id="doDel" ${n?'':'disabled'}><img src="icons/bin.svg" width="24">Delete Assets</button>`;
   else if(S.pick){const ic=S.icons.find(i=>i.id===S.pick);foot=`<div class="l"><div class="pv"><img src="icons/${ic?ic.f:'image'}.svg"></div><span>${ic?ic.n:''}</span></div><button class="btn pur" id="addScene">${S.choose?'Confirm':'Add to Scene'}</button>`}
   p.innerHTML=`<div class="hdr"><img src="icons/media.svg" width="24"><span class="t">${S.choose?'Choose Asset':'Asset Panel'}</span><div class="x" id="close"><img src="icons/close.svg" width="16"></div></div>
-  <div class="opt${del?' dim2':''}"><div class="loc">${['Local','Online'].map(t=>`<div class="tag${S.tab===t?' on':''}" data-tab="${t}"><img src="icons/computer.svg" width="24">${t}</div>`).join('')}</div><div class="tools">${tools}</div>${S.tip?'<div class="tip">Clear unused assets</div>':''}</div>
+  <div class="opt${del?' dim2':''}"><div class="loc">${['Local','Online'].map(t=>`<div class="tag${S.tab===t?' on':''}" data-tab="${t}">${TABIC[t]}${t}</div>`).join('')}</div><div class="tools">${tools}</div>${S.tip?'<div class="tip">Clear unused assets</div>':''}</div>
   <div class="bar"></div>
   <div class="body"><div class="cats">${cats.map(c=>`<div class="${S.cat===c?'on':(S.mode?'dm':'')}" data-cat="${c}">${c}</div>`).join('')}</div>
   <div class="srow"><div class="search"><img src="icons/magnifier.svg"><input id="q" placeholder="Search media..." value="${S.q.replace(/"/g,'&quot;')}"></div>${drop}</div>${main}
@@ -173,7 +174,7 @@ document.addEventListener('click',e=>{
   if(id==='drop'){S.dd=!S.dd;return render()}
   if(S.dd&&!t.dataset.f){S.dd=false}
   if(t.dataset.tab){S.tab=t.dataset.tab;return render()}
-  if(t.dataset.cat&&!S.mode){S.cat=t.dataset.cat;S.q='';S.pick=null;return render()}
+  if(t.dataset.cat&&!S.mode){S.cat=t.dataset.cat;S.q='';S.filter='All';S.pick=null;return render()}
   if(t.dataset.id){const i=t.dataset.id;if(S.mode){S.sel.has(i)?S.sel.delete(i):S.sel.add(i)}else if(S.cat==='Icons')S.pick=S.pick===i?null:i;return render()}
   switch(id){
    case'close':S.open=false;return render();
