@@ -30,11 +30,11 @@ var nameOf = function (n) { return NAMES[n] || "Scene " + n; };
 /* ---------- state ---------- */
 var S = {
   screen: "s1",
-  mode: "loading",          /* loading | failed | offline | ready */
+  mode: "loading",          /* loading | failed | skipped | empty | ready */
   open: false,              /* loader card expanded */
   scenes: [],               /* {st:'ready'|'loading'|'queue'|'failed', p:0..1} */
   scroll: 0,
-  timer: null, auto: null, cdTimer: null, countdown: 10
+  timer: null, auto: null
 };
 function freshScenes() {
   var a = [];
@@ -50,7 +50,7 @@ var plural = function (n, w) { return n + " " + w + (n === 1 ? "" : "s"); };
 function show(id) {
   S.screen = id;
   document.querySelectorAll(".screen").forEach(function (e) { e.classList.toggle("on", e.id === id); });
-  clearTimeout(S.auto); stopEngine(); stopCountdown();
+  clearTimeout(S.auto); stopEngine();
   if (id === "s1") S.auto = setTimeout(function () { show("s2"); }, 3200);
   if (id === "s2") {
     var b = $("#s2bar"); b.style.transition = "none"; b.style.width = "12%";
@@ -111,7 +111,6 @@ function renderRow() {
 function footerText() {
   var r = count("ready");
   if (S.mode === "ready") return "All " + TOTAL + " assets ready";
-  if (S.mode === "offline") return "Offline. Project loaded locally; some assets not synced.";
   if (S.mode === "skipped") return plural(failedList().length, "scene") + " skipped. Play, Edit and Save unlock when they load or are removed.";
   if (S.mode === "empty") return "No scenes yet";
   if (S.mode === "failed") return plural(failedList().length, "scene") + " didn’t load. " + r + " of " + TOTAL + " assets ready";
@@ -131,7 +130,6 @@ function renderLoader() {
   if (!S.open) {
     if (m === "loading") h = '<a class="pill" data-act="toggle"><img class="spin" alt="" src="' + A + 'load2.svg"><span id="pillTxt">Loading ' + r + "/" + TOTAL + '</span><span class="mini"><i id="pillBar" style="width:' + Math.round(48 * r / TOTAL) + 'px"></i></span>' + chev(false) + "</a>";
     if (m === "failed" || m === "skipped") h = '<a class="pill err" data-act="toggle"><img alt="" src="' + A + 'warn.svg"><span>' + plural(f, "scene") + ' failed</span><span class="link">Retry</span>' + chev(false) + "</a>";
-    if (m === "offline") h = '<a class="pill" data-act="toggle"><img alt="" src="' + A + 'warn.svg"><span>Offline · some assets not synced</span>' + chev(false) + "</a>";
   } else {
     var count_ = '<div class="cnt"><b id="cPct">' + pct + '%</b><span id="cOf">' + r + " of " + TOTAL + ' assets ready</span></div><div class="track"><i id="cBar" style="width:' + pct + '%"></i></div>';
     if (m === "loading") h = '<div class="lcard"><div class="head" data-act="toggle"><img class="spin" alt="" src="' + A + 'load.svg"><span>Loading assets</span>' + chev(true) + "</div>" + count_ +
@@ -140,8 +138,6 @@ function renderLoader() {
       '<div class="rule err"><span>' + plural(f, "scene") + ' skipped. Play, Edit and Save stay locked until they load or you remove them.</span></div><div class="btns"><a class="cbtn pri" data-act="retry">Retry ' + plural(f, "scene") + '</a></div></div>';
     if (m === "failed") h = '<div class="lcard"><div class="head" data-act="toggle"><img alt="" src="' + A + 'warn.svg"><span>' + plural(f, "scene") + " didn’t load</span>" + chev(true) + "</div>" + count_ +
       '<div class="rule err"><span>' + plural(f, "scene") + ' timed out. Play, Edit and Save stay locked until they load or you remove them.</span></div><div class="btns"><a class="cbtn pri" data-act="retry">Retry ' + plural(f, "scene") + '</a><a class="cbtn sec" data-act="skip">Skip for now</a></div></div>';
-    if (m === "offline") h = '<div class="lcard"><div class="head" data-act="toggle"><img alt="" src="' + A + 'warn.svg"><span>Connection lost</span>' + chev(true) + "</div>" + count_ +
-      '<div class="rule info"><span>Loading is paused and resumes when you are back online.</span></div><div class="btns off"><a class="cbtn pri" data-act="retryNow">Retry now</a><small id="cd">Checking again in ' + S.countdown + " s</small></div></div>";
   }
   L.innerHTML = h;
 }
@@ -191,7 +187,6 @@ function retryFailed() {
   S.scenes.forEach(function (s) { if (s.st === "failed") { s.st = "queue"; s.p = 0; } });
   S.mode = "loading"; S.open = false; promote(); renderAll(); startEngine();
 }
-function resume() { stopCountdown(); S.mode = "loading"; S.open = false; renderAll(); startEngine(); }
 $("#loader").addEventListener("click", function (ev) {
   var t = ev.target.closest("[data-act]"); if (!t) return;
   ev.stopPropagation();
@@ -210,29 +205,19 @@ $(".strip").addEventListener("wheel", function (ev) {
   ev.preventDefault(); S.scroll += (Math.abs(ev.deltaX) > Math.abs(ev.deltaY) ? ev.deltaX : ev.deltaY); renderRow();
 }, { passive: false });
 
-/* ---------- offline countdown ---------- */
-function startCountdown() {
-  stopCountdown(); S.countdown = 10;
-  S.cdTimer = setInterval(function () {
-    S.countdown--; var el = $("#cd"); if (el) el.textContent = "Checking again in " + Math.max(S.countdown, 0) + " s";
-    if (S.countdown <= 0) resume();
-  }, 1000);
-}
-function stopCountdown() { clearInterval(S.cdTimer); S.cdTimer = null; }
 
 /* ---------- simulated events (keys F / N / A) ---------- */
 function enterEmpty() { S.mode = "empty"; S.open = false; S.scenes = []; S.scroll = 0; show("editor"); }
 function addFirstScene() { S.scenes = freshScenes(); S.scenes.forEach(function (s) { s.st = "ready"; s.p = 1; }); S.mode = "ready"; S.open = false; renderAll(); }
 function simulate(kind) {
   if (S.screen !== "editor") return;
-  stopEngine(); stopCountdown(); S.open = false;
+  stopEngine(); S.open = false;
   if (kind === "failed") {
     S.scenes = freshScenes();
     S.scenes.forEach(function (s, i) { if (i >= 8) { s.st = "ready"; s.p = 1; } });
     S.scenes[3].st = "failed"; S.scenes[4].st = "failed";
     S.mode = "failed";
   }
-  if (kind === "offline") { if (S.mode !== "ready" && S.mode !== "offline") { return; } S.mode = "offline"; }
   if (kind === "skipped") {
     S.scenes = freshScenes();
     S.scenes.forEach(function (s, i) { if (i >= 8) { s.st = "ready"; s.p = 1; } });
@@ -248,8 +233,6 @@ document.addEventListener("keydown", function (ev) {
   var k = ev.key.toLowerCase();
   if (S.screen === "s2" && k === "f") { clearTimeout(S.auto); show("s3"); return; }
   if (k === "f") simulate("failed");
-  if (k === "n") simulate("offline");
-  if (k === "o" && S.mode === "offline") simulate("ready");
   if (k === "a") simulate("ready");
   if (k === "s") simulate("skipped");
   if (k === "e") simulate("empty");
