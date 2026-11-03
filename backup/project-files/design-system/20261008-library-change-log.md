@@ -972,3 +972,232 @@ Page Button, Library file. Three sets: `Button / Dark / 40px` (17463:54657, Stat
 - 2026-10-29 Workbench: scene dropdown (board 904:5382, menu 904:5426): removed the duplicate ON_HOVER → "selection=highlighted" reaction (606:6116) from Gallery Hall, Empty Scene and Lobby items; each item now has one hover (selection=hover) plus its click navigation. Static canvas had all items in default; the "all lit" look was seen in prototype only, not re-tested by Claude in prototype mode.
 - 2026-10-29 Workbench: scene dropdown (menu 904:5426) still turned fully purple in Alan's prototype after removing the duplicate highlighted reaction. Removed the remaining ON_HOVER CHANGE_TO (selection=hover) from all four menu items (they sit in a slot; hover swaps appear to apply to every item). Click navigation kept (All Scenes → Board 1, Empty Scene → 1d, Lobby → 1c, Gallery Hall → Board 1). Hover feedback in the menu is lost for now; not re-tested in prototype by Claude.
 - 2026-10-30 Workbench: disabled W / L tooltip copy changed to "Debug setting is only available for items in the current scene" (Alan). Updated on boards 1f, 1g (tooltip now 320 wide, wraps to 2 lines, realigned to the toggle arrow) and in the Debug Toggle description. No other occurrences left.
+- 2026-11-02 Workbench (ZBOB48n4eLsZABCTnhh5kk) Voyage 360 Loading UX, page "Voyage 360 Loading Enhancement" (1057:4921). Uses the Voyage 360 library (⭐202502-Voyage 360 UI-PC+VR: UI colour variables, Inter text styles, Drop shadow 01, icon_* components) because Voyage360 does not use PC tokens. No new tokens. 0 unbound fills (scanned). Dark only. New feature-specific components on Components page, Section "Voyage 360 · Loading components" (1060:328): Loading Header Button (1060:438, Play/Save/Export × Enabled/Disabled), Loading Scene Thumb (1060:439, Ready A/B/C, Loading, Queued, Failed), Loading New Scene Tile (1060:440, Locked/Enabled/Adding), Loading Tooltip (1060:360), Loading Card (1062:455, Loading/Failed/Offline), Loading Pill (1062:456, Loading/Failed/Offline/Ready). Boards: Overview (1067:1554), S1 to S3 splash (1068:1238/1262/1285), 01 to 07 editor states (1065:3, 1065:209, 1065:399, 1066:420, 1066:627, 1066:829, 1066:981), R1 narrow 1280 (1066:1171), R2 wide 2560 (1066:1358), notes under each. Prototype: S1→S2→01; 01 Play→02, Collapse→03, New scene→07; 03 pill→01; 04 Retry→06; 05 Retry now→01; S3 Try again→S2, Open without Lobby→01. Gaps: Voyage library has no spacing/radius variables or status colours (radius and gaps are raw values, failed uses Color/delete from "Full Picture marking"); no V logo component (placeholder vector in splash, swap for real mark); no 360 images (scene = blurred placeholder, thumbnails = vector placeholders). Assumptions: 36 = scenes (one 360 image each); Export sits in the toolbar; Skip semantics and "open without first scene" need dev confirmation. Publish the Workbench library to share the new components.
+- 2026-11-02 Workbench Voyage 360 Loading page, round 2 (Alan feedback): S1 "Opening project" reduced to logo mark + "Opening project" only (project name, bar, description removed; notes rewritten). Prototype audit found dead clicks: added Play menu / Save / Export / canvas click on 01 (canvas click collapses the card), Play / Save / Export on 03, Skip for now and Collapse on 04, Collapse on 05, 06 click returns to S1. New boards 04b "Failed, collapsed" (1078:1587) and 05b "Network lost, collapsed" (1078:1697) with notes, y 3000 next to 07. 02 tooltip now "Play, Save and Export unlock after all 36 scenes load". 01 notes state the card default (expanded on open, collapses on first click into the editor, re-expands on failure or offline). Audit: 0 broken destinations, 0 unbound fills. Still inert on purpose: thumbnails, scroll arrows, window controls.
+
+## 2026-11-02 · Voyage 360 · Main page · Scene tray redesign (XRCC-Claude-Workbench)
+- 目標：下方縮圖列嘅縮圖同後面 360° 大圖「痴埋」。喺頁面 Voyage 360 Main page Enhancement 新增 3 組畫面（舊版 UI 來源：Voyage 360 UI PC+VR node 4728:72778）。
+- 新畫面：1068:1505「1 Default」（Kitchen 選中，全部 Ready）、1081:285「2 Loading, scrolled」（Master bedroom 選中，Failed / Loading / Waiting 同時出現，左右 fade）、響應式檢查 1083:411（窄 1280×800）、1083:461（寬 2560×1080，放得下所以隱藏 fade / 掣 / scroll bar）。
+- 做法：縮圖列放入獨立實色 tray（surface/panel + border/faded + shadow/dark/4 + radius/xl）；選中 = 2px border/interactive 外框 + 紫色編號 badge + 粗體名，其餘 Ready 縮圖壓暗 35%；編號 badge 改實色 surface/panel 底；右邊／左邊 fade + › ‹ 掣（Button / Dark / Icon Square 28）；位置 scroll bar；Scene Map / Scene Outline 移入 tray 標題列（Button / Dark / Tabs，icon 換成 map / list）；New scene 釘喺右邊固定（沿用 Loading 嘅 Loading New Scene Tile，載入期間 Locked）。
+- 新 component（只喺本檔 Components 頁，唔入共用 Library）：Scene Strip Thumb（1076:441），State = Ready / Hover / Selected / Loading / Queued / Failed。字眼同 Loading thread 一致（Loading… / Waiting / Couldn’t load）。
+- 冇新 token。所有 fill / stroke / radius / spacing / text style 綁現有 token。例外：邊緣 fade 用 mask（白色漸層只做遮罩，顏色來自 surface/panel 實色層），所以 fade 會跟 panel token 變。
+- Prototype：Board 1 起點；Ready 縮圖 hover 轉 Hover 狀態；撳 Master bedroom → Board 2；Board 2 撳 1 至 4 → Board 1（Dissolve 0.15 s）。已加 11 組 annotation（廣東話，Development / Interaction / Accessibility / Content）。
+- 自檢：兩塊主畫面 0 個未綁 fill / stroke / text style，prototype 目標全部存在，窄／預設／寬三種 frame 冇重疊。
+- 素材：360° 背景同縮圖相片係 Unsplash 示意相（Board 2 背景解像度偏低，只作示意）。
+- 還原：刪除 1068:1505、1081:285、1083:411、1083:461 同 Components 頁嘅 Scene Strip Thumb 即可。
+
+## 2026-11-02 · Voyage 360 Loading Enhancement · round 3a (Export removed)
+- Alan pointed out the original design (⭐202502-Voyage 360 UI-PC+VR, "360 overall UI") has no Export button in the top-right toolbar (only Play with menu and Save). Removed the "Export" instance from the Toolbar of all 11 boards; no Library changes.
+- Copy updated to "Play and Save" in tooltip, Loading Card rule notes, board notes and overview detail. Assumption "Export in toolbar" is withdrawn.
+
+## 2026-11-02 · Voyage 360 Loading Enhancement · round 3b (real photos, simpler S2)
+- Workbench file, page "Voyage 360 Loading Enhancement": scene thumbnails and the 360 canvas now use real photos (Unsplash, free licence; credit list: Lobby 1692153142524-60285a93c249, Atrium 1757894651531-c318fe4072b2, Showroom A 1687180498602-5a1046defaa4, Showroom B 1687180497716-5872969e5125, Rooftop Bar 1770021601385-af0bf0136762, Roof Garden 1493246318656-5bfd4cfb29b8, Corridor 2F 1660662735785-6e7c067d6cd0, Meeting Room 1764810815228-b7f9432eec5c, Kitchen Walkthrough 1722605090433-41d1183a792d, Pantry 1628745277862-bc0b2d68c50c, Dining Hall 1725257928373-dc6d2ac7b145, Garden Patio 1711098256574-7b497260cdc9, Lounge 1590564310616-4984760edb51, Reception 1724230758718-406bab979e67). Photos are placeholders for the layout, not final content.
+- Thumb component set (1060:439): Ridge/Sun art removed; Ready B/C instances swapped to Ready A (variants B/C now unused, can be deleted). Loading variant rebuilt: blurred photo preview + dim + spinner + 4px progress bar (d9 on txt 30%) + status "Loading… 60%". Queued = dashed + lock + "Waiting" (no photo). Failed = red outline + warning.
+- Scene names 11-14 renamed: Dining Hall, Garden Patio, Lounge, Reception. Canvas glow placeholders removed; lobby photo fills the canvas.
+- S2 "Loading first scene" simplified to logo + "Loading Lobby" + thin bar (project name, file name, description removed); S3 project line removed. Notes and overview updated.
+- Tokens only (no new). Image fills are not variable-bound by nature.
+
+## 2026-11-02 · Voyage 360 Loading Enhancement · round 4 (strip like original, Save*)
+- Toolbar: Save label is now "Save*" on all 11 boards (matches 360 UI 20251030).
+- Scene strip follows original node 4728:72778: no background panel, thumbs sit straight on the 360 view. Thumb set 1060:439: Meta row (name/status) removed; number badge top-left (txt fill, sur text); status text now inside the thumb for Loading/Queued/Failed; Ready has no text; current scene (1) gets a d9 2px outline; Ready/Loading get ph 1px outline + Drop shadow 01. Ready B/C variants deleted. New scene tile (1060:419) label removed, now 90px tall like thumbs.
+- Strip header: "Scenes" title and range text sit in solid sur pills so they stay readable over bright photos. Locked tile filled with sur.
+- Trade-off: scene names are no longer printed under thumbs (as in the original); show them in a hover tooltip. Failed scenes are named in the Loading Card.
+
+## 2026-11-02 · Voyage 360 Loading Enhancement · round 5 (reuse Voyage Library components)
+- Per Alan: follow the original 360 UI and reuse its components. On all 11 boards: top menu bar = Voyage "DropDownList" (Default), toolbar = Voyage "header" (Disable variant on loading/failed/offline boards, EditMode on 06 All scenes ready). Project name text set to "Skyline Showroom Tour". My own Menu bar/Toolbar frames removed; Play/Save prototype links re-applied on 01 and 03.
+- Scene strip: Ready thumbs = Voyage "Scene Card" (Selected Scene for 1, Non-Selected scene for others) with photo fill on the image rectangle; "New scene tile" = Voyage "Scene Card / Add New Scene" at 75% opacity while locked. Loading/Queued/Failed stay as feature components on the Components page, resized to 146x85 to match Scene Card.
+- Added a "Scene mode pill" (Scene Map / Scene Outline) and a "Status bar" under the strip, as in the original; both built with tokens (no Voyage component for them).
+- Gaps: Disable header shows greyed Play/Save without lock icon, so the reason is only shown on hover (tooltip, board 02). Voyage "Scene Map" component is a panel, not the toggle pill.
+
+## 2026-11-02 · Voyage 360 Loading Enhancement · round 6 (restart on Alan's Edit Mode base, node 1100:9344)
+- Alan asked to start over from his Edit Mode instance. Page 1057:4921 now holds: Overview, S1-S3 (+notes), the untouched base (renamed "Base · Edit Mode (from Alan, unchanged)", y=110) and 11 new boards: 01 Loading expanded, 02 Hover on locked Play, 03 Card collapsed to pill, 04 Asset failed, 05 Network lost, 06 All scenes ready, 07 New scene while loading, 04b, 05b, R1 Narrow 1280, R2 Wide 2560 (+ a notes frame under each).
+- Each board = clone of the base with the top instance and its "Scene group" detached (nested Voyage instances kept: DropDownList, header, Scene Card, Scene pill). Cursor and radial element menu removed as irrelevant. Header swapped to Voyage "header / Disable" on locked boards (EditMode on 06). Status bar text per state.
+- Scene row: Ready = original Scene Card photos; scene 9 Loading / 10 Waiting / 4-5 Couldn't load use "Loading Scene Thumb" (Components page, resized to 146x85, 10th clipped to 63px like the original). Add New Scene dimmed to 75% while locked. Drop shadow 01 on Ready cards to separate them from the photo. No strip background.
+- Overlays from the Components page: Loading Card (Loading/Failed/Offline), Loading Pill (4 states), Loading Tooltip. Copy fixed at component level ("Play and Save", no Export).
+- Deleted unused feature components "Loading Header Button" and "Loading New Scene Tile" (replaced by Voyage header / Add New Scene).
+- Prototype: S1 > S2 > 01; S3 Try again > S2, Open without > 01; 01 Play/Save > 02, Collapse and canvas > 03, Add New Scene > 07; 03 pill > 01; 04 Retry > 06, Skip/Collapse > 04b; 05 Retry now > 01, Collapse > 05b; pills 04b/05b back; 06 > S1; 07 > 01. Flow starts: Open project, First scene failed, Editor loading, Failed scene, Network lost. 0 broken destinations.
+- Open for Alan/dev: Skip semantics, "36 = scenes", Disable header has no lock icon (reason only on hover and in the card), R1 row scrolls. Base photos come from the Voyage Scene Card component, not new uploads; Unsplash images from earlier rounds are no longer used on these boards.
+- Round 6 follow-up: Alan said responsive boards are not needed (old Unity cannot do it yet for XRCC and 360). R1/R2 boards and their notes removed; boards stay at 1920x1080.
+- Round 6 follow-up (XRCC components, per Alan): tooltips on boards 02 and 07 now use XRCC (PC) Library "New Tooltips" (Arrow top/down, Location end). Loading Card Failed/Offline buttons now use XRCC "Button / Dark / Primary" and "Secondary", Medium 36, no icons. Loading Card progress uses the XRCC progress-bar visual but is detached (size of the fill cannot be overridden in an instance), so fill widths 22% / 94% / 22% are set manually. Removed own "Loading Tooltip" usage (component kept on the Components page, unused). Retry/Skip prototype links re-applied.
+- Round 6 follow-up (swipe, per Alan): on boards 01-07, 04b, 05b the scene row (Frame 427319994 inside Scene group) is now a horizontal scroll frame (overflow HORIZONTAL, 1449px viewport) with 16 scenes (scenes 11-16 added as Waiting or Ready depending on the board), so it can be swiped or scrolled in prototype preview. The scroll-position rail scrolls with the row (fixed children are not supported in an auto-layout frame).
+- Loading Card (3 variants): count row now baseline-aligned, so the large number sits on the same baseline as "of 36 scenes ready".
+- Round 6 follow-up (simplify, per Alan): Loading Card simplified. Loading = header with spinner, count, bar and one line of text (second spinner, lock icon and rule box removed). Failed keeps the red note without a second warning icon. Offline note is one short line without icon.
+- Warning icon (icon_Warning_24, 38 instances incl. component variants): the exclamation mark (dot and bar) was recoloured to the same token as the triangle by an earlier bulk recolour and disappeared. It is now bound to the surface colour (dark) while the triangle keeps its state colour.
+- Round 6 review (per Alan, "Waiting looks locked"): thumb state "Waiting" renamed "In queue", lock icon replaced by Voyage icon_Clock_24, dashed black box replaced by a solid listBg tile with a ph outline. Lock now only means locked controls. Overview and board notes updated (greyed controls, In queue, dimmed New scene, swipe hint); the removed "alternative tile" mention deleted. Reviewed all 9 boards, S1-S3 and the overview.
+
+## 2026-11-02 · Voyage 360 Loading: Pill/Card alignment and thumbnail sizing (Workbench ZBOB48n4eLsZABCTnhh5kk, Components page)
+- Loading Card: padding 16 on all sides, title uses the 14 Semi Bold style (same as Pill label), chevron layer renamed `icon_chevron`.
+- Loading Pill: height 48, radius 24, left/right padding 16, icon 24, label layer renamed `Title`, expand button renamed `Collapse` (28x28, radius 4), chevron renamed `icon_chevron`. Header row now shares the same x position, size and layer names as the Card for Smart Animate. Ready pill check icon centered.
+- Loading Scene Thumb (Ready A, Loading, In queue, Failed): all 146x85 with 3px inset, image area 140x79 and radius 4, badge padding 4/8 with Voyage 16 Regular style, so they match the Voyage Scene Card. No new tokens.
+
+## 2026-11-02 · Voyage 360 Loading: XRCC token pass (Workbench Components page)
+- Error states now bind to XRCC Theme: warning/error icons `status/error/icon`, failed tile and note borders `border/error`, note tint `status/error/default` at 15%, failed text `status/error/text`; offline warning icons `status/warning/icon`; In queue icon and text `text/secondary`.
+- Tile status text uses Voyage P2-14-regular (was raw 11px); card number "8" uses the same heading style as the other cards. Tile icon plus text centered as one group (icon y 15, gap 8). No new tokens. Fonts stay Inter (Voyage) to avoid mixing with Roboto.
+
+## 2026-11-02 · Voyage 360 Loading: no "All scenes ready" pop-up
+- Board 06 no longer shows a pill; when all scenes are ready the card or pill disappears. Removed the unused Loading Pill State=Ready variant from the Components page. Notes (06) and Overview improvement text updated.
+
+## 2026-11-02 · Voyage 360 Loading Card: percent as hero
+- Count row re-laid out: percent (32 Bold, accent) on the left, "8 of 36 scenes ready" (16 Regular) on the right, baseline aligned. Offline card shows the frozen percent instead of "Paused" (the header and note already say it). Notes on board 01 updated.
+
+## 2026-11-02 · Voyage Library (KoJQjDPM4sjwsoMYEvCDkw): Add New Scene hover
+- Scene Card set (page Design Guidelines, node 1589:36570): added variant `Property 1=Add New Scene_hovering` (node 6199:80210). Same structure as Add New Scene; bg purple fill opacity 0.5 to 0.8 and 2px inside stroke bound to Brand/White (same stroke as Non-Selected scene_hovering). `Add New Scene` now has an ON_HOVER CHANGE_TO reaction to it. Set height extended to fit. No new tokens.
+- Needs Alan to Publish the Voyage Library, then Update library in the Workbench file. Disabled New scene on the loading boards (01-05, 07) is dimmed and should not react on hover.
+
+## 2026-11-02 · Voyage 360 Loading: error tint made robust
+- Failed Loading Card "Rule note": fill replaced by a `Tint` rectangle (status/error/default, layer opacity 15%) because the paint-level opacity kept resetting to 100% on board instances. Board 04 and 04b error icons rebound to status/error/icon (they had been showing amber).
+
+## 2026-11-02 · Voyage 360 Loading: In queue tile
+- In queue thumbnail now has a dashed 1px border (Primary/Placeholder Stroke) so it reads as a waiting slot, not a locked or disabled tile. All boards updated via the component.
+
+## 2026-11-02 · Voyage 360 Loading: softer Couldn't load tile
+- Failed thumbnail border is now a 1px `Border` rectangle (border/error, layer opacity 55%) instead of a 1.5px full-strength stroke; the red warning icon is kept. Layer opacity is used because paint-level opacity does not carry through to instances.
+
+## 2026-11-02 · Voyage Library (KoJQjDPM4sjwsoMYEvCDkw): Scene (Map / Outline) spacing
+- Component set `Scene` (node 2447:76359, both variants): both halves now use padding 16 on the curved ends and 8 top/bottom, gap 8; map icon resized 32 to 24 so it matches the arrow weight. Overall width 308 to 316. Needs Publish, then Update library in the Workbench file.
+
+## 2026-11-02 · Voyage 360 Loading: Couldn't load tile is grey
+- Alan: no red on the failed thumbnail. Border now Primary/Placeholder Stroke (1px) and the warning icon text/secondary. Red (status/error) remains only in the Loading Card and Pill (header icon, note).
+
+## 2026-11-02 · Voyage 360 Loading: Failed tile hover
+- Loading Scene Thumb set: new variant `State=Failed hover` (grey warning icon, "Retry" chip using Voyage button bg, accent text and P2 SemiBold, brighter border via border/interactive). `State=Failed` has an ON_HOVER CHANGE_TO reaction to it. Failed and In queue tile images are now fully opaque (they were 80% and showed the photo through on some boards); warning triangle on Failed bound to text/secondary (it was still red in the master).
+
+## 2026-11-02 · Voyage 360 Loading: red warning icon back on Failed tile
+- Alan wants the red icon back. Failed and Failed hover tiles use status/error/icon for the warning triangle again; border stays grey.
+
+## 2026-11-02 · Voyage 360 Loading: Failed hover uses XRCC button
+- `State=Failed hover` Retry is now the XRCC (PC) Library Button / Dark / Primary instance (Size=Small, no icons, text "Retry") instead of a hand-built chip. Matches the Retry buttons in the Loading Card.
+
+## 2026-11-02 · Voyage 360 Asset Panel: Icons tab completed
+- File "⭐202502-Voyage 360 UI-PC+VR", component set `Asset Panel( Icons)` (1255:50986). The Icons tab already had Default, Selected, Choose Asset, No search result and Empty; added the missing states, cloned from the Images set and switched to icon thumbnails (no dropdown, as in the existing Icons panels):
+  - `Delete_Mode` (6209:15499), `Selected_All_Asset` (6209:15838), `Choose_Asset-selected` (6209:17885).
+- Renamed the two loose components to `Asset Panel( Icons)/ No search result` and `/ Empty`.
+- Prototype: trash opens Delete_Mode, undo returns to Default. Asset hover reactions came with the clones.
+- No new tokens or library components. Loading/Failed not added (no such pattern in other asset tabs). Tab switching Images/Icons could not be linked (Figma rejects reactions on tags nested in instances).
+- Layout fix (2026-11-02): the taller Icons set overlapped the Video panels; moved everything below it (Video, Audio, Online, loose Icons comps, labels) down 650 px and grew the Asset Panel frame by the same amount.
+
+## 2026-11-02 · Voyage 360 Asset Panel: Clear Unused Assets
+- File "⭐202502-Voyage 360 UI-PC+VR", page Design Guidelines, section `Clear Unused - section` (6214:16021), below the Pexels panels.
+- New component set `Asset Panel( Clear Unused)` (6215:20627), 8 variants shown on the Images tab (same flow for Icons, Videos and Audio): Entry_Hover, Scanning, Review_Unused_Selected, Confirm_Delete, Deleting, Done_Toast, No_Unused, Failed.
+- Entry: new purple icon button (RubbishBinWithTick) left of the trash in the Option Bar, tooltip "Clear unused assets" (existing Voyage tooltip). Flow: scan, then Delete mode with the unused assets pre-selected, then the existing confirm pattern, then a toast.
+- New components: `Dialog-Delete Unused`, `Dialog-No Unused`, `Dialog-Clear Unused Failed` (cloned from Dialog-Delete). Toast uses XRCC (PC) Library `Notification / Dark` Compact; loader uses `icon_Loading_24`.
+- Prototype: entry button, 1.5s timers on Scanning and Deleting, hotspots on Cancel Selection, Delete Assets, dialog buttons. No_Unused is not reachable from the flow (it is the alternative result of the scan).
+- Assumptions to confirm: scope is the current tab; "unused" means not used in any scene of the project. No new tokens. Voyage Library components added, so Publish is needed.
+
+## 2026-11-02 · Voyage 360 Asset Panel page: layout tidy-up
+- Page Design Guidelines, frame `360 Content VR Tour( Desktop)-Asset Panel` (1300:29474 / Content 1300:29478). Positions and headings only; no component or prototype changes.
+- Sections now run in one order with numbered headings and a one-line description under each: 1 Images, 2 Icons, 3 Videos, 4 Audio, 5 Illustrations, 6 Online (Pexels), 7 Clear Unused Assets. Even 150 px between sections.
+- New "5. Illustrations" area holds `no search result` and `upload-01 1` (they used to sit on top of the Audio set). Icons set padding tidied, Clear Unused section widened to 1920 so nothing is clipped. Content and outer frame heights fitted to the content.
+- Noted: the Icons set now has Variant6 and Variant7 (the empty states, merged in by someone) and the `Choose_Asset-selected` variant I added earlier is no longer there; left as is.
+- Fix (2026-11-02): resizing the outer frame with a STRETCH constraint flipped the Content frame upside down and moved it above the page. Reset its transform and constraints (MIN/MIN); Content sits at y 164 under the header again. Lesson: set Content height first and never resize the outer frame afterwards on this board.
+
+## 2026-11-02 · Clear Unused: broom icon and hover tooltip
+- Replaced the bin-with-tick on the entry button with a new broom + sparkle icon `icon_Clean_24` (6220:18055, in the icon frame next to icon_RubbishBin_24; white outline fill like the others). Bin-with-tick still used in the "No unused" dialog.
+- New variant `Entry_Default` (no tooltip). Hovering the button changes to `Entry_Hover` (tooltip "Clear unused assets"); click goes to Scanning from both.
+- New Voyage Library component: icon_Clean_24 (Publish needed).
+- `icon_Clean_24` redrawn from Alan's reference (sweep with two sparkles): 1 px outline on the 24 px grid, outlined to a single filled vector like the other icons. Entry buttons use it automatically.
+- `icon_Clean_24` is now one vector with a live 1 px stroke (white, round caps and joins, no fill, not outlined), so Alan can change the stroke weight at any time. Instances update automatically.
+
+## 2026-11-02 · Voyage 360 Loading: full screens flow
+- Boards re-laid out left to right on a 2400 x 1700 grid (S1 to S3 top row; 03, 01, 02, 07; 04, 04b, 06; 05, 05b). Notes frames moved with their boards.
+- New `Flow lines` frame (behind the boards): 20 arrows (vectors, stroke behaviour/flow-control) and labels (XRCC heading/md, text/on-light/primary), solid for user actions and dashed for system events, plus a legend at the top right.
+- Prototype additions: key F on S2 goes to S3; keys F, N, A on 01 go to 04, 05, 06 (simulated system events). Existing click and hover links unchanged, 0 broken destinations. Notes on 01 and the Overview text updated.
+
+## 2026-11-02 · Voyage 360 "Asset Panel" page: screens flow for Icons tab and Clear Unused
+- File "⭐202502-Voyage 360 UI-PC+VR", new page "Asset Panel" (6224:17416). Two Sections of 1920x1080 screens (scene background + panel instance): `A. Icons tab` (A1 to A8, 6227:1247) and `B. Clear unused assets` (B1a to B8, 6227:8415). Single desktop frame, no responsive versions.
+- Flow arrows with labels drawn between screens (vector arrows, no FigJam connectors in design files). Each screen has a title, a one-line note under it and a native Figma annotation.
+- Prototype: hotspots over the real buttons (trash, undo, Select All, Cancel Selection, Delete Assets, dialog buttons, search, icon cards, clear-unused button), hover on the clear button shows the tooltip screen, timers 1.5 s on Scanning and Deleting. Flow starting points: A. Icons tab, A. Choose asset (Icons), B. Clear unused assets. Variant-level reactions inside the panel instances were cleared so only the screen links apply.
+- Also re-added `Choose_Asset-selected` (6226:83095) to the `Asset Panel( Icons)` set.
+- Open for confirmation: Deleting is not cancellable; Failed leaves assets unchanged is not stated in copy; clear unused scope is the current tab.
+
+## 2026-11-02 · Voyage 360 Loading Enhancement · Flow 風格統一（依 Debug Panel flow 做法）
+- Workbench 頁面 "Voyage 360 Loading Enhancement"：Alan 將畫板放入 section 後位置位移，已將 12 塊畫板還原至原座標並刪除重複的舊 "Flow lines" frame。
+- 外層 Section 改名 "Voyage 360 · Loading Enhancement"，內設 4 個灰色 lane section（1 Opening the project、2 The editor while scenes load、3 When an asset fails、4 When the network drops），結構同 Debug Panel（grey section + 1px 10% black stroke）。
+- 所有連線改為 Debug Panel 做法：stroke 綁定 surface/accent-muted、ROUND join、ARROW_LINES 箭咀（按 1920 畫板比例線寬 4）；系統事件維持虛線。命名 "Flow line · …"、"Flow label · …"，label 置於線上方（text/on-light/primary）。
+- 加入 "Start here" 紫色 pill（surface/accent-muted）；圖例同步更新。畫板改名 "Board · …"。
+- 18 組 native annotations 統一為中文書面語加英文專有名詞。Prototype 28 個導航、0 失效。
+
+## 2026-11-02 Voyage 360 Asset Panel flow page restyle and Icons grid
+- Page "Asset Panel" (6224:17416) unified to the Workbench flow style: new main Section (white, black 1px) holding grey sub-sections A and B (border/strong fill, 10% black stroke, radius 16, native section title). Big section titles removed. Board titles use "N · Title — State" (Roboto 34), notes Roboto/Noto Sans TC.
+- All 14 flow arrows redrawn style: stroke bound to surface/accent-muted, 6px, round joins, open arrowhead, dashed for alternate branches (A1 to A6, A4 to A5, B2 to B7, B5 to B8). Labels use text/on-light/primary, placed above the line. B5 to B6 arrow moved into the gap.
+- Annotations stay native, now categorised (Interaction / Development / Content); annotations and notes rewritten in 書面語 Chinese with English UI terms (Alan, 2026-11-02).
+- Icons set (1255:50986), 6 variants with a grid (All_assets_recent, Selected_1_Asset, Variant3, Delete_Mode, Selected_All_Asset, Choose_Asset-selected): the 3-per-row Asset cards were replaced with an icon-only grid (8 per row, 64px tiles, 4px gap, 40 icons) cloned from the Waypoint icon selection (2908:50844). Selected = orange outline, Delete mode = checkbox at the tile corner. Remember to Publish the Voyage Library.
+- (2026-11-02 補) 重建全部 20 條 Flow line：每條起點與終點均精確貼住畫板邊緣，圓角轉折，置於所有 section 之上，不再被截斷；05b → 01 改為實際連回 01（虛線），06 → S1 以 "Back to S1" 終點 chip 收尾；label 重新置於線上方或線旁。
+
+## 2026-11-02 Asset Panel flow: full editor UI and extra screens
+- All flow screens (A and B) now include the full editor UI (top menu, header toolbar, scene thumbnail strip, status bar) by cloning the Edit Mode instance (5166:76182); old image-only backgrounds removed. Frame names are the board titles (separate title text removed).
+- New screens in Section A: A0 Editor, Asset Panel closed (entry is the 36 x 36 Asset Panel button in the header, hotspot to A1), A1b hover icon with Tooltip (icon name), A9 confirm delete (Dialog-Delete over scrim). Icons flow re-laid out to 5 columns, arrows and labels re-snapped, prototype rewired (A1 hover to A1b, A4 Delete Assets to A9, A9 Delete to A5), flow start A0.
+- Annotations remain native and in 書面語 Chinese.
+- (2026-11-02) Loading Card 的收合互動由 28px 箭咀改為整條 Header（326x28）可點擊（03、04b、05b）；Loading Pill 五個實例維持整條 Pill 可點擊展開。相關 annotation 已同步更新。
+
+## 2026-11-02 Clear unused button in the Icons panel
+- Icons set (1255:50986): Clear Unused Button (icon_Clean_24, copied from Clear Unused Entry_Default) added between Import and the trash in All_assets_recent, Selected_1_Asset, Variant7 (no result) and Variant6 (empty, button at 50% as disabled). Hidden in Delete mode as in the Clear unused review state. Publish the Voyage Library.
+- Asset Panel page: new A1c (hover Clear unused tooltip) with prototype link into B2; A1 hotspot hover to A1c; elbow flow A1 to A1c; annotations and notes updated. B group still uses the Images tab; the note states the same flow applies to the current tab.
+- Clear Unused Button (icon_Clean_24) also added to the Local tab Option Bar of Images (968:16510, 1045:11272), Video (1287:27380, 1287:27504) and Audio (1292:66773, 1292:66897, 1292:73990) panel variants, between Import and the trash. Not shown in Delete mode, Choose Asset and Online tabs. Publish the Voyage Library.
+- Multi-select (Delete mode and Select All) in Images, Icons, Video and Audio panel variants (8 variants): the whole Tag Group (Images / Icons / Videos / Audio) is dimmed at 50% opacity so the active tab no longer stands out, and inactive tab text is bound to the disabled text token consistently (Icons variants had Images tab text on the default token). No new tokens. Flow screens update automatically. Publish the Voyage Library.
+
+## 2026-11-02 Tooltips use XRCC New Tooltips; prototype page sync
+- Tooltips in the Asset Panel work are now instances of the XRCC (PC) Library "New Tooltips" (Arrow=down/Location=middle for the icon name on A1b, Arrow=top/Location=end for Clear unused assets on A1c and in Clear Unused Entry_Hover). The Voyage-local "Hovering-function Name" instances there were removed.
+- Prototype page (artifact "Voyage 360 Prototype", v4): broom icon (icon_Clean_24) on the Clear unused button, full Icons clear-unused flow with simulated unused icons (every 5th icon is unused), XRCC tooltip look, hover states for tabs, buttons, close buttons, dropdown and search. PR #3 not updated: GitHub tools failed to connect in this session.
+- (2026-11-02) Hover 補完（Workbench · Voyage 360 Loading components）：Loading Pill 與 Loading Card 組件集新增屬性 Hover=Off/On（On 僅將外框綁定 border/interactive，無新增 token）；5 個 Pill 實例及 3 個 Card 標題列加上 ON_HOVER；5 個 Header Button 實例（所有畫板）接上既有 hovering 變體；Card 內 XRCC Button 及 Failed 縮圖的 Retry 按鈕接上 Hover 變體。Loading / Queued 縮圖載入期間不可操作，刻意不設 hover。Scene Map / Outline（Voyage `Scene` off/on）尚無 hover 變體，需於 Voyage Library 新增（待 Alan 決定）。
+- Tooltip 核對：02、07 的提示均為 XRCC (PC) Library 的 "New Tooltips" 實例，無需替換。
+
+## 2026-11-02 Icons clear-unused screens, icon hover, dialog copy
+- Icons set: new variant Hover_Icon (tile outline bound to the existing hover stroke token 1023:6303 used by Asset Multi-Hovering). A1b uses it. Other interactive elements keep the hover states of their Library components.
+- Section B on the Asset Panel page: new B9 Review (8 unused icons ticked, bar "8 Unused Items Selected"), B10 Confirm (Dialog with scrim) and B11 Done (XRCC Notification toast), connected with arrows and prototype links; A1c click now goes to B9.
+- Dialog copy updated on the assumption that deletion cannot be cancelled and failures leave assets unchanged: Dialog-Delete Unused now ends with "This can't be undone."; Dialog-Clear Unused Failed reads "No assets were changed. Please try again." Prototype page copy matches.
+
+## 2026-11-02 Align Icons (A) with Images / Clear unused (B)
+- Audit of search row, filter, grid, checkbox, bottom bar, dialog, toast, top menu: only difference was the filter Drop Down (All / Used / Unused), present on Images, Videos, Audio and Clear Unused but missing on Icons. Added the same Drop Down (cloned from Images) to all 9 Icons variants; Search Input now 376 + Drop Down 160, same as Images. Search hotspots on flow screens resized to 376. Prototype page shows the filter on Icons and filters by unused. Intentional difference kept: Icons use a 64px icon-only grid, Images use 176 x 145 cards.
+
+## 2026-11-03 · Voyage 360 Loading Enhancement · Skip 後與無首個 scene 路徑
+- 新增畫板（只用既有 Library 組件與 token）：08 Skipped, Save unlocked（Save 解鎖、Play 維持鎖定）、08b Play hover tooltip（XRCC New Tooltips）、09 No first scene, empty editor（empty state：icon/outline/add-image、heading/lg、XRCC Button Primary "Add a scene"、caption）、09b Play tooltip "Add a scene to play."。
+- 新增 lane 5 "After Skip for now" 與 lane 6 "Opening without a first scene"；外層 section 加寬至 13000；Legend 移至左下角。
+- Prototype：04b "Skip for now" → 08；S3 "Open without Lobby" → 09；08/09 Play → tooltip 畫板；09 "Add a scene" 與 New scene → 01；新增起始點 08、09。
+- Flow：新增 8 條連線，全部起點與終點貼住畫板邊緣；相關 annotation（08、08b、09、09b、04 Pill、04b Card、S3）已更新為書面語。
+
+## 2026-11-03 · Voyage 360 Loading · 決定落實
+- Voyage Library（⭐202502-Voyage 360 UI-PC+VR，頁面 287:56025）組件 `Scene`（Scene Map / Outline）新增 4 個 hover 變體：off_Map hovering、off_List hovering、on_Map hovering、on_List hovering（Scene List 填色綁定 Primary/List-Hovering；Mini Map 加 Primary/Selected Border & Font 1px 內描邊）。需 Alan Publish 後，於 Workbench Update library，再接上畫板的 hover 互動。
+- Pill / Card 的「36」代表 assets（場景及其他資源）：文案改為 "Loading assets"、"8 of 36 assets ready"、"34 of 36 assets ready"、"All 36 assets ready"，Tooltip 與 annotation 同步；失敗相關文案仍用 scenes。01 的 Pill 加上說明 annotation。
+- Alan 同意「完全沒有 scene 時 Save 可用」；Voyage Library 先前變更已由 Alan Publish 並更新。
+
+## 2026-11-03 · Voyage 360 Loading · 鎖定規則改版（撤回「Save 解鎖」）
+- 規則：本機載入未完成（含 Skip 後）→ Play、Edit、Save 全部鎖定；無首個場景 → 只保留 Add a scene；載入完成後離線 → 不鎖定，Pill 為純提示。詳見 20261103-loading-lock-rules-prototype-spec.md。
+- 畫板：01、02、03、07、04、04b、08、08b、09、09b 的 Header Edit 按鈕降為 40% 透明並移除 hover；08、08b、09、09b 的 Save 還原為鎖定；05、05b 改用 06 的已載入編輯器，Play、Edit、Save 可用。
+- 組件：Loading Pill / Card 的 Offline 變體（Hover Off/On）改為純提示：Pill 文案 "Offline · some assets not synced" 並隱藏 Retry；Card 標題 "You’re offline"，隱藏百分比、進度條與 Retry now，說明文字更新。
+- 文案：Tooltip（02、08b、09b）、Card 說明、empty state 內文與 caption 全部更新。
+- Prototype：01 移除 N 鍵；06 新增 N → 05；05／05b 新增 O → 06；Flow 連線 01→05 改為 06→05，05b→01 改為 05b→06；Legend 與 lane 4 名稱同步；全部 annotation 以書面語更新。
+
+## 2026-11-03 · Voyage Library · 移除 Scene 縮圖三點按鈕
+- Voyage Library `Scene Card` 的 "Selected Scene" 變體刪除 `Frame 427320098`（28×19 三點按鈕，含 icon_ThreeDots_24）；其他變體原本沒有。庫內其餘 ThreeDots 僅在 Font Family 文件頁，與縮圖無關，保留。
+- Workbench（Voyage 360 Loading Enhancement）全部 13 塊以上畫板檢查：三點按鈕 0 個，沒有相關 annotation 或 hover／prototype 連線。
+- 需 Alan Publish Voyage Library 並於相關檔案 Update library。Prototype 網頁需移除縮圖右上角的三點按鈕，刪除功能維持由 hover 彈出。
+
+## 2026-11-03 · Voyage 360 Asset Panel · three-dot buttons check
+- Scanned the whole "Asset Panel" page (24 frames of 1920x1080, groups A and B, scene strip, annotations and notes) for three-dot buttons (28x19 nodes, names containing more/dots/menu/ellipsis/kebab, "…" texts, annotation text). None found; nothing needed removing. Scene Cards in the Editor UI clones contain only image and index badge.
+- The Library Scene Card component itself is the Loading thread's responsibility.
+- Web prototype republished (version 7): Icons tab now has the All / Used / Unused drop-down and filter, aligned with Images.
+
+## 2026-11-03 · Voyage 360 Loading · 整體 review 修正
+- Loading Pill / Card 的 Offline 變體警告圖示由紅色改為 status/warning/icon（琥珀），表示純提示而非錯誤。
+- Loading Pill 標題改為 "Loading assets 8/36"，與 Card 用語一致。
+- Overview 說明文字按新鎖定規則、assets 用語與新模擬鍵（06 按 N、05 按 O）更新。
+
+## 2026-11-03 · Voyage 360 Loading · Annotation 精簡
+- annotation 由 47 則（27 個節點）精簡為 15 則（13 個節點）：刪除外觀描述、重複說明及 prototype 操作提示（改由圖例與 Overview 說明）；只保留行為規則（鎖定條件、離線不鎖定、無首個場景）、狀態切換條件及開發需注意事項（determinate/indeterminate、Skip 不改變鎖定、aria-live、備選方案）。
+
+## 2026-11-03 · Voyage 360 Loading · 警告圖示顏色修正
+- 原因：把 Offline 圖示改成琥珀時，連驚嘆號（Ellipse 2×2、Vector 2×7）也綁成琥珀，令驚嘆號與三角同色而消失；Failed 變體的三角亦混有兩種顏色。
+- 修正：全部 icon_warn（組件頁及各畫板，共 36 個實例）統一——三角（Subtract、Vector 20×18）Failed 綁 status/error/icon、Offline 綁 status/warning/icon；驚嘆號沿用原本的深色 token。
+- 順帶同步組件頁 Card 的說明文字（Play, Edit and Save…）。
+
+## 2026-11-03 · Voyage 360 Loading Enhancement: offline content removed
+- Deleted boards 05 / 05b, lane 5, offline flow lines and labels, key N / O reactions, "Network lost" start point.
+- Deleted Offline variants (4) from Loading Pill / Loading Card sets; Overview, legend and annotations updated.
+- Lane 4 renamed "4 · After Skip for now" (08 / 08b). Audit: 281 navigations, 0 broken.
+- Lock rule kept: after Skip for now or with no first scene, Play, Edit and Save stay locked.
+
+## 2026-11-03 · Voyage 360 Loading Enhancement: no-scene case removed
+- Deleted boards 09 / 09b, lane 6, their flow lines, labels and the "No first scene" start point. Section width 13000 → 10600.
+- S3 "Open without Lobby" kept (the other scenes still load): it now goes to board 01 and shares the existing line. Legend, Overview and S3 annotation updated.
+- Audit: 255 navigations, 0 broken.
