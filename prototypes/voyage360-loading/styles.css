@@ -184,3 +184,5 @@ img{display:block}
 .modes .map,.modes .list{cursor:pointer;transition:filter .12s,background .12s}
 .modes .map:hover{filter:brightness(1.15)}
 .modes .list:hover{background:var(--list-bg)}
+
+.locked .hdr .ibtn{opacity:.4;cursor:not-allowed}.locked .hdr .ibtn:hover{background:none}

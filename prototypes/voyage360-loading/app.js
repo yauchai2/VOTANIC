@@ -57,7 +57,7 @@ function show(id) {
     requestAnimationFrame(function () { requestAnimationFrame(function () { b.style.transition = "width 3.2s linear"; b.style.width = "100%"; }); });
     S.auto = setTimeout(function () { enterEditor(); }, 3400);
   }
-  if (id === "editor") { renderAll(); if (S.mode === "loading") startEngine(); if (S.mode === "offline") startCountdown(); }
+  if (id === "editor") { renderAll(); if (S.mode === "loading") startEngine(); }
 }
 function enterEditor() { S.mode = "loading"; S.open = false; S.scenes = freshScenes(); S.scroll = 0; show("editor"); }
 
@@ -111,8 +111,8 @@ function renderRow() {
 function footerText() {
   var r = count("ready");
   if (S.mode === "ready") return "All " + TOTAL + " assets ready";
-  if (S.mode === "offline") return "Offline. Loading paused at " + r + " of " + TOTAL + " assets";
-  if (S.mode === "skipped") return plural(failedList().length, "scene") + " skipped. Save is available; Play unlocks when they load or are removed.";
+  if (S.mode === "offline") return "Offline. Project loaded locally; some assets not synced.";
+  if (S.mode === "skipped") return plural(failedList().length, "scene") + " skipped. Play, Edit and Save unlock when they load or are removed.";
   if (S.mode === "empty") return "No scenes yet";
   if (S.mode === "failed") return plural(failedList().length, "scene") + " didn’t load. " + r + " of " + TOTAL + " assets ready";
   return "Loading assets… " + r + " of " + TOTAL + " ready";
@@ -120,9 +120,8 @@ function footerText() {
 function updateFooter() { $("#footer").textContent = footerText(); }
 function updateTips() {
   var left = TOTAL - count("ready");
-  if (S.mode === "empty") { $("#tipPlay").innerHTML = "<p>Add a scene to play.</p><p>Play unlocks once your project has at least one scene.</p>"; }
-  else if (S.mode === "skipped") { var f = failedList().length; $("#tipPlay").innerHTML = "<p>Play is locked while " + plural(f, "scene") + " can’t load.</p><p>Retry them or remove them from the strip to continue.</p>"; }
-  else $("#tipPlay").innerHTML = "<p>Play and Save unlock after all " + TOTAL + " assets load.</p><p>" + plural(left, "asset") + (left === 1 ? " is" : " are") + " still loading. Open any ready scene to keep editing.</p>";
+  if (S.mode === "empty") $("#tipPlay").innerHTML = "<p>Add a scene to play, edit and save.</p>";
+  else $("#tipPlay").innerHTML = "<p>Finish loading to play, edit and save.</p><p>" + (S.mode === "skipped" || S.mode === "failed" ? plural(failedList().length, "scene") + " can’t load. Retry them or remove them from the strip." : plural(left, "asset") + (left === 1 ? " is" : " are") + " still loading. Open any ready scene to keep browsing.") + "</p>";
   $("#tipNew").innerHTML = "<p>New scene unlocks after loading.</p><p>" + plural(left, "asset") + (left === 1 ? " is" : " are") + " still loading. You can add a scene as soon as they finish.</p>";
 }
 function chev(up) { return '<span class="chev" data-act="toggle"><img alt="" src="' + A + (up ? "chevup" : "chevron") + '.svg"></span>'; }
@@ -132,15 +131,15 @@ function renderLoader() {
   if (!S.open) {
     if (m === "loading") h = '<a class="pill" data-act="toggle"><img class="spin" alt="" src="' + A + 'load2.svg"><span id="pillTxt">Loading ' + r + "/" + TOTAL + '</span><span class="mini"><i id="pillBar" style="width:' + Math.round(48 * r / TOTAL) + 'px"></i></span>' + chev(false) + "</a>";
     if (m === "failed" || m === "skipped") h = '<a class="pill err" data-act="toggle"><img alt="" src="' + A + 'warn.svg"><span>' + plural(f, "scene") + ' failed</span><span class="link">Retry</span>' + chev(false) + "</a>";
-    if (m === "offline") h = '<a class="pill" data-act="toggle"><img alt="" src="' + A + 'warn.svg"><span>Paused · offline</span><span class="link">Retry</span>' + chev(false) + "</a>";
+    if (m === "offline") h = '<a class="pill" data-act="toggle"><img alt="" src="' + A + 'warn.svg"><span>Offline · some assets not synced</span>' + chev(false) + "</a>";
   } else {
     var count_ = '<div class="cnt"><b id="cPct">' + pct + '%</b><span id="cOf">' + r + " of " + TOTAL + ' assets ready</span></div><div class="track"><i id="cBar" style="width:' + pct + '%"></i></div>';
     if (m === "loading") h = '<div class="lcard"><div class="head" data-act="toggle"><img class="spin" alt="" src="' + A + 'load.svg"><span>Loading assets</span>' + chev(true) + "</div>" + count_ +
-      '<p class="note" id="cNote">Now loading ' + nameOf(currentLoading() || r + 1) + ". Play and Save unlock when all assets are ready.</p></div>";
+      '<p class="note" id="cNote">Now loading ' + nameOf(currentLoading() || r + 1) + ". Play, Edit and Save unlock when all assets are ready.</p></div>";
     if (m === "skipped") h = '<div class="lcard"><div class="head" data-act="toggle"><img alt="" src="' + A + 'warn.svg"><span>' + plural(f, "scene") + " didn’t load</span>" + chev(true) + "</div>" + count_ +
-      '<div class="rule err"><span>' + plural(f, "scene") + ' skipped. Save is available; Play stays locked until they load or you remove them.</span></div><div class="btns"><a class="cbtn pri" data-act="retry">Retry ' + plural(f, "scene") + '</a></div></div>';
+      '<div class="rule err"><span>' + plural(f, "scene") + ' skipped. Play, Edit and Save stay locked until they load or you remove them.</span></div><div class="btns"><a class="cbtn pri" data-act="retry">Retry ' + plural(f, "scene") + '</a></div></div>';
     if (m === "failed") h = '<div class="lcard"><div class="head" data-act="toggle"><img alt="" src="' + A + 'warn.svg"><span>' + plural(f, "scene") + " didn’t load</span>" + chev(true) + "</div>" + count_ +
-      '<div class="rule err"><span>' + plural(f, "scene") + ' timed out. Play and Save stay locked until they load or you skip them.</span></div><div class="btns"><a class="cbtn pri" data-act="retry">Retry ' + plural(f, "scene") + '</a><a class="cbtn sec" data-act="skip">Skip for now</a></div></div>';
+      '<div class="rule err"><span>' + plural(f, "scene") + ' timed out. Play, Edit and Save stay locked until they load or you remove them.</span></div><div class="btns"><a class="cbtn pri" data-act="retry">Retry ' + plural(f, "scene") + '</a><a class="cbtn sec" data-act="skip">Skip for now</a></div></div>';
     if (m === "offline") h = '<div class="lcard"><div class="head" data-act="toggle"><img alt="" src="' + A + 'warn.svg"><span>Connection lost</span>' + chev(true) + "</div>" + count_ +
       '<div class="rule info"><span>Loading is paused and resumes when you are back online.</span></div><div class="btns off"><a class="cbtn pri" data-act="retryNow">Retry now</a><small id="cd">Checking again in ' + S.countdown + " s</small></div></div>";
   }
@@ -153,30 +152,28 @@ function updateLoaderLive() {
   if ((e = $("#cPct"))) e.textContent = pct + "%";
   if ((e = $("#cOf"))) e.textContent = r + " of " + TOTAL + " assets ready";
   if ((e = $("#cBar"))) e.style.width = pct + "%";
-  if ((e = $("#cNote"))) e.textContent = "Now loading " + nameOf(currentLoading() || r + 1) + ". Play and Save unlock when all assets are ready.";
+  if ((e = $("#cNote"))) e.textContent = "Now loading " + nameOf(currentLoading() || r + 1) + ". Play, Edit and Save unlock when all assets are ready.";
   updateTips();
 }
 function renderAll() {
   var ed = $("#editor"), m = S.mode;
-  var saveLock = m === "loading" || m === "failed" || m === "offline", playLock = m !== "ready";
-  ed.classList.toggle("locked", saveLock); ed.classList.toggle("playlocked", playLock); ed.classList.toggle("ready", !saveLock);
+  var lock = m === "loading" || m === "failed" || m === "skipped" || m === "empty";
+  ed.classList.toggle("locked", lock); ed.classList.toggle("playlocked", lock); ed.classList.toggle("ready", !lock);
   ed.classList.toggle("empty", m === "empty");
-  $("#playBtn").setAttribute("aria-disabled", playLock); $("#saveBtn").setAttribute("aria-disabled", saveLock);
+  $("#playBtn").setAttribute("aria-disabled", lock); $("#saveBtn").setAttribute("aria-disabled", lock);
   renderRow(); updateFooter(); updateTips(); renderLoader(); hideTips();
 }
 
 /* ---------- tooltips ---------- */
 function hideTips() { $("#tipPlay").classList.remove("show"); $("#tipNew").classList.remove("show"); }
 function showPlayTip() { if ($("#editor").classList.contains("playlocked")) $("#tipPlay").classList.add("show"); }
-function showSaveTip() { if ($("#editor").classList.contains("locked")) $("#tipPlay").classList.add("show"); }
-[$("#playBtn"), $("#saveBtn")].forEach(function (e) {
-  var tip = e.id === "saveBtn" ? showSaveTip : showPlayTip;
+Array.prototype.slice.call(document.querySelectorAll("#playBtn,#saveBtn,.hdr .ibtn")).forEach(function (e) {
+  var tip = showPlayTip;
   e.addEventListener("mouseenter", tip); e.addEventListener("focus", tip);
   e.addEventListener("mouseleave", hideTips); e.addEventListener("blur", hideTips);
   e.addEventListener("click", function (ev) {
     ev.stopPropagation();
-    if (S.mode === "ready") { show("s1"); return; }
-    if (e.id === "saveBtn" && S.mode !== "loading" && S.mode !== "failed" && S.mode !== "offline") return;
+    if (!$("#editor").classList.contains("locked")) { if (e.id === "playBtn") show("s1"); return; }
     tip(); setTimeout(hideTips, 1800);
   });
 });
@@ -201,7 +198,6 @@ $("#loader").addEventListener("click", function (ev) {
   var a = t.getAttribute("data-act");
   if (a === "toggle") { S.open = !S.open; renderLoader(); }
   if (a === "retry") retryFailed();
-  if (a === "retryNow") resume();
   if (a === "skip") { S.mode = "skipped"; S.open = false; renderAll(); }
 });
 $("#row").addEventListener("click", function (ev) {
@@ -236,10 +232,7 @@ function simulate(kind) {
     S.scenes[3].st = "failed"; S.scenes[4].st = "failed";
     S.mode = "failed";
   }
-  if (kind === "offline") {
-    if (S.mode === "ready" || S.mode === "failed") { S.scenes = freshScenes(); }
-    S.mode = "offline";
-  }
+  if (kind === "offline") { if (S.mode !== "ready" && S.mode !== "offline") { return; } S.mode = "offline"; }
   if (kind === "skipped") {
     S.scenes = freshScenes();
     S.scenes.forEach(function (s, i) { if (i >= 8) { s.st = "ready"; s.p = 1; } });
@@ -247,8 +240,8 @@ function simulate(kind) {
     S.mode = "skipped";
   }
   if (kind === "empty") { S.scenes = []; S.mode = "empty"; }
-  if (kind === "ready") { S.scenes.forEach(function (s) { s.st = "ready"; s.p = 1; }); S.mode = "ready"; }
-  renderAll(); if (kind === "offline") startCountdown();
+  if (kind === "ready") { if (!S.scenes.length) S.scenes = freshScenes(); S.scenes.forEach(function (s) { s.st = "ready"; s.p = 1; }); S.mode = "ready"; }
+  renderAll();
 }
 document.addEventListener("keydown", function (ev) {
   if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
@@ -256,6 +249,7 @@ document.addEventListener("keydown", function (ev) {
   if (S.screen === "s2" && k === "f") { clearTimeout(S.auto); show("s3"); return; }
   if (k === "f") simulate("failed");
   if (k === "n") simulate("offline");
+  if (k === "o" && S.mode === "offline") simulate("ready");
   if (k === "a") simulate("ready");
   if (k === "s") simulate("skipped");
   if (k === "e") simulate("empty");
