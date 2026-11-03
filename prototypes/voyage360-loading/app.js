@@ -88,7 +88,7 @@ function finish() {
 function cardReady(n) {
   var sel = n === 1;
   return '<div class="card' + (sel ? " sel" : "") + '" data-n="' + n + '"><div class="thumb" style="background-image:url(' + thumbFor(n) + ')"></div><div class="badge">' + n + "</div>" +
-    (sel ? '<div class="dots"><img alt="" src="' + A + 'dots.svg"></div>' : "") + "</div>";
+    "</div>";
 }
 function cardBox(n, cls, inner) { return '<div class="card state ' + cls + '" data-n="' + n + '"><div class="box">' + inner + '<div class="badge">' + n + "</div></div></div>"; }
 function renderRow() {
