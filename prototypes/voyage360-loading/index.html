@@ -54,6 +54,13 @@
 <!-- Editor -->
 <section class="screen" id="editor" data-screen="editor">
   <div class="scene" id="canvas"></div>
+  <div class="emptystate" id="emptyState">
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#e5e5e5" stroke-width="1.5"><rect x="3" y="5" width="30" height="24" rx="2"/><circle cx="12" cy="13" r="2.5"/><path d="M3 24l9-7 8 6 6-4 7 5"/><circle cx="32" cy="30" r="6" fill="#0e0d0d"/><path d="M32 27v6M29 30h6"/></svg>
+    <h3>No scenes yet</h3>
+    <p>Bring in a 360 image or video to start building.<br>You can still save the project and come back later.</p>
+    <a class="cbtn pri" id="addScene" tabindex="0" role="button">Add a scene</a>
+    <small>Play unlocks once there is a scene to play.</small>
+  </div>
   <div class="menubar" data-menubar></div>
   <div class="hdr">
     <div class="fname">File Name-123456789</div>
@@ -81,15 +88,15 @@
   <div class="footer" id="footer"></div>
 
   <div id="loader"></div>
-  <div class="tip below" id="tipPlay"><p>Play and Save unlock after all 36 scenes load.</p><p>28 scenes are still loading. Open any ready scene to keep editing.</p></div>
-  <div class="tip above" id="tipNew"><p>New scene unlocks after loading.</p><p>28 scenes are still loading. You can add scene 37 as soon as they finish.</p></div>
+  <div class="tip below" id="tipPlay"><p>Play and Save unlock after all 36 assets load.</p><p>28 assets are still loading. Open any ready scene to keep editing.</p></div>
+  <div class="tip above" id="tipNew"><p>New scene unlocks after loading.</p><p>28 assets are still loading. You can add a scene as soon as they finish.</p></div>
 </section>
 
 </div></div>
 
 <div id="chrome" aria-label="Prototype controls">
   <span>Editor:</span>
-  <kbd>F</kbd> fail <kbd>N</kbd> offline <kbd>A</kbd> all ready
+  <kbd>F</kbd> fail <kbd>S</kbd> skipped <kbd>N</kbd> offline <kbd>E</kbd> empty <kbd>A</kbd> all ready
   <button data-go="s1">Restart</button>
 </div>
 
