@@ -29,6 +29,15 @@ main{flex:1;position:relative;overflow:hidden}
 .search:hover{border-color:#7a7a7a}
 .cats div.dm{opacity:.5;cursor:default}
 .foot .pv{width:80px;height:44px;border-radius:4px;background:#2a2a2e;display:flex;align-items:center;justify-content:center}.foot .pv img{width:32px;height:32px}
+.btn[data-tip]{position:relative}
+.btn[data-tip]:hover::after{content:attr(data-tip);position:absolute;right:-4px;top:calc(100% + 8px);background:#1e1e21;border:1px solid #5c4e7b;border-radius:6px;padding:3px 10px;font:14px/20px Roboto,system-ui,sans-serif;color:#c8c8c8;white-space:nowrap;z-index:8;pointer-events:none}
+.btn[data-tip]:hover::before{content:"";position:absolute;right:14px;top:calc(100% + 3px);width:8px;height:8px;background:#1e1e21;border:1px solid #5c4e7b;border-right:0;border-bottom:0;transform:rotate(45deg);z-index:9;pointer-events:none}
+#ring{position:absolute;width:300px;height:300px;z-index:12;display:none}
+#ring.on{display:block}
+#ring .rb{position:absolute;width:92px;height:92px;margin:-46px 0 0 -46px;border-radius:50%;background:#6429a0;color:#e5e5e5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font:600 14px Inter,system-ui,sans-serif;cursor:pointer;transition:background .12s,transform .12s;border:0}
+#ring .rb svg,#ring .rb img{width:32px;height:32px}
+#ring .rb:hover{background:#3d2a63}
+#ring .rb.dis{cursor:default}
 /* panel */
 #panel{position:absolute;left:664px;top:250px;width:592px;height:580px;border-radius:20px 0 20px 20px;background:var(--surf);overflow:hidden;box-shadow:8px 10px 25px rgba(0,0,0,.25);transition:opacity .15s}
 #panel.hide{opacity:0;pointer-events:none}
@@ -101,13 +110,13 @@ main{flex:1;position:relative;overflow:hidden}
 <aside>
 <h1>Voyage 360</h1><p>Asset Panel · live prototype</p>
 <h2>Open as</h2>
-<button id="mAsset">Asset Panel</button><button id="mChoose">Choose Asset (Icons)</button>
+<button id="mAsset">Asset Panel</button><button id="mChoose">Choose Image (Icons)</button>
 <h2>Simulate</h2>
 <label><input type="checkbox" id="oFail"> Deletion fails</label>
 <label><input type="checkbox" id="oNone"> No unused assets</label>
-<h2>Try</h2><p>Click the pulsing Asset Panel button in the top toolbar. Hover icons for names, search “star”, pick an icon, use the bin to select and delete, or use the broom button to clear unused assets (Images or Icons).</p>
+<h2>Try</h2><p>Right-click an empty spot in the scene to open the element ring, then pick Image. Or click the pulsing Asset Panel button in the top toolbar. Hover icons for names, search “star”, pick an icon, use the bin to select and delete, or use the broom button to clear unused assets (Images or Icons).</p>
 </aside>
-<main><div id="stage"><div id="reopen" title="Reopen panel"></div><div id="panel"></div></div></main>
+<main><div id="stage"><div id="reopen" title="Reopen panel"></div><div id="panel"></div><div id="ring"></div></div></main>
 </div>
 <script>
 const $=s=>document.querySelector(s);
@@ -132,7 +141,7 @@ function render(){
   let tools='';
   if(S.choose)tools='<button class="btn imp"><img src="icons/upload.svg">Import</button>';
   else if(del)tools='<button class="btn imp dim"><img src="icons/upload.svg">Import</button><button class="btn sq undo" id="undo" title="Back"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M18 8H9a5 5 0 000 10h4M6 5L3 8l3 3" transform="translate(1 1)"/></svg></button>';
-  else tools='<button class="btn imp"><img src="icons/upload.svg">Import</button>'+'<button class="btn sq pur'+(count()?'':' dim')+'" id="clean"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M13.2 0.5V10.1"/><path d="M5.7 4.7L5.1 3.9 4.5 3.3 3.9 4.7 4.5 5.1 5.1 5.7 5.7 4.7M21.2 6.6L20.6 5.8 20 5.2 19.4 6.6 20 7 20.6 7.6 21.2 6.6"/><path d="M4.5 14.1C4.5 11.8 6 10.1 8 10.1L18.1 10.1C20.1 10.1 21.6 11.8 21.6 14.1L21.6 20.6C21.6 22.2 20.8 23.4 19.5 23.4L2.8 23.4C4 23.4 4.5 22.7 4.5 21.8Z"/><path d="M4.5 14.1L21.6 14.1M8.7 14.1V19.7M11.6 14.1V19.7M14.6 14.1V19.7M17.6 14.1V19.7"/></svg></button>'+'<button class="btn sq del" id="bin"><img src="icons/bin.svg"></button>';
+  else tools='<button class="btn imp"><img src="icons/upload.svg">Import</button>'+'<button class="btn sq pur'+(count()?'':' dim')+'" id="clean" data-tip="Clear unused assets"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M13.2 0.5V10.1"/><path d="M5.7 4.7L5.1 3.9 4.5 3.3 3.9 4.7 4.5 5.1 5.1 5.7 5.7 4.7M21.2 6.6L20.6 5.8 20 5.2 19.4 6.6 20 7 20.6 7.6 21.2 6.6"/><path d="M4.5 14.1C4.5 11.8 6 10.1 8 10.1L18.1 10.1C20.1 10.1 21.6 11.8 21.6 14.1L21.6 20.6C21.6 22.2 20.8 23.4 19.5 23.4L2.8 23.4C4 23.4 4.5 22.7 4.5 21.8Z"/><path d="M4.5 14.1L21.6 14.1M8.7 14.1V19.7M11.6 14.1V19.7M14.6 14.1V19.7M17.6 14.1V19.7"/></svg></button>'+'<button class="btn sq del" id="bin" data-tip="Delete assets"><img src="icons/bin.svg"></button>';
   let main='';
   if(S.cat==='Videos'||S.cat==='Audio')main='<div class="empty"><img src="img/empty.png" width="160" style="opacity:.6"><div>No '+S.cat.toLowerCase()+' yet</div></div>';
   else if(!v.length)main='<div class="empty"><img src="img/empty.png"><div>No Search Result</div></div>';
@@ -143,8 +152,8 @@ function render(){
   if(S.mode==='delete')foot=`<div class="l">${n?n+' Items Selected':'Select Items'}</div><button class="btn pur" id="selall">${n&&n===v.length?'Cancel Selection':'Select All'}</button><button class="btn del" id="doDel" ${n?'':'disabled'}><img src="icons/bin.svg" width="24">Delete Assets</button>`;
   else if(S.mode==='clean')foot=`<div class="l">${n} Unused Items Selected</div><button class="btn pur" id="cancelSel">Cancel Selection</button><button class="btn del" id="doDel" ${n?'':'disabled'}><img src="icons/bin.svg" width="24">Delete Assets</button>`;
   else if(S.pick){const ic=S.icons.find(i=>i.id===S.pick);foot=`<div class="l"><div class="pv"><img src="icons/${ic?ic.f:'image'}.svg"></div><span>${ic?ic.n:''}</span></div><button class="btn pur" id="addScene">${S.choose?'Confirm':'Add to Scene'}</button>`}
-  p.innerHTML=`<div class="hdr"><img src="icons/media.svg" width="24"><span class="t">${S.choose?'Choose Asset':'Asset Panel'}</span><div class="x" id="close"><img src="icons/close.svg" width="16"></div></div>
-  <div class="opt${del?' dim2':''}"><div class="loc">${['Local','Online'].map(t=>`<div class="tag${S.tab===t?' on':''}" data-tab="${t}">${TABIC[t]}${t}</div>`).join('')}</div><div class="tools">${tools}</div>${S.tip?'<div class="tip">Clear unused assets</div>':''}</div>
+  p.innerHTML=`<div class="hdr"><img src="icons/media.svg" width="24"><span class="t">${S.choose?'Choose Image':'Asset Panel'}</span><div class="x" id="close"><img src="icons/close.svg" width="16"></div></div>
+  <div class="opt${del?' dim2':''}"><div class="loc">${['Local','Online'].map(t=>`<div class="tag${S.tab===t?' on':''}" data-tab="${t}">${TABIC[t]}${t}</div>`).join('')}</div><div class="tools">${tools}</div></div>
   <div class="bar"></div>
   <div class="body"><div class="cats">${cats.map(c=>`<div class="${S.cat===c?'on':(S.mode?'dm':'')}" data-cat="${c}">${c}</div>`).join('')}</div>
   <div class="srow"><div class="search"><img src="icons/magnifier.svg"><input id="q" placeholder="Search media..." value="${S.q.replace(/"/g,'&quot;')}"></div>${drop}</div>${main}
@@ -177,7 +186,7 @@ document.addEventListener('click',e=>{
   if(t.dataset.cat&&!S.mode){S.cat=t.dataset.cat;S.q='';S.filter='All';S.pick=null;return render()}
   if(t.dataset.id){const i=t.dataset.id;if(S.mode){S.sel.has(i)?S.sel.delete(i):S.sel.add(i)}else if(S.cat==='Icons')S.pick=S.pick===i?null:i;return render()}
   switch(id){
-   case'close':S.open=false;return render();
+   case'close':if(S.choose){init(false);S.open=false}else S.open=false;return render();
    case'reopen':S.open=true;return render();
    case'bin':S.mode='delete';S.sel.clear();S.pick=null;return render();
    case'undo':case'cancelSel':return exit();
@@ -188,15 +197,24 @@ document.addEventListener('click',e=>{
    case'dOk':S.dlg=null;return render();
    case'tx':S.toast=null;return render();
    case'addScene':toast(S.choose?'Asset confirmed':'Added to scene');S.pick=null;return render();
-   case'clean':if(!count())return;S.veil='Checking which '+S.cat.toLowerCase()+' are in use...';S.tip=false;render();
+   case'clean':if(!count())return;S.veil='Checking which '+S.cat.toLowerCase()+' are in use...';render();
      return setTimeout(()=>{S.veil=null;const un=S.cat==='Images'?S.imgs.filter(i=>!i.used):S.cat==='Icons'?S.icons.filter(i=>!i.used):[];
        if($('#oNone').checked||!un.length){S.dlg='none';return render()}
        S.mode='clean';S.sel=new Set(un.map(i=>i.id));render()},1800)}
 });
-document.addEventListener('mouseover',e=>{const c=e.target.closest('#clean');if(c&&!S.tip&&!S.veil){S.tip=true;render()}});
-document.addEventListener('mouseout',e=>{if(e.target.closest('#clean')&&S.tip){S.tip=false;render()}});
 document.addEventListener('input',e=>{if(e.target.id==='q'){S.q=e.target.value;S._focus=1;render()}});
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(S.dlg){S.dlg=null}else if(S.mode)S.mode=null,S.sel.clear();else S.open=false;render()}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){ringClose();if(S.dlg){S.dlg=null}else if(S.mode)S.mode=null,S.sel.clear();else S.open=false;render()}});
+
+const RING=[['Text',0,-102,'<svg viewBox="0 0 32 32" fill="none" stroke="#e5e5e5" stroke-width="2"><rect x="4" y="4" width="24" height="24" rx="2"/><path d="M10 10h12M16 10v13M13 23h6"/></svg>'],['Video',-89,-51,'<img src="icons/video.svg" alt="">'],['Info',89,-51,'<img src="icons/info-f.svg" alt="">'],['Image',-89,52,'<img src="icons/image.svg" alt="">'],['Waypoint',89,52,'<img src="icons/gps-f.svg" alt="">'],['Audio',0,103,'<svg viewBox="0 0 32 32" fill="#e5e5e5"><path d="M5 12h5l7-6v20l-7-6H5z"/><path d="M21 11c2 2 2 8 0 10M24 8c4 4 4 12 0 16" stroke="#e5e5e5" stroke-width="2" fill="none"/></svg>']];
+function ringOpen(x,y){const r=$('#ring');x=Math.max(150,Math.min(1770,x));y=Math.max(150,Math.min(930,y));r.style.left=(x-150)+'px';r.style.top=(y-150)+'px';
+  r.innerHTML=RING.map(([n,dx,dy,ic])=>`<button class="rb${n==='Image'?'':' dis'}" data-ring="${n}" style="left:${150+dx}px;top:${150+dy}px">${ic}<span>${n}</span></button>`).join('');r.classList.add('on')}
+function ringClose(){$('#ring').classList.remove('on')}
+$('#stage').addEventListener('contextmenu',e=>{e.preventDefault();
+  if(e.target.closest('#panel')||e.target.closest('#reopen')||(S&&S.open))return ringClose();
+  const rc=$('#stage').getBoundingClientRect(),k=rc.width/1920,x=(e.clientX-rc.left)/k,y=(e.clientY-rc.top)/k;
+  if(y<100||y>940)return ringClose();ringOpen(x,y)});
+document.addEventListener('mousedown',e=>{if(!e.target.closest('#ring'))ringClose()});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-ring]');if(!b||b.dataset.ring!=='Image')return;ringClose();init(true)});
 $('#mAsset').onclick=()=>{init(false);S.open=false;render()};$('#mChoose').onclick=()=>init(true);
 function fit(){const m=$('main'),k=Math.min(m.clientWidth/1920,m.clientHeight/1080);$('#stage').style.transform=`translate(-50%,-50%) scale(${k})`}
 addEventListener('resize',fit);fit();init(false);S.open=false;render();
