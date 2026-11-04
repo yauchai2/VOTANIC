@@ -1,0 +1,20 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="icon_Restore_24">
+<g id="Vector">
+<path d="M11.1111 10.2222V10.6667H13.3333V2.66667H5.33333V4.44444H5.77778V3.11111H12.8889V10.2222H11.1111Z" fill="#E5E5E5"/>
+<mask id="stroke0_0_280" maskUnits="userSpaceOnUse" x="4.33333" y="1.66667" width="10" height="10" fill="black">
+<rect fill="white" x="4.33333" y="1.66667" width="10" height="10"/>
+<path d="M11.1111 10.2222V10.6667H13.3333V2.66667H5.33333V4.44444H5.77778V3.11111H12.8889V10.2222H11.1111Z"/>
+</mask>
+<path d="M11.1111 10.2222V10.6667H13.3333V2.66667H5.33333V4.44444H5.77778V3.11111H12.8889V10.2222H11.1111Z" stroke-width="0.4" stroke="#E5E5E5" mask="url(#stroke0_0_280)"/>
+</g>
+<g id="Vector_2">
+<path d="M2.66667 12.8889H10.6667V4.8889H2.66667V12.8889ZM3.11111 5.33334H10.2222V12.4445H3.11111V5.33334Z" fill="#E5E5E5"/>
+<mask id="stroke1_0_280" maskUnits="userSpaceOnUse" x="1.66667" y="3.8889" width="10" height="10" fill="black">
+<rect fill="white" x="1.66667" y="3.8889" width="10" height="10"/>
+<path d="M2.66667 12.8889H10.6667V4.8889H2.66667V12.8889ZM3.11111 5.33334H10.2222V12.4445H3.11111V5.33334Z"/>
+</mask>
+<path d="M2.66667 12.8889H10.6667V4.8889H2.66667V12.8889ZM3.11111 5.33334H10.2222V12.4445H3.11111V5.33334Z" stroke-width="0.4" stroke="#E5E5E5" mask="url(#stroke1_0_280)"/>
+</g>
+</g>
+</svg>
