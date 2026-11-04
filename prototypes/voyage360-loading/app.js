@@ -167,16 +167,14 @@ Array.prototype.slice.call(document.querySelectorAll("#playBtn,#saveBtn,.hdr .ib
   e.addEventListener("click", function (ev) {
     ev.stopPropagation();
     if (!$("#editor").classList.contains("locked")) { if (e.id === "playBtn") show("s1"); return; }
-    tip(); setTimeout(hideTips, 1800);
   });
 });
 var ns = $("#newScene");
-ns.addEventListener("click", function (ev) {
-  ev.stopPropagation();
-  if (S.mode === "loading") { $("#tipNew").classList.add("show"); setTimeout(function () { $("#tipNew").classList.remove("show"); }, 3000); }
-});
-ns.addEventListener("mouseleave", function () { $("#tipNew").classList.remove("show"); });
-document.addEventListener("click", hideTips, true);
+function showNewTip() { if ($("#editor").classList.contains("locked")) $("#tipNew").classList.add("show"); }
+ns.addEventListener("click", function (ev) { ev.stopPropagation(); });
+ns.addEventListener("mouseenter", showNewTip); ns.addEventListener("focus", showNewTip);
+ns.addEventListener("mouseleave", hideTips); ns.addEventListener("blur", hideTips);
+
 
 /* ---------- loader actions ---------- */
 function retryFailed() {
