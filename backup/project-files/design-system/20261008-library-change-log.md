@@ -1201,3 +1201,46 @@ Page Button, Library file. Three sets: `Button / Dark / 40px` (17463:54657, Stat
 - Deleted boards 09 / 09b, lane 6, their flow lines, labels and the "No first scene" start point. Section width 13000 → 10600.
 - S3 "Open without Lobby" kept (the other scenes still load): it now goes to board 01 and shares the existing line. Legend, Overview and S3 annotation updated.
 - Audit: 255 navigations, 0 broken.
+
+## 2026-11-03 Voyage 360 批 1：改綁舊 kit 變數 → XRCC Theme token（⭐202502-Voyage 360 UI-PC+VR）
+- 範圍：💎360 UI、Design Guidelines、Loading Enhancement（Asset Panel、cover 無需改）；只處理非 instance 內部節點的 fills／strokes，色值與 Dark 相同，視覺不變。
+- 改動：約 1,200 處。例如 Brand/ Citrus → notification/accent/citrus（252）、Brand/White → icon/inverse／text/inverse、Neutrals/grey 200 → text/primary／icon/default、grey 500 → text/placeholder／icon/secondary、grey 700 → border/default、grey 800／900 → surface/elevated／panel、High light Font & icon → text/accent／icon/accent、Colour/ Deep Purple → action/primary/background/default。
+- 未改（無可匯入的 Theme 對應或屬 stroke／text）：Brand/Ultra Violet 邊框、grey 300、Turkish Sea 文字等約 300 處；XRCC Primitive 變數無法由外部檔案匯入，故一律只用 Theme token。
+- 未動：Voyage Library 的 instance 內部（約 4,300 處舊 kit 綁定在遠端 component 內，需在 Voyage Library 檔案處理）、舊頁面（🗑️、wireframe、Research、Meeting）。
+
+## 2026-11-03 Voyage 360 Library 重建（DyjGKBd4Z24GgffN1bAnG6，未發佈）
+- 新增 collection `Voyage Theme`（單一 mode Dark）12 個顏色：surface/base #0e0d0d、surface/list #1d1d1d、surface/tint #241b38、surface/tint-delete #1c1a21、brand/band #6429a0、brand/band-delete #302c35、accent/light #d9b0fd、button/background #56317b、button/background-hover #413152、button/background-selected #221d27、marking/delete #c92e5f、partner/pexels #05a081。皆有 scope、描述、WEB code syntax（--voyage-*）。
+- 新增頁面 `Colour tokens`（色票，綁定變數）。
+- 原有 `UI colour`、`Full Picture marking` 未動（Voyage 檔案仍綁定它們）；通用色（灰階、文字、邊框等）一律用 XRCC。
+- 本 Library 沒有任何 component；Voyage 檔案的 component 目前都在該檔案本身（約 19,000 個 instance）。
+
+## 2026-11-03 Voyage 360 批 2：UI colour 綁定改到 Voyage Theme／XRCC（⭐202502-Voyage 360 UI-PC+VR）
+- 範圍：💎360 UI、Design Guidelines、Loading Enhancement、cover（非 instance 內部節點）。約 4,300 處。
+- 專屬色 → Voyage Theme：Primary/Sur BG→surface/base、Band Colour／Inspector/6429A0→brand/band、For Icon & Text／Button/icon／Inspector/D9B0FD→accent/light、Header-Default／List-Hovering→surface/tint、Button/BG*→button/background*、Color/delete→marking/delete 等。
+- 同值通用色 → XRCC Theme：For inspector／Element/icon→text/primary 或 icon/default、Disable→text/placeholder 或 icon/secondary、Placeholder Stroke→border/default、Text input-BG→surface/panel、Element/BG→surface/canvas、Selected Border & Font→text/accent／border/interactive／icon/accent。
+- 略過：明確設為 Light Mode 的 frame（共 84 個，約 42 處綁定），避免變色；instance 內部（遠端 component）未動。
+- 抽查 1920x1080 畫面，外觀無變化。舊 `UI colour` 與 `Full Picture marking` collection 尚保留。
+
+## 2026-11-03 Voyage 360 批 3：硬編碼純色改綁（⭐202502-Voyage 360 UI-PC+VR）
+- 色值與 token 完全相同的純色（#6429a0→brand/band、#d9b0fd→accent/light、#0e0d0d→surface/base、#c92e5f→marking/delete、#161616→surface/panel、#1e1e21→surface/canvas、#e5e5e5 文字／圖示→text/primary／icon/default、#545454 邊框→border/default）：💎360 UI 約 125 處、Design Guidelines 約 100 處；略過 Light frame 與 instance 內部。
+- 未處理：#ffffff、#000000、#d9d9d9 等無明確語義的色；疑為錯誤色的 #fa5d6c、#e65869、#22a4e5；未套 style 的文字。待 Alan 決定。
+
+## 2026-11-03 Voyage 360 批 4：Light Mode 節點轉 Dark ＋ 同值舊 kit 改綁
+- 💎360 UI 頁 84 個明確設為 UI colour Light Mode 的節點，已改為 Dark Mode（還原清單：design-system/20261103-voyage-light-to-dark-undo-ids.md）。抽查 Edit Mode 畫面與流程圖文字，可讀性正常（流程圖文字原綁舊 Brand/Ultra Violet，不受 mode 影響）。Design Guidelines 的 Light 色票（20 個 Color Sample）屬文件說明，保留。
+- 舊 kit 同值改綁：#818181 填色→icon/secondary（約 170）、#545454→border/default（約 45）、白色描邊→border/inverse、#e5e5e5 描邊→border/strong、#353535 描邊→border/disabled、#676767 填色→icon/disabled、#161616 文字→text/on-light/primary，共約 270 處。
+
+## 2026-11-03 Voyage 360 批 5：instance 覆寫綁定 ＋ 文字樣式改用 XRCC
+- UI colour 在 instance 內的覆寫綁定（顯示為「?」的 Inspector/D9B0FD、Icon&Text/* 等）：360 UI、Loading、Asset Panel、cover、Design Guidelines、Meeting、舊頁（UI/test、Old flow）約 15,000 處改綁到 Voyage Theme／XRCC。Light Mode 的 frame（舊頁約 50 處、Design Guidelines 約 11 處）略過。
+- 文字樣式：Desktop/*（Inter）12 個樣式全部改用 XRCC（heading/xl、lg、md；body/lg、lg-bold、md、md-bold）。對照：H1-32 → heading/xl；H2-28、H3-24 → heading/lg；H4-20 → heading/md；P1-16 → body/lg（SemiBold → lg-bold）；P2-14 → body/md（SemiBold → md-bold）。XRCC 無 Regular 標題，故 *-regular 一併用 Bold 樣式。約 11,000 個文字節點。Loading 概覽畫面抽查版面正常。
+- 未處理：未套樣式的零散文字（Arial／Inter）、wireframe 頁、Loading 概覽內文「Inter text styles」字樣。
+- 待決定：XRCC Components 的使用範圍（已發決策卡）。
+
+## 2026-11-03 Voyage 360 批 6：Dialog 改用 XRCC Dialog
+- 畫面上的 Voyage Dialog instance 20 個，改為 XRCC Dialog（Type：Delete 系列用 Destructive、Position Warning 用 Warning、其餘用 Info；Size Medium），標題、說明、按鈕文字與按鈕 prototype 互動均保留。原 instance 已隱藏並改名為「OLD · …」，未刪除，待 Alan 核對後自行刪除。
+- 範例：Design Guidelines 頁「PILOT XRCC Dialog-Delete」（供對照，可刪）。
+- 未處理：Dialog-Enter Play Mode（含場景選擇內容）、Dialog-Warning-XR；Voyage 的 Dialog 原件（Design Guidelines 頁）保持不動。
+- 外觀差異：標題與底欄由 Voyage 紫調改為 XRCC 深灰，刪除按鈕由粉紅改為 XRCC 紅色，寬度由 508 變為 480。
+
+## 2026-11-03 Voyage 360 批 7：未套樣式文字改用 XRCC 樣式
+- 依字級與粗細對應 XRCC（11→caption、12→body/sm、13–15→body/md(-bold)、16–17→body/lg(-bold)、18→heading/sm、20→heading/md、24→heading/lg、32→heading/xl）：360 UI 約 210、Design Guidelines 約 150、Meeting 約 180、Loading 10。
+- 略過：混合字型或字級、粗體 11–12px、常規字重 18px 以上、32px 以上的特大字、instance 內部（約 470 個）。Loading 概覽內文「Inter text styles」改為「XRCC text styles」。
