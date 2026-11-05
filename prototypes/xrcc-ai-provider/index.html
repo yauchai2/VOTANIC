@@ -362,8 +362,8 @@ function voices(){
  const chip=(id,l,lgp)=>`<button class="chip ${lgp?'':'txt'} ${S.vf===id?'on':''}" data-vf="${id}">${lgp?lg(lgp,20):''}${l}</button>`;
  return `<div class="row g12" style="align-items:flex-end"><div class="field fill"><div class="mdb">Preview line</div><input class="input" id="pl" value="${S.preview}"></div><button class="btn out" data-all>Play all</button></div>
  <div class="row g8">${chip('all','All '+S.voices.length)}${chip('minimax','MiniMax','minimax')}${chip('gemini','Gemini','gemini')}<span class="fill"></span><button class="btn" data-newv>New voice preset</button></div>
- <div class="grid3">${vs.map(v=>{const pl=S.playing===v.id;return `<div class="card voice ${pl?'play':''} ${v.gone?'gone':''}"><div class="row g12"><button class="pbtn" data-play="${v.id}" data-tip="${pl?'Stop':'Play the preview line'}">${ic(pl?'Stop':'Play')}</button><div class="col g4 fill"><div class="mdb ${v.gone?'t2':''}">${v.n}</div><div class="row g8 sm t2">${lg(v.prov,16)}${v.meta}</div></div><button class="iconbtn s28" data-tip="More actions">${ic('MoreH','i16')}</button></div>
-  ${pl?`<div class="wave">${WAVE.map((h,i)=>`<i style="height:${h}px;animation-delay:${i*50}ms"></i>`).join('')}</div>`:''}
+ ${S.cloneBanner===false?'':`<div class="col g12" style="padding:16px;border:1px solid var(--warn);border-radius:8px;background:var(--canvas)"><div class="row g8 twarn mdb">${ic('Warning')}<span>Grandpa Lau is no longer on MiniMax</span></div><div class="sm t2">MiniMax deletes voice clones that go unused for 7 days. 2 characters now speak with Warm host until you choose.</div><div class="row g8"><button class="btn" data-clone="pick">Pick another voice</button><button class="btn" data-clone="keep">Keep Warm host</button></div></div>`}<div class="grid3">${vs.map(v=>{const pl=S.playing===v.id;return `<div class="card voice ${pl?'play':''} ${v.gone?'gone':''}"><div class="row g12"><button class="pbtn" data-play="${v.id}" data-tip="${pl?'Stop':'Play the preview line'}">${ic(pl?'Stop':'Play')}</button><div class="col g4 fill"><div class="mdb ${v.gone?'t2':''}">${v.n}</div><div class="row g8 sm t2">${lg(v.prov,16)}${v.meta}</div></div><button class="iconbtn s28" data-tip="More actions">${ic('MoreH','i16')}</button></div>
+  ${S.asking===v.id?`<span class="caption t2">ASKING THE PROVIDER</span>`:''}${pl?`<div class="wave">${WAVE.map((h,i)=>`<i style="height:${h}px;animation-delay:${i*50}ms"></i>`).join('')}</div>`:''}
   ${v.gone?`<div class="row g8 sm twarn" style="align-items:flex-start">${ic('Warning')}<span>Clone removed after 7 idle days. Playing Warm host instead.</span></div>`:v.tag&&!pl?`<span class="tag">${v.tag}</span>`:''}</div>`}).join('')}
  <div class="new" data-newv><div class="pbtn">${ic('Plus','i20')}</div><div class="mdb tacc">New voice preset</div></div></div>
  <div class="sm t3">Every play uses a little of that provider's quota.</div>`}
@@ -383,7 +383,7 @@ function addDlg(){
  const tile=(id,v)=>{const caps=v.caps;const shown=caps.slice(0,3);const more=caps.length-3;
   return `<button class="ptile ${S.addSel===id?'on':''}" data-sel="${id}">${lg(id,40)}<span class="mdb">${v.n}</span><span class="can">${shown.map(c=>ic(CIC[c])).join('')}${more>0?`<span class="sm ${S.addSel===id?'tacc':'t3'}">+${more}</span>`:''}</span></button>`};
  dlg('Add a provider',`<div class="lg">Pick a provider and a saved key. We'll test it right away.</div><div class="content"><div class="col g12"><div class="mdb">Pick a provider</div><div class="row g8">${Object.entries(P).map(([i,v])=>tile(i,v)).join('')}</div><div class="note">${ic('Info')}<span>Icons under each name show what it can do. ${p.n}: ${p.caps.map(c=>CNAME[c]).join(', ')}.</span></div></div>
- ${keySel(p)}${p.vpn?`<div class="warn">${ic('World')}<div class="col g4"><b class="mdb">Gemini needs a VPN in Hong Kong</b><span class="sm">Turn it on before you connect, or the test will time out.</span></div></div>`:''}</div>`,
+ <div class="row g8 sm t2" style="align-items:flex-start">${ic('Info','i16')}<span>Icons under each name show what it can do. ${p.n}: ${({gemini:'chat, quiz, speech and transcription',minimax:'chat, speech and music',poe:'chat, quiz, images and more',openrouter:'chat, quiz and images',custom:'whatever your server supports'})[S.addSel]}.</span></div>${keySel(p)}${p.vpn?`<div class="warn">${ic('World')}<div class="col g4"><b class="mdb">Gemini needs a VPN in Hong Kong</b><span class="sm">Turn it on before you connect, or the test will time out.</span></div></div>`:''}</div>`,
  `${cancel}<button class="btn pri" data-connect ${ks.length?'':'disabled'}>Connect ${p.n}</button>`);}
 const inp=(l,v,ph,h,opt,type)=>`<div class="field"><div class="lrow"><span class="mdb">${l}</span>${opt?'<span class="sm t3">Optional</span>':''}</div><input class="input" value="${v||''}" placeholder="${ph||''}" ${type?`type="${type}"`:''}>${h?`<div class="helper">${h}</div>`:''}</div>`;
 function customDlg(){dlg('Add your own server',`<div class="lg">For a model running in your studio or any OpenAI-style endpoint.</div><div class="content">${inp('Name','Studio LLM')}${inp('Base URL','http://192.168.1.20:8080/v1','','We can only check that this address answers.')}
@@ -442,13 +442,14 @@ document.addEventListener('click',e=>{
   return settings()}
  if(km){S.kmenu=S.kmenu===km.dataset.kmenu?null:km.dataset.kmenu;return settings()}
  if(S.kmenu&&ov.querySelector('.win')){S.kmenu=null;settings()}
- const t=e.target.closest('[data-x],[data-back],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-doun],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dLaunch');
+ const t=e.target.closest('[data-x],[data-back],[data-clone],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-doun],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dLaunch');
  if(!t)return;const d=t.dataset;
  if(t.id==='openAI')return openPanel();
  if(t.id==='reset'){S=init();hide();return toast('Prototype reset')}
  if(t.id==='dLoad'){S.tab='voices';S.vstate='loading';if(!S.providers.length)S.providers.push({id:'p1',pid:'minimax',key:'k2'});renderPanel();setTimeout(()=>{S.vstate='ok';if(ov.querySelector('.skel'))renderPanel()},2000);return}
  if(t.id==='dFail'){S.tab='voices';S.vstate='error';if(!S.providers.length)S.providers.push({id:'p1',pid:'minimax',key:'k2'});return renderPanel()}
  if(t.id==='dLaunch')return launchDlg();
+ if(d.clone){S.cloneBanner=false;if(d.clone==='pick')toast('Pick any voice below to replace Grandpa Lau');else toast('Warm host stays as the fallback');return renderPanel()}
  if('x' in d)return hide();
  if('back' in d){return stack.length>1?pop():hide()}
  if(d.tab){S.tab=d.tab;S.vstate=S.vstate==='loading'?'ok':S.vstate;return renderPanel()}
@@ -472,7 +473,7 @@ document.addEventListener('click',e=>{
  if(d.remove)return removeDlg(d.remove);
  if(d.rm){S.providers=S.providers.filter(p=>p.id!==d.rm);Object.keys(S.assign).forEach(k=>{if(S.assign[k]===d.rm)delete S.assign[k]});S.open=null;if(!S.providers.length)S.tab='first';return renderPanel()}
  if(d.prov&&!e.target.closest('button')){S.open=S.open===d.prov?null:d.prov;return renderPanel()}
- if(d.play){const v=S.voices.find(v=>v.id===d.play);S.playing=S.playing===v.id?null:v.id;renderPanel();if(S.playing)setTimeout(()=>{if(S.playing===v.id){S.playing=null;if(ov.querySelector('.wave'))renderPanel()}},4000);return}
+ if(d.play){const v=S.voices.find(v=>v.id===d.play);if(S.playing===v.id){S.playing=null;return renderPanel()}if(S.asking)return;S.playing=null;S.asking=v.id;renderPanel();setTimeout(()=>{S.asking=null;S.playing=v.id;if(ov.querySelector('.panel'))renderPanel();setTimeout(()=>{if(S.playing===v.id){S.playing=null;if(ov.querySelector('.wave'))renderPanel()}},4000)},700);return}
  if('all' in d){toast('Playing each voice with the same line');return}
  if(d.vf){S.vf=d.vf;return renderPanel()}
  if('newv' in d){S.advOpen=false;return newVoice()}
