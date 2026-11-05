@@ -1244,3 +1244,45 @@ Page Button, Library file. Three sets: `Button / Dark / 40px` (17463:54657, Stat
 ## 2026-11-03 Voyage 360 批 7：未套樣式文字改用 XRCC 樣式
 - 依字級與粗細對應 XRCC（11→caption、12→body/sm、13–15→body/md(-bold)、16–17→body/lg(-bold)、18→heading/sm、20→heading/md、24→heading/lg、32→heading/xl）：360 UI 約 210、Design Guidelines 約 150、Meeting 約 180、Loading 10。
 - 略過：混合字型或字級、粗體 11–12px、常規字重 18px 以上、32px 以上的特大字、instance 內部（約 470 個）。Loading 概覽內文「Inter text styles」改為「XRCC text styles」。
+
+## 2026-11-04 · Loading Enhancement: locked-control tooltip is hover only
+- Play / Save on boards 01 and 08 now open the tooltip boards (02, 08b) on hover instead of click; the tooltip boards return on mouse leave (root click kept as fallback). Tooltip annotation states hover / keyboard focus only. Audit: 259 navigations, 0 broken.
+
+## 2026-11-04 · Voyage 360 UI · Asset Panel hover tooltips
+- B1b (6227:9423): added missing Tooltip instance "Clear unused assets" (6396:13971), reusing existing Tooltip component (Arrow=top, Location=end).
+- New board A1d · Icons tab — Hover Delete (6396:13975) with Tooltip "Delete assets"; note 6396:14329.
+- A1 Hotspot - trash (6227:17623): added ON_HOVER → A1d (click → A3 kept).
+- No new tokens or components. Flow arrow for A1 → A1d not drawn.
+- Voyage 360 UI · Asset Panel: added A6b · Image Inspector — Choose New Asset (6401:14349), entry frame whose hotspot links to A7 (6227:6456); flow arrow, label and note added; flow starting point "A. Image Inspector" replaces the A7 start. Cross-page links to the 💎360 UI page are not possible in Figma prototypes. A7 still shows the generic Choose Asset panel (Images and Icons tabs); no Image-only variant exists.
+- Voyage 360 UI · Asset Panel: A6b rebuilt as "A6b · Element Ring — Image" (6401:14349) using the Element Ring screen (source 4728:72778); Hotspot - Image (6402:14939) → A7. Flow start renamed "A. Element Ring". Replaces the earlier Inspector-based A6b.
+- Voyage 360 UI · Asset Panel: panel title on A7 (6227:6927) and A8 (6227:7893) overridden from 'Choose Asset' to 'Choose Image'; frames renamed; A6b note updated. Component untouched.
+- Voyage 360 UI · Asset Panel: A0 (6260:26668) got 'Hotspot - empty area (right click)' (below the Asset Panel button hotspot) → A6b; Figma has no right-click trigger so ON_CLICK is used, noted in A0/A6b notes.
+
+## 2026-11-05 Voyage 360 UI-PC+VR 顏色改綁 XRCC (PC) Library（未新增任何 token）
+範圍：💎360 UI、Asset Panel、Loading Enhancement、Design Guidelines 四頁（不含 instance 內部、舊頁、cover、Research、Meeting）。
+- Voyage 近似色改綁：surface/list、tint-delete、button/background-selected → surface/canvas；surface/tint、brand/band-delete → surface/header；button/background-hover → action/primary/background/default；button/background → action/primary/background/pressed。
+- 舊 kit：Ultra Violet → surface/accent-muted（140）；Deep Purple → action/primary/background/default（40）；Turkish Sea → notification/accent/blue；Blackenend Pearl、Hovering → border/default；grey 200 → icon/default。
+- 硬編碼：#ffffff → text/icon/surface/border inverse（按節點類型，約 1,200）；#222222 → surface/canvas（147）；#525252 描邊 → border/default（300）；#f9ac2f → notification/accent/citrus。
+- 保留不動（Alan 決定）：surface/base、brand/band、accent/light、marking/delete、partner/pexels。
+- 未處理：#d9d9d9、#000000、Blue Moon、Silver（XRCC 只有 Primitive 對應，Primitive 集合未發布，無法在 Voyage 檔綁定）；#fa5d6c、#22a4e5、紫藍硬編碼、其餘灰階。
+- 還原方式：Figma 版本歷史（改綁前版本）。
+
+## 2026-11-05 修正「?」顏色綁定並清理 Voyage Library（未新增 XRCC token）
+- 「?」來源：舊 Voyage 變數集合（UI colour、Full Picture marking、360、Future List、Light slides）已不在現行 Library。只在色值與目前 Dark 值相同時重新綁定：Voyage 專屬色綁 Voyage Theme（brand/band、surface/base、accent/light、marking/delete），其餘綁 XRCC Theme（surface/canvas、surface/header、surface/panel、border/default、text 與 icon 系列等）。
+- 修正量（UI 檔）：Loading 367、360 UI 35、Design Guidelines 36、Meeting 20、Old UI/test 122、Old User flow 190、wireframe 441，合計約 1,211 處；Voyage Library 的 Cover 頁 174 處。
+- instance 內部殘留的 Voyage 近似色（surface/list、tint、button 系列、band-delete 等）改綁 XRCC，約 480 處，另 cover 2 處。
+- 刪除 Voyage Theme 中 7 個零使用 token：surface/list、surface/tint、surface/tint-delete、brand/band-delete、button/background、button/background-hover、button/background-selected；同步移除 Colour tokens 頁對應 7 行。保留 surface/base、brand/band、accent/light、marking/delete、partner/pexels。
+- 尚餘「?」：Full Picture marking/Words #08470c（約 175 處，Meeting 與舊頁）、淺色模式值（#f4f4f4、#f0e9ff、#7845ab 等，約 60 處）、360/Success-Main、Error-Main、Light slides/Black 等少量，交 Alan 決定。
+- 待 Alan：在 Voyage Library 按 Publish；UI 檔 Update library。
+- 2026-11-05（Alan 決定：無近似色者新增 Voyage token）：Voyage Theme 新增 marking/words（#08470c，取代舊 Full Picture marking/Words），Colour tokens 頁新增對應行。待 Alan Publish Voyage Library 後，再把 UI 檔約 175 處 Words 綁定改綁 marking/words（僅 #08470c；#933bdf 為另一 mode 值，另議）。淺色模式值與 Error/Success 等少量色維持原狀。
+- 2026-11-05：Alan 已 Publish。Words #08470c 已改綁 Voyage marking/words：Meeting 158、Design Guidelines 1、Old User flow 15，共 174 處。
+
+## 2026-11-05 XRCC (PC) Library：依 Library 設定檢視執行（第一段，未發布）
+依 reports/20261105-figma-library-setup-review.md，Alan 批准「可以執行」。11:59 按 Alan 指示暫停。
+- 第 3 項（遠端引用改本地）：Breadcrumbs 22 個遠端 icon 換成本地（icon/house → icon/outline/home、icon 外框 → 本地 icon set 同 variant），20 處舊遠端 Theme 綁定（Unit/x4、Body 2 line height）改為 size/icon/16、size/icon/20；Alert 20 個遠端 link 換成本地 link（color、disabled 一致，文字與 underline 保留）；Pagination 刪除 30 個隱藏的佔位 icon/activity（無 property 引用，畫面不變）；Internal 16 處、Dropdown 2、Menu item 1、Popover 4、Text field 2 處舊 Theme 綁定改為 XRCC 同值 token；Internal 2 個 en/paragraph-2 文字改用 body/md。截圖核對 Breadcrumbs、Pagination、Alert 畫面不變。
+- 未處理：Breadcrumbs 4 個 button-icon（ghost 款，Library 無對應組件）及其內 ellipsis、chevron-right（Library 無 chevron-right）；Pagination 15 處 itemSpacing 綁 Unit/x1-5（6px，無對應 spacing token）；All Figma files 2 個遠端 sorting（變體式組件，無對應）。
+- 第 4 項：刪除 Dialog 頁的「(TBC) Debug Confirm Dialog」instance（18180:1664，Runtime Debug 專屬，主組件仍在其工作檔）。Dialog 頁已無遠端 instance。
+- 第 5 項：Internal 頁 7 個文件用組件加「.」前綴不發布（.Design Symbols Header、.overlay、.dismissible、.meta、.DIY/Table row、.image 31、.Notion link）；All Figma files 改名 .All Figma files。
+- 第 9 項（部分）：Radio set「Form」改名「Form / Dark / Radio」（17463:86273）；「New Tooltips」改名「Tooltip」（17463:94693）。Pattern 05 未移動。
+- 尚未執行：第 6、7、8、10、11 項（Library）；第 12、14 項（Voyage）；第 2 項需 Alan 在 Figma 手動移除 5 個產品檔訂閱（建議待 Breadcrumbs button-icon 及 All Figma files 的 sorting 處理後才移除，否則該兩處會失去來源）；第 13 項留待 Voyage Library 重整。
+- 還原：Figma 版本歷史。

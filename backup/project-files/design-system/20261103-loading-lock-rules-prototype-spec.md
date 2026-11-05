@@ -15,3 +15,4 @@
 4. S3 "Open without Lobby" 保留，改為進入編輯器（01），其餘場景繼續載入，Play、Edit、Save 鎖定。
 5. 文案：Loading scenes → Loading assets；8 of 36 scenes ready → 8 of 36 assets ready；All 36 scenes ready → All 36 assets ready。
 6. Card 標題列整條可點擊收合；Pill 整條可點擊展開；Scene Map／Outline 補 hover。
+7. 鎖定提示（tooltip）只在 hover 或鍵盤 focus Play、Edit、Save 時顯示，移開或失焦即消失；不可常駐顯示，亦不需點擊。
