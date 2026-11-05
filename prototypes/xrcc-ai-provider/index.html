@@ -10,7 +10,7 @@
 :root{
   --canvas:#1e1e21;--panel:#161616;--header:#2a2531;--elevated:#353535;--faded:rgba(255,255,255,.03);
   --muted:#5f4b8b;--pbg:#392e52;--pc:#b89afa;--pc-hover:#9c70ff;
-  --t1:#e5e5e5;--t2:#c8c8c8;--t3:#818181;--tdis:#676767;
+  --t1:#e5e5e5;--t2:#c8c8c8;--t3:#9a9a9a;--tdis:#676767;
   --b-sub:#676767;--b-def:#545454;--b-dis:#353535;--b-int:#b89afa;--b-err:#ff453a;--b-faded:rgba(255,255,255,.07);
   --ok:#37954b;--warn:#c7843a;--warn-bg:rgba(199,132,58,.15);--err:#ff453a;--err-bg:rgba(255,69,58,.15);--destr:#a32929;--pink:#562b52;
   font-family:Roboto,system-ui,"Noto Sans TC",sans-serif;font-size:14px;line-height:20px;color:var(--t1);
@@ -346,7 +346,7 @@ function tasks(){
  const sel=TASKS.map(t=>t);
  return `<div class="row g16"><div class="col g4 fill"><div class="hsm">${n===6?'Who runs what':n+' of 6 tasks are ready'}</div><div class="sm t2">Pick a card to change who runs it. Keys stay encrypted on this computer.</div></div>${n===6?'':`<div class="prog">${TASKS.map((t,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}</div>`}</div>
  <div class="grid3">${TASKS.map(t=>{const p=prov(S.assign[t.id]);const bad=p&&isLocked(p);const cls=!p?'unset':bad?'blocked':'';
-  const tile=`<div class="tile" style="background:${t.bg};color:${t.fg}">${ic(t.i,'i20')}</div>`;
+  const tile=`<div class="tile" style="background:color-mix(in srgb,${t.fg} 20%,#1c1c1c);box-shadow:inset 0 0 0 1px color-mix(in srgb,${t.fg} 38%,transparent);color:${t.fg}">${ic(t.i,'i20')}</div>`;
   const top=`<div class="row g8">${tile}<span class="fill"></span>${!p?'':bad?`<span class="t3">${ic('Lock')}</span>`:`<span class="row g4 caption tok"><i class="dot8"></i>Ready</span>`}</div>`;
   const runs=!p?`<div class="runs cta sm tacc">${ic('Plus')}<span class="fill">Choose a provider</span>${ic('Chevron')}</div>`:bad?`<div class="runs sm t2">${lg(p.pid,20)}<span class="fill">Needs ${P[p.pid].n}. Unlock its key to use.</span></div>`:`<div class="runs sm t1">${lg(p.pid,20)}<span class="fill">${model(p,t)}</span>${extra(p,t)?`<span class="caption t2">${extra(p,t)}</span>`:''}</div>`;
   return `<div class="card task ${cls}" data-task="${t.id}">${top}<div class="col g4"><div class="lgb ${bad?'t2':''}">${t.n}</div><div class="sm t2">${t.d}</div></div>${runs}</div>`}).join('')}</div>`}
@@ -455,7 +455,7 @@ function pickDlg(id){const t=TASKS.find(x=>x.id===id);const ps=S.providers;
  if(sp){const list=(MODELS[t.id]&&MODELS[t.id][sp.pid])||[[model(sp,t),'The only model here. Nothing else to pick.','']];
   models=`<div class="col g8"><div class="caption t2">MODEL</div>${list.map((m,i)=>`<div class="mdl ${S.pick.m===i&&!m[3]?'on':''} ${m[3]?'dis':''}" ${m[3]?'':`data-pm="${i}"`}><span class="radio ${S.pick.m===i&&!m[3]?'on':''}"></span><div class="col g4 fill"><b class="mdb ${m[3]?'':'t1'}">${m[0]}</b><span class="sm ${m[3]?'':'t2'}">${m[1]}</span></div><span class="caption t2">${m[2]||''}</span></div>`).join('')}</div>`}
  const mname=sp?(((MODELS[t.id]&&MODELS[t.id][sp.pid])||[[model(sp,t)]])[S.pick.m]||[model(sp,t)])[0]:'';
- push(`<div class="picker"><div class="row g12"><div class="tile" style="width:32px;height:32px;background:${t.bg};color:${t.fg}">${ic(t.i,'i16')}</div><span class="hsm fill">Who runs ${t.n}?</span><button class="iconbtn s28" data-back data-tip="Close">${ic('Close')}</button></div>
+ push(`<div class="picker"><div class="row g12"><div class="tile" style="width:32px;height:32px;background:color-mix(in srgb,${t.fg} 20%,#1c1c1c);box-shadow:inset 0 0 0 1px color-mix(in srgb,${t.fg} 38%,transparent);color:${t.fg}">${ic(t.i,'i16')}</div><span class="hsm fill">Who runs ${t.n}?</span><button class="iconbtn s28" data-back data-tip="Close">${ic('Close')}</button></div>
  ${ps.length?`<div class="col g8"><div class="caption t2">PROVIDER</div><div class="row g8">${ps.map(choice).join('')}</div></div>${models}${sp?'':`<div class="note">${ic('Question')}<span>None of your providers can do ${CNAME[t.cap]} yet. Add one that can, such as Gemini or Poe, then come back.</span></div>`}<div class="row g12">${sp?'<button class="btn" data-sample>Try a sample question</button>':'<button class="btn" data-back>Cancel</button>'}<span class="fill"></span>${sp?`<button class="btn pri" data-set="${id}|${sp.id}">Use ${P[sp.pid].n}</button>`:'<button class="btn pri" data-add>Add a provider</button>'}</div>`:`<div class="md">Add a provider first.</div><button class="btn pri m" data-add>Add a provider</button>`}</div>`,'pick')}
 function launchDlg(){hide();dlg('One more step before Lobby · Museum tour opens',`<div class="lg">This project uses AI. Choose which saved key each provider should use. Keys stay on this computer.</div><div class="content">
  ${[['gemini','Text chat, Transcription','Office Key · ends 4F2A',1],['minimax','Text to speech, Text to music','Voice Lab key · ends 91C7',0]].map(r=>`<div class="col g8" style="padding:16px;background:var(--canvas);border-radius:8px"><div class="row g12">${lg(r[0],32)}<div class="col g4 fill"><b class="mdb">${P[r[0]].n}</b><span class="sm t2">${r[1]}</span></div><span class="row g4 caption tok">${ic('Check')}Key chosen</span></div><div class="sel"><span class="md fill">${r[2]}</span>${ic('Down','i12')}</div>${r[3]?`<div class="note">${ic('World')}<span>Gemini needs a VPN in Hong Kong. Turn it on before you start.</span></div>`:''}</div>`).join('')}
