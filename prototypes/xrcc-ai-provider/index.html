@@ -34,14 +34,15 @@ svg{display:block;fill:none;stroke:currentColor;stroke-width:1;stroke-linecap:ro
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;place-items:center;z-index:10}
 .overlay.on{display:grid}
 .panel{width:min(982px,96vw);height:min(580px,92vh);background:var(--panel);border:1px solid var(--line);border-radius:var(--r-lg);display:flex;flex-direction:column;overflow:hidden}
-.p-head{background:#2a2236;padding:12px 16px 0}
-.p-title{display:flex;align-items:center;gap:12px;height:32px}
-.p-title .tile{width:28px;height:28px}
+.p-head{background:#2a2236;padding:0 0 0 16px}
+.tabsrow{padding:12px 16px;background:var(--panel)}
+.p-title{display:flex;align-items:center;gap:8px;height:40px}
+.p-title .ico{width:20px;height:20px;color:var(--primary-text)}.p-title .tb{width:40px;height:40px;border-radius:0}
 .p-title h1{font-size:16px;font-weight:600}
 .p-title .sp{flex:1}
 .dock{display:flex;align-items:center;gap:6px;background:#1c1824;border:1px solid var(--line);border-radius:20px;padding:4px 12px 4px 6px;font-size:12px}
 .dock:hover{border-color:var(--primary-line)}
-.tabs{display:flex;gap:2px;margin-top:8px;width:min(652px,100%);border-radius:8px;overflow:hidden}
+.tabs{display:flex;gap:2px;width:100%;border-radius:8px;overflow:hidden}
 .tab{height:36px;padding:8px 12px;display:flex;align-items:center;gap:8px;background:#1e1e21;color:var(--text-2);font-size:14px;flex:1;justify-content:center}
 .tab .ico{width:20px;height:20px}
 .tab.on{background:#392e52;color:var(--primary-text)}
@@ -215,12 +216,12 @@ function openPanel(){
   if(!S.providers.length){S.tab='first'}else if(S.tab==='first'){S.tab='tasks'}
   renderPanel()}
 function renderPanel(){
-  if(S.tab==='first'){return show(`<div class="panel"><div class="p-head" style="background:var(--panel)"><div class="p-title"><div class="tile s p">${ic('spark')}</div><h1>AI</h1><span class="sp"></span><button class="tb" data-x>${ic('close')}</button></div></div><div class="p-body"><div class="empty"><div class="orbit"><div class="core">${ic('spark','m')}</div><span class="sat" style="top:-8px;left:56px;color:#8ab4f8">G</span><span class="sat" style="top:60px;right:-10px;color:#ff4d5e">M</span><span class="sat" style="bottom:-6px;left:30px">P</span></div><h2>Give your project a brain and a voice</h2><p class="sub">Connect an AI provider to chat in character, quiz learners on a PDF, or read lines out loud in Cantonese.</p><button class="btn pri l" data-add>Add a provider</button></div></div></div>`);}
+  if(S.tab==='first'){return show(`<div class="panel"><div class="p-head" style="background:var(--panel)"><div class="p-title">${ic('spark')}<h1>AI</h1><span class="sp"></span><button class="tb" data-x>${ic('close')}</button></div></div><div class="p-body"><div class="empty"><div class="orbit"><div class="core">${ic('spark','m')}</div><span class="sat" style="top:-8px;left:56px;color:#8ab4f8">G</span><span class="sat" style="top:60px;right:-10px;color:#ff4d5e">M</span><span class="sat" style="bottom:-6px;left:30px">P</span></div><h2>Give your project a brain and a voice</h2><p class="sub">Connect an AI provider to chat in character, quiz learners on a PDF, or read lines out loud in Cantonese.</p><button class="btn pri l" data-add>Add a provider</button></div></div></div>`);}
   const n=TASKS.filter(ready).length;
   const dock=S.providers.map(p=>logo(p.pid,1)).join('');
   const tabs=[['tasks',`${ic('spark')} Tasks · ${n}/6`],['voices',`${ic('speech')} Voices · ${S.voices.length}`],['sessions',`${ic('chat')} Sessions · ${S.sessions.length}`],['providers',`${ic('plug')} Providers · ${S.providers.length}`]];
   const body={tasks,voices,sessions,providers}[S.tab]();
-  show(`<div class="panel"><div class="p-head"><div class="p-title"><div class="tile s p">${ic('spark')}</div><h1>AI</h1><span class="sp"></span><button class="dock" data-tab="providers">${dock}<span>${S.providers.length} provider${S.providers.length>1?'s':''}</span></button><button class="tb" data-x>${ic('close')}</button></div><div class="tabs">${tabs.map(t=>`<button class="tab ${S.tab===t[0]?'on':''}" data-tab="${t[0]}">${t[1]}</button>`).join('')}</div></div><div class="p-body">${body}</div></div>`);
+  show(`<div class="panel"><div class="p-head"><div class="p-title">${ic('spark')}<h1>AI</h1><span class="sp"></span><button class="dock" data-tab="providers">${dock}<span>${S.providers.length} provider${S.providers.length>1?'s':''}</span></button><button class="tb" data-x>${ic('close')}</button></div></div><div class="tabsrow"><div class="tabs">${tabs.map(t=>`<button class="tab ${S.tab===t[0]?'on':''}" data-tab="${t[0]}">${t[1]}</button>`).join('')}</div></div><div class="p-body" style="padding-top:8px">${body}</div></div>`);
 }
 function tasks(){
   const n=TASKS.filter(ready).length;
