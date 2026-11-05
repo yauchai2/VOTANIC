@@ -395,7 +395,8 @@ function addDlg(){
 const inp=(l,v,ph,h,opt,type)=>`<div class="field"><div class="lrow"><span class="mdb">${l}</span>${opt?'<span class="sm t3">Optional</span>':''}</div><input class="input" value="${v||''}" placeholder="${ph||''}" ${type?`type="${type}"`:''}>${h?`<div class="helper">${h}</div>`:''}</div>`;
 function customDlg(){dlg('Add your own server',`<div class="lg">For a model running in your studio or any OpenAI-style endpoint.</div><div class="content">${inp('Name','Studio LLM')}${inp('Base URL','http://192.168.1.20:8080/v1','','We can only check that this address answers.')}
  <div class="field"><div class="lrow"><span class="mdb">API key</span><span class="sm t3">Optional</span></div><div class="sel"><span class="md fill">No key</span>${ic('Down','i12')}</div></div>${inp('Model name','llama-3.3-70b','','Type it exactly as your server expects.')}
- <div class="adv"><div class="top">${ic('Chevron')}<span class="md t2">Advanced</span><span class="fill"></span><span class="sm t3">OpenAI format · 30 s timeout</span></div></div></div>`,`${cancel}<button class="btn pri" data-customadd>Add provider</button>`,'sub')}
+ <div class="adv"><div class="top" data-cadv>${ic('Chevron')}<span class="md t2">Advanced</span><span class="fill"></span><span class="sm t3" data-csum>OpenAI format · 30 s timeout</span><button class="btn" data-noop data-creset style="display:none">Reset</button></div></div>
+ <div data-cbody class="col g16" style="display:none"><div class="field"><div class="lrow"><span class="mdb">Request format</span></div><div class="sel"><span class="md fill">OpenAI chat completions</span>${ic('Down','i12')}</div></div>${inp('Timeout','30 s')}${inp('Extra header','','Optional, e.g. X-Studio: lobby')}</div></div>`,`${cancel}<button class="btn pri" data-customadd>Add provider</button>`,'sub')}
 function keyDlg(){dlg('Add an AI key',`<div class="lg">Keys stay on this computer. VOTANIC never sees them.</div><div class="content">${inp('Key name','Office Key','Office Key','Only you see this name.')}
  <div class="col g8"><div class="mdb">Provider</div><div class="row g8" style="flex-wrap:wrap">${Object.entries(P).map(([i,v])=>`<button class="chip ${S.addSel===i?'on':''}" data-ksel="${i}">${lg(i,20)}${v.n}</button>`).join('')}</div></div>
  <div class="field"><div class="mdb">API key</div><input class="input" id="kv" type="password" placeholder="Paste your key"><button class="lnk" data-ext style="align-self:flex-start" data-tip="Opens Google AI Studio in your browser">Where do I find my ${P[S.addSel].n} key?</button></div>
@@ -449,7 +450,7 @@ document.addEventListener('click',e=>{
   return settings()}
  if(km){S.kmenu=S.kmenu===km.dataset.kmenu?null:km.dataset.kmenu;return settings()}
  if(S.kmenu&&ov.querySelector('.win')){S.kmenu=null;settings()}
- const t=e.target.closest('[data-x],[data-back],[data-clone],[data-manage],[data-ext],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-doun],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dLaunch');
+ const t=e.target.closest('[data-x],[data-back],[data-clone],[data-manage],[data-ext],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-doun],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dLaunch');
  if(!t)return;const d=t.dataset;
  if(t.id==='openAI')return openPanel();
  if(t.id==='reset'){S=init();hide();return toast('Prototype reset')}
@@ -487,6 +488,7 @@ document.addEventListener('click',e=>{
  if(d.vf){S.vf=d.vf;return renderPanel()}
  if('newv' in d){S.advOpen=false;return newVoice()}
  if('adv' in d){S.advOpen=!S.advOpen;return newVoice()}
+ if('cadv' in d){const box=t.closest('.dlg'),b=box.querySelector('[data-cbody]'),open=b.style.display==='none';b.style.display=open?'':'none';t.querySelector('svg,.ico,i')&&(t.firstElementChild.style.transform=open?'rotate(90deg)':'');box.querySelector('[data-csum]').style.display=open?'none':'';box.querySelector('[data-creset]').style.display=open?'':'none';return}
  if('savev' in d){S.voices.push({id:'v'+Date.now(),n:'Museum guide',prov:'minimax',meta:'Cantonese'});S.tab='voices';return renderPanel()}
  if('news' in d){S.sessions.push({n:'New session',u:'Not used yet',p:'“Write the character prompt here.”'});S.tab='sessions';return renderPanel()}
 });
