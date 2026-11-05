@@ -54,8 +54,9 @@ svg{display:block}
 [data-tip]:hover::after{content:attr(data-tip);position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--canvas);border:1px solid var(--b-def);color:var(--t1);font-size:14px;line-height:20px;padding:4px 8px;border-radius:8px;white-space:nowrap;z-index:60;pointer-events:none}
 .tb[data-tip]:hover::after{top:calc(100% - 2px)}
 /* Overlay and containers */
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;place-items:center;z-index:10;padding:16px}
-.overlay.on{display:grid}
+.overlay{position:fixed;inset:0;display:none;z-index:10}
+.overlay.on{display:block}
+.lay{position:fixed;inset:0;display:grid;place-items:center;padding:16px;background:rgba(0,0,0,.55)}
 .panel{width:960px;max-width:100%;max-height:94vh;background:var(--panel);border:1px solid var(--b-sub);border-radius:16px;display:flex;flex-direction:column;overflow:hidden}
 .panel.first{width:760px}
 .phead{height:40px;background:var(--header);display:flex;align-items:center;gap:8px;padding-left:16px;flex:none}
@@ -243,7 +244,7 @@ const D={
  Question:'M9.5 9.5C9.5 8 10.6 7 12 7C13.4 7 14.5 8 14.5 9.3C14.5 11.5 12 11.5 12 14M12 16.8H12.01M21 12C21 16.97 16.97 21 12 21C7.03 21 3 16.97 3 12C3 7.03 7.03 3 12 3C16.97 3 21 7.03 21 12Z',
  World:'M21 12C21 16.97 16.97 21 12 21M21 12C21 7.03 16.97 3 12 3M21 12H3M12 21C7.03 21 3 16.97 3 12M12 21C9.5 18 9 15 9 12C9 9 9.5 6 12 3M12 21C14.5 18 15 15 15 12C15 9 14.5 6 12 3M3 12C3 7.03 7.03 3 12 3',
  Refresh:'M20 12C20 16.4 16.4 20 12 20C8.6 20 5.7 17.9 4.6 15M4 12C4 7.6 7.6 4 12 4C15.4 4 18.3 6.1 19.4 9M4 20V15H9M20 4V9H15',
- Chevron:'M9 5L16 12L9 19',Down:'M6 9L12 15L18 9',Close:'M6 6L18 18M18 6L6 18',
+ Chevron:'M9 5L16 12L9 19',Down:'M6 9L12 15L18 9',Left:'M15 5L8 12L15 19',Close:'M6 6L18 18M18 6L6 18',
  Bug:'M8 9H16V15C16 17.2 14.2 19 12 19C9.8 19 8 17.2 8 15V9ZM12 9V19M4 12H8M16 12H20M5 7L8 9M19 7L16 9M5 18L8 16M19 18L16 16M9 5L10.5 7M15 5L13.5 7',
  Wrench:'M14.5 6.5C12.8 5.5 10.6 6.2 9.6 8C9 9 9 10.2 9.5 11.2L4 16.7L7.3 20L12.8 14.5C13.8 15 15 15 16 14.4C17.8 13.4 18.5 11.2 17.5 9.5L15 12L12.5 11.5L12 9L14.5 6.5Z',
  Save:'M5 4H16L19 7V20H5V4ZM8 4V9H15V4M8 20V14H16V20',
@@ -299,8 +300,12 @@ const can=(p,t)=>{const pc=P[p.pid];const c=t.id==='tts'?'speech':t.cap;return p
 const model=(p,t)=>(P[p.pid].M[t.id]||[P[p.pid].n])[0];
 const extra=(p,t)=>(P[p.pid].M[t.id]||[])[1]||'';
 const isReady=t=>{const p=prov(S.assign[t.id]);return p&&!isLocked(p)&&p.status!=='failed'};
-const show=h=>{ov.innerHTML=h;ov.classList.add('on')};
-const hide=()=>{ov.classList.remove('on');ov.innerHTML=''};
+let stack=[],keys=[];
+const paint=()=>{ov.innerHTML=stack.map((h,i)=>`<div class="lay" style="z-index:${i}">${h}</div>`).join('');ov.classList.toggle('on',stack.length>0)};
+const show=h=>{stack=[h];keys=['base'];paint()};
+const push=(h,k)=>{if(keys.length&&keys[keys.length-1]===k)stack[stack.length-1]=h;else{stack.push(h);keys.push(k)}paint()};
+const hide=()=>{stack=[];keys=[];paint()};
+const pop=()=>{stack.pop();keys.pop();paint()};
 /* header */
 $('#projName').innerHTML=ic('Bookmark','i24')+'<span class="md">Lobby · Museum tour</span>';
 $('#tabEdit').innerHTML=ic('Edit','i24')+'Edit';$('#tabBeh').innerHTML=ic('Beh','i24')+'Behaviour';
@@ -362,7 +367,7 @@ function sessions(){return `<div class="row g12"><div class="col g4 fill"><div c
  <div class="grid3" style="grid-template-columns:1fr 1fr 200px">${S.sessions.map(s=>`<div class="card sess"><div class="row g12"><div class="tile" style="width:40px;height:40px;border-radius:50%;background:#1a1f29;color:#65a7ff">${ic('Chat','i20')}</div><div class="col g4 fill"><div class="mdb">${s.n}</div><div class="sm t2">${s.u}</div></div><button class="iconbtn s28" data-tip="More actions">${ic('MoreH')}</button></div><div class="sm t2" style="background:var(--panel);border-radius:4px;padding:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.p}</div></div>`).join('')}
  <div class="new" data-news><div class="pbtn" style="width:40px;height:40px">${ic('Plus','i20')}</div><div class="mdb tacc">New session</div></div></div>`}
 /* dialogs */
-function dlg(title,body,foot,cls=''){show(`<div class="dlg ${cls}"><div class="h"><span class="lgb fill">${title}</span><button class="iconbtn s24" data-back data-tip="Close">${ic('Close')}</button></div><div class="b">${body}</div><div class="f">${foot}</div></div>`)}
+function dlg(title,body,foot,cls=''){push(`<div class="dlg ${cls}"><div class="h">${cls.includes('sub')?`<button class="iconbtn s24" data-back data-tip="Back">${ic('Left')}</button>`:''}<span class="lgb fill">${title}</span><button class="iconbtn s24" data-back data-tip="Close">${ic('Close')}</button></div><div class="b">${body}</div><div class="f">${foot}</div></div>`,title)}
 const cancel=`<button class="btn" data-back>Cancel</button>`;
 const keySel=(p)=>{const ks=S.keys.filter(k=>k.prov===S.addSel);
  if(!ks.length)return `<div class="field"><div class="mdb">API key</div><div class="row g16" style="padding:16px;border:1px dashed var(--b-def);border-radius:8px"><div class="tile" style="width:40px;height:40px;background:var(--muted)">${ic('Key','i20')}</div><div class="col g4 fill"><div class="mdb">No ${p.n} keys here yet</div><div class="sm t2">Paste one from Google AI Studio. It is saved on this computer only.</div></div><button class="btn out" data-addkey>Add a key</button></div></div>`;
@@ -379,11 +384,11 @@ function addDlg(){
 const inp=(l,v,ph,h,opt,type)=>`<div class="field"><div class="lrow"><span class="mdb">${l}</span>${opt?'<span class="sm t3">Optional</span>':''}</div><input class="input" value="${v||''}" placeholder="${ph||''}" ${type?`type="${type}"`:''}>${h?`<div class="helper">${h}</div>`:''}</div>`;
 function customDlg(){dlg('Add your own server',`<div class="lg">For a model running in your studio or any OpenAI-style endpoint.</div><div class="content">${inp('Name','Studio LLM')}${inp('Base URL','http://192.168.1.20:8080/v1','','We can only check that this address answers.')}
  <div class="field"><div class="lrow"><span class="mdb">API key</span><span class="sm t3">Optional</span></div><div class="sel"><span class="md fill">No key</span>${ic('Down','i12')}</div></div>${inp('Model name','llama-3.3-70b','','Type it exactly as your server expects.')}
- <div class="adv"><div class="top">${ic('Chevron')}<span class="md t2">Advanced</span><span class="fill"></span><span class="sm t3">OpenAI format · 30 s timeout</span></div></div></div>`,`${cancel}<button class="btn pri" data-customadd>Add provider</button>`)}
+ <div class="adv"><div class="top">${ic('Chevron')}<span class="md t2">Advanced</span><span class="fill"></span><span class="sm t3">OpenAI format · 30 s timeout</span></div></div></div>`,`${cancel}<button class="btn pri" data-customadd>Add provider</button>`,'sub')}
 function keyDlg(){dlg('Add an AI key',`<div class="lg">Keys stay on this computer. VOTANIC never sees them.</div><div class="content">${inp('Key name','Office Key','Office Key','Only you see this name.')}
  <div class="col g8"><div class="mdb">Provider</div><div class="row g8" style="flex-wrap:wrap">${Object.entries(P).map(([i,v])=>`<button class="chip ${S.addSel===i?'on':''}" data-ksel="${i}">${lg(i,20)}${v.n}</button>`).join('')}</div></div>
- <div class="field"><div class="mdb">API key</div><input class="input" id="kv" type="password" placeholder="Paste your key"><button class="lnk md" style="font-size:16px;line-height:24px;align-self:flex-start">Where do I find my ${P[S.addSel].n} key?</button></div>
- ${inp('Password','','Add a password',"Asked each time a project opens. It can't be recovered, so pick one you'll remember.",1,'password')}</div>`,`${cancel}<button class="btn pri" data-savekey>Save key</button>`)}
+ <div class="field"><div class="mdb">API key</div><input class="input" id="kv" type="password" placeholder="Paste your key"><button class="lnk md" style="font-size:14px;line-height:20px;align-self:flex-start">Where do I find my ${P[S.addSel].n} key?</button></div>
+ ${inp('Password','','Add a password',"Asked each time a project opens. It can't be recovered, so pick one you'll remember.",1,'password')}</div>`,`${cancel}<button class="btn pri" data-savekey>Save key</button>`,S.fromSettings?'':'sub')}
 function removeDlg(id){const p=prov(id);const n=P[p.pid].n;dlg(`Remove ${n}?`,`<div class="row g20" style="gap:20px;align-items:flex-start"><span style="color:var(--t1)">${ic('Trash','i24','width:72px;height:72px;stroke-width:.75')}</span><div class="col g12 fill"><div class="lg">Text to speech and Text to music will stop until you pick another provider. Two voice presets use ${n} and will play the fallback voice instead.</div><div class="note">${ic('Key')}<span>Your ${n} key stays in Key Management, so you can add it back any time.</span></div></div></div>`,`${cancel}<button class="btn des" data-rm="${id}">Remove ${n}</button>`,'md')}
 function unlockDlg(id,err){const p=prov(id);const k=keyOf(p);dlg(`Unlock your ${P[p.pid].n} key`,`<div class="lg">Enter the password you set when you saved this key.</div><div class="content"><div class="row g12" style="padding:12px;background:var(--canvas);border-radius:8px"><div class="tile" style="width:32px;height:32px;background:var(--muted)">${ic('Lock')}</div><div class="col g4 fill"><b class="mdb">${k.name}</b><span class="sm t2">${P[p.pid].n} · added 12 Oct 2026</span></div></div>
  <div class="field"><div class="mdb">Key password</div><input class="input ${err?'err':''}" id="pw" type="password" value="${err?'••••••••':''}" placeholder="Password">${err?`<div class="caption terr">That password doesn't match. Check Caps Lock and try again.</div>`:''}</div><div class="note">${ic('Question')}<span>Forgot it? Passwords can't be recovered. Remove the key and add it again in Key Management. (Prototype password: xrcc)</span></div></div>`,`${cancel}<button class="btn pri" data-doun="${id}">Unlock</button>`,'md')}
@@ -404,9 +409,9 @@ function pickDlg(id){const t=TASKS.find(x=>x.id===id);const ps=S.providers;
  if(sp){const list=(MODELS[t.id]&&MODELS[t.id][sp.pid])||[[model(sp,t),'Ready to use here','']];
   models=`<div class="col g8"><div class="caption t2">MODEL</div>${list.map((m,i)=>`<div class="mdl ${S.pick.m===i&&!m[3]?'on':''} ${m[3]?'dis':''}" ${m[3]?'':`data-pm="${i}"`}><span class="radio ${S.pick.m===i&&!m[3]?'on':''}"></span><div class="col g4 fill"><b class="mdb ${m[3]?'':'t1'}">${m[0]}</b><span class="sm ${m[3]?'':'t2'}">${m[1]}</span></div><span class="caption t2">${m[2]||''}</span></div>`).join('')}</div>`}
  const mname=sp?(((MODELS[t.id]&&MODELS[t.id][sp.pid])||[[model(sp,t)]])[S.pick.m]||[model(sp,t)])[0]:'';
- show(`<div class="picker"><div class="row g12"><div class="tile" style="width:32px;height:32px;background:${t.bg};color:${t.fg}">${ic(t.i,'i16')}</div><span class="hsm fill">Who runs ${t.n}?</span><button class="iconbtn s28" data-back data-tip="Close">${ic('Close')}</button></div>
- ${ps.length?`<div class="col g8"><div class="caption t2">PROVIDER</div><div class="row g8">${ps.map(choice).join('')}</div></div>${models}<div class="row g12"><button class="btn" data-sample>Try a sample question</button><span class="fill"></span><button class="btn pri" data-set="${id}|${sp?sp.id:''}" ${sp?'':'disabled'}>Use ${mname}</button></div>`:`<div class="md">Add a provider first.</div><button class="btn pri m" data-add>Add a provider</button>`}</div>`)}
-function launchDlg(){dlg('One more step before Lobby · Museum tour opens',`<div class="lg">This project uses AI. Choose which saved key each provider should use. Keys stay on this computer.</div><div class="content">
+ push(`<div class="picker"><div class="row g12"><div class="tile" style="width:32px;height:32px;background:${t.bg};color:${t.fg}">${ic(t.i,'i16')}</div><span class="hsm fill">Who runs ${t.n}?</span><button class="iconbtn s28" data-back data-tip="Close">${ic('Close')}</button></div>
+ ${ps.length?`<div class="col g8"><div class="caption t2">PROVIDER</div><div class="row g8">${ps.map(choice).join('')}</div></div>${models}<div class="row g12"><button class="btn" data-sample>Try a sample question</button><span class="fill"></span><button class="btn pri" data-set="${id}|${sp?sp.id:''}" ${sp?'':'disabled'}>Use ${mname}</button></div>`:`<div class="md">Add a provider first.</div><button class="btn pri m" data-add>Add a provider</button>`}</div>`,'pick')}
+function launchDlg(){hide();dlg('One more step before Lobby · Museum tour opens',`<div class="lg">This project uses AI. Choose which saved key each provider should use. Keys stay on this computer.</div><div class="content">
  ${[['gemini','Text chat, Transcription','Office Key · ends 4F2A',1],['minimax','Text to speech, Text to music','Voice Lab key · ends 91C7',0]].map(r=>`<div class="col g8" style="padding:16px;background:var(--canvas);border-radius:8px"><div class="row g12">${lg(r[0],32)}<div class="col g4 fill"><b class="mdb">${P[r[0]].n}</b><span class="sm t2">${r[1]}</span></div><span class="row g4 caption tok">${ic('Check')}Key chosen</span></div><div class="sel"><span class="md fill">${r[2]}</span>${ic('Down','i12')}</div>${r[3]?`<div class="note">${ic('World')}<span>Gemini needs a VPN in Hong Kong. Turn it on before you start.</span></div>`:''}</div>`).join('')}
  <div class="row g12 note" style="padding:12px;border:1px solid var(--b-def);border-radius:8px;align-items:center">${ic('Lock')}<span>Poe is also used, but its key is locked. You can unlock it inside XRCC.</span></div></div>`,`<button class="btn m" data-addkey>Manage keys</button><button class="btn out m" data-back>Start without AI</button><button class="btn pri m" data-back>Start XRCC</button>`)}
 function settings(){
@@ -441,7 +446,7 @@ document.addEventListener('click',e=>{
  if(t.id==='dFail'){S.tab='voices';S.vstate='error';if(!S.providers.length)S.providers.push({id:'p1',pid:'minimax',key:'k2'});return renderPanel()}
  if(t.id==='dLaunch')return launchDlg();
  if('x' in d)return hide();
- if('back' in d){if(S.fromSettings&&!ov.querySelector('.panel'))return settings();return ov.querySelector('.picker')||S.tab!=='first'||S.providers.length?renderPanel():renderPanel()}
+ if('back' in d){return stack.length>1?pop():hide()}
  if(d.tab){S.tab=d.tab;S.vstate=S.vstate==='loading'?'ok':S.vstate;return renderPanel()}
  if('add' in d){S.addSel='gemini';S.addKey='k1';S.menuOpen=false;return addDlg()}
  if(d.sel){if(d.sel==='custom')return customDlg();S.addSel=d.sel;S.menuOpen=false;return addDlg()}
@@ -449,7 +454,7 @@ document.addEventListener('click',e=>{
  if(d.pickkey){S.addKey=d.pickkey;S.menuOpen=false;return addDlg()}
  if('addkey' in d||'addkey2' in d){S.fromSettings='addkey2' in d;S.menuOpen=false;return keyDlg()}
  if(d.ksel){S.addSel=d.ksel;return keyDlg()}
- if('savekey' in d){const inps=ov.querySelectorAll('input');const n=inps[0].value||'New key',pw=inps[2]&&inps[2].value;S.keys.push({id:'k'+Date.now(),name:n,prov:S.addSel,meta:P[S.addSel].n+' · added today',pw:!!pw,end:'2C9D'});toast('Key saved');if(S.fromSettings)return settings();S.addKey=S.keys[S.keys.length-1].id;return addDlg()}
+ if('savekey' in d){const inps=ov.querySelectorAll('input');const n=inps[0].value||'New key',pw=inps[2]&&inps[2].value;S.keys.push({id:'k'+Date.now(),name:n,prov:S.addSel,meta:P[S.addSel].n+' · added today',pw:!!pw,end:'2C9D'});toast('Key saved');if(S.fromSettings)return settings();S.addKey=S.keys[S.keys.length-1].id;pop();return addDlg()}
  if('customadd' in d){S.providers.push({id:'p'+Date.now(),pid:'custom',key:'k4'});autoAssign();S.tab='providers';toast('Custom connected');return renderPanel()}
  if('connect' in d){const kid=S.addKey;if(!kid)return;if(!S.providers.find(p=>p.pid===S.addSel))S.providers.push({id:'p'+Date.now(),pid:S.addSel,key:kid});autoAssign();S.tab='providers';toast(P[S.addSel].n+' connected');return renderPanel()}
  if(d.task){S.pick=null;return pickDlg(d.task)}
@@ -472,8 +477,8 @@ document.addEventListener('click',e=>{
  if('news' in d){S.sessions.push({n:'New session',u:'Not used yet',p:'“Write the character prompt here.”'});S.tab='sessions';return renderPanel()}
 });
 function autoAssign(){TASKS.forEach(t=>{if(S.assign[t.id])return;const p=S.providers.find(p=>can(p,t));if(p)S.assign[t.id]=p.id})}
-ov.addEventListener('mousedown',e=>{if(e.target===ov)hide()});
-document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='0'){e.preventDefault();S.fromSettings=true;settings()}if(e.key==='Escape')hide()});
+ov.addEventListener('mousedown',e=>{if(e.target.classList.contains('lay'))pop()});
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='0'){e.preventDefault();S.fromSettings=true;settings()}if(e.key==='Escape')pop()});
 </script>
 </body>
 </html>
