@@ -41,9 +41,10 @@ svg{display:block;fill:none;stroke:currentColor;stroke-width:1;stroke-linecap:ro
 .p-title .sp{flex:1}
 .dock{display:flex;align-items:center;gap:6px;background:#1c1824;border:1px solid var(--line);border-radius:20px;padding:4px 12px 4px 6px;font-size:12px}
 .dock:hover{border-color:var(--primary-line)}
-.tabs{display:flex;gap:4px;margin-top:8px}
-.tab{height:26px;padding:0 20px;display:flex;align-items:center;gap:8px;background:#181818;color:var(--text-2);font-size:12px;min-width:160px;justify-content:center}
-.tab.on{background:var(--primary);color:#fff}
+.tabs{display:flex;gap:2px;margin-top:8px;width:min(652px,100%);border-radius:8px;overflow:hidden}
+.tab{height:36px;padding:8px 12px;display:flex;align-items:center;gap:8px;background:#1e1e21;color:var(--text-2);font-size:14px;flex:1;justify-content:center}
+.tab .ico{width:20px;height:20px}
+.tab.on{background:#392e52;color:var(--primary-text)}
 .p-body{flex:1;overflow:auto;padding:20px 32px 24px}
 .tile{width:40px;height:40px;border-radius:8px;background:#232323;border:1px solid var(--line);display:grid;place-items:center;flex:none}
 .tile.s{width:28px;height:28px}.tile.p{background:var(--primary-soft);color:var(--primary-text);border-color:transparent}
@@ -133,7 +134,7 @@ details{margin-top:8px;border:1px solid var(--line);border-radius:var(--r);paddi
 .keyrow .prot{font-size:12px;color:var(--primary-text);display:flex;gap:4px;align-items:center}.keyrow .prot.n{color:var(--text-2)}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--card-2);border:1px solid var(--line);padding:10px 16px;border-radius:var(--r);display:none;z-index:50}
 .toast.on{display:block}
-@media(max-width:760px){.grid3,.vgrid{grid-template-columns:1fr}.tab{min-width:0;padding:0 10px}.p-body{padding:16px}.ptiles{grid-template-columns:repeat(2,1fr)}.picks{grid-template-columns:1fr}.set{grid-template-columns:1fr}.nav{display:none}}
+@media(max-width:760px){.grid3,.vgrid{grid-template-columns:1fr}.tab{padding:0 6px;font-size:12px}.p-body{padding:16px}.ptiles{grid-template-columns:repeat(2,1fr)}.picks{grid-template-columns:1fr}.set{grid-template-columns:1fr}.nav{display:none}}
 </style>
 </head>
 <body>
