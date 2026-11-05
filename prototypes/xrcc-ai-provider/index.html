@@ -344,7 +344,7 @@ function renderPanel(){
 function tasks(){
  const n=TASKS.filter(isReady).length;
  const sel=TASKS.map(t=>t);
- return `<div class="row g16"><div class="col g4 fill"><div class="hsm">${n} of 6 tasks are ready</div><div class="sm t2">Pick a card to change who runs it. Keys stay encrypted on this computer.</div></div><div class="prog">${TASKS.map((t,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}</div></div>
+ return `<div class="row g16"><div class="col g4 fill"><div class="hsm">${n===6?'Who runs what':n+' of 6 tasks are ready'}</div><div class="sm t2">Pick a card to change who runs it. Keys stay encrypted on this computer.</div></div>${n===6?'':`<div class="prog">${TASKS.map((t,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}</div>`}</div>
  <div class="grid3">${TASKS.map(t=>{const p=prov(S.assign[t.id]);const bad=p&&isLocked(p);const cls=!p?'unset':bad?'blocked':'';
   const tile=`<div class="tile" style="background:${t.bg};color:${t.fg}">${ic(t.i,'i20')}</div>`;
   const top=`<div class="row g8">${tile}<span class="fill"></span>${!p?'':bad?`<span class="t3">${ic('Lock')}</span>`:`<span class="row g4 caption tok"><i class="dot8"></i>Ready</span>`}</div>`;
