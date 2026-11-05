@@ -63,8 +63,8 @@ svg{display:block}
 /* Overlay and containers */
 .overlay{position:fixed;inset:0;display:none;z-index:10}
 .overlay.on{display:block}
-.lay{position:fixed;inset:0;display:grid;place-items:center;padding:16px;background:rgba(0,0,0,.55)}
-.panel{width:960px;max-width:100%;max-height:94vh;background:var(--panel);border:1px solid var(--b-sub);border-radius:16px;display:flex;flex-direction:column;overflow:hidden}
+.lay{position:fixed;inset:0;display:grid;place-items:center;padding:56px 24px;background:rgba(0,0,0,.55)}
+.panel{width:960px;max-width:100%;max-height:min(760px,82vh);background:var(--panel);border:1px solid var(--b-sub);border-radius:16px;display:flex;flex-direction:column;overflow:hidden}
 .panel.first{width:760px}
 .phead{height:40px;background:var(--header);display:flex;align-items:center;gap:8px;padding-left:16px;flex:none}
 .phead .hsm,.phead .lgb{flex:1;min-width:0}
@@ -154,7 +154,7 @@ svg{display:block}
 .orbit .core{position:absolute;left:148px;top:68px;width:64px;height:64px;border-radius:16px;background:var(--pbg);display:grid;place-items:center;color:var(--pc);transform:rotate(8deg)}
 .orbit .logo{position:absolute}.orbit .sp{position:absolute;border-radius:50%;background:var(--pc);opacity:.7}
 /* Dialog (Library Dialog) */
-.dlg{width:600px;max-width:100%;max-height:94vh;display:flex;flex-direction:column;background:var(--canvas);border:1px solid var(--b-sub);border-radius:16px;overflow:hidden}
+.dlg{width:600px;max-width:100%;max-height:min(720px,84vh);display:flex;flex-direction:column;background:var(--canvas);border:1px solid var(--b-sub);border-radius:16px;overflow:hidden}
 .dlg.md{width:480px}
 .dlg .h{height:48px;padding:8px 12px 8px 20px;display:flex;align-items:center;gap:12px;flex:none}
 .dlg .b{background:var(--header);padding:20px;display:flex;flex-direction:column;gap:12px;overflow:auto;min-height:0}
@@ -179,7 +179,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 .mdl{display:flex;align-items:center;gap:12px;padding:12px;border-radius:8px;border:1px solid var(--b-sub);cursor:pointer}
 .mdl.on{background:var(--pbg);border-color:var(--b-int)}.mdl.dis{cursor:not-allowed;color:var(--tdis)}
 /* Settings window */
-.win{width:960px;max-width:100%;height:min(720px,94vh);display:flex;background:var(--panel);border:1px solid var(--b-sub);border-radius:16px;overflow:hidden}
+.win{width:960px;max-width:100%;height:min(680px,82vh);display:flex;background:var(--panel);border:1px solid var(--b-sub);border-radius:16px;overflow:hidden}
 .side{width:236px;background:var(--header);display:flex;flex-direction:column;flex:none}
 .side .sh{height:40px;background:var(--canvas);display:flex;align-items:center;gap:16px;padding:8px 32px;font-weight:700;font-size:16px;line-height:24px;color:var(--t1)}
 .side .ml{padding-top:43px;display:flex;flex-direction:column;flex:1;overflow:auto}
@@ -369,16 +369,48 @@ function voices(){
  const chip=(id,l,lgp)=>`<button class="chip ${lgp?'':'txt'} ${S.vf===id?'on':''}" data-vf="${id}">${lgp?lg(lgp,20):''}${l}</button>`;
  return `<div class="row g12" style="align-items:flex-end"><div class="field fill"><div class="mdb">Preview line</div><input class="input" id="pl" value="${S.preview}"></div><button class="btn out" data-all>Play all</button></div>
  <div class="row g8">${chip('all','All '+S.voices.length)}${chip('minimax','MiniMax','minimax')}${chip('gemini','Gemini','gemini')}<span class="fill"></span><button class="btn" data-newv>New voice preset</button></div>
- ${S.cloneBanner===false?'':`<div class="col g12" style="padding:16px;border:1px solid var(--warn);border-radius:8px;background:var(--canvas)"><div class="row g8 twarn mdb">${ic('Warning')}<span>Grandpa Lau is no longer on MiniMax</span></div><div class="sm t2">MiniMax deletes voice clones that go unused for 7 days. 2 characters now speak with Warm host until you choose.</div><div class="row g8"><button class="btn" data-clone="pick">Pick another voice</button><button class="btn" data-clone="keep">Keep Warm host</button></div></div>`}<div class="grid3">${vs.map(v=>{const pl=S.playing===v.id;return `<div class="card voice ${pl?'play':''} ${v.gone?'gone':''}"><div class="row g12"><button class="pbtn" data-play="${v.id}" data-tip="${pl?'Stop':'Play the preview line'}">${ic(pl?'Stop':'Play')}</button><div class="col g4 fill"><div class="mdb ${v.gone?'t2':''}">${v.n}</div><div class="row g8 sm t2">${lg(v.prov,16)}${v.meta}</div></div><button class="iconbtn s28" data-tip="More actions">${ic('MoreH','i16')}</button></div>
+ ${S.cloneBanner===false?'':`<div class="col g12" style="padding:16px;border:1px solid var(--warn);border-radius:8px;background:var(--canvas)"><div class="row g8 twarn mdb">${ic('Warning')}<span>Grandpa Lau is no longer on MiniMax</span></div><div class="sm t2">MiniMax deletes voice clones that go unused for 7 days. 2 characters now speak with Warm host until you choose.</div><div class="row g8"><button class="btn" data-clone="pick">Pick another voice</button><button class="btn" data-clone="keep">Keep Warm host</button></div></div>`}<div class="grid3">${vs.map(v=>{const pl=S.playing===v.id;return `<div class="card voice ${pl?'play':''} ${v.gone?'gone':''}"><div class="row g12"><button class="pbtn" data-play="${v.id}" data-tip="${pl?'Stop':'Play the preview line'}">${ic(pl?'Stop':'Play')}</button><div class="col g4 fill"><div class="mdb ${v.gone?'t2':''}">${v.n}</div><div class="row g8 sm t2">${lg(v.prov,16)}${v.meta}</div></div><button class="iconbtn s28" data-cm="voice|${v.id}" data-tip="More actions">${ic('MoreH','i16')}</button></div>
   ${S.asking===v.id?`<span class="caption t2">ASKING THE PROVIDER</span>`:''}${pl?`<div class="wave">${WAVE.map((h,i)=>`<i style="height:${h}px;animation-delay:${i*50}ms"></i>`).join('')}</div>`:''}
   ${v.gone?`<div class="row g8 sm twarn" style="align-items:flex-start">${ic('Warning')}<span>Clone removed after 7 idle days. Playing Warm host instead.</span></div>`:v.tag&&!pl?`<span class="tag">${v.tag}</span>`:''}</div>`}).join('')}
  <div class="new" data-newv><div class="pbtn">${ic('Plus','i20')}</div><div class="mdb tacc">New voice preset</div></div></div>
  <div class="sm t3">Every play uses a little of that provider's quota.</div>`}
 function sessions(){const many=S.sessions.length>6;
  return `<div class="row g12"><div class="col g4 fill"><div class="hsm">Who your AI pretends to be</div><div class="sm t2">A session is a saved system prompt. Characters and behaviours pick one.</div></div>${many?`<div class="srch"><input class="input" data-sq placeholder="Search ${S.sessions.length} sessions" style="width:240px"></div>`:''}<button class="btn" data-news>New session</button></div>
- <div class="grid3" id="sgrid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">${S.sessions.map(s=>`<div class="card sess" data-st="${(s.n+' '+s.p).toLowerCase().replace(/"/g,'')}"><div class="row g12"><div class="tile" style="width:40px;height:40px;border-radius:50%;background:#1a1f29;color:#65a7ff">${ic('Chat','i20')}</div><div class="col g4 fill"><div class="mdb">${s.n}</div><div class="sm t2">${s.u}</div></div><button class="iconbtn s28" data-tip="More actions">${ic('MoreH')}</button></div><div class="sm t2" style="background:var(--panel);border-radius:4px;padding:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.p}</div></div>`).join('')}
+ <div class="grid3" id="sgrid" style="grid-template-columns:repeat(auto-fill,minmax(280px,1fr))">${S.sessions.map((s,si)=>`<div class="card sess" data-st="${(s.n+' '+s.p).toLowerCase().replace(/"/g,'')}"><div class="row g12"><div class="tile" style="width:40px;height:40px;border-radius:50%;background:#1a1f29;color:#65a7ff">${ic('Chat','i20')}</div><div class="col g4 fill"><div class="mdb">${s.n}</div><div class="sm t2">${s.u}</div></div><button class="iconbtn s28" data-cm="sess|${si}" data-tip="More actions">${ic('MoreH')}</button></div><div class="sm t2" style="background:var(--panel);border-radius:4px;padding:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${s.p}</div></div>`).join('')}
  ${many?'':`<div class="new" data-news><div class="pbtn" style="width:40px;height:40px">${ic('Plus','i20')}</div><div class="mdb tacc">New session</div></div>`}</div><div class="md t2" id="snone" style="display:none;padding:24px 0;text-align:center">No session matches that. Try a character name or a word from the prompt.</div>`}
 document.addEventListener('input',e=>{const q=e.target.closest&&e.target.closest('[data-sq]');if(!q)return;const v=q.value.trim().toLowerCase();let n=0;document.querySelectorAll('#sgrid [data-st]').forEach(c=>{const ok=!v||c.dataset.st.includes(v);c.style.display=ok?'':'none';if(ok)n++});const z=document.getElementById('snone');if(z)z.style.display=n?'none':''});
+
+function cmItems(t,id){
+ if(t==='voice')return [['prev','Play preview'],['edit','Edit preset'],['dup','Duplicate'],['---'],['del','Delete preset','d']];
+ if(t==='sess')return [['edit','Edit session'],['dup','Duplicate'],['---'],['del','Delete session','d']];
+ return [['ren','Rename'],['---'],['del','Remove token','d']]}
+document.addEventListener('click',e=>{
+ const old=document.getElementById('cmenu');
+ const b=e.target.closest('[data-cm]');
+ if(old&&!e.target.closest('#cmenu')){old.remove();if(b&&old.dataset.for===b.dataset.cm){e.stopPropagation();return}}
+ if(b){e.stopPropagation();const [t,id]=b.dataset.cm.split('|');const r=b.getBoundingClientRect();
+  const m=document.createElement('div');m.id='cmenu';m.dataset.for=b.dataset.cm;m.className='menu on';
+  m.style.cssText=`position:fixed;top:${r.bottom+4}px;left:${Math.max(8,r.right-200)}px;min-width:200px;z-index:400`;
+  m.innerHTML=cmItems(t,id).map(i=>i[0]==='---'?'<hr>':`<div data-cact="${i[0]}|${t}|${id}" ${i[2]?'style="color:#ff8a8a"':''}>${i[1]}</div>`).join('');
+  document.body.appendChild(m);return}
+ const a=e.target.closest('[data-cact]');
+ if(a){e.stopPropagation();const [act,t,id]=a.dataset.cact.split('|');const m=document.getElementById('cmenu');m&&m.remove();return cmAct(act,t,id)}
+},true);
+function cmAct(act,t,id){
+ if(t==='voice'){const v=S.voices.find(v=>v.id===id);
+  if(act==='prev'){S.playing=id;renderPanel();setTimeout(()=>{S.playing=null;renderPanel()},1800);return}
+  if(act==='edit')return newVoice();
+  if(act==='dup'){S.voices.push({...v,id:'v'+Date.now(),n:v.n+' copy'});toast('Preset duplicated');return renderPanel()}
+  return dlg('Delete '+v.n+'?',`<div class="lg">Characters that use this voice will speak with the default voice until you pick another.</div>`,`${cancel}<button class="btn pri" data-cdel="voice|${id}" style="background:var(--err,#c92e5f)">Delete preset</button>`,'sub')}
+ if(t==='sess'){const s=S.sessions[+id];
+  if(act==='edit')return newSession(s,+id);
+  if(act==='dup'){S.sessions.splice(+id+1,0,{...s,n:s.n+' copy',u:'Not used yet'});toast('Session duplicated');return renderPanel()}
+  return dlg('Delete '+s.n+'?',`<div class="lg">${s.u==='Not used yet'?'Nothing uses this session yet.':'Behaviours that use it will fall back to no system prompt.'}</div>`,`${cancel}<button class="btn pri" data-cdel="sess|${id}" style="background:var(--err,#c92e5f)">Delete session</button>`,'sub')}
+ if(act==='ren')return dlg('Rename token',`<div class="lg">Only you see this name.</div><div class="content">${inp('Token name','Lobby kiosk token')}</div>`,`${cancel}<button class="btn pri" data-back>Save name</button>`,'sub');
+ return dlg('Remove Lobby kiosk token?',`<div class="lg">Speech commands stop working until you add a Wit.ai token again.</div>`,`${cancel}<button class="btn pri" data-back style="background:var(--err,#c92e5f)">Remove token</button>`,'sub')}
+document.addEventListener('click',e=>{const d=e.target.closest('[data-cdel]');if(!d)return;e.stopPropagation();const [t,id]=d.dataset.cdel.split('|');
+ if(t==='voice'){S.voices=S.voices.filter(v=>v.id!==id);toast('Preset deleted')}else{S.sessions.splice(+id,1);toast('Session deleted')}
+ hide();S.tab=t==='voice'?'voices':'sessions';renderPanel()},true);
 /* dialogs */
 function dlg(title,body,foot,cls=''){push(`<div class="dlg ${cls}"><div class="h">${cls.includes('sub')?`<button class="iconbtn s24" data-back data-tip="Back">${ic('Left')}</button>`:''}<span class="lgb fill">${title}</span><button class="iconbtn s24" data-back data-tip="Close">${ic('Close')}</button></div><div class="b">${body}</div><div class="f">${foot}</div></div>`,title)}
 const cancel=`<button class="btn" data-back>Cancel</button>`;
@@ -432,7 +464,7 @@ function keyAct(a,k){document.querySelectorAll('.menu.on').forEach(m=>m.remove()
  if(a==='pw')return dlg('Change password',`<div class="lg">Set a new password for this key. It is asked each time a project opens.</div><div class="content">${inp('New password','','Add a password','Passwords can’t be recovered, so pick one you’ll remember.',0,'password')}</div>`,`${cancel}<button class="btn pri" data-ksave="pw|${k.id}">Save password</button>`,'sub');
  if(a==='del')return dlg('Remove '+k.name+'?',`<div class="lg">Text chat and Transcription will stop until you pick another key. Providers that use it show Needs key.</div><div class="note">${ic('Question')}<span>You can add the key again from Google AI Studio.</span></div>`,`${cancel}<button class="btn pri" data-ksave="del|${k.id}" style="background:var(--err,#c92e5f)">Remove key</button>`,'sub');
  return dlg('Rename key',`<div class="lg">Only you see this name. Projects keep using the key.</div><div class="content">${inp('Key name',k.name)}</div>`,`${cancel}<button class="btn pri" data-ksave="ren|${k.id}">Save name</button>`,'sub')}
-function newSession(){dlg('New session',`<div class="lg">A session is a saved system prompt. Characters and behaviours pick one.</div><div class="content">${inp('Name','','e.g. Museum guide')}<div class="field"><div class="lrow"><span class="mdb">Prompt</span></div><textarea class="input" rows="5" placeholder="You are a cheerful museum guide. Keep every answer under three sentences." style="height:auto;padding:12px;resize:none"></textarea></div></div>`,`${cancel}<button class="btn pri" data-savesess>Save session</button>`,'sub')}
+function newSession(s0,i0){dlg(s0?'Edit session':'New session',`<div class="lg">A session is a saved system prompt. Characters and behaviours pick one.</div><div class="content">${inp('Name',s0?s0.n:'','e.g. Museum guide')}<div class="field"><div class="lrow"><span class="mdb">Prompt</span></div><textarea class="input" rows="5" placeholder="You are a cheerful museum guide. Keep every answer under three sentences." style="height:auto;padding:12px;resize:none">${s0?s0.p.replace(/[“”]/g,''):''}</textarea></div></div>`,`${cancel}<button class="btn pri" data-savesess="${s0?i0:''}">Save session</button>`,'sub')}
 function settings(over){
  const items=[['Display','Display'],['Control','Mouse'],['Edit','Pencil'],['Networking','Wifi'],['Sketchfab','Image'],['Security and Privacy','Shield'],['Licensing','Id'],['Devices','Head'],['Connections','Link']];
  (over?(h=>push(h,'settings')):show)(`<div class="win"><div class="side"><div class="sh">${ic('Set','i20')}My Setting</div><div class="ml">${items.map(i=>`<div class="m ${i[0]==='Connections'?'on':''}">${ic(i[1],'i20')}${i[0]}</div>`).join('')}</div><div class="ver">Version 3.1.0</div></div>
@@ -440,7 +472,7 @@ function settings(over){
   <div class="col g4"><div class="h2">Connections</div><div class="md t2">Keys are encrypted and kept on this computer. Projects never contain them, and VOTANIC never sees them.</div></div>
   <div class="col g12"><div class="row g12" style="align-items:center"><div class="col g4 fill"><div class="lgb">AI keys</div><div class="sm t2">Used by AI providers in every project on this computer.</div></div><button class="btn pri" data-addkey2 style="height:36px">Add key</button></div><div class="input" style="width:100%;height:36px;color:var(--t3);display:flex;align-items:center;gap:8px">${ic('Search')}Search keys</div>
   <div class="col g8">${S.keys.map(k=>`<div class="krow">${lg(k.prov,32)}<div class="col g4 fill"><b class="mdb">${k.name}</b><span class="sm t2">${k.meta}</span></div><span class="row g4 sm ${k.pw?'tacc':'t2'}">${ic(k.pw?'Lock':'Key')}${k.pw?'Password set':'No password'}</span><span style="position:relative"><button class="iconbtn s28" data-kmenu="${k.id}" ${S.kmenu===k.id?'':'data-tip="More actions"'}>${ic('MoreH')}</button>${S.kmenu===k.id?`<div class="menu on" style="left:auto;right:0;min-width:200px;z-index:5"><div data-kact="pw|${k.id}">${k.pw?'Change password':'Set password'}</div><div data-kact="ren|${k.id}">Rename</div><hr><div data-kact="del|${k.id}" style="color:#ff8a8a">Remove key</div></div>`:''}</span></div>`).join('')}</div></div>
-  <div class="col g8"><div class="lg" style="padding-left:16px">Speech commands (Wit.ai)</div><div class="krow"><span class="logo l32" style="background:#510e69;border-color:#510e69"><svg viewBox="0 0 24 24"><use href="#lg-wit"/></svg></span><div class="col g4 fill"><b class="mdb">Lobby kiosk token</b><span class="sm t2">Wit.ai · last used 28 Oct</span></div><span class="row g4 sm t2">${ic('Key')}No password</span><button class="iconbtn s28">${ic('MoreH')}</button></div></div>
+  <div class="col g8"><div class="lg" style="padding-left:16px">Speech commands (Wit.ai)</div><div class="krow"><span class="logo l32" style="background:#510e69;border-color:#510e69"><svg viewBox="0 0 24 24"><use href="#lg-wit"/></svg></span><div class="col g4 fill"><b class="mdb">Lobby kiosk token</b><span class="sm t2">Wit.ai · last used 28 Oct</span></div><span class="row g4 sm t2">${ic('Key')}No password</span><button class="iconbtn s28" data-cm="wit|1" data-tip="More actions">${ic('MoreH')}</button></div></div>
  </div></div></div>`)}
 /* events */
 const MENUS=$('#helpBtn');
@@ -457,7 +489,7 @@ document.addEventListener('click',e=>{
   else if(a==='pw'){if(!v||!v.value){v&&v.classList.add('err');return}k.pw=true;toast('Password saved')}
   else{if(v&&v.value.trim())k.name=v.value.trim();toast('Key renamed')}
   return settings()}
- if(e.target.closest('[data-savesess]')){const i=ov.querySelectorAll('.dlg input,.dlg textarea');S.sessions.push({n:(i[0].value||'Untitled session').trim(),u:'Not used yet',p:'“'+((i[1]&&i[1].value)||'Write the character prompt here.').trim()+'”'});S.tab='sessions';toast('Session saved');return renderPanel()}
+ if(e.target.closest('[data-savesess]')){const i=ov.querySelectorAll('.dlg input,.dlg textarea');{const idx=e.target.closest('[data-savesess]').dataset.savesess;const obj={n:(i[0].value||'Untitled session').trim(),u:'Not used yet',p:'“'+((i[1]&&i[1].value)||'Write the character prompt here.').trim()+'”'};if(idx!==''){obj.u=S.sessions[+idx].u;S.sessions[+idx]=obj}else S.sessions.push(obj)}S.tab='sessions';toast('Session saved');return renderPanel()}
  if(km){S.kmenu=S.kmenu===km.dataset.kmenu?null:km.dataset.kmenu;return settings()}
  if(S.kmenu&&ov.querySelector('.win')){S.kmenu=null;settings()}
  const t=e.target.closest('[data-x],[data-back],[data-clone],[data-manage],[data-ext],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-doun],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dLaunch');
