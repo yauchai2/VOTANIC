@@ -428,6 +428,11 @@ function pickDlg(id){const t=TASKS.find(x=>x.id===id);const ps=S.providers;
 function launchDlg(){hide();dlg('One more step before Lobby · Museum tour opens',`<div class="lg">This project uses AI. Choose which saved key each provider should use. Keys stay on this computer.</div><div class="content">
  ${[['gemini','Text chat, Transcription','Office Key · ends 4F2A',1],['minimax','Text to speech, Text to music','Voice Lab key · ends 91C7',0]].map(r=>`<div class="col g8" style="padding:16px;background:var(--canvas);border-radius:8px"><div class="row g12">${lg(r[0],32)}<div class="col g4 fill"><b class="mdb">${P[r[0]].n}</b><span class="sm t2">${r[1]}</span></div><span class="row g4 caption tok">${ic('Check')}Key chosen</span></div><div class="sel"><span class="md fill">${r[2]}</span>${ic('Down','i12')}</div>${r[3]?`<div class="note">${ic('World')}<span>Gemini needs a VPN in Hong Kong. Turn it on before you start.</span></div>`:''}</div>`).join('')}
  <div class="row g12 note" style="padding:12px;border:1px solid var(--b-def);border-radius:8px;align-items:center">${ic('Lock')}<span>Poe is also used, but its key is locked. You can unlock it inside XRCC.</span></div></div>`,`<button class="btn m" data-addkey>Manage keys</button><button class="btn out m" data-back>Start without AI</button><button class="btn pri m" data-back>Start XRCC</button>`)}
+function keyAct(a,k){document.querySelectorAll('.menu.on').forEach(m=>m.remove());
+ if(a==='pw')return dlg('Change password',`<div class="lg">Set a new password for this key. It is asked each time a project opens.</div><div class="content">${inp('New password','','Add a password','Passwords can’t be recovered, so pick one you’ll remember.',0,'password')}</div>`,`${cancel}<button class="btn pri" data-ksave="pw|${k.id}">Save password</button>`,'sub');
+ if(a==='del')return dlg('Remove '+k.name+'?',`<div class="lg">Text chat and Transcription will stop until you pick another key. Providers that use it show Needs key.</div><div class="note">${ic('Question')}<span>You can add the key again from Google AI Studio.</span></div>`,`${cancel}<button class="btn pri" data-ksave="del|${k.id}" style="background:var(--err,#c92e5f)">Remove key</button>`,'sub');
+ return dlg('Rename key',`<div class="lg">Only you see this name. Projects keep using the key.</div><div class="content">${inp('Key name',k.name)}</div>`,`${cancel}<button class="btn pri" data-ksave="ren|${k.id}">Save name</button>`,'sub')}
+function newSession(){dlg('New session',`<div class="lg">A session is a saved system prompt. Characters and behaviours pick one.</div><div class="content">${inp('Name','','e.g. Museum guide')}<div class="field"><div class="lrow"><span class="mdb">Prompt</span></div><textarea class="input" rows="5" placeholder="You are a cheerful museum guide. Keep every answer under three sentences." style="height:auto;padding:12px;resize:none"></textarea></div></div>`,`${cancel}<button class="btn pri" data-savesess>Save session</button>`,'sub')}
 function settings(over){
  const items=[['Display','Display'],['Control','Mouse'],['Edit','Pencil'],['Networking','Wifi'],['Sketchfab','Image'],['Security and Privacy','Shield'],['Licensing','Id'],['Devices','Head'],['Connections','Link']];
  (over?(h=>push(h,'settings')):show)(`<div class="win"><div class="side"><div class="sh">${ic('Set','i20')}My Setting</div><div class="ml">${items.map(i=>`<div class="m ${i[0]==='Connections'?'on':''}">${ic(i[1],'i20')}${i[0]}</div>`).join('')}</div><div class="ver">Version 3.1.0</div></div>
@@ -446,13 +451,16 @@ document.addEventListener('click',e=>{
  $('#helpMenu').classList.remove('on');MENUS.classList.remove('on');
  const km=e.target.closest('[data-kmenu]'),ka=e.target.closest('[data-kact]');
  if(ka){const [a,id]=ka.dataset.kact.split('|');S.kmenu=null;const k=S.keys.find(k=>k.id===id);
+  return keyAct(a,k)}
+ if(e.target.closest('[data-ksave]')){const [a,id]=e.target.closest('[data-ksave]').dataset.ksave.split('|');const k=S.keys.find(k=>k.id===id);const v=ov.querySelector('.dlg input');
   if(a==='del'){S.keys=S.keys.filter(k=>k.id!==id);toast('Key removed')}
-  else if(a==='pw'){k.pw=true;toast('Password set')}
-  else toast('Rename “'+k.name+'”');
+  else if(a==='pw'){if(!v||!v.value){v&&v.classList.add('err');return}k.pw=true;toast('Password saved')}
+  else{if(v&&v.value.trim())k.name=v.value.trim();toast('Key renamed')}
   return settings()}
+ if(e.target.closest('[data-savesess]')){const i=ov.querySelectorAll('.dlg input,.dlg textarea');S.sessions.push({n:(i[0].value||'Untitled session').trim(),u:'Not used yet',p:'“'+((i[1]&&i[1].value)||'Write the character prompt here.').trim()+'”'});S.tab='sessions';toast('Session saved');return renderPanel()}
  if(km){S.kmenu=S.kmenu===km.dataset.kmenu?null:km.dataset.kmenu;return settings()}
  if(S.kmenu&&ov.querySelector('.win')){S.kmenu=null;settings()}
- const t=e.target.closest('[data-x],[data-back],[data-clone],[data-manage],[data-ext],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-doun],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dLaunch');
+ const t=e.target.closest('[data-x],[data-back],[data-clone],[data-manage],[data-ext],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-doun],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dLaunch');
  if(!t)return;const d=t.dataset;
  if(t.id==='openAI')return openPanel();
  if(t.id==='reset'){S=init();hide();return toast('Prototype reset')}
@@ -492,7 +500,7 @@ document.addEventListener('click',e=>{
  if('adv' in d){S.advOpen=!S.advOpen;return newVoice()}
  if('cadv' in d){const box=t.closest('.dlg'),b=box.querySelector('[data-cbody]'),open=b.style.display==='none';b.style.display=open?'':'none';t.querySelector('svg,.ico,i')&&(t.firstElementChild.style.transform=open?'rotate(90deg)':'');box.querySelector('[data-csum]').style.display=open?'none':'';box.querySelector('[data-creset]').style.display=open?'':'none';return}
  if('savev' in d){S.voices.push({id:'v'+Date.now(),n:'Museum guide',prov:'minimax',meta:'Cantonese'});S.tab='voices';return renderPanel()}
- if('news' in d){S.sessions.push({n:'New session',u:'Not used yet',p:'“Write the character prompt here.”'});S.tab='sessions';return renderPanel()}
+ if('news' in d)return newSession();
 });
 function autoAssign(){TASKS.forEach(t=>{if(S.assign[t.id])return;const p=S.providers.find(p=>can(p,t));if(p)S.assign[t.id]=p.id})}
 ov.addEventListener('mousedown',e=>{if(e.target.classList.contains('lay'))pop()});
