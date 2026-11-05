@@ -135,6 +135,11 @@ svg{display:block}
 .skel i{background:var(--elevated);border-radius:4px;display:block;animation:sk 1.2s infinite}
 @keyframes sk{50%{opacity:.5}}
 .sess{display:flex;flex-direction:column;gap:12px}
+.marq{margin-top:auto;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.marq .track{display:flex;gap:8px;width:max-content;animation:marq 28s linear infinite;padding-right:8px}
+.marq:hover .track{animation-play-state:paused}
+@keyframes marq{to{transform:translateX(-50%)}}
+@media (prefers-reduced-motion:reduce){.marq .track{animation:none}}
 .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:9999px;color:var(--t2);font-size:12px;line-height:18px}
 .orbit{position:relative;width:360px;height:200px;flex:none}
 .orbit .el{position:absolute;border:1px dashed var(--b-def);border-radius:50%;left:20px;top:15px;width:320px;height:170px}
@@ -322,7 +327,7 @@ function renderPanel(){
    ${sp(50,34,6)}${sp(318,52,5)}${sp(290,152,8)}${sp(60,150,5)}</div>
   <div class="col g12" style="align-items:center;text-align:center"><div class="hmd">Give your project a brain and a voice</div><div class="md t2" style="max-width:480px">Connect an AI provider to chat in character, quiz learners on a PDF, or read lines out loud in Cantonese.</div></div>
   <button class="btn pri m" data-add>Add a provider</button><div class="sm t3">You bring the key. Gemini has a free tier if you just want to try.</div>
-  <div class="row g8" style="margin-top:auto;justify-content:center;flex-wrap:wrap">${TASKS.map(t=>`<span class="pill">${ic(t.i,'i16')}${t.n}</span>`).join('')}</div></div></div>`);}
+  <div class="marq" aria-label="What you can do once a provider is connected"><div class="track">${[0,1].map(()=>TASKS.map(t=>`<span class="pill">${ic(t.i,'i16')}${t.n}</span>`).join('')).join('')}</div></div></div></div>`);}
  const n=TASKS.filter(isReady).length;
  const tabs=[['tasks','Sparkle',`Tasks · ${n}/6`],['voices','Speech',`Voices · ${S.voices.length}`],['sessions','Chat',`Sessions · ${S.sessions.length}`],['providers','Plug',`Providers · ${S.providers.length}`]];
  const body={tasks,voices,sessions,providers}[S.tab]();
