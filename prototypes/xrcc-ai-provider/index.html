@@ -25,6 +25,13 @@ svg{display:block}
 .caption{font-size:11px;line-height:16px}.sm{font-size:12px;line-height:18px}.md{font-size:14px;line-height:20px}.mdb{font-size:14px;line-height:20px;font-weight:700}
 .lg{font-size:16px;line-height:24px}.lgb{font-size:16px;line-height:24px;font-weight:700}.hsm{font-size:18px;line-height:24px;font-weight:700}.hmd{font-size:20px;line-height:28px;font-weight:700}.h2{font-size:24px;line-height:32px;font-weight:700}
 .t1{color:var(--t1)}.t2{color:var(--t2)}.t3{color:var(--t3)}.tacc{color:var(--pc)}.tok{color:var(--ok)}.twarn{color:var(--warn)}.terr{color:var(--err)}
+*{scrollbar-width:thin;scrollbar-color:var(--b-def) transparent}
+*::-webkit-scrollbar{width:8px;height:8px}
+*::-webkit-scrollbar-track{background:transparent}
+*::-webkit-scrollbar-thumb{background:var(--b-def);border-radius:9999px;border:2px solid transparent;background-clip:content-box}
+*::-webkit-scrollbar-thumb:hover{background:var(--b-int);background-clip:content-box}
+*::-webkit-scrollbar-corner{background:transparent}
+.dlg .b,.pbody,.rb{overflow-x:hidden}
 .row{display:flex;align-items:center}.col{display:flex;flex-direction:column}.fill{flex:1;min-width:0}.g4{gap:4px}.g8{gap:8px}.g12{gap:12px}.g16{gap:16px}.g24{gap:24px}
 /* Workbench header */
 .bench{height:100vh;display:flex;flex-direction:column}
@@ -135,7 +142,7 @@ svg{display:block}
 .skel i{background:var(--elevated);border-radius:4px;display:block;animation:sk 1.2s infinite}
 @keyframes sk{50%{opacity:.5}}
 .sess{display:flex;flex-direction:column;gap:12px}
-.marq{margin-top:auto;overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.marq{margin-top:auto;overflow:hidden;width:100%;min-width:0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
 .marq .track{display:flex;gap:8px;width:max-content;animation:marq 28s linear infinite;padding-right:8px}
 .marq:hover .track{animation-play-state:paused}
 @keyframes marq{to{transform:translateX(-50%)}}
