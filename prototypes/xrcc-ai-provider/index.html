@@ -415,7 +415,7 @@ function settings(){
  <div class="rp"><div class="tb2"><button class="iconbtn" data-x data-tip="Close">${ic('Close')}</button></div><div class="rb">
   <div class="col g4"><div class="h2">Connections</div><div class="md t2">Keys are encrypted and kept on this computer. Projects never contain them, and VOTANIC never sees them.</div></div>
   <div class="col g12"><div class="row g12" style="align-items:center"><div class="col g4 fill"><div class="lgb">AI keys</div><div class="sm t2">Used by AI providers in every project on this computer.</div></div><button class="btn pri" data-addkey2 style="height:36px">Add key</button></div><div class="input" style="width:100%;height:36px;color:var(--t3);display:flex;align-items:center;gap:8px">${ic('Search')}Search keys</div>
-  <div class="col g8">${S.keys.map(k=>`<div class="krow">${lg(k.prov,32)}<div class="col g4 fill"><b class="mdb">${k.name}</b><span class="sm t2">${k.meta}</span></div><span class="row g4 sm ${k.pw?'tacc':'t2'}">${ic(k.pw?'Lock':'Key')}${k.pw?'Password set':'No password'}</span><button class="iconbtn s28" data-tip="More actions">${ic('MoreH')}</button></div>`).join('')}</div></div>
+  <div class="col g8">${S.keys.map(k=>`<div class="krow">${lg(k.prov,32)}<div class="col g4 fill"><b class="mdb">${k.name}</b><span class="sm t2">${k.meta}</span></div><span class="row g4 sm ${k.pw?'tacc':'t2'}">${ic(k.pw?'Lock':'Key')}${k.pw?'Password set':'No password'}</span><span style="position:relative"><button class="iconbtn s28" data-kmenu="${k.id}" ${S.kmenu===k.id?'':'data-tip="More actions"'}>${ic('MoreH')}</button>${S.kmenu===k.id?`<div class="menu on" style="left:auto;right:0;min-width:200px;z-index:5"><div data-kact="pw|${k.id}">${k.pw?'Change password':'Set password'}</div><div data-kact="ren|${k.id}">Rename</div><hr><div data-kact="del|${k.id}" style="color:#ff8a8a">Remove key</div></div>`:''}</span></div>`).join('')}</div></div>
   <div class="col g8"><div class="lg" style="padding-left:16px">Speech commands (Wit.ai)</div><div class="krow"><span class="logo l32" style="background:#510e69;border-color:#510e69"><svg viewBox="0 0 24 24"><use href="#lg-wit"/></svg></span><div class="col g4 fill"><b class="mdb">Lobby kiosk token</b><span class="sm t2">Wit.ai · last used 28 Oct</span></div><span class="row g4 sm t2">${ic('Key')}No password</span><button class="iconbtn s28">${ic('MoreH')}</button></div></div>
  </div></div></div>`)}
 /* events */
@@ -425,6 +425,14 @@ document.addEventListener('click',e=>{
  if(e.target.closest('#mySettings')){$('#helpMenu').classList.remove('on');MENUS.classList.remove('on');S.fromSettings=true;return settings()}
  if(hb){const m=$('#helpMenu');m.classList.toggle('on');MENUS.classList.toggle('on');return}
  $('#helpMenu').classList.remove('on');MENUS.classList.remove('on');
+ const km=e.target.closest('[data-kmenu]'),ka=e.target.closest('[data-kact]');
+ if(ka){const [a,id]=ka.dataset.kact.split('|');S.kmenu=null;const k=S.keys.find(k=>k.id===id);
+  if(a==='del'){S.keys=S.keys.filter(k=>k.id!==id);toast('Key removed')}
+  else if(a==='pw'){k.pw=true;toast('Password set')}
+  else toast('Rename “'+k.name+'”');
+  return settings()}
+ if(km){S.kmenu=S.kmenu===km.dataset.kmenu?null:km.dataset.kmenu;return settings()}
+ if(S.kmenu&&ov.querySelector('.win')){S.kmenu=null;settings()}
  const t=e.target.closest('[data-x],[data-back],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-doun],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dLaunch');
  if(!t)return;const d=t.dataset;
  if(t.id==='openAI')return openPanel();
