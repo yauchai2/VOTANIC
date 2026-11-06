@@ -386,7 +386,7 @@ $('#playIc').innerHTML=ic('Play','i16','fill:currentColor')+'Play';$('#playCar')
 /* tabs panel */
 const closeBtn=`<button class="iconbtn" data-x data-tip="Close">${ic('Close','i20')}</button>`;
 function openPanel(){S.tab=S.providers.length?(S.tab==='first'?'tasks':S.tab):'first';renderPanel()}
-function renderPanel(){
+function renderPanel(){const _d=document.querySelector('#openAI .dot');if(_d)_d.style.display=S.providers.length?'none':'';
  if(S.tab==='first'){
   const sp=(l,t,w)=>`<i class="sp" style="left:${l}px;top:${t}px;width:${w}px;height:${w}px"></i>`;
   return show(`<div class="panel first"><div class="phead">${ic('Sparkle','i20','color:var(--pc)')}<span class="lgb fill">AI Provider</span>${closeBtn}</div><div class="pbody">
