@@ -148,10 +148,15 @@ svg{display:block}
 @keyframes marq{to{transform:translateX(-50%)}}
 @media (prefers-reduced-motion:reduce){.marq .track{animation:none}}
 .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:9999px;color:var(--t2);font-size:12px;line-height:18px}
+.orbwrap{width:450px;height:250px;flex:none}
+.orbwrap .orbit{transform:scale(1.25);transform-origin:0 0}
+.orbit>span>*{box-shadow:0 6px 14px rgba(110,50,190,.35),inset 0 0 0 1px rgba(170,120,255,.35);border-radius:10px}
+.caps{margin-top:auto;display:flex;gap:4px;justify-content:center;flex-wrap:nowrap;width:100%}
+.caps .pill{color:var(--t3);padding:8px;white-space:nowrap}
 .orbit{position:relative;width:360px;height:200px;flex:none}
 .orbit .el{position:absolute;border:1px dashed var(--b-def);border-radius:50%;left:20px;top:15px;width:320px;height:170px}
 .orbit .el.in{border-color:var(--b-sub);left:80px;top:48px;width:200px;height:104px}
-.orbit .core{position:absolute;left:148px;top:68px;width:64px;height:64px;border-radius:16px;background:var(--pbg);display:grid;place-items:center;color:var(--pc);transform:rotate(8deg)}
+.orbit .core{position:absolute;left:148px;top:68px;width:64px;height:64px;border-radius:16px;background:linear-gradient(145deg,#5a2a9a,#2d1650);box-shadow:0 0 28px rgba(150,80,255,.55),inset 0 0 0 1px rgba(200,160,255,.5);display:grid;place-items:center;color:#e6d4ff;transform:rotate(8deg)}
 .orbit .logo{position:absolute}.orbit .sp{position:absolute;border-radius:50%;background:var(--pc);opacity:.7}
 /* Dialog (Library Dialog) */
 .dlg{width:600px;max-width:100%;max-height:min(720px,84vh);display:flex;flex-direction:column;background:var(--canvas);border:1px solid var(--b-sub);border-radius:16px;overflow:hidden}
@@ -329,12 +334,12 @@ function renderPanel(){
  if(S.tab==='first'){
   const sp=(l,t,w)=>`<i class="sp" style="left:${l}px;top:${t}px;width:${w}px;height:${w}px"></i>`;
   return show(`<div class="panel first"><div class="phead">${ic('Sparkle','i20','color:var(--pc)')}<span class="lgb fill">AI</span>${closeBtn}</div><div class="pbody">
-  <div class="orbit"><div class="el"></div><div class="el in"></div><div class="core">${ic('Sparkle','i24','width:32px;height:32px')}</div>
+  <div class="orbwrap"><div class="orbit"><div class="el"></div><div class="el in"></div><div class="core">${ic('Sparkle','i24','width:32px;height:32px')}</div>
    <span style="position:absolute;left:12px;top:78px;transform:rotate(-8deg)">${lg('gemini',40)}</span><span style="position:absolute;left:96px;top:4px;transform:rotate(-10deg)">${lg('minimax',32)}</span><span style="position:absolute;left:228px;top:6px;transform:rotate(8deg)">${lg('poe',32)}</span><span style="position:absolute;left:303px;top:84px;transform:rotate(6deg)">${lg('openrouter',40)}</span><span style="position:absolute;left:176px;top:168px;transform:rotate(-6deg)">${lg('custom',32)}</span>
-   ${sp(50,34,6)}${sp(318,52,5)}${sp(290,152,8)}${sp(60,150,5)}</div>
+   ${sp(50,34,6)}${sp(318,52,5)}${sp(290,152,8)}${sp(60,150,5)}</div></div>
   <div class="col g12" style="align-items:center;text-align:center"><div class="hmd">Give your project a brain and a voice</div><div class="md t2" style="max-width:480px">Connect an AI provider to chat in character, quiz learners on a PDF, or read lines out loud in Cantonese.</div></div>
-  <button class="btn pri m" data-add>Add a provider</button><div class="sm t3">You bring the key. Gemini has a free tier if you just want to try.</div>
-  <div class="marq" aria-label="What you can do once a provider is connected"><div class="track">${[0,1].map(()=>TASKS.map(t=>`<span class="pill">${ic(t.i,'i16')}${t.n}</span>`).join('')).join('')}</div></div></div></div>`);}
+  <button class="btn pri m" data-add>Add a provider</button>
+  <div class="caps" aria-label="What you can do once a provider is connected">${TASKS.map(t=>`<span class="pill">${ic(t.i,'i16')}${t.n}</span>`).join('')}</div></div></div>`);}
  const n=TASKS.filter(isReady).length;
  const tabs=[['tasks','Sparkle',`Tasks · ${n}/6`],['voices','Speech',`Voices · ${S.voices.length}`],['sessions','Chat',`Sessions · ${S.sessions.length}`],['providers','Plug',`Providers · ${S.providers.length}`]];
  const body={tasks,voices,sessions,providers}[S.tab]();
