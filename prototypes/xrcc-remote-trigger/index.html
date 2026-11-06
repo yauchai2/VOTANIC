@@ -347,6 +347,16 @@ input:focus{outline:1px solid var(--interactive)}
 @media(max-width:700px){.topbar{height:auto;min-height:44px;flex-wrap:wrap;padding:6px 12px}.brand{font-size:13px}.brand i{display:none}.tabs{margin-left:0;width:100%;height:36px}.tab{padding:0 10px;font-size:12px;white-space:nowrap}main{padding:12px}.pill#playPill{display:none}}
 .editor .key .rz{opacity:.15}.editor .key:hover .rz,.key.resizing .rz{opacity:.9}.btn.danger:hover{background:rgba(255,69,58,.12)}
 .slot{cursor:pointer}.slot.target{background:rgba(169,139,240,.18);color:var(--accent);outline:1px solid var(--interactive)}
+.sec{display:flex;justify-content:space-between;align-items:baseline;margin:16px 0 4px;padding:0 10px;font-size:12px}.sec b{font-weight:500;color:var(--text)}.sec .muted{font-size:11px}
+.tagro,.tagb{position:absolute;left:8px;bottom:6px;font-size:9px;letter-spacing:.04em;text-transform:uppercase;color:var(--text2)}
+.key.t-stepper .tagro{position:static;margin-top:-2px}
+.tagb{left:auto;right:8px;top:-7px;bottom:auto;z-index:2;color:#fff;background:var(--warning);border-radius:4px;padding:1px 5px}
+.key.b-warn{border-color:var(--warning)}.key.b-err{border-color:var(--error)}.key.b-err .tagb{background:var(--error)}
+.key.b-warn .ico,.key.b-warn .lab{opacity:.55}
+.key.ro .rail,.key.ro .step{pointer-events:none}
+.shape-rounded{border-radius:26px!important}.shape-pill{border-radius:999px!important}
+.pdeck.stack{grid-template-columns:1fr;grid-auto-rows:auto}.pdeck.stack .key{grid-column:auto!important;grid-row:auto!important;min-height:84px!important;flex-direction:row;justify-content:flex-start;gap:14px;padding:12px 16px;text-align:left}
+.pdeck.stack .key.t-vector3,.pdeck.stack .key.t-dial{min-height:0!important}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -370,7 +380,7 @@ input:focus{outline:1px solid var(--interactive)}
             <div class="card editor">
               <div class="row" style="justify-content:space-between;margin-bottom:12px">
                 <div><h2>Remote deck</h2><div class="muted" id="edHint" data-html>Drag a variable onto any free cell. Drag keys to move, the corner to resize. Select a key to remove it.</div></div>
-                <span class="pill" id="count"></span>
+                <div class="row" style="gap:8px"><button class="btn tertiary" id="presetBtn">Preset layout</button><span class="pill" id="count"></span></div>
               </div>
               <div class="deck" id="deckE"></div>
             </div>
@@ -416,6 +426,7 @@ input:focus{outline:1px solid var(--interactive)}
           <div class="tools">
             <button class="btn tertiary" id="tReconnect">Simulate network drop</button>
             <button class="btn tertiary" id="tStale">Edit deck in XRCC</button>
+            <button class="btn tertiary" id="tStack">Phone layout: Grid</button>
             <button class="btn tertiary" id="tLand">Rotate</button>
             <button class="btn tertiary" id="tReset">Restart phone</button>
           </div>
@@ -431,36 +442,42 @@ input:focus{outline:1px solid var(--interactive)}
 const $=(s,e=document)=>e.querySelector(s),$$=(s,e=document)=>[...e.querySelectorAll(s)];
 const h=(t,a={},...k)=>{const e=document.createElement(t);for(const[n,v]of Object.entries(a)){if(v==null||v===false)continue;if(n==='class')e.className=v;else if(n.startsWith('on'))e.addEventListener(n.slice(2),v);else if(n==='html')e.innerHTML=v;else e.setAttribute(n,v)}k.flat().forEach(c=>e.append(c));return e};
 /* ---------- State ---------- */
+const SRC=[['trigger','Triggers','Scene triggers'],['project','Project variables','Shared by every scene'],['spotA','Instance · Spotlight A','Variables on this object in Intro'],['speaker','Instance · Stage speaker','Variables on this object in Intro']];
 const LIB=[
- {id:'start',type:'trigger',l:'Start show',i:'▶',w:1},
- {id:'curtain',type:'trigger',l:'Open curtains',i:'▤',tint:'blue',w:1},
- {id:'lights',type:'toggle',l:'Lights',i:'☀',w:1},
- {id:'mood',type:'colour',l:'Mood colour',w:1},
- {id:'spot',type:'dial',l:'Spotlight',i:'◉',w:2},
- {id:'guests',type:'stepper',l:'Guests',w:1},
- {id:'music',type:'toggle',l:'Music',i:'♪',w:1},
- {id:'pos',type:'vector3',l:'Spotlight position',i:'⬡',w:2,h:2},
- {id:'applause',type:'trigger',l:'Applause',i:'♫',tint:'green',w:1},
- {id:'next',type:'trigger',l:'Next room',i:'›',tint:'yellow',w:1},
- {id:'reset',type:'trigger',l:'Reset scene',i:'↺',tint:'red',w:1}
+ {id:'start',src:'trigger',type:'trigger',l:'Start show',i:'▶',w:1},
+ {id:'curtain',src:'trigger',type:'trigger',l:'Open curtains',i:'▤',tint:'blue',w:1},
+ {id:'applause',src:'trigger',type:'trigger',l:'Applause',i:'♫',tint:'green',w:1},
+ {id:'next',src:'trigger',type:'trigger',l:'Next room',i:'›',tint:'yellow',w:1},
+ {id:'reset',src:'trigger',type:'trigger',l:'Reset scene',i:'↺',tint:'red',w:1},
+ {id:'lights',src:'project',type:'toggle',l:'Lights',i:'☀',w:1},
+ {id:'mood',src:'project',type:'colour',l:'Mood colour',w:1},
+ {id:'guests',src:'project',type:'stepper',l:'Guests',w:1},
+ {id:'spot',src:'spotA',type:'dial',l:'Spotlight',i:'◉',w:2},
+ {id:'pos',src:'spotA',type:'vector3',l:'Spotlight position',i:'⬡',w:2,h:2},
+ {id:'temp',src:'spotA',type:'stepper',l:'Lamp temp',i:'♨',w:1,ro:true,unit:'°C'},
+ {id:'music',src:'speaker',type:'toggle',l:'Music',i:'♪',w:1}
 ];
 const BYID=Object.fromEntries(LIB.map(k=>[k.id,k]));
-const TYPELABEL={trigger:'Trigger',toggle:'Toggle',dial:'Dial',stepper:'Stepper',colour:'Colour',vector3:'Vector3'};
+const TYPELABEL={trigger:'Trigger button',toggle:'Boolean toggle',dial:'Number slider',stepper:'Number input',colour:'Colour input',vector3:'Vector3 slider'};
+const SHORT={trigger:'Trigger',toggle:'Toggle',dial:'Slider',stepper:'Number',colour:'Colour',vector3:'Vector3'};
 const DEFAULT_DECK=['start','curtain','lights','mood','spot','guests','music','pos','applause','next','reset'];
 const DEFAULT_POS={start:[0,0],curtain:[1,0],lights:[2,0],mood:[3,0],spot:[0,1],guests:[2,1],music:[3,1],pos:[0,2],applause:[2,2],next:[3,2],reset:[2,3]};
 const MAXROWS=8;
 const st={
   tab:'editor',deck:[],labels:{},sizes:{},pos:{},selected:null,
-  vals:{lights:false,music:false,mood:'#e8467c',spot:64,guests:12,pos:[1.2,.8,-.4]},
+  vals:{lights:false,music:false,mood:'#e8467c',spot:64,guests:12,pos:[1.2,.8,-.4],temp:41},access:{temp:'read'},shape:{},bind:{},mobileMode:'grid',
   playing:false,publicOn:false,publicLink:'https://gallery-tiger-42.trycloudflare.com',phones:[],code:'',
   layoutVer:1,phoneVer:1,log:[]
 };
 const COLS=['#e5566d','#f0b429','#4ec27d','#4f8cf0','#8b5cf6','#c0392b','#d68a2c','#2e8b57','#4b3a78','#ffffff'];
 let ch;try{ch=new BroadcastChannel('xrcc-rt')}catch(e){ch={postMessage(){},set onmessage(f){}}}
 const genCode=()=>String(Math.floor(100000+Math.random()*900000));
-const save=()=>{try{localStorage.setItem('xrcc-rt-deck',JSON.stringify({deck:st.deck,labels:st.labels,sizes:st.sizes,pos:st.pos}))}catch(e){}};
-try{const s=JSON.parse(localStorage.getItem('xrcc-rt-deck')||'null');if(s){st.deck=s.deck.filter(i=>BYID[i]);st.labels=s.labels||{};st.sizes=s.sizes||{};st.pos=s.pos||{}}else st.deck=[...DEFAULT_DECK]}catch(e){st.deck=[...DEFAULT_DECK]}
+const save=()=>{try{localStorage.setItem('xrcc-rt-deck',JSON.stringify({deck:st.deck,labels:st.labels,sizes:st.sizes,pos:st.pos,access:st.access,shape:st.shape}))}catch(e){}};
+try{const s=JSON.parse(localStorage.getItem('xrcc-rt-deck')||'null');if(s){st.deck=s.deck.filter(i=>BYID[i]);st.labels=s.labels||{};st.sizes=s.sizes||{};st.pos=s.pos||{};if(s.access)st.access=s.access;st.shape=s.shape||{}}else st.deck=[...DEFAULT_DECK]}catch(e){st.deck=[...DEFAULT_DECK]}
 const label=id=>st.labels[id]||BYID[id].l;
+const isVar=id=>BYID[id].type!=='trigger';
+const acc=id=>isVar(id)?(st.access[id]||'readWrite'):'readWrite';
+const srcName=id=>(SRC.find(x=>x[0]===BYID[id].src)||[0,''])[1];
 const MINSZ={vector3:{w:2,h:2},dial:{w:2,h:1}};
 const minOf=id=>MINSZ[BYID[id].type]||{w:1,h:1};
 const sz=id=>{const m=minOf(id);const z=st.sizes[id]||{w:BYID[id].w||1,h:BYID[id].h||1};return{w:Math.max(m.w,z.w),h:Math.max(m.h,z.h)}};
@@ -487,6 +504,9 @@ function applyScene(){
 function perform(id,payload,from){
   const k=BYID[id];if(!k)return {ok:false,err:'Unknown key'};
   if(!st.playing)return {ok:false,err:'Play is not running'};
+  if(from!=='xrcc'&&acc(id)==='read')return {ok:false,err:label(id)+' is read-only'};
+  if(st.bind[id]==='missing')return {ok:false,err:label(id)+' lost its variable in XRCC'};
+  if(st.bind[id]==='type')return {ok:false,err:label(id)+' has a type mismatch'};
   const t0=performance.now();
   switch(k.type){
     case'toggle':st.vals[id]=!st.vals[id];log(`${label(id)} <b>${st.vals[id]?'On':'Off'}</b> from ${from}`);break;
@@ -507,14 +527,19 @@ function keyEl(id,mode){
   const cls=['key','t-'+k.type];
   if(k.type==='toggle'&&v)cls.push('on');
   if(mode==='editor'&&st.selected===id)cls.push('sel');
+  if(acc(id)==='read')cls.push('ro');
+  if(st.bind[id])cls.push(st.bind[id]==='type'?'b-err':'b-warn');
+  if(st.shape[id])cls.push('shape-'+st.shape[id]);
   const z=sz(id);const el=h('div',{class:cls.join(' '),'data-id':id,tabindex:'0',role:'button','aria-label':label(id),style:`grid-column:${PS(id).x+1} / span ${z.w};grid-row:${PS(id).y+1} / span ${z.h}`});
   const ico=()=>h('div',{class:'ico '+(k.tint||'')},k.i||'•');
   if(k.type==='trigger')el.append(ico(),h('div',{class:'lab'},label(id)));
   if(k.type==='toggle')el.append(h('i',{class:'led'}),ico(),h('div',{class:'lab'},label(id)),h('div',{class:'val'},v?'On':'Off'));
   if(k.type==='colour')el.append(h('div',{class:'swatch',style:`background:${v}`}),h('div',{class:'lab'},label(id)),h('div',{class:'val'},v.toUpperCase()));
-  if(k.type==='stepper'){el.append(h('div',{class:'val'},label(id)),h('div',{class:'big'},String(v)),h('div',{class:'step'},h('button',{class:'btn sq','data-d':-1,'aria-label':'Minus'},'−'),h('button',{class:'btn sq','data-d':1,'aria-label':'Plus'},'+')))}
+  if(k.type==='stepper'){el.append(h('div',{class:'val'},label(id)),h('div',{class:'big'},String(v)+(k.unit||'')),acc(id)==='read'?'':h('div',{class:'step'},h('button',{class:'btn sq','data-d':-1,'aria-label':'Minus'},'−'),h('button',{class:'btn sq','data-d':1,'aria-label':'Plus'},'+')))}
   if(k.type==='dial'){el.append(dialEl(id,mode))}
   if(k.type==='vector3'){el.append(v3El(id,mode))}
+  if(k.ro||acc(id)==='read')el.append(h('span',{class:'tagro'},'Read only'));
+  if(st.bind[id])el.append(h('span',{class:'tagb',title:st.bind[id]==='type'?'Type mismatch':'Variable missing'},st.bind[id]==='type'?'Type':'Missing'));
   if(mode==='editor')el.append(h('div',{class:'rz',title:'Drag to resize'}));
   return el;
 }
@@ -556,7 +581,7 @@ function renderDeckE(){
   const occ=new Set();for(const id of st.deck){const q=PS(id),z=sz(id);for(let i=0;i<z.w;i++)for(let j=0;j<z.h;j++)occ.add((q.x+i)+','+(q.y+j))}
   for(let y=0;y<rows;y++)for(let x=0;x<4;x++){if(occ.has(x+','+y))continue;
     d.append(h('div',{class:'slot'+(targetSlot&&targetSlot.x===x&&targetSlot.y===y?' target':''),'data-x':x,'data-y':y,onclick:()=>{if(pdrag.just)return;targetSlot={x,y};setSide('keys');renderAll();toast('Pick a variable for this cell')},style:`grid-column:${x+1};grid-row:${y+1}`},'＋'))}
-  $('#count').textContent=st.deck.length+' keys';
+  $('#count').textContent=st.deck.length+' of 128 keys';$('#presetBtn').textContent=presetPrev?'Undo preset':'Preset layout';
   $$('.key',d).forEach(el=>{
     el.addEventListener('pointerdown',e=>{if(e.target.closest('.rail,.btn,.x,.rz'))return;pdrag(el,el.dataset.id,e)});
     const rz=$('.rz',el);
@@ -616,40 +641,61 @@ function placeKey(id,x,y){
 let targetSlot=null;
 function addKey(id){if(!BYID[id]||st.deck.includes(id))return;const z=sz(id);let f=null;if(targetSlot&&fits(id,targetSlot.x,targetSlot.y,z.w,z.h))f=targetSlot;targetSlot=null;if(!f)f=findFree(id,z.w,z.h);if(!f){toast('The deck is full');return}
   st.deck.push(id);st.pos[id]=f;st.selected=id;st.layoutVer++;save();renderAll();toast(`${label(id)} added as a ${TYPELABEL[BYID[id].type].toLowerCase()} key`)}
-function removeKey(id){st.deck=st.deck.filter(x=>x!==id);delete st.pos[id];if(st.selected===id)st.selected=null;st.layoutVer++;save();renderAll();toast(`${label(id)} removed`)}
+let presetPrev=null;
+function presetLayout(){if(presetPrev){st.deck=presetPrev.deck;st.pos=presetPrev.pos;st.sizes=presetPrev.sizes;presetPrev=null;st.selected=null;st.layoutVer++;save();renderAll();toast('Preset undone');return}
+  presetPrev={deck:[...st.deck],pos:{...st.pos},sizes:{...st.sizes}};st.deck=[];st.pos={};st.sizes={};st.selected=null;
+  const order=['trigger','project','spotA','speaker'];LIB.slice().sort((a,b)=>order.indexOf(a.src)-order.indexOf(b.src)).forEach(k=>{if(k.ro)return;const z=sz(k.id);const f=findFree(k.id,z.w,z.h);if(f){st.deck.push(k.id);st.pos[k.id]=f}});
+  st.layoutVer++;save();renderAll();toast('Preset layout applied · '+st.deck.length+' keys')}
+function removeKey(id){presetPrev=null;st.deck=st.deck.filter(x=>x!==id);delete st.pos[id];if(st.selected===id)st.selected=null;st.layoutVer++;save();renderAll();toast(`${label(id)} removed`)}
 let sideTab='keys';
 function setSide(s){sideTab=s;$$('[data-side]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.side===s));renderSide()}
-function issues(){const a=[];st.deck.forEach(id=>{if(BYID[id].type==='dial'&&st.vals[id]==null)a.push({id,t:`${label(id)} has no value`});if(label(id).trim()==='')a.push({id,t:'A key needs a label'})});if(!st.deck.length)a.push({id:null,t:'The deck is empty — add a key'});return a}
+function issues(){const a=[];st.deck.forEach(id=>{if(st.bind[id]==='missing')a.push({id,lvl:'warn',t:`${label(id)} is bound to a variable that no longer exists in XRCC`});if(st.bind[id]==='type')a.push({id:id,lvl:'err',t:`${label(id)} expects a number, but the bound variable is now text`})});st.deck.forEach(id=>{if(BYID[id].type==='dial'&&st.vals[id]==null)a.push({id,t:`${label(id)} has no value`});if(label(id).trim()==='')a.push({id,t:'A key needs a label'})});if(!st.deck.length)a.push({id:null,t:'The deck is empty — add a key'});return a}
 function renderSide(){
   const s=$('#side');s.innerHTML='';
   const iss=issues();$('#issueN').textContent=iss.length;
   if(sideTab==='keys'){
-    s.append(h('div',{class:'muted'},'Project and object variables'));
-    const l=h('div',{class:'lib'});
-    LIB.forEach(k=>{const placed=st.deck.includes(k.id);
-      const it=h('div',{class:'libitem'+(placed?' placed':''),title:placed?'Already on the deck':'Drag to a slot'},h('div',{class:'ico '+(k.tint||'')},k.i||'•'),h('span',{},k.l),h('span',{class:'t'},placed?'On deck':TYPELABEL[k.type]));
-      if(!placed)it.addEventListener('pointerdown',e=>pdrag(it,k.id,e));
-      it.addEventListener('click',()=>!placed&&!pdrag.just&&addKey(k.id));l.append(it)});
-    s.append(l);
+    s.append(h('div',{class:'muted',style:'font-size:12px'},'Drag onto the deck, or click a cell first. Only what you place can be controlled remotely.'));
+    SRC.forEach(([sid,name,sub])=>{
+      const items=LIB.filter(k=>k.src===sid);const left=items.filter(k=>!st.deck.includes(k.id)).length;
+      s.append(h('div',{class:'sec'},h('b',{},name),h('span',{class:'muted'},left+' of '+items.length+' left')));
+      const l=h('div',{class:'lib'});
+      items.forEach(k=>{const placed=st.deck.includes(k.id);
+        const it=h('div',{class:'libitem'+(placed?' placed':''),title:placed?'Already on the deck':'Drag to a slot'},h('div',{class:'ico '+(k.tint||'')},k.i||'•'),h('span',{},k.l),h('span',{class:'t'},placed?'On deck':(k.ro?'Read · ':'')+SHORT[k.type]));
+        if(!placed)it.addEventListener('pointerdown',e=>pdrag(it,k.id,e));
+        it.addEventListener('click',()=>!placed&&!pdrag.just&&addKey(k.id));l.append(it)});
+      s.append(l)});
   }else if(sideTab==='settings'){
     const id=st.selected;
     if(!id||!st.deck.includes(id)){s.append(h('div',{class:'muted',style:'margin-top:12px'},'Select a key on the deck to tune it.'));return}
     const k=BYID[id];
-    s.append(h('h3',{style:'margin-top:8px'},label(id)),h('div',{class:'muted'},TYPELABEL[k.type]+' key'));
+    s.append(h('h3',{style:'margin-top:8px'},label(id)),h('div',{class:'muted'},TYPELABEL[k.type]+' · '+(k.type==='trigger'?'Scene trigger':srcName(id))));
+    if(st.bind[id])s.append(h('div',{class:'alert'+(st.bind[id]==='type'?' crit':'')},st.bind[id]==='type'?'✕ The bound variable changed type. Pick another variable or fix it in XRCC.':'⚠ This variable no longer exists in XRCC. The key is paused on phones.'));
     const f=h('div',{class:'field'},h('label',{},'Label'));const inp=h('input',{type:'text',value:label(id),maxlength:'24'});
     inp.addEventListener('input',()=>{st.labels[id]=inp.value;save();$$('.key[data-id="'+id+'"] .lab').forEach(e=>e.textContent=inp.value)});
     f.append(inp);s.append(f);
     const z=sz(id);const fs=h('div',{class:'field'},h('label',{},'Size on the deck (columns × rows)'));const sg=h('div',{class:'sizes'});
     [[1,1],[2,1],[3,1],[4,1],[1,2],[2,2]].forEach(([w,hh])=>sg.append(h('button',{class:'btn tertiary',disabled:(w<minOf(id).w||hh<minOf(id).h)?'':null,'aria-pressed':String(z.w===w&&z.h===hh),title:(w<minOf(id).w||hh<minOf(id).h)?'Too small for this key':'',onclick:()=>{setSize(id,w,hh);setSide('settings')}},w+'×'+hh)));
     fs.append(sg,h('div',{class:'muted',style:'font-size:12px'},'You can also drag the corner of a key.'));s.append(fs);
+    if(isVar(id)){const fa=h('div',{class:'field'},h('label',{},'Phone access'));const ag=h('div',{class:'sizes'});
+      [['readWrite','Read & write'],['read','Read only']].forEach(([v,t])=>ag.append(h('button',{class:'btn tertiary','aria-pressed':String(acc(id)===v),onclick:()=>{st.access[id]=v;save();st.layoutVer++;renderAll();setSide('settings')}},t)));
+      fa.append(ag,h('div',{class:'muted',style:'font-size:12px'},acc(id)==='read'?'Phones can see the value but not change it.':'Phones can change the value. XRCC stays the source of truth.'));s.append(fa)}
+    if(k.type==='trigger'){const fh=h('div',{class:'field'},h('label',{},'Button shape'));const hg=h('div',{class:'sizes'});
+      [['','Square'],['rounded','Rounded'],['pill','Pill']].forEach(([v,t])=>hg.append(h('button',{class:'btn tertiary','aria-pressed':String((st.shape[id]||'')===v),onclick:()=>{if(v)st.shape[id]=v;else delete st.shape[id];save();renderAll();setSide('settings')}},t)));fh.append(hg);s.append(fh)}
+    if(k.type==='vector3')s.append(h('div',{class:'muted',style:'font-size:12px;margin-top:8px'},'Needs at least 2×2 so every axis stays easy to drag. That is 4 × 5 on the 12-column grid in XRCC.'));
     if(k.type==='dial'){const f2=h('div',{class:'field'},h('label',{},'Value'));const n=h('input',{type:'number',min:0,max:100,value:st.vals[id]});n.addEventListener('input',()=>{const x=Math.min(100,Math.max(0,+n.value||0));st.vals[id]=x;applyScene();renderDeckE();renderPhone()});f2.append(n);s.append(f2)}
     s.append(h('div',{style:'margin-top:20px'},h('button',{class:'btn danger',style:'width:100%',onclick:()=>removeKey(id)},'Remove from deck')));
   }else{
     if(!iss.length)s.append(h('div',{class:'alert',style:'background:#173222;border-color:#245a37'},'✓ No issues. This deck is ready for Play.'));
-    iss.forEach(i=>s.append(h('div',{class:'alert'},'⚠ '+i.t)));
+    iss.forEach(i=>s.append(h('div',{class:'alert'+(i.lvl==='err'?' crit':''),style:i.id?'cursor:pointer':'',onclick:()=>{if(i.id){st.selected=i.id;setSide('settings');renderDeckE()}}},(i.lvl==='err'?'✕ ':'⚠ ')+i.t)));
+    const vars=st.deck.filter(isVar);
+    s.append(h('div',{class:'muted',style:'margin:16px 0 8px;font-size:12px'},'Try it: change something in XRCC while this deck is open'),h('div',{class:'row',style:'gap:8px'},
+      h('button',{class:'btn tertiary',onclick:()=>{const id=vars[0];if(!id)return toast('Add a variable key first');st.bind[id]='missing';renderAll();toast('Variable deleted in XRCC')}},'Delete a variable'),
+      h('button',{class:'btn tertiary',onclick:()=>{const id=vars.find(x=>BYID[x].type==='stepper'||BYID[x].type==='dial');if(!id)return toast('Add a number key first');st.bind[id]='type';renderAll();toast('Variable type changed in XRCC')}},'Change a type'),
+      h('button',{class:'btn tertiary',onclick:()=>{st.bind={};renderAll()}},'Reset')));
   }
 }
 $$('[data-side]').forEach(b=>b.addEventListener('click',()=>setSide(b.dataset.side)));
+$('#presetBtn').addEventListener('click',presetLayout);
 /* ---------- QR (decorative pseudo code seeded by link) ---------- */
 function drawQR(seed){
   const c=$('#qr'),x=c.getContext('2d'),N=29;x.clearRect(0,0,N,N);x.fillStyle='#111';
@@ -751,7 +797,7 @@ function renderPhone(){
     if(phone.stale)s.append(h('div',{class:'banner2 info'},h('b',{},'New keys are ready'),h('div',{class:'muted'},'Edited in XRCC. Refresh to get it.'),h('button',{class:'btn primary',style:'width:100%;margin-top:8px',onclick:()=>{phone.stale=false;renderPhone();toast('Deck refreshed')}},'Refresh deck')));
     if(phone.conn!=='local')s.append(h('div',{class:'banner2 warn'},h('b',{},'Lost ALAN-PC for a moment'),h('div',{class:'muted'},'Keys are paused so nothing fires twice.'),h('button',{class:'btn',style:'width:100%;margin-top:8px',onclick:()=>{phone.conn='local';renderPhone();toast('Back online')}},'Retry now')));
     if(!st.playing){phoneGoto('ended');return}
-    const g=h('div',{class:'pdeck'+(phone.conn!=='local'?' paused':'')});st.deck.forEach(id=>g.append(keyEl(id,'phone')));s.append(g);
+    const g=h('div',{class:'pdeck'+(phone.conn!=='local'?' paused':'')+(st.mobileMode==='stack'?' stack':'')});(st.mobileMode==='stack'?[...st.deck].sort((a,b)=>PS(a).y-PS(b).y||PS(a).x-PS(b).x):st.deck).forEach(id=>g.append(keyEl(id,'phone')));s.append(g);
     s.append(h('div',{class:'dots'},h('i',{class:'on'}),h('i')));
     $$('.key',g).forEach(el=>{const id=el.dataset.id,k=BYID[id];
       $$('.btn[data-d]',el).forEach(b=>b.addEventListener('click',ev=>{ev.stopPropagation();phoneApi.press(id,+b.dataset.d,false);const bp=h('span',{class:'bump'},(+b.dataset.d>0?'+1':'−1'));el.append(bp);setTimeout(()=>bp.remove(),600)}));
@@ -779,6 +825,7 @@ function renderSheet(){
 }
 $('#tReconnect').onclick=()=>{if(phone.screen!=='deck'){toast('Open a deck on the phone first');return}phone.conn=phone.conn==='local'?'drop':'local';renderPhone();if(phone.conn==='drop'){log('Phone <b>lost connection</b>');clearTimeout(phone.rt);phone.rt=setTimeout(()=>{if(phone.conn==='drop'){phone.conn='local';renderPhone();toast('Reconnected')}},6000)}};
 $('#tStale').onclick=()=>{const free=LIB.find(k=>!st.deck.includes(k.id));if(free){addKey(free.id)}phone.stale=true;if(phone.screen==='deck')renderPhone();toast('Deck edited in XRCC')};
+$('#tStack').onclick=()=>{st.mobileMode=st.mobileMode==='stack'?'grid':'stack';$('#tStack').textContent='Phone layout: '+(st.mobileMode==='stack'?'Stack':'Grid');renderPhone()};
 $('#tLand').onclick=()=>{phone.land=!phone.land;renderPhone()};
 $('#tReset').onclick=()=>{st.phones=st.phones.filter(p=>!p.local);phone.conn='local';phone.stale=false;phoneGoto('join');renderLaunch()};
 /* ---------- Tabs and render ---------- */
