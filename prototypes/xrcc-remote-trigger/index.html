@@ -379,6 +379,10 @@ input:focus{outline:1px solid var(--interactive)}
   .editor .key.sel .rz::after{width:10px;height:10px;right:7px;bottom:7px;border-color:var(--accent)}
   .editor .key.sel{outline-width:2px}
 }
+.stage .stg{position:absolute;right:12px;bottom:8px;z-index:3;padding:3px 10px;font-size:12px}
+.stage{transition:height .2s}
+.stage.collapsed{height:44px}.stage.collapsed .scene,.stage.collapsed .ghost,.stage.collapsed .beam{display:none}.stage.collapsed .stg{bottom:8px;top:auto}
+.stage .banner{right:12px;top:10px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -397,8 +401,7 @@ input:focus{outline:1px solid var(--interactive)}
     <div class="layout">
       <div>
         <section class="view view-editor on" id="vEditor">
-          <div class="stage dark" id="stageE"><div class="beam"></div><div class="ghost">Scene preview · lights and guests appear here during Play</div><span class="pill tag">Scene: Intro</span><span class="banner" id="bannerE"></span><div class="scene" id="guestsE"></div></div>
-          <div class="ed-grid">
+                    <div class="ed-grid">
             <div class="card editor">
               <div class="row" style="justify-content:space-between;margin-bottom:12px">
                 <div><h2>Remote deck</h2><div class="muted" id="edHint" data-html>Drag a variable onto any free cell. Drag keys to move, the corner to resize. Select a key to remove it.</div></div>
@@ -417,7 +420,7 @@ input:focus{outline:1px solid var(--interactive)}
           </div>
         </section>
         <section class="view view-play" id="vPlay">
-          <div class="stage dark" id="stageP"><div class="beam"></div><div class="ghost">Scene preview · starts when you press Play</div><span class="pill tag">Scene view · Play</span><span class="banner" id="bannerP"></span><div class="scene" id="guestsP"></div></div>
+          <div class="stage dark" id="stageP"><div class="beam"></div><div class="ghost">Scene preview · starts when you press Play</div><span class="pill tag">Scene preview · Intro</span><button class="btn tertiary stg" id="stgBtn" aria-expanded="true">Hide</button><span class="banner" id="bannerP"></span><div class="scene" id="guestsP"></div></div>
           <div class="card" style="margin-bottom:16px">
             <div class="row" style="justify-content:space-between">
               <div><h2>Play</h2><div class="muted">Start Play to open the remote. Phones can only press keys while Play is running.</div></div>
@@ -517,10 +520,10 @@ function log(msg){const t=new Date().toLocaleTimeString([], {hour12:false});st.l
 /* ---------- Scene effects ---------- */
 function applyScene(){
   document.documentElement.style.setProperty('--mood',st.vals.mood);
-  ['stageE','stageP'].forEach(id=>{const s=$('#'+id);const lit=st.playing&&st.vals.lights;s.classList.toggle('dark',!lit);s.style.setProperty('--beam',(st.vals.spot/100*.85).toFixed(2));
-    const g=$('#guests'+id.slice(-1));g.innerHTML='';for(let i=0;i<Math.min(st.vals.guests,24);i++)g.append(h('i',{class:'guest',style:`background:hsl(${(i*47)%360} 40% 45%)`}));});
+  ['stageP'].forEach(id=>{const s=$('#'+id);const lit=st.playing&&st.vals.lights;s.classList.toggle('dark',!lit);s.style.setProperty('--beam',(st.vals.spot/100*.85).toFixed(2));
+    const g=$('#guestsP');g.innerHTML='';for(let i=0;i<Math.min(st.vals.guests,24);i++)g.append(h('i',{class:'guest',style:`background:hsl(${(i*47)%360} 40% 45%)`}));});
   const msg=!st.playing?'':st.vals.music?'♪ Music on':'';
-  $('#bannerE').textContent=$('#bannerP').textContent=msg;
+  $('#bannerP').textContent=msg;
 }
 /* ---------- Actions (single source of truth: the "Play" side) ---------- */
 function perform(id,payload,from){
@@ -756,6 +759,7 @@ $('#segPublic').onclick=()=>{st.showPublic=true;renderLaunch()};
 $('#copyBtn').onclick=async()=>{try{await navigator.clipboard.writeText($('#linkIn').value)}catch(e){}toast('Link copied')};
 $('#dNo').onclick=()=>$('#scrim').classList.remove('on');
 $('#dYes').onclick=()=>{$('#scrim').classList.remove('on');$('#launchAlert').innerHTML='<div class="alert">⏳ Opening a public link…</div>';setTimeout(()=>{st.publicOn=true;renderLaunch();toast('Public link is on')},1400)};
+$('#stgBtn').onclick=()=>{const s=$('#stageP'),c=s.classList.toggle('collapsed');$('#stgBtn').textContent=c?'Show preview':'Hide';$('#stgBtn').setAttribute('aria-expanded',String(!c))};
 $('#playBtn').onclick=()=>{
   st.playing=!st.playing;
   if(st.playing){st.code=genCode();st.vals.lights=true;log('Play started — remote is ready, code <b>'+st.code+'</b>')}
