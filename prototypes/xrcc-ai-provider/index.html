@@ -498,8 +498,8 @@ const cancel=`<button class="btn" data-back>Cancel</button>`;
 const keySel=(p)=>{const ks=S.keys.filter(k=>k.prov===S.addSel);
  if(!ks.length)return `<div class="field"><div class="mdb">API key</div><div class="row g16" style="padding:16px;border:1px dashed var(--b-def);border-radius:8px"><div class="tile" style="width:40px;height:40px;background:var(--muted)">${ic('Key','i20')}</div><div class="col g4 fill"><div class="mdb">No ${p.n} keys here yet</div><div class="sm t2">Paste one from Google AI Studio. It is saved on this computer only.</div></div><button class="btn out" data-addkey>Add a key</button></div></div>`;
  const cur=ks.find(k=>k.id===S.addKey)||ks[0];
- return `<div class="field" style="position:relative"><div class="lrow"><span class="mdb fill">API key</span><button class="lnk" data-manage data-tip="Open Settings › Connections">Manage keys</button></div><button class="sel ${S.menuOpen?'open':''}" data-menu><span class="md fill">${cur.name}${needPw(cur)?' (locked)':''}</span>${ic('Down','i12')}</button>
- ${S.menuOpen?`<div class="menu2"><div class="grp">${p.n} keys on this computer</div>${ks.map(k=>`<div class="mitem" data-pickkey="${k.id}"><span class="st">${ic(needPw(k)?'Lock':'Key')}</span><div class="col fill" style="gap:4px"><span class="md">${k.name}</span><span class="sm t2">${needPw(k)?'Needs its password':'Last used '+(k.meta.split('last used ')[1]||'recently')}</span></div>${needPw(k)?'<span class="caption t2">LOCKED</span>':''}</div>`).join('')}<div class="mdiv"></div><div class="mitem" data-addkey><span class="st">${ic('Plus')}</span><span class="md">Add a new key…</span></div></div>`:''}</div>`};
+ return `<div class="field" style="position:relative"><div class="lrow"><span class="mdb fill">${S.addSel==='custom'?'Saved server':'API key'}</span><button class="lnk" data-manage data-tip="Open Settings › Connections">Manage keys</button></div><button class="sel ${S.menuOpen?'open':''}" data-menu><span class="md fill">${cur.name}${needPw(cur)?' (locked)':''}</span>${ic('Down','i12')}</button>
+ ${S.menuOpen?`<div class="menu2"><div class="grp">${S.addSel==='custom'?'Servers on this computer':p.n+' keys on this computer'}</div>${ks.map(k=>`<div class="mitem" data-pickkey="${k.id}"><span class="st">${ic(needPw(k)?'Lock':'Key')}</span><div class="col fill" style="gap:4px"><span class="md">${k.name}</span><span class="sm t2">${needPw(k)?'Needs its password':S.addSel==='custom'?(k.meta.split(' · ')[1]||'Your server'):'Last used '+(k.meta.split('last used ')[1]||'recently')}</span></div>${needPw(k)?'<span class="caption t2">LOCKED</span>':''}</div>`).join('')}<div class="mdiv"></div><div class="mitem" ${S.addSel==='custom'?'data-addserver':'data-addkey'}><span class="st">${ic('Plus')}</span><span class="md">${S.addSel==='custom'?'Add a new server…':'Add a new key…'}</span></div></div>`:''}</div>`};
 function addDlg(){
  const p=P[S.addSel];const ks=S.keys.filter(k=>k.prov===S.addSel);if(!ks.find(k=>k.id===S.addKey))S.addKey=ks[0]?ks[0].id:'';
  const tile=(id,v)=>{const caps=v.caps;const dn=(id!=='custom'&&!!S.providers.find(p=>p.pid===id))||(S.forCap&&id!=='custom'&&!v.caps.includes(S.forCap));const shown=caps.slice(0,3);const more=caps.length-3;
@@ -609,7 +609,7 @@ document.addEventListener('click',e=>{
  if(e.target.closest('[data-savesess]')){const i=ov.querySelectorAll('.dlg input,.dlg textarea');{const idx=e.target.closest('[data-savesess]').dataset.savesess;const obj={n:(i[0].value||'Untitled session').trim(),u:'Not used yet',p:'“'+((i[1]&&i[1].value)||'Write the character prompt here.').trim()+'”'};if(idx!==''){obj.u=S.sessions[+idx].u;S.sessions[+idx]=obj}else S.sessions.push(obj)}S.tab='sessions';toast('Session saved');return renderPanel()}
  if(km){S.kmenu=S.kmenu===km.dataset.kmenu?null:km.dataset.kmenu;return settings()}
  if(S.kmenu&&ov.querySelector('.win')){S.kmenu=null;settings()}
- const t=e.target.closest('[data-addwit],[data-savewit],[data-vall],[data-nai],[data-sx],[data-pkmenu],[data-pk],[data-x],[data-back],[data-clone],[data-manage],[data-ext],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-unset],[data-pu],[data-doun],[data-dokey],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dEmpty,#dLaunch,#dLaunch0,#dLConn');
+ const t=e.target.closest('[data-addwit],[data-savewit],[data-vall],[data-nai],[data-sx],[data-pkmenu],[data-pk],[data-x],[data-back],[data-clone],[data-manage],[data-ext],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-unset],[data-pu],[data-doun],[data-dokey],[data-addserver],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dEmpty,#dLaunch,#dLaunch0,#dLConn');
  if(!t)return;const d=t.dataset;
  if(t.id==='openAI')return openPanel();
  if(t.id==='reset'){S=init();hide();return toast('Prototype reset')}
@@ -626,7 +626,7 @@ document.addEventListener('click',e=>{
  if('back' in d){return stack.length>1?pop():hide()}
  if(d.tab){S.tab=d.tab;S.vstate=S.vstate==='loading'?'ok':S.vstate;return renderPanel()}
  if('add' in d){S.ret=d.ret||null;S.forCap=d.for||null;const first=S.forCap?Object.entries(P).find(([i,v])=>v.caps.includes(S.forCap)&&!S.providers.find(p=>p.pid===i)):null;S.addSel=first?first[0]:((Object.keys(P).find(i=>i==='custom'||!S.providers.find(p=>p.pid===i)))||'custom');if(d.with&&P[d.with])S.addSel=d.with;const k0=S.keys.find(k=>k.prov===S.addSel);S.addKey=k0?k0.id:'';S.menuOpen=false;return addDlg()}
- if(d.sel){if(d.sel==='custom')return customDlg();S.addSel=d.sel;S.menuOpen=false;return addDlg()}
+ if(d.sel){if(d.sel==='custom'&&!S.keys.some(k=>k.prov==='custom'))return customDlg();S.addSel=d.sel;S.menuOpen=false;return addDlg()}
  if('menu' in d){S.menuOpen=!S.menuOpen;return addDlg()}
  if('nai' in d){hide();S.providers=[];S.assign={};return toast('XRCC started without AI. Add keys any time in Settings')}
  if('sx' in d){hide();return toast('XRCC started with your saved keys')}
@@ -636,6 +636,7 @@ document.addEventListener('click',e=>{
  if(d.pkmenu){S.pkmenu=S.pkmenu===d.pkmenu?null:d.pkmenu;return renderPanel()}
  if(d.pk){const [pi,ki]=d.pk.split('|');const pp=S.providers.find(q=>q.id===pi);if(pp)pp.key=ki;S.pkmenu=null;toast('Key changed');return renderPanel()}
  if(d.pickkey){S.menuOpen=false;const kk=S.keys.find(k=>k.id===d.pickkey);S.addKey=d.pickkey;return addDlg()}
+ if('addserver' in d){S.menuOpen=false;return customDlg()}
  if(d.dokey){const kk=S.keys.find(k=>k.id===d.dokey);const v=$('#pw').value;if(v==='xrcc'){kk.locked=false;kk.ok=true;S.addKey=kk.id;toast('Key unlocked');pop();return addDlg()}return keyUnlockDlg(kk.id,true)}
  if('addkey' in d||'addkey2' in d){S.fromSettings='addkey2' in d;S.menuOpen=false;return keyDlg()}
  if(d.ksel){S.addSel=d.ksel;return keyDlg()}
