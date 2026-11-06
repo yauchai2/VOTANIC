@@ -346,6 +346,7 @@ input:focus{outline:1px solid var(--interactive)}
 @media(max-width:800px){.card.editor .deck{width:100%;grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media(max-width:700px){.topbar{height:auto;min-height:44px;flex-wrap:wrap;padding:6px 12px}.brand{font-size:13px}.brand i{display:none}.tabs{margin-left:0;width:100%;height:36px}.tab{padding:0 10px;font-size:12px;white-space:nowrap}main{padding:12px}.pill#playPill{display:none}}
 .editor .key .rz{opacity:.15}.editor .key:hover .rz,.key.resizing .rz{opacity:.9}.btn.danger:hover{background:rgba(255,69,58,.12)}
+.slot{cursor:pointer}.slot.target{background:rgba(169,139,240,.18);color:var(--accent);outline:1px solid var(--interactive)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -554,7 +555,7 @@ function renderDeckE(){
   st.deck.forEach(id=>d.append(keyEl(id,'editor')));
   const occ=new Set();for(const id of st.deck){const q=PS(id),z=sz(id);for(let i=0;i<z.w;i++)for(let j=0;j<z.h;j++)occ.add((q.x+i)+','+(q.y+j))}
   for(let y=0;y<rows;y++)for(let x=0;x<4;x++){if(occ.has(x+','+y))continue;
-    d.append(h('div',{class:'slot','data-x':x,'data-y':y,style:`grid-column:${x+1};grid-row:${y+1}`},'＋'))}
+    d.append(h('div',{class:'slot'+(targetSlot&&targetSlot.x===x&&targetSlot.y===y?' target':''),'data-x':x,'data-y':y,onclick:()=>{if(pdrag.just)return;targetSlot={x,y};setSide('keys');renderAll();toast('Pick a variable for this cell')},style:`grid-column:${x+1};grid-row:${y+1}`},'＋'))}
   $('#count').textContent=st.deck.length+' keys';
   $$('.key',d).forEach(el=>{
     el.addEventListener('pointerdown',e=>{if(e.target.closest('.rail,.btn,.x,.rz'))return;pdrag(el,el.dataset.id,e)});
@@ -612,7 +613,8 @@ function placeKey(id,x,y){
   if(!isNew){const other=st.deck.find(o=>o!==id&&PS(o).x===x&&PS(o).y===y&&sz(o).w===zz.w&&sz(o).h===zz.h);
     if(other){const a=PS(id);st.pos[id]={x,y};st.pos[other]=a;st.layoutVer++;save();renderAll();toast(label(id)+' swapped with '+label(other));return}}
   renderAll();toast('Not enough free space there')}
-function addKey(id){if(!BYID[id]||st.deck.includes(id))return;const z=sz(id);const f=findFree(id,z.w,z.h);if(!f){toast('The deck is full');return}
+let targetSlot=null;
+function addKey(id){if(!BYID[id]||st.deck.includes(id))return;const z=sz(id);let f=null;if(targetSlot&&fits(id,targetSlot.x,targetSlot.y,z.w,z.h))f=targetSlot;targetSlot=null;if(!f)f=findFree(id,z.w,z.h);if(!f){toast('The deck is full');return}
   st.deck.push(id);st.pos[id]=f;st.selected=id;st.layoutVer++;save();renderAll();toast(`${label(id)} added as a ${TYPELABEL[BYID[id].type].toLowerCase()} key`)}
 function removeKey(id){st.deck=st.deck.filter(x=>x!==id);delete st.pos[id];if(st.selected===id)st.selected=null;st.layoutVer++;save();renderAll();toast(`${label(id)} removed`)}
 let sideTab='keys';
