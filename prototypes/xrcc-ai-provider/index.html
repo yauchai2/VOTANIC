@@ -349,7 +349,7 @@ function renderPanel(){
    ${sp(50,34,6)}${sp(318,52,5)}${sp(290,152,8)}${sp(60,150,5)}</div></div>
   <div class="col g12" style="align-items:center;text-align:center"><div class="hmd">Give your project a brain and a voice</div><div class="md t2" style="max-width:480px">Connect an AI provider to chat in character, quiz learners on a PDF, or read lines out loud in Cantonese.</div></div>
   <button class="btn pri m" data-add>Add a provider</button>
-  <div class="caps" aria-label="What you can do once a provider is connected">${TASKS.map(t=>`<span class="pill">${ic(t.i,'i16')}${t.n}</span>`).join('')}</div></div></div>`);}
+  <div class="marq" aria-label="What you can do once a provider is connected"><div class="track">${[0,1].map(()=>TASKS.map(t=>`<span class="pill">${ic(t.i,'i16')}${t.n}</span>`).join('')).join('')}</div></div></div></div>`);}
  const n=TASKS.filter(isReady).length;
  const tabs=[['tasks','Sparkle','Tasks',`${n}/6`],['voices','Speech','Voices',S.voices.length],['sessions','Chat','Sessions',S.sessions.length],['providers','Plug','Providers',S.providers.length]];
  const body={tasks,voices,sessions,providers}[S.tab]();
