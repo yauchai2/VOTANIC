@@ -373,7 +373,7 @@ const prov=id=>S.providers.find(p=>p.id===id);
 const keyOf=p=>S.keys.find(k=>k.id===p.key);
 const isLocked=p=>{const k=keyOf(p);return k&&k.locked};
 const capOf=t=>({chat:'chat',quiz:'quiz',tts:'speech',music:'music',image:'image',stt:'stt'}[t.id]);
-const can=(p,t)=>{const pc=P[p.pid];const c=t.id==='tts'?'speech':t.cap;return pc.caps.includes(c)&&!(t.id==='quiz'&&!pc.pdf)};
+const can=(p,t)=>{if(p.pid==='custom')return true;const pc=P[p.pid];const c=t.id==='tts'?'speech':t.cap;return pc.caps.includes(c)&&!(t.id==='quiz'&&!pc.pdf)};
 const model=(p,t)=>(P[p.pid].M[t.id]||[P[p.pid].n])[0];
 const extra=(p,t)=>(P[p.pid].M[t.id]||[])[1]||'';
 const isReady=t=>{const p=prov(S.assign[t.id]);return p&&!isLocked(p)&&p.status!=='failed'};
@@ -502,7 +502,7 @@ const keySel=(p)=>{const ks=S.keys.filter(k=>k.prov===S.addSel);
 function addDlg(){
  const p=P[S.addSel];const ks=S.keys.filter(k=>k.prov===S.addSel);if(!ks.find(k=>k.id===S.addKey))S.addKey=ks[0]?ks[0].id:'';
  const tile=(id,v)=>{const caps=v.caps;const shown=caps.slice(0,3);const more=caps.length-3;
-  return `<button class="ptile ${S.addSel===id?'on':''}" ${S.forCap&&!v.caps.includes(S.forCap)?'style="opacity:.45;filter:grayscale(1);cursor:not-allowed;pointer-events:none" disabled aria-disabled="true"':`data-sel="${id}"`}>${lg(id,40)}<span class="mdb">${v.n}</span><span class="can">${shown.map(c=>ic(CIC[c])).join('')}${more>0?`<span class="sm ${S.addSel===id?'tacc':'t3'}" data-tip="Also: ${caps.slice(3).map(c=>CNAME[c]||c).join(', ')}">+${more}</span>`:''}</span></button>`};
+  return `<button class="ptile ${S.addSel===id?'on':''}" ${S.forCap&&id!=='custom'&&!v.caps.includes(S.forCap)?'style="opacity:.45;filter:grayscale(1);cursor:not-allowed;pointer-events:none" disabled aria-disabled="true"':`data-sel="${id}"`}>${lg(id,40)}<span class="mdb">${v.n}</span><span class="can">${shown.map(c=>ic(CIC[c])).join('')}${more>0?`<span class="sm ${S.addSel===id?'tacc':'t3'}" data-tip="Also: ${caps.slice(3).map(c=>CNAME[c]||c).join(', ')}">+${more}</span>`:''}</span></button>`};
  dlg('Add a provider',`<div class="lg">Pick a provider and a saved key. We'll test it right away.</div><div class="content"><div class="col g12"><div class="mdb">Pick a provider</div><div class="row g8">${Object.entries(P).map(([i,v])=>tile(i,v)).join('')}</div>${S.forCap?`<div class="sm t2">Showing who can do ${CNAME[S.forCap]}. The others are dimmed.</div>`:''}</div>
  <div class="row g8 sm t2" style="align-items:flex-start">${ic('Info','i16')}<span>Icons under each name show what it can do. ${p.n}: ${({gemini:'chat, quiz, speech, images and transcription',minimax:'chat, speech and music',poe:'chat, quiz, images and more',openrouter:'chat, quiz and images',custom:'whatever your server supports'})[S.addSel]}.</span></div>${keySel(p)}${S.addSel==='gemini'?`<div class="helper">You bring the key. Gemini has a free tier if you just want to try.</div>`:''}${p.vpn?`<div class="warn">${ic('World')}<div class="col g4"><b class="mdb">Gemini needs a VPN in Hong Kong</b><span class="sm">Turn it on before you connect, or the test will time out.</span></div></div>`:''}</div>`,
  `${cancel}<button class="btn pri" data-connect ${ks.length?'':'disabled'}>Connect ${p.n}</button>`);}
