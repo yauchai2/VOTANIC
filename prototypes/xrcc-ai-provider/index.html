@@ -38,6 +38,13 @@ svg{display:block}
 .filemenu{height:36px;background:var(--header);display:flex;align-items:center;gap:4px;padding:0 8px;position:relative;z-index:5}
 .filemenu>.mi{height:28px;padding:0 10px;display:flex;align-items:center;border-radius:4px;font-size:12px;line-height:18px;position:relative}
 .filemenu>.mi:hover,.filemenu>.mi.on{background:var(--pbg)}
+.brand{width:24px;height:24px;margin:0 8px;border-radius:6px;background:var(--pbg);color:var(--pc);display:grid;place-items:center;font:700 14px/1 Roboto,sans-serif;flex:none}
+.coach{position:fixed;z-index:30;width:300px;background:var(--elevated,#2a2a2e);border:1px solid var(--b-int,#8a5cd0);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:8px;box-shadow:0 12px 32px rgba(0,0,0,.5)}
+.coach:before{content:"";position:absolute;top:-7px;right:var(--ax,40px);width:12px;height:12px;background:inherit;border-left:1px solid var(--b-int,#8a5cd0);border-top:1px solid var(--b-int,#8a5cd0);transform:rotate(45deg)}
+.coach ol{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px}
+.pulse{animation:pls 1.6s ease-out infinite;border-radius:8px}
+@keyframes pls{0%{box-shadow:0 0 0 0 rgba(180,130,255,.7)}100%{box-shadow:0 0 0 14px rgba(180,130,255,0)}}
+@media (prefers-reduced-motion:reduce){.pulse{animation:none;box-shadow:0 0 0 3px rgba(180,130,255,.6)}}
 .xlogo{width:20px;height:20px;margin:0 8px;color:var(--t1)}
 .menu{position:absolute;top:34px;left:0;min-width:300px;background:#2a2531;border:1px solid var(--b-dis);border-radius:4px;padding:4px 0;display:none;box-shadow:0 8px 24px rgba(0,0,0,.5)}
 .menu.on{display:block}
@@ -222,7 +229,7 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 </svg>
 <div class="bench">
   <div class="filemenu">
-    <svg class="xlogo ic" viewBox="0 0 24 24" style="stroke-width:1.5"><path d="M4 4l16 16M20 4L4 20"/></svg>
+    <span class="brand" aria-label="XRCC">X</span>
     <span class="mi">File</span><span class="mi">Project</span><span class="mi">Edit</span><span class="mi">View</span>
     <span class="mi" id="helpBtn">Help
       <div class="menu" id="helpMenu"><div>Tutorials…</div><hr><div>About XRCC</div><div>Release Notes</div><div>Shortcut List</div><div id="mySettings">My Settings<span class="k">Ctrl+0</span></div><div>Feature Requests/Bug Reports</div><hr><div>Sign in Sketchfab</div></div>
@@ -554,6 +561,17 @@ document.addEventListener('click',e=>{
 function autoAssign(){TASKS.forEach(t=>{if(S.assign[t.id])return;const p=S.providers.find(p=>can(p,t));if(p)S.assign[t.id]=p.id})}
 ov.addEventListener('mousedown',e=>{if(e.target.classList.contains('lay'))pop()});
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='0'){e.preventDefault();S.fromSettings=true;settings()}if(e.key==='Escape')pop()});
+
+/* first-visit coach mark */
+(function(){const b=document.getElementById('openAI');if(!b)return;b.classList.add('pulse');
+ const c=document.createElement('div');c.className='coach';c.id='coach';
+ c.innerHTML='<div class="mdb">Start here</div><div class="sm t2">This is the XRCC editor with the new AI Provider flow. Try it in three steps:</div><ol class="sm t2"><li>Click the sparkle icon above.</li><li>Choose Add a provider and follow the steps.</li><li>Use the links at the bottom to jump to other states.</li></ol><div class="row g8" style="justify-content:flex-end"><button class="btn pri" id="coachOk">Got it</button></div>';
+ document.body.appendChild(c);
+ const place=()=>{const r=b.getBoundingClientRect();const w=300;let l=Math.min(Math.max(8,r.left+r.width/2-w+36),innerWidth-w-8);c.style.left=l+'px';c.style.top=(r.bottom+14)+'px';c.style.setProperty('--ax',Math.max(12,l+w-(r.left+r.width/2)-6)+'px')};
+ place();addEventListener('resize',place);
+ const off=()=>{c.remove();b.classList.remove('pulse')};
+ document.getElementById('coachOk').addEventListener('click',off);b.addEventListener('click',off);
+})();
 </script>
 </body>
 </html>
