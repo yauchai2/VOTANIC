@@ -64,8 +64,8 @@ svg{display:block}
 .overlay{position:fixed;inset:0;display:none;z-index:10}
 .overlay.on{display:block}
 .lay{position:fixed;inset:0;display:grid;place-items:center;padding:56px 24px;background:rgba(0,0,0,.55)}
-.panel{width:960px;max-width:100%;max-height:min(760px,82vh);background:var(--panel);border:1px solid var(--b-sub);border-radius:16px;display:flex;flex-direction:column;overflow:hidden}
-.panel.first{width:760px}
+.panel{width:960px;max-width:100%;height:min(640px,82vh);background:var(--panel);border:1px solid var(--b-sub);border-radius:16px;display:flex;flex-direction:column;overflow:hidden}
+.panel.first{width:760px;height:auto;max-height:min(760px,82vh)}
 .phead{height:40px;background:var(--header);display:flex;align-items:center;gap:8px;padding-left:16px;flex:none}
 .phead .hsm,.phead .lgb{flex:1;min-width:0}
 .iconbtn{width:40px;height:40px;display:grid;place-items:center;color:var(--t1);flex:none}
