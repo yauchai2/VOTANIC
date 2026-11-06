@@ -67,6 +67,7 @@ svg{display:block}
 [data-tip]{position:relative}
 [data-tip]:hover::after{content:attr(data-tip);position:absolute;top:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--canvas);border:1px solid var(--b-def);color:var(--t1);font-size:14px;line-height:20px;padding:4px 8px;border-radius:8px;white-space:nowrap;z-index:60;pointer-events:none}
 .tb[data-tip]:hover::after{top:calc(100% - 2px)}
+[data-tip]:has([data-tip]:hover)::after{display:none!important}
 /* Overlay and containers */
 .overlay{position:fixed;inset:0;display:none;z-index:10}
 .overlay.on{display:block}
