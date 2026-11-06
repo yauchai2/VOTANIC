@@ -314,7 +314,7 @@ const st={
   layoutVer:1,phoneVer:1,log:[]
 };
 const COLS=['#e5566d','#f0b429','#4ec27d','#4f8cf0','#8b5cf6','#c0392b','#d68a2c','#2e8b57','#4b3a78','#ffffff'];
-const ch=new BroadcastChannel('xrcc-rt');
+let ch;try{ch=new BroadcastChannel('xrcc-rt')}catch(e){ch={postMessage(){},set onmessage(f){}}}
 const genCode=()=>String(Math.floor(100000+Math.random()*900000));
 const save=()=>{try{localStorage.setItem('xrcc-rt-deck',JSON.stringify({deck:st.deck,labels:st.labels}))}catch(e){}};
 try{const s=JSON.parse(localStorage.getItem('xrcc-rt-deck')||'null');if(s){st.deck=s.deck.filter(i=>BYID[i]);st.labels=s.labels||{}}else st.deck=[...DEFAULT_DECK]}catch(e){st.deck=[...DEFAULT_DECK]}
@@ -527,6 +527,7 @@ function renderPhone(){
       if(v!==st.code){o.classList.remove('err');void o.offsetWidth;o.classList.add('err');err.textContent='That code is not right. Check the Launcher.';return}
       phoneGoto('connecting')};
     s.append(h('div',{class:'hero'},'⌁'),h('h2',{},'Join the remote'),h('div',{class:'muted',style:'max-width:300px'},'Enter the 6-digit code shown in XRCC Launcher. No app needed.'),o,err,h('button',{class:'btn primary',style:'width:100%',onclick:go},'Join'),h('div',{class:'muted',style:'font-size:12px'},'The code changes every time Play starts.'));
+    if(!st.playing)s.append(h('div',{class:'banner2 info',style:'font-size:12px;max-width:300px'},'Demo: open tab 2 · Play & Launcher and press Start Play. The code appears there.'));
     if(st.playing)s.append(h('button',{class:'btn tertiary',style:'font-size:12px',onclick:()=>{[...st.code].forEach((c,i)=>ins[i].value=c);go()}},'Fill demo code'));
     setTimeout(()=>ins[0]&&ins[0].focus({preventScroll:true}),50);
   }
@@ -580,7 +581,7 @@ $('#tReset').onclick=()=>{st.phones=st.phones.filter(p=>!p.local);phone.conn='lo
 /* ---------- Tabs and render ---------- */
 function setTab(t){st.tab=t;document.body.dataset.tab=t;$$('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));
   $('#vEditor').classList.toggle('on',t==='editor');$('#vPlay').classList.toggle('on',t==='play');
-  if(t==='phone'&&phone.screen==='ended'&&st.playing)phoneGoto('projects');history.replaceState(null,'','#'+t)}
+  if(t==='phone'&&phone.screen==='ended'&&st.playing)phoneGoto('projects');try{history.replaceState(null,'','#'+t)}catch(e){}}
 $$('.tab').forEach(b=>b.addEventListener('click',()=>setTab(b.dataset.t)));
 function renderAll(keepPhoneUi){renderDeckE();renderSide();renderLaunch();applyScene();
   if(keepPhoneUi&&phone.screen==='deck'&&P.querySelector('.pdeck')&&!P.querySelector('.rail.drag')&&!phone.sheet){softPhone()}else if(!keepPhoneUi||phone.screen!=='deck'){renderPhone()}}
@@ -592,8 +593,8 @@ function softPhone(){const g=P.querySelector('.pdeck');if(!g)return;
     if(k.type==='colour'){const s=$('.swatch',el);s&&(s.style.background=v);const x=$('.val',el);x&&(x.textContent=v.toUpperCase())}
   })}
 phoneApiInit();
-window.addEventListener('storage',e=>{if(e.key==='xrcc-rt-deck'){try{const s=JSON.parse(e.newValue);st.deck=s.deck.filter(i=>BYID[i]);st.labels=s.labels||{};renderAll()}catch(_){}}});
-setTab((location.hash||'#editor').slice(1).replace(/^(?!editor|play|phone).*$/,'editor'));
+try{window.addEventListener('storage',e=>{if(e.key==='xrcc-rt-deck'){try{const s=JSON.parse(e.newValue);st.deck=s.deck.filter(i=>BYID[i]);st.labels=s.labels||{};renderAll()}catch(_){}}})}catch(_){}
+let h0='editor';try{h0=(location.hash||'#editor').slice(1)}catch(e){}if(!/^(editor|play|phone)$/.test(h0))h0='editor';setTab(h0);
 renderAll();
 })();
 </script>
