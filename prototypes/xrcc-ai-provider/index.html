@@ -381,12 +381,12 @@ const pop=()=>{stack.pop();keys.pop();paint()};
 /* header */
 $('#projName').innerHTML=ic('Bookmark','i24')+'<span class="md">Lobby · Museum tour</span>';
 $('#tabEdit').innerHTML=ic('Edit','i24')+'Edit';$('#tabBeh').innerHTML=ic('Beh','i24')+'Behaviour';
-$('#tools').innerHTML=`<button class="tb" data-tip="Debug">${ic('Bug','i24')}</button><button class="tb" id="openAI" data-tip="AI Provider · Connect an AI service">${ic('Sparkle','i24')}<i class="dot"></i></button><button class="tb" data-tip="Inspector">${ic('Wrench','i24')}</button>`;
+$('#tools').innerHTML=`<button class="tb" data-tip="Debug">${ic('Bug','i24')}</button><button class="tb" id="openAI" data-tip="AI providers · Connect an AI service">${ic('Sparkle','i24')}<i class="dot"></i></button><button class="tb" data-tip="Inspector">${ic('Wrench','i24')}</button>`;
 $('#playIc').innerHTML=ic('Play','i16','fill:currentColor')+'Play';$('#playCar').innerHTML=ic('Down','i16');$('#saveBtn').innerHTML=ic('Save','i20')+'Save*';
 /* tabs panel */
 const closeBtn=`<button class="iconbtn" data-x data-tip="Close">${ic('Close','i20')}</button>`;
 function openPanel(){S.tab=S.providers.length?(S.tab==='first'?'tasks':S.tab):'first';renderPanel()}
-function renderPanel(){S.providers.sort((a,b)=>Object.keys(P).indexOf(a.pid)-Object.keys(P).indexOf(b.pid));const _d=document.querySelector('#openAI .dot');if(_d)_d.style.display=S.providers.length?'none':'';
+function renderPanel(){S.providers.sort((a,b)=>Object.keys(P).indexOf(a.pid)-Object.keys(P).indexOf(b.pid));const _b=document.getElementById('openAI');if(_b)_b.setAttribute('data-tip',S.providers.length?'AI providers · Add or change providers':'AI providers · Connect an AI service');const _d=document.querySelector('#openAI .dot');if(_d)_d.style.display=S.providers.length?'none':'';
  if(S.tab==='first'){
   const sp=(l,t,w)=>`<i class="sp" style="left:${l}px;top:${t}px;width:${w}px;height:${w}px"></i>`;
   return show(`<div class="panel first"><div class="phead">${ic('Sparkle','i20','color:var(--pc)')}<span class="lgb fill">AI Provider</span>${closeBtn}</div><div class="pbody">
