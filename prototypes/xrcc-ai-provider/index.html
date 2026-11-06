@@ -209,6 +209,41 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 .rp{flex:1;display:flex;flex-direction:column;min-width:0}
 .rp .tb2{height:40px;background:var(--canvas);display:flex;justify-content:flex-end;flex:none}
 .rp .rb{flex:1;overflow:auto;padding:32px 45px;display:flex;flex-direction:column;gap:32px;background:var(--panel)}
+.win.lw{width:1100px;height:min(723px,88vh);flex-direction:column;background:#1e1e21;border-radius:16px 0 16px 16px}
+.lw .lt{height:32px;flex:none;background:#2a2531;display:flex;align-items:center;justify-content:space-between;padding-left:36px;font-size:14px;color:var(--t1)}
+.lw .lt div{display:flex}.lw .lt button{width:40px;height:32px;background:none;border:0;color:var(--t1);display:flex;align-items:center;justify-content:center;cursor:pointer}.lw .lt button:hover{background:#ffffff14}
+.lw .lbody{flex:1;display:flex;min-height:0}
+.lw .lside{width:240px;flex:none;background:#1e1e21;padding:30px 20px;display:flex;flex-direction:column;justify-content:space-between;align-items:center}
+.lw .lside .lglogo{color:#fff;font-weight:700;letter-spacing:6px;font-size:22px;height:35px;display:flex;align-items:center;white-space:nowrap}
+.lw .lside .ver{height:auto;margin:0;padding:12px 16px;background:#2a2531;border-radius:8px;width:200px;display:flex;align-items:center;gap:12px;color:#b89afa;font-weight:700;font-size:16px}
+.lw .lside .ver span{flex:1}
+.lw .ln{display:flex;flex-direction:column;gap:4px;width:200px}
+.lw .ln div{display:flex;align-items:center;gap:12px;padding:12px 8px 12px 20px;border-radius:8px;color:#818181;font-size:16px;line-height:24px;position:relative}
+.lw .ln div.on{background:linear-gradient(90deg,#4f348d,#2a2531);color:#b89afa}.lw .ln div.on:before{content:"";position:absolute;left:8px;top:8px;width:4px;height:32px;border-radius:4px;background:#b89afa}
+.lw .lbot{display:flex;gap:8px;align-items:center;width:200px}
+.lw .lbot .set{flex:1;display:flex;align-items:center;gap:12px;padding:12px 8px 12px 20px;color:#818181;font-size:16px}
+.lw .lbot .cn{width:40px;height:40px;border-radius:8px;background:#392e52;color:#b89afa;border:0;display:flex;align-items:center;justify-content:center}
+.lw .lbot .cn.on{border:1px solid #b89afa}
+.lw .lmain{flex:1;display:flex;flex-direction:column;min-width:0;background:#1e1e21}
+.lw .fb{height:44px;flex:none;display:flex;align-items:center;justify-content:flex-end;padding:8px 24px;color:#b89afa}
+.lw .lpage{flex:1;overflow:auto;background:#161616;border-radius:24px 0 0 0;padding:36px 24px;display:flex;justify-content:center}
+.lw .lcol{width:650px;display:flex;flex-direction:column;gap:16px}
+.lw .lcol h2{margin:0;font-size:24px;line-height:34px;font-weight:700;color:#e5e5e5}
+.lw .lsec{display:flex;flex-direction:column;gap:16px}
+.lw .lsec .ht{font-size:16px;line-height:24px;font-weight:700;color:#b89afa}.lw .lsec .hd{font-size:14px;line-height:20px;color:#e5e5e5;margin-top:4px}
+.lw .sb{display:flex;align-items:center;gap:8px}
+.lw .sb .in{width:203px;height:36px;border:1px solid #545454;border-radius:8px;background:#1e1e21;display:flex;align-items:center;padding:0 12px}
+.lw .sb .in input{background:none;border:0;outline:0;color:#e5e5e5;font:inherit;font-size:14px;width:100%}.lw .sb .in input::placeholder{color:#545454}
+.lw .sb .sbt{width:28px;height:28px;border-radius:3px;background:#392e52;color:#b89afa;display:flex;align-items:center;justify-content:center}
+.lw .sb .dv{width:1px;height:29px;background:#e5e5e5;border-radius:1px}.lw .sb .ico{width:28px;height:28px;display:flex;align-items:center;justify-content:center;color:#b89afa}
+.lw .sb .add{margin-left:auto;background:#392e52;color:#b89afa;border:0;border-radius:8px;height:40px;padding:0 16px;min-width:100px;display:flex;align-items:center;justify-content:center;gap:8px;font:inherit;font-size:16px;cursor:pointer}.lw .sb .add:hover{background:#463a63}
+.lw .tbl{background:#1e1e21;border-radius:8px;overflow:hidden}
+.lw .tbl .th{display:flex;padding:0;gap:0;background:#392e52;color:#b89afa;font-size:13px;font-weight:700;line-height:20px;border-bottom:1px solid #b89afa}
+.lw .tbl .th>span{padding:8px}.lw .tbl .th>span:first-child{flex:1}.lw .tbl .th>span:not(:first-child){width:130px;text-align:center}
+.lw .tbl .tr{display:flex;align-items:center;height:40px;padding:0;gap:0;font-size:13px;color:#e5e5e5}
+.lw .tbl .tr>*{padding:0 8px}.lw .tbl .tr>:first-child{flex:1;font-weight:400}.lw .tbl .tr>:not(:first-child){width:130px;display:flex;justify-content:center;align-items:center}
+.lw .tbl .tr .mdb{font-weight:400}
+
 .tbl{background:var(--canvas);border-radius:8px;overflow:hidden}.tbl .th{display:grid;grid-template-columns:1fr 140px 96px;gap:8px;padding:6px 12px;background:var(--pbg);color:var(--pc);font-size:12px}.tbl .tr{display:grid;grid-template-columns:1fr 140px 96px;gap:8px;padding:10px 12px;align-items:center}
 .krow{display:flex;align-items:center;gap:16px;padding:12px 16px;background:var(--canvas);border-radius:8px}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--elevated);border:1px solid var(--b-def);padding:8px 16px;border-radius:8px;display:none;z-index:70;font-size:14px}
@@ -266,6 +301,7 @@ const D={
  Image:'M3 16L8.5 11L13 15L16 12.5L21 17M4 5H20C20.6 5 21 5.4 21 6V18C21 18.6 20.6 19 20 19H4C3.4 19 3 18.6 3 18V6C3 5.4 3.4 5 4 5ZM9.5 9C9.5 9.83 8.83 10.5 8 10.5C7.17 10.5 6.5 9.83 6.5 9C6.5 8.17 7.17 7.5 8 7.5C8.83 7.5 9.5 8.17 9.5 9Z',
  Mic:'M5.5 11C5.5 14.6 8.4 17.5 12 17.5M12 17.5C15.6 17.5 18.5 14.6 18.5 11M12 17.5V21M9 21H15M9 6C9 4.3 10.3 3 12 3C13.7 3 15 4.3 15 6V11C15 12.7 13.7 14 12 14C10.3 14 9 12.7 9 11V6Z',
  Plus:'M12 5V19M5 12H19',
+ Download:'M12 4V15M7 11L12 16L17 11M5 20H19',Min:'M5 12H19',Sort:'M8 5V19M8 5L5 8M8 5L11 8M16 19V5M16 19L13 16M16 19L19 16',List:'M4 7H20M4 12H14M4 17H9',Layers:'M12 4L20 8L12 12L4 8L12 4ZM4 12L12 16L20 12M4 16L12 20L20 16',Folder:'M3 7H10L12 9H21V19H3V7Z',
  Plug:'M9 3V7M15 3V7M12 17C15.3 17 18 14.3 18 11V7H6V11C6 14.3 8.7 17 12 17ZM12 17V21',
  Key:'M11 13L20 4M17 7L19.5 9.5M14.5 9.5L16.5 11.5M12 16C12 18.21 10.21 20 8 20C5.79 20 4 18.21 4 16C4 13.79 5.79 12 8 12C10.21 12 12 13.79 12 16Z',
  Lock:'M8 11V7C8 4.8 9.8 3 12 3C14.2 3 16 4.8 16 7V11M12 15V17M5 11H19C19.6 11 20 11.4 20 12V20C20 20.6 19.6 21 19 21H5C4.4 21 4 20.6 4 20V12C4 11.4 4.4 11 5 11Z',
@@ -507,24 +543,27 @@ function settings(over,lch){
  </div></div></div>`)}
 
 function launcherWin(over){
- const nav=[['Projects','Display'],['Content Library','World'],['Packages','Image'],['Profiles','Pencil'],['Versions','Refresh'],['License','Id']];
+ const nav=[['Projects','Folder'],['Content Library','World'],['Packages','Image'],['Profiles','Pencil'],['Versions','Layers'],['License','Id']];
  const kmenu=k=>S.kmenu===k.id?`<div class="menu on" style="left:auto;right:0;min-width:200px;z-index:5"><div data-kact="pw|${k.id}">${k.pw?'Change password':'Set password'}</div><div data-kact="ren|${k.id}">Rename</div><hr><div data-kact="del|${k.id}" style="color:#ff8a8a">Remove key</div></div>`:'';
  const act=k=>`<span class="row g4" style="justify-content:center;position:relative">${k.pw?`<span class="tacc" data-tip="Password set">${ic('Lock','i16')}</span>`:''}<button class="iconbtn s28" data-kmenu="${k.id}" ${S.kmenu===k.id?'':'data-tip="More actions"'}>${ic('MoreH')}</button>${kmenu(k)}</span>`;
- const tbl=(rows,empty)=>`<div class="tbl"><div class="th"><span>Key Name</span><span style="text-align:center">Last Used</span><span style="text-align:center">Action</span></div>${rows.length?rows.join(''):`<div class="md t2" style="padding:16px 12px">${empty}</div>`}</div>`;
+ const tbl=(rows,empty,h3)=>`<div class="tbl"><div class="th"><span>${h3||'Key Name'}</span><span>Last Used</span><span>Action</span></div>${rows.length?rows.join(''):`<div class="md t2" style="padding:16px 12px">${empty}</div>`}</div>`;
+ const sbar=(ph,btn)=>`<div class="sb"><div class="in"><input data-kq placeholder="${ph}"></div><span class="sbt">${ic('Search')}</span><span class="dv"></span><span class="ico">${ic('Sort')}</span><span class="ico">${ic('List')}</span><button class="add" data-addkey2>${ic('Plus','i20')}${btn}</button></div>`;
  const KD={k1:'2025-11-03',k2:'2025-11-05',k3:'2025-10-12',k4:'2025-11-01'};
  const sec=(pid,title)=>{const ks=S.keys.filter(k=>k.prov===pid);if(!ks.length&&pid!=='poe')return '';
-  return `<div class="col g8"><div class="lgb tacc">${title}</div><div class="sm t2">All the ${title} API keys added to XRCC</div>
-  <div class="row g8" style="align-items:center"><div class="input" style="width:240px;height:36px;display:flex;align-items:center;gap:8px;color:var(--t3)">${ic('Search')}<input data-kq placeholder="Search key name" style="flex:1;background:none;border:0;outline:0;color:var(--t1);font:inherit;min-width:0"></div><span class="fill"></span><button class="btn pri" data-addkey2 style="height:36px">Add API Key</button></div>
+  return `<div class="lsec"><div><div class="ht">${title}</div><div class="hd">all the ${title} API keys added to XRCC</div></div>
+  ${sbar('Search key name','Add API Key')}
   ${tbl(ks.map(k=>`<div class="tr" data-kt="${(k.name+' '+k.meta).toLowerCase()}"><b class="mdb">${k.name}</b><span class="sm t2" style="text-align:center">${KD[k.id]||'Today'}</span>${act(k)}</div>`),'No keys yet. Add one to use '+title+'.')}</div>`};
- const wit=S.wit===false?tbl([],'No Wit.ai token yet. Speech commands need one.'):tbl([`<div class="tr"><b class="mdb">Lobby kiosk token</b><span class="sm t2" style="text-align:center">2025-10-28</span><span class="row g4" style="justify-content:center;position:relative"><button class="iconbtn s28" data-cm="wit|1" data-tip="More actions">${ic('MoreH')}</button></span></div>`]);
- (over?(h=>push(h,'settings')):show)(`<div class="win"><div class="side"><div class="sh">${ic('Set','i20')}XRCC Launcher</div><div class="col g12" style="padding:12px 16px 4px"><div class="lgb" style="font-size:24px;letter-spacing:6px;text-align:center;padding:8px 0">X R C C</div><div class="sel" style="height:36px;background:var(--pbg);border-color:transparent"><span class="md fill tacc">Version 4.0</span>${ic('Down','i12')}</div></div>
-  <div class="ml">${nav.map(i=>`<div class="m">${ic(i[1],'i20')}${i[0]}</div>`).join('')}<div class="m">${ic('Set','i20')}Settings</div><div class="m on">${ic('Link','i20')}Connections</div></div></div>
- <div class="rp"><div class="tb2"><button class="iconbtn" data-x data-tip="Close">${ic('Close')}</button></div><div class="rb" style="gap:20px">
-  <div class="h2">XRCC Connections</div>
+ const wit=`<div class="tbl"><div class="th"><span>Token name</span><span>Token</span><span>Last Used</span><span>Action</span></div>${S.wit===false?`<div class="md t2" style="padding:16px 12px">No Wit.ai token yet. Speech commands need one.</div>`:`<div class="tr"><span>Lobby kiosk token</span><span class="t2" data-tip="Token hidden">${ic('Chat','i20')}</span><span>2025-10-28</span><span class="row g4" style="justify-content:center;position:relative"><button class="iconbtn s28" data-cm="wit|1" data-tip="More actions">${ic('MoreH')}</button></span></div>`}</div>`;
+ (over?(h=>push(h,'settings')):show)(`<div class="win lw"><div class="lt"><span>XRCC Launcher</span><div><button data-tip="Minimise">${ic('Min')}</button><button data-x data-tip="Close">${ic('Close')}</button></div></div>
+ <div class="lbody"><div class="lside"><div class="col" style="gap:32px;align-items:center"><div class="lglogo">X R C C</div><div class="ver">${ic('Layers','i20')}<span>4.0</span>${ic('Down','i16')}</div></div>
+  <div class="ln">${nav.map(i=>`<div>${ic(i[1],'i20')}${i[0]}</div>`).join('')}</div>
+  <div class="lbot"><div class="set">${ic('Set','i20')}Settings</div><button class="cn on" data-tip="Connections">${ic('Link','i20')}</button></div></div>
+ <div class="lmain"><div class="fb">${ic('Download','i20')}</div><div class="lpage"><div class="lcol">
+  <h2>XRCC Connections</h2>
   ${sec('gemini','Gemini')}${sec('minimax','MiniMax')}${sec('poe','Poe')}${sec('openrouter','OpenRouter')}${sec('custom','Custom server')}
-  <div class="col g8"><div class="lgb tacc">Wit.ai</div><div class="sm t2">All the Wit.ai tokens added to XRCC</div><div class="row g8"><span class="fill"></span><button class="btn pri" data-addkey2 style="height:36px">Add Token</button></div>${wit}</div>
-  <div class="col g8"><div class="lgb tacc">Clear Unused Connection Information</div><div class="sm t2">Automatically delete connections if they are not used for a long time</div><div class="sel" style="width:220px;height:36px"><span class="md fill">90 days</span>${ic('Down','i12')}</div></div>
- </div></div></div>`)}
+  <div class="lsec"><div><div class="ht">Wit.ai</div><div class="hd">all the wit.ai tokens added to XRCC</div></div>${sbar('Search token name','Add Token')}${wit}</div>
+  <div class="lsec"><div><div class="ht">Clear Unused Connection Information</div><div class="hd">Automatically delete connections if they are not used for a long time</div></div><div class="sel" style="width:285px;height:36px"><span class="md fill">90 days</span>${ic('Down','i12')}</div></div>
+ </div></div></div></div></div>`)}
 /* events */
 const MENUS=$('#helpBtn');
 document.addEventListener('click',e=>{
