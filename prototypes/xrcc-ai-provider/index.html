@@ -371,7 +371,7 @@ const $=s=>document.querySelector(s),ov=$('#ov');
 const toast=t=>{const e=$('#toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),2200)};
 const prov=id=>S.providers.find(p=>p.id===id);
 const keyOf=p=>S.keys.find(k=>k.id===p.key);
-const needPw=k=>!!k&&(k.locked||(k.pw&&!k.ok));
+const needPw=k=>!!k&&!!k.locked;
 const isLocked=p=>{const k=keyOf(p);return k&&k.locked};
 const capOf=t=>({chat:'chat',quiz:'quiz',tts:'speech',music:'music',image:'image',stt:'stt'}[t.id]);
 const can=(p,t)=>{if(p.pid==='custom')return true;const pc=P[p.pid];const c=t.id==='tts'?'speech':t.cap;return pc.caps.includes(c)&&!(t.id==='quiz'&&!pc.pdf)};
@@ -635,13 +635,13 @@ document.addEventListener('click',e=>{
  if('savewit' in d){S.wit=true;pop();toast('Token saved');return settings()}
  if(d.pkmenu){S.pkmenu=S.pkmenu===d.pkmenu?null:d.pkmenu;return renderPanel()}
  if(d.pk){const [pi,ki]=d.pk.split('|');const pp=S.providers.find(q=>q.id===pi);if(pp)pp.key=ki;S.pkmenu=null;toast('Key changed');return renderPanel()}
- if(d.pickkey){S.menuOpen=false;const kk=S.keys.find(k=>k.id===d.pickkey);if(needPw(kk))return keyUnlockDlg(kk.id);S.addKey=d.pickkey;return addDlg()}
+ if(d.pickkey){S.menuOpen=false;const kk=S.keys.find(k=>k.id===d.pickkey);S.addKey=d.pickkey;return addDlg()}
  if(d.dokey){const kk=S.keys.find(k=>k.id===d.dokey);const v=$('#pw').value;if(v==='xrcc'){kk.locked=false;kk.ok=true;S.addKey=kk.id;toast('Key unlocked');pop();return addDlg()}return keyUnlockDlg(kk.id,true)}
  if('addkey' in d||'addkey2' in d){S.fromSettings='addkey2' in d;S.menuOpen=false;return keyDlg()}
  if(d.ksel){S.addSel=d.ksel;return keyDlg()}
  if('savekey' in d){const inps=ov.querySelectorAll('input');const n=inps[0].value||'New key',pwi=ov.querySelector('#kpw'),pw=ov.querySelector('#pwon')&&ov.querySelector('#pwon').checked&&pwi&&pwi.value;S.keys.push({id:'k'+Date.now(),name:n,prov:S.addSel,meta:P[S.addSel].n+' · added today',pw:!!pw,ok:true,end:'2C9D'});toast('Key saved');if(S.fromSettings)return settings();S.addKey=S.keys[S.keys.length-1].id;pop();return addDlg()}
  if('customadd' in d){const first=!S.providers.length;const np={id:'p'+Date.now(),pid:'custom',key:'k4'};S.providers.push(np);autoAssign();toast('Custom connected');const r=S.ret;S.ret=null;if(r){S.tab='tasks';renderPanel();S.pick={t:r,p:np.id,m:0};return pickDlg(r)}S.tab=first?'tasks':'providers';return renderPanel()}
- if('connect' in d){const kid=S.addKey;if(!kid)return;{const kk0=S.keys.find(k=>k.id===kid);if(needPw(kk0))return keyUnlockDlg(kid)}const first=!S.providers.length;let np=S.providers.find(p=>p.pid===S.addSel);if(!np){np={id:'p'+Date.now(),pid:S.addSel,key:kid};S.providers.push(np)}autoAssign();toast(P[S.addSel].n+' connected');const r=S.ret;S.ret=null;if(r){S.tab='tasks';renderPanel();S.pick={t:r,p:np.id,m:0};return pickDlg(r)}S.tab=first?'tasks':'providers';return renderPanel()}
+ if('connect' in d){const kid=S.addKey;if(!kid)return;const first=!S.providers.length;let np=S.providers.find(p=>p.pid===S.addSel);if(!np){np={id:'p'+Date.now(),pid:S.addSel,key:kid};S.providers.push(np)}autoAssign();toast(P[S.addSel].n+' connected');const r=S.ret;S.ret=null;if(r){S.tab='tasks';renderPanel();S.pick={t:r,p:np.id,m:0};return pickDlg(r)}S.tab=first?'tasks':'providers';return renderPanel()}
  if(d.task){S.pick=null;return pickDlg(d.task)}
  if(d.pu){S.pick.hint=d.pu;return pickDlg(S.pick.t)}
  if(d.pp){S.pick.p=d.pp;S.pick.m=0;S.pick.hint=null;return pickDlg(S.pick.t)}
