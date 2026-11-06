@@ -612,8 +612,8 @@ document.addEventListener('click',e=>{
  if('addkey' in d||'addkey2' in d){S.fromSettings='addkey2' in d;S.menuOpen=false;return keyDlg()}
  if(d.ksel){S.addSel=d.ksel;return keyDlg()}
  if('savekey' in d){const inps=ov.querySelectorAll('input');const n=inps[0].value||'New key',pw=inps[2]&&inps[2].value;S.keys.push({id:'k'+Date.now(),name:n,prov:S.addSel,meta:P[S.addSel].n+' · added today',pw:!!pw,end:'2C9D'});toast('Key saved');if(S.fromSettings)return settings();S.addKey=S.keys[S.keys.length-1].id;pop();return addDlg()}
- if('customadd' in d){const np={id:'p'+Date.now(),pid:'custom',key:'k4'};S.providers.push(np);autoAssign();toast('Custom connected');const r=S.ret;S.ret=null;if(r){S.tab='tasks';renderPanel();S.pick={t:r,p:np.id,m:0};return pickDlg(r)}S.tab='providers';return renderPanel()}
- if('connect' in d){const kid=S.addKey;if(!kid)return;let np=S.providers.find(p=>p.pid===S.addSel);if(!np){np={id:'p'+Date.now(),pid:S.addSel,key:kid};S.providers.push(np)}autoAssign();toast(P[S.addSel].n+' connected');const r=S.ret;S.ret=null;if(r){S.tab='tasks';renderPanel();S.pick={t:r,p:np.id,m:0};return pickDlg(r)}S.tab='providers';return renderPanel()}
+ if('customadd' in d){const first=!S.providers.length;const np={id:'p'+Date.now(),pid:'custom',key:'k4'};S.providers.push(np);autoAssign();toast('Custom connected');const r=S.ret;S.ret=null;if(r){S.tab='tasks';renderPanel();S.pick={t:r,p:np.id,m:0};return pickDlg(r)}S.tab=first?'tasks':'providers';return renderPanel()}
+ if('connect' in d){const kid=S.addKey;if(!kid)return;const first=!S.providers.length;let np=S.providers.find(p=>p.pid===S.addSel);if(!np){np={id:'p'+Date.now(),pid:S.addSel,key:kid};S.providers.push(np)}autoAssign();toast(P[S.addSel].n+' connected');const r=S.ret;S.ret=null;if(r){S.tab='tasks';renderPanel();S.pick={t:r,p:np.id,m:0};return pickDlg(r)}S.tab=first?'tasks':'providers';return renderPanel()}
  if(d.task){S.pick=null;return pickDlg(d.task)}
  if(d.pu){S.pick.hint=d.pu;return pickDlg(S.pick.t)}
  if(d.pp){S.pick.p=d.pp;S.pick.m=0;S.pick.hint=null;return pickDlg(S.pick.t)}
