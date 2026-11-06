@@ -357,6 +357,28 @@ input:focus{outline:1px solid var(--interactive)}
 .shape-rounded{border-radius:26px!important}.shape-pill{border-radius:999px!important}
 .pdeck.stack{grid-template-columns:1fr;grid-auto-rows:auto}.pdeck.stack .key{grid-column:auto!important;grid-row:auto!important;min-height:84px!important;flex-direction:row;justify-content:flex-start;gap:14px;padding:12px 16px;text-align:left}
 .pdeck.stack .key.t-vector3,.pdeck.stack .key.t-dial{min-height:0!important}
+
+.stage .ghost{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;font-size:12px;color:#4b4b52;pointer-events:none;z-index:1}
+.stage:not(.dark) .ghost{opacity:0}
+.stage::before{content:"";position:absolute;inset:auto 0 0 0;height:1px;background:linear-gradient(90deg,transparent,#2c2c30,transparent);z-index:1}
+.slot{color:#2f2f34;border:1px dashed #232326}
+.slot:hover{border-color:var(--border)}
+.card.editor .deck{background-image:radial-gradient(#232326 1px,transparent 1px);background-size:14px 14px}
+.emptyhint{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--text2);pointer-events:none;text-align:center;padding:24px}
+.emptyhint b{color:#c9c9ce;font-weight:500}
+.emptyside{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;color:var(--text2);padding:40px 16px}
+.emptyside .glyph{font-size:34px;color:#3a3a3e;line-height:1}.emptyside b{color:#c9c9ce;font-weight:500}.emptyside span{font-size:12px;max-width:220px}
+.log div:only-child{color:#55555c}
+.dev.empty,#devs .slot{color:#55555c;font-size:12px}
+@media(pointer:coarse){
+  .editor .key:not(.sel){touch-action:pan-y}
+  .editor .key.sel{touch-action:none}
+  .libitem{touch-action:pan-y;cursor:pointer}
+  .editor .key .rz{display:none}
+  .editor .key.sel .rz{display:block;opacity:1;width:32px;height:32px;right:0;bottom:0}
+  .editor .key.sel .rz::after{width:10px;height:10px;right:7px;bottom:7px;border-color:var(--accent)}
+  .editor .key.sel{outline-width:2px}
+}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -375,7 +397,7 @@ input:focus{outline:1px solid var(--interactive)}
     <div class="layout">
       <div>
         <section class="view view-editor on" id="vEditor">
-          <div class="stage dark" id="stageE"><div class="beam"></div><span class="pill tag">Scene: Intro</span><span class="banner" id="bannerE"></span><div class="scene" id="guestsE"></div></div>
+          <div class="stage dark" id="stageE"><div class="beam"></div><div class="ghost">Scene preview · lights and guests appear here during Play</div><span class="pill tag">Scene: Intro</span><span class="banner" id="bannerE"></span><div class="scene" id="guestsE"></div></div>
           <div class="ed-grid">
             <div class="card editor">
               <div class="row" style="justify-content:space-between;margin-bottom:12px">
@@ -395,7 +417,7 @@ input:focus{outline:1px solid var(--interactive)}
           </div>
         </section>
         <section class="view view-play" id="vPlay">
-          <div class="stage dark" id="stageP"><div class="beam"></div><span class="pill tag">Scene view · Play</span><span class="banner" id="bannerP"></span><div class="scene" id="guestsP"></div></div>
+          <div class="stage dark" id="stageP"><div class="beam"></div><div class="ghost">Scene preview · starts when you press Play</div><span class="pill tag">Scene view · Play</span><span class="banner" id="bannerP"></span><div class="scene" id="guestsP"></div></div>
           <div class="card" style="margin-bottom:16px">
             <div class="row" style="justify-content:space-between">
               <div><h2>Play</h2><div class="muted">Start Play to open the remote. Phones can only press keys while Play is running.</div></div>
@@ -581,6 +603,7 @@ function renderDeckE(){
   const occ=new Set();for(const id of st.deck){const q=PS(id),z=sz(id);for(let i=0;i<z.w;i++)for(let j=0;j<z.h;j++)occ.add((q.x+i)+','+(q.y+j))}
   for(let y=0;y<rows;y++)for(let x=0;x<4;x++){if(occ.has(x+','+y))continue;
     d.append(h('div',{class:'slot'+(targetSlot&&targetSlot.x===x&&targetSlot.y===y?' target':''),'data-x':x,'data-y':y,onclick:()=>{if(pdrag.just)return;targetSlot={x,y};setSide('keys');renderAll();toast('Pick a variable for this cell')},style:`grid-column:${x+1};grid-row:${y+1}`},'＋'))}
+  if(!st.deck.length)d.append(h('div',{class:'emptyhint'},h('b',{},'Your deck is empty'),h('span',{},'Pick variables on the right, or try Preset layout.')));
   $('#count').textContent=st.deck.length+' of 128 keys';$('#presetBtn').textContent=presetPrev?'Undo preset':'Preset layout';
   $$('.key',d).forEach(el=>{
     el.addEventListener('pointerdown',e=>{if(e.target.closest('.rail,.btn,.x,.rz'))return;pdrag(el,el.dataset.id,e)});
@@ -595,7 +618,7 @@ function renderDeckE(){
         if(cur.w!==z0.w||cur.h!==z0.h)setSize(id,cur.w,cur.h)};
       rz.addEventListener('pointermove',mv);rz.addEventListener('pointerup',up);rz.addEventListener('pointercancel',up);});
       rz.addEventListener('click',ev=>ev.stopPropagation())}
-    el.addEventListener('click',ev=>{if(pdrag.just||ev.target.closest('.rail,.btn,.x'))return;st.selected=el.dataset.id;setSide('settings');renderDeckE()});
+    el.addEventListener('click',ev=>{if(pdrag.just||ev.target.closest('.rail,.btn,.x'))return;const was=st.selected===el.dataset.id;st.selected=el.dataset.id;setSide('settings');renderDeckE();if(!was&&matchMedia('(pointer:coarse)').matches)toast('Drag to move, or use the corner to resize')});
     $$('.btn[data-d]',el).forEach(b=>b.addEventListener('click',ev=>{ev.stopPropagation();perform(el.dataset.id,+b.dataset.d,'editor')}));
   });
 }
@@ -604,6 +627,7 @@ function setSize(id,w,hh){const q=PS(id);const mn=minOf(id);if(w<mn.w||hh<mn.h){
   renderAll();toast('Not enough free space for '+w+'×'+hh);return false}
 function pdrag(el,id,e){
   if(e.button!==0)return;
+  if(e.pointerType==='touch'&&(!st.deck.includes(id)||!el.classList.contains('sel')))return;
   const lib=!st.deck.includes(id);
   const sx=e.clientX,sy=e.clientY,d=$('#deckE');let ghost=null,pv=null,started=false,tgt=null,off={x:0,y:0};
   const z=sz(id);
@@ -666,7 +690,7 @@ function renderSide(){
       s.append(l)});
   }else if(sideTab==='settings'){
     const id=st.selected;
-    if(!id||!st.deck.includes(id)){s.append(h('div',{class:'muted',style:'margin-top:12px'},'Select a key on the deck to tune it.'));return}
+    if(!id||!st.deck.includes(id)){s.append(h('div',{class:'emptyside'},h('div',{class:'glyph'},'▢'),h('b',{},'No key selected'),h('span',{},'Click a key on the deck to rename it, change its size or phone access.')));return}
     const k=BYID[id];
     s.append(h('h3',{style:'margin-top:8px'},label(id)),h('div',{class:'muted'},TYPELABEL[k.type]+' · '+(k.type==='trigger'?'Scene trigger':srcName(id))));
     if(st.bind[id])s.append(h('div',{class:'alert'+(st.bind[id]==='type'?' crit':'')},st.bind[id]==='type'?'✕ The bound variable changed type. Pick another variable or fix it in XRCC.':'⚠ This variable no longer exists in XRCC. The key is paused on phones.'));
