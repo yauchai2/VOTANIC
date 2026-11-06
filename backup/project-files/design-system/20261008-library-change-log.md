@@ -1286,3 +1286,110 @@ Page Button, Library file. Three sets: `Button / Dark / 40px` (17463:54657, Stat
 - 第 9 項（部分）：Radio set「Form」改名「Form / Dark / Radio」（17463:86273）；「New Tooltips」改名「Tooltip」（17463:94693）。Pattern 05 未移動。
 - 尚未執行：第 6、7、8、10、11 項（Library）；第 12、14 項（Voyage）；第 2 項需 Alan 在 Figma 手動移除 5 個產品檔訂閱（建議待 Breadcrumbs button-icon 及 All Figma files 的 sorting 處理後才移除，否則該兩處會失去來源）；第 13 項留待 Voyage Library 重整。
 - 還原：Figma 版本歷史。
+
+## 2026-11-05 · XRCC AI Provider screen flow（Workbench ZBOB48n4eLsZABCTnhh5kk）
+
+- 不改動 XRCC (PC) Library，不新增 token。
+- Workbench Components 頁（Section 1340:367）新增功能專用元件：AI Provider Card（1340:515，5 種狀態）、AI Voice Card（1340:580，5 種狀態）、AI Task Row（1340:769，舊方案保留）、7 個自繪 glyph（AI Glyph / Sparkle、Chat、Mic、Plus、Plug、Speech、Quiz，frame 1343:470），顏色綁 icon/default。
+- Section「XRCC AI Provider · Screen flow」（1337:2）：Overview 加 4 條 lane，共 29 個板（A1–A6、B1–B7、C1–C8、D1–D4），附 19 條 prototype 連線（On click，Smart animate，Ease out，0.1s）。
+- 依 Alan 意見（prototype 影片只是 developer 測試），主面板改為「任務卡優先」，舊的 B1 長表單已轉為 B3 Providers 分頁。
+- Provider 標誌顏色：Gemini avatar/blue、MiniMax avatar/red、OpenRouter avatar/green、Custom avatar/yellow、Poe behaviour/poe。
+- 未用元件而自建的部分：破壞性按鈕（action/destructive/*）、警告框（status/warning/*，因 Alert 元件呈淺色）、tab 列、選單、radio。
+- 還原：Figma 版本歷史。
+
+### 2026-11-05 · XRCC AI Provider（續）· 圖示與 component 整理
+- 檔案：XRCC Claude Workbench，Components 頁。無 Library 改動，無新 token。
+- 新增 feature component：AI Provider Logo（Provider × Size）、AI Task Card（Ready / Unset / Blocked）、AI Key Row（Gemini / MiniMax / Poe / Custom）、AI Icon 系列 24 個（outline，1px 描邊，圓角線頭，描邊綁定 icon/default）。
+- 全部畫面的 icon 統一改為 AI Icon 系列，保留原有顏色 token；內嵌尺寸統一為 16，tile 內為 20，主視覺 Sparkle 保持 32。舊 AI Glyphs 已刪除。
+- Add a provider 的能力圖示改為可換行（最多 4 個一行）。
+- A3、A6、B5、B6、C2、D2、D4 的 Dialog 與分頁使用 Library 的 Dialog 及 Tab。
+- Prototype 連線已重建：A2→A3、A3 Custom→A6、A4／A5／D1／D3 Add key→D2、B4 Remove→B5、B3 Poe→B6、C1 New voice→C2。
+- 尚未改為 component：Voice Tile、Voice Pick、Session Card、Task Chip、Provider Chip、Warning 框、Destructive 按鈕、A4 選單（Library dropdown-menu）。
+- （續）新增 AI Warning（Actions Off / On）及 AI Destructive Button，已套用於 A3、B4、B5、B7、C6。B4 Remove → B5 連線已重建。
+- 仍為 frame：Voice Tile、Voice Pick、Session Card、Task Chip、Provider Chip、A4 選單。
+- （續）新增 AI Session Card，已套用於 C8。仍為 frame：Voice Tile、Voice Pick、Task Chip、Provider Chip、A4 選單。
+- （續）A3 provider tile 能力圖示最多顯示 3 個，其餘以「+N」表示，完整清單見提示行。
+- （續）AI 面板四個分頁列改為 Library「Full Tabs」用法：單一圓角容器（radius/md，gap 2，clip）、Size L（36）、四個 Tab 等寬 FILL、icon 20；各分頁 prototype 連線已改指向 B1／C1／C8／B3。
+- （續）新增 feature component：AI Voice Tile（Idle / Playing / Gone / New）、AI Voice Pick（Selected / Playing / Default）、AI Provider Chip（On / Off）、AI Provider Choice（Ready / Locked / Unsupported），已套用於 C1、C2、D2、B2。
+- B2 模型選項的 radio 改用 Library「Form」（Radio，Small，label 隱藏）。A4 key 選單改用 Library「dropdown-menu」+「menu-item」（內容 slot 放兩行文字，Locked 標籤放 end slot）。
+- 至此所有重複 pattern 均為 component（Task Chip 在畫面中並無獨立出現，不另建）。
+- （續）AI 面板 head 與分頁列對齊 Runtime Debug Panel：head 高 40、左 padding 16、surface/header，icon 20 + 標題 + provider dock + Button Square 40 關閉；分頁列為獨立「Tabs」列（padding 16/12、surface/panel），內含 Tag List（FILL、gap 2、radius 8）。適用於 A2、B1、B3、C1、C8。
+
+## 2026-11-05 · XRCC AI Provider (Workbench) follow-ups
+- Cancel buttons in A3, A6, B5, B6, C2, D2 swapped to Library Button / Dark / Tertiary; AI Destructive Button is now solid (action/destructive/background/default, action/destructive/content/default).
+- Custom provider logo: outline plug replaced by a filled plug (icon/accent) in all five sizes of the Logo set; B4 Gemini tile now uses the Logo instance.
+- D1 and D3 side menu: Connections Active, Licensing Default.
+- A1 toolbars rebuilt to follow Main Scene header: File menu row, project name with favorite icon, Header Tabs (Edit), Behaviour tool buttons (bug, AI, inspector), Play split button, Save*. Imported Library parts: Header Tabs, Button with arrow, Behaviour tool, icon/outline/favorite, bug, inspector-01.
+- Manage keys moved into the API key label row (12 px link, field full width) in A3 and B4.
+- Baseline alignment applied to mixed-size text rows (Label row, Voice head). No new tokens.
+- New lane "5 · Hover and tooltips" with tooltip spec table and hover variants.
+- A1 tooltip now uses Library Tooltip (Arrow=top, Location=middle), centred under the AI button.
+
+### 2026-11-05 (later) XRCC AI Provider flow
+- D1/D3 "AI keys header": now a vertical block (title row with Add key on the right, sub text on one line, Search fill width below). No new tokens.
+- Screen flow: added "Flow connectors" frame (18 arrows, strokes bound to border/interactive for main path, border/default dashed for branches); moved A4-A6, C3, D3 (and labels) to give 80px+ gaps.
+- Annotations (5, caption + body/sm label styles): legend, A5 to D2, B7 state of B4, C4-C7 states of C1, D2 shared dialog.
+- GitHub prototype rebuilt to follow Figma (PR #6), AI keys header tidied the same way.
+- Full review 2026-11-05: no broken prototype links, no unbound fills in own frames, no text without style, no mixed-size text rows off baseline. Renamed 2 generic frames to "Connections content"; added Lane 5 (Hover and tooltips) to Overview. Prototype: hint bar raised above overlay, key row More actions menu added.
+- 2026-11-05 popup stacking and flow review (XRCC AI Provider): A3, A6, B2, B5, B6, C2, D2 now sit on a dimmed copy of the screen that opens them (Scrim bound to an existing grey token at 70%). Lanes re-spaced, connectors rebuilt from board positions, 17 Close/Cancel/Back actions now NAVIGATE to the previous layer (panel Close goes to A1, Back on A6 goes to A3). New D5 Key actions (menu from the key row three dots). New feature-file components: AI Icon / Pencil, Trash, Left. Capability chips in A2 are flat (info only). D2 link text 16 to 14 (body/md). Prototype uses a layer stack to match.
+
+## 2026-11-05 · XRCC Remote Trigger (Workbench, new page)
+- 新頁面「XRCC Remote Trigger」（1454:2615）：Overview、A1–A6、B1–B7、C1–C9、D1。沒有修改 XRCC (PC) Library，沒有新增 token，不需要 Publish。
+- 自訂 frame（Library 沒有對應元件）：對話框、QR 位置、手機元件、滑桿軌道、警示卡；其餘使用 Library 的 Button、Switch、Tag、Tooltip、Text Input、loader、Dialog 及 outline icon。
+- Annotations 以繁體中文書面語撰寫（Alan 要求），僅術語用英文。
+- 還原方式：Figma 版本紀錄，或刪除該頁面。
+- （續）XRCC Remote Trigger 新增第 5 區「Stream Deck 風格」編輯端畫面 S1–S4（與 A1–A4 並列），沒有 Library 改動，沒有新 token。
+
+## 2026-11-05 (later)
+- AI Provider flow: new board A6b (Custom provider, Advanced opened) beside A6, wired both ways; connector A6 to A6b added. Deleted three redundant note frames (B7, C4, D2); the board captions already say the same.
+- Prototype: picker with no capable provider offers "Add a provider" instead of a disabled Use; Custom provider Advanced expands.
+- AI Provider: task tiles (39 across boards) get a 1px stroke bound to the icon's own colour token at 50%; tile fills unchanged. Prototype: tile tint 20% + 38% border, secondary grey raised to #9a9a9a. New boards C9 (New session), A6b; lanes aligned. Icons swapped to XRCC (PC) Library: Pencil, Trash (delete-warning), Image, Music, Close, Info, Refresh, Stop, Warning, World, Left (arrow-left), Key, Lock; others stay custom (not in Library).
+- AI Task Card (Workbench, Components page, node 1367:1804): all 4 state variants now carry a "Tint" layer (icon colour token at 20%) and a 1px stroke (same token at 50%) inside the icon tile; 14 flow instances rebound to their own icon colour.
+- AI panel boards (B1, B2, B3, B5, B6, C1, C2, C8, C9) unified to 960x640; prototype window fixed at 640 (82vh max), content scrolls.
+
+## 2026-11-06 · XRCC AI Provider: empty states
+- New Section "6 · Empty states" in the Workbench AI Provider flow: E1 Providers empty, E2 Voices empty, E3 Sessions empty, E4 Connections empty (AI keys + Wit.ai), E5 Connections search no match. Built from existing tile, text and button instances; dashed border bound to border/default. No new tokens.
+- Panel titles changed from "AI" to "AI Provider" on 13 boards and in the prototype.
+- Add key dialog: Save key shown Disabled until an API key is entered (Figma D4 and prototype).
+- Prototype: "Empty states" demo link, key search, Wit.ai token removal.
+
+## 2026-11-06 · XRCC AI Provider: B2b, menus, grid, dismissible banner
+- B2b "No provider for this task" built (Text to image: Gemini shown as Unsupported, note naming Poe and OpenRouter, Cancel / Add a provider wired to B1 and A3).
+- New Section "7 · Actions and confirmations": M1 Voice ⋯ menu, M2 Delete preset, M3 Session ⋯ menu, M4 Delete session, M5 Wit.ai token ⋯ menu, M6 Remove token. Uses the Library Menu and Dialog instances; ⋯ buttons on C1, C8 and D1 link to them; Edit items link to C2 / C9 / D7.
+- B3 Providers list is a 2-column wrapping grid; "Bring your own AI" banner has a dismiss button (B3, E1). Prototype matches.
+
+## 2026-11-06 · XRCC Remote Trigger（Stream Deck 版，新頁面）
+- Workbench 新頁面「XRCC Remote Trigger 」（1481:10758）新增以下內容：
+  - Overview
+  - 4 道流程：A1–A7、B1–B8、C1–C12，以及微互動、Hover 及 Tooltip 規格
+  - 33 條 prototype 連結，設有 3 個起點
+- Components 頁新增 Section「Remote Trigger · Components」（1491:3952），共 14 個元件或元件組，詳見交接文件。
+- Connection pill 的文字改為自動寬度，避免出現截斷。
+- 沒有修改 Library，沒有新增 token。
+- 交接文件：design-system/20261106-remote-trigger-streamdeck-handoff.md
+
+## 2026-11-06 · Launcher Connections redesign, preview placeholder, Tab Badge
+- D3 "Launcher · Connections" rebuilt to follow the XRCC Launcher file (node 22001:6892): Launcher sidebar (XRCC wordmark, Version 4.0, Projects / Content Library / Packages / Profiles / Versions / License, Settings, Connections active), per-provider key tables (Key Name / Last Used / Action), Wit.ai table, Clear Unused Connection Information. Prototype Launcher keys matches.
+- E6 Preview line empty (placeholder, Play all disabled). Gemini is now image-capable in data and tiles (+2).
+- All 67 Tab instances use the new Tab Badge for counts.
+- Labels on E1-E6, M1-M6 and B2b state their source board; M1→M2, M3→M4, M5→M6 arrows added.
+
+## 2026-11-06 · Visual pass (fun and graphic)
+- AI Task Card (all 4 variants): faded task-icon Watermark layer (96 px, 6% opacity); instances swap it to their own task icon.
+- AI Session Card: avatar (gradient circle with initial, decorative) replaces the chat tile; new "Sample chat" bubbles (user + AI) above the prompt line; instances carry their own initial, colour and sample lines.
+- Prototype only so far: static mini waveform on voice cards, capability icon row on provider cards, "Every task has a runner" copy at 6/6.
+- Figma now matches the prototype visual pass: AI Voice Tile (Idle) has a Mini wave; AI Provider Card (all 5 variants) has a Capabilities icon row, with per-instance visibility by provider.
+
+## 2026-11-06 AI Provider: card heights and empty-state art
+- Prototype: all empty states now share one illustration (tilted glowing icon tile, dashed orbit ellipses, small dots), matching the first-run page style.
+- Figma E1 to E5 cards: card heights unified (M1 to M6, B1, C1, C8, B3). Empty-state art in Figma not yet mirrored.
+- 2026-11-06 AI Task Card: removed the large Watermark icon (Alan: looked poor). Removed from the 4 variants of set 1367:1804 and from the prototype. Publish Library and update consumers.
+- 2026-11-06 Launcher Connections (D3 1534:6437) rebuilt as a clone of Alan's reference "XRCC Launcher" 1521:18167 (title bar, menu, function bar, search bar rows, Key Name / Last Used / Action tables, Wit.ai, Clear Unused). Only additions: one section per provider (Gemini, MiniMax, Poe, Custom server) cloned from the Poe section, and the lock and more-actions icons in the Action column. The Connections entry is the bottom-left connect button (outlined as active); Projects set to its inactive variant. D4 to D8 and their labels moved +160 to make room. Prototype matches.
+- 2026-11-06 Empty-state art in Figma: dashed orbit ellipses (outer 160x64, inner 100x40, stroke border/default) and 3 dots (tile fill token) added behind the Tile in the Empty state frames of E1 to E5 (1503:3859, 4050, 4125, 4357, 4365, 4592). No new tokens.
+- 2026-11-06 Provider choice chip variant Choice=Unsupported (1384:2098): opacity 0.5 to 0.45, dashed border, no fill, so it clearly reads as disabled. Publish Library or Workbench components as needed.
+- 2026-11-06 AI Session Card: removed the Sample chat layer (Alan: unclear). Component 1380:1816; 8 instances now 130 high. Prototype matches.
+- 2026-11-06 AI Task Card set 1367:1804: added State=Selected (2px border/interactive, open picker) and State=Attention (warning status 'Check key'), now 6 variants. Existing tokens only. Publish/update consumers.
+- 2026-11-06 REVERTED: the Selected and Attention variants of AI Task Card (1367:1804) were removed again at Alan's request (he had misread the ask; set is back to 4 variants).
+- 2026-11-06 AI Task Card (1367:1804): the six task icons replaced by the image sheet from Alan's 'icons' section 1537:19524 (each tile = image fill, old icon hidden, tile fill and stroke cleared) in the 4 variants and all 20 instances. Prototype uses the same six images (cropped, 96px, embedded). Picker dialog headers in Figma and first-run marquee still use old icons.
+- 2026-11-06 Task icons switched to the 'icons 2' sheet (section 1537:25493): AI Task Card variants and all 20 instances use the new image fills; prototype re-cropped from the same sheet.
+- 2026-11-06 Task icons switched to the 'icons 3' sheet (section 1561:25510, transparent line icons): AI Task Card variants and all 20 instances; prototype re-cropped.
