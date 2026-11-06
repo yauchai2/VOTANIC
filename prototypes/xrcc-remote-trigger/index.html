@@ -122,7 +122,8 @@ h2{font-size:20px}h3{font-size:15px}
 .v3 .ax b{width:22px;height:22px;display:grid;place-items:center;border-radius:5px;background:#1c1c1e;font-size:11px}
 .v3 .ax .rail{flex:1}.v3 .ax span{width:36px;text-align:right;font-size:13px}
 .dim .key:not(.dragging){opacity:.3;transition:opacity .2s}
-.editor .key{cursor:grab}
+.editor .key{cursor:grab;touch-action:none}
+.libitem{touch-action:none}
 .key.dragging-src{opacity:.35;transform:rotate(-3deg) scale(.97)}
 .key.drop-before{box-shadow:-6px 0 0 0 var(--interactive)}
 .key.drop-after{box-shadow:6px 0 0 0 var(--interactive)}
@@ -425,13 +426,7 @@ function renderDeckE(){
   }
   $('#count').textContent=st.deck.length+' keys';
   $$('.key',d).forEach(el=>{
-    el.draggable=true;
-    $$('.rail,.btn',el).forEach(r=>{r.addEventListener('pointerdown',()=>{el.draggable=false;const u=()=>{el.draggable=true;window.removeEventListener('pointerup',u)};window.addEventListener('pointerup',u)})});
-    el.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',el.dataset.id);e.dataTransfer.effectAllowed='move';setTimeout(()=>el.classList.add('dragging-src'),0)});
-    el.addEventListener('dragend',()=>{el.classList.remove('dragging-src');$$('.drop-before,.drop-after',d).forEach(x=>x.classList.remove('drop-before','drop-after'))});
-    el.addEventListener('dragover',e=>{e.preventDefault();const r=el.getBoundingClientRect();const after=e.clientX>r.left+r.width/2;el.classList.toggle('drop-after',after);el.classList.toggle('drop-before',!after)});
-    el.addEventListener('dragleave',()=>el.classList.remove('drop-before','drop-after'));
-    el.addEventListener('drop',e=>{e.preventDefault();e.stopPropagation();const after=el.classList.contains('drop-after');el.classList.remove('drop-before','drop-after');dropAt(e.dataTransfer.getData('text/plain'),el.dataset.id,after)});
+    el.addEventListener('pointerdown',e=>{if(e.target.closest('.rail,.btn,.x,.rz'))return;pdrag(el,el.dataset.id,e)});
     const rz=$('.rz',el);
     if(rz){rz.addEventListener('pointerdown',e=>{
       e.preventDefault();e.stopPropagation();el.draggable=false;rz.setPointerCapture(e.pointerId);
@@ -443,11 +438,35 @@ function renderDeckE(){
         if(cur.w!==z0.w||cur.h!==z0.h){st.sizes[id]=cur;st.layoutVer++;save();renderAll();toast(label(id)+' is now '+cur.w+'×'+cur.h)}};
       rz.addEventListener('pointermove',mv);rz.addEventListener('pointerup',up);rz.addEventListener('pointercancel',up);});
       rz.addEventListener('click',ev=>ev.stopPropagation());rz.addEventListener('dragstart',ev=>ev.preventDefault());}
-    el.addEventListener('click',ev=>{if(ev.target.closest('.rail,.btn,.x'))return;st.selected=el.dataset.id;setSide('settings');renderDeckE()});
+    el.addEventListener('click',ev=>{if(pdrag.just||ev.target.closest('.rail,.btn,.x'))return;st.selected=el.dataset.id;setSide('settings');renderDeckE()});
     $$('.btn[data-d]',el).forEach(b=>b.addEventListener('click',ev=>{ev.stopPropagation();perform(el.dataset.id,+b.dataset.d,'editor')}));
   });
   // empty-ish decks accept drops on the whole grid
   d.ondragover=e=>e.preventDefault();d.ondrop=e=>{if(e.target===d){e.preventDefault();dropAt(e.dataTransfer.getData('text/plain'),null)}};
+}
+function pdrag(el,id,e){
+  if(e.button!==0)return;
+  const sx=e.clientX,sy=e.clientY,deckE=$('#deckE');let ghost=null,started=false,tgt,after=false;
+  const clear=()=>$$('.drop-before,.drop-after',deckE).forEach(x=>x.classList.remove('drop-before','drop-after'));
+  const mv=ev=>{
+    if(!started){if(Math.hypot(ev.clientX-sx,ev.clientY-sy)<6)return;started=true;
+      ghost=el.cloneNode(true);ghost.removeAttribute('data-id');ghost.style.cssText='position:fixed;left:0;top:0;width:'+Math.min(el.offsetWidth,200)+'px;pointer-events:none;z-index:50;opacity:.92;box-shadow:0 14px 34px rgba(0,0,0,.55);grid-column:auto;grid-row:auto;min-height:0';
+      document.body.append(ghost);el.classList.add('dragging-src');document.body.style.userSelect='none';document.body.style.cursor='grabbing'}
+    ghost.style.transform='translate('+(ev.clientX-ghost.offsetWidth/2)+'px,'+(ev.clientY-24)+'px) rotate(-3deg)';
+    clear();$$('.slot.over',deckE).forEach(x=>x.classList.remove('over'));
+    const t=document.elementFromPoint(ev.clientX,ev.clientY);const k=t&&t.closest('#deckE .key');tgt=undefined;
+    if(k&&k.dataset.id!==id){tgt=k.dataset.id;const r=k.getBoundingClientRect();after=ev.clientX>r.left+r.width/2;k.classList.add(after?'drop-after':'drop-before')}
+    else if(k){tgt=undefined}
+    else{const sl=t&&t.closest('#deckE .slot');if(sl){tgt=null;sl.classList.add('over')}else if(t===deckE)tgt=null}
+  };
+  const up=()=>{
+    window.removeEventListener('pointermove',mv);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',up);
+    if(!started)return;
+    ghost.remove();el.classList.remove('dragging-src');clear();document.body.style.userSelect='';document.body.style.cursor='';
+    pdrag.just=true;setTimeout(()=>{pdrag.just=false},0);
+    if(tgt!==undefined)dropAt(id,tgt,after);
+  };
+  window.addEventListener('pointermove',mv);window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up);
 }
 function dropAt(id,targetId,after){
   if(!BYID[id]||id===targetId)return;
@@ -468,9 +487,9 @@ function renderSide(){
     s.append(h('div',{class:'muted'},'Project and object variables'));
     const l=h('div',{class:'lib'});
     LIB.forEach(k=>{const placed=st.deck.includes(k.id);
-      const it=h('div',{class:'libitem'+(placed?' placed':''),draggable:!placed,title:placed?'Already on the deck':'Drag to a slot'},h('div',{class:'ico '+(k.tint||'')},k.i||'•'),h('span',{},k.l),h('span',{class:'t'},TYPELABEL[k.type]));
-      it.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',k.id);it.style.opacity=.5});it.addEventListener('dragend',()=>it.style.opacity='');
-      it.addEventListener('click',()=>!placed&&addKey(k.id));l.append(it)});
+      const it=h('div',{class:'libitem'+(placed?' placed':''),title:placed?'Already on the deck':'Drag to a slot'},h('div',{class:'ico '+(k.tint||'')},k.i||'•'),h('span',{},k.l),h('span',{class:'t'},TYPELABEL[k.type]));
+      if(!placed)it.addEventListener('pointerdown',e=>pdrag(it,k.id,e));
+      it.addEventListener('click',()=>!placed&&!pdrag.just&&addKey(k.id));l.append(it)});
     s.append(l);
   }else if(sideTab==='settings'){
     const id=st.selected;
