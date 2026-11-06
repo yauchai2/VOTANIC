@@ -161,7 +161,8 @@ svg{display:block}
 .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border-radius:9999px;color:var(--t2);font-size:12px;line-height:18px}
 .pgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:start}.pgrid>*{min-width:0}.pgrid>.emptyx{grid-column:1/-1}
 .emptyx{display:flex;flex-direction:column;align-items:center;gap:12px;text-align:center;padding:32px 24px;border:1px dashed var(--b-def);border-radius:8px}
-.emptyx .ei{width:48px;height:48px;border-radius:12px;background:var(--pbg);color:var(--pc);display:grid;place-items:center}
+.emptyx .art{position:relative;width:180px;height:84px;margin-bottom:4px}.emptyx .art .el{position:absolute;left:10px;top:10px;width:160px;height:64px;border:1px dashed var(--b-def);border-radius:50%}.emptyx .art .el.in{left:42px;top:24px;width:96px;height:36px;border-color:var(--b-sub)}.emptyx .art i{position:absolute;border-radius:50%;background:var(--pc);opacity:.7}
+.emptyx .ei{position:absolute;left:66px;top:18px;width:48px;height:48px;border-radius:12px;background:linear-gradient(145deg,#5a2a9a,#2d1650);box-shadow:0 0 22px rgba(150,80,255,.45),inset 0 0 0 1px rgba(200,160,255,.45);color:#e6d4ff;display:grid;place-items:center;transform:rotate(8deg)}
 .orbwrap{width:450px;height:250px;flex:none}
 .orbwrap .orbit{transform:scale(1.25);transform-origin:0 0}
 .orbit>span>*{box-shadow:0 6px 14px rgba(110,50,190,.35),inset 0 0 0 1px rgba(170,120,255,.35);border-radius:10px}
@@ -370,7 +371,7 @@ function tasks(){
   const top=`<div class="row g8">${tile}<span class="fill"></span>${!p?'':bad?`<span class="t3">${ic('Lock')}</span>`:`<span class="row g4 caption tok"><i class="dot8"></i>Ready</span>`}</div>`;
   const runs=!p?`<div class="runs cta sm tacc">${ic('Plus')}<span class="fill">Choose a provider</span>${ic('Chevron')}</div>`:bad?`<div class="runs sm t2">${lg(p.pid,20)}<span class="fill">Needs ${P[p.pid].n}. Unlock its key to use.</span></div>`:`<div class="runs sm t1">${lg(p.pid,20)}<span class="fill">${model(p,t)}</span>${extra(p,t)?`<span class="caption t2">${extra(p,t)}</span>`:''}</div>`;
   return `<div class="card task ${cls}" data-task="${t.id}"><span class="wm" style="color:${t.fg}">${ic(t.i,'i24')}</span>${top}<div class="col g4"><div class="lgb ${bad?'t2':''}">${t.n}</div><div class="sm t2">${t.d}</div></div>${runs}</div>`}).join('')}</div>`}
-const EM=(i,t,b,btn)=>`<div class="emptyx"><div class="ei">${ic(i,'i24')}</div><div class="mdb">${t}</div><div class="sm t2" style="max-width:380px">${b}</div>${btn||''}</div>`;
+const EM=(i,t,b,btn)=>`<div class="emptyx"><div class="art"><div class="el"></div><div class="el in"></div><i style="left:22px;top:18px;width:6px;height:6px"></i><i style="left:150px;top:56px;width:8px;height:8px"></i><i style="left:160px;top:24px;width:4px;height:4px"></i><div class="ei">${ic(i,'i24')}</div></div><div class="mdb">${t}</div><div class="sm t2" style="max-width:380px">${b}</div>${btn||''}</div>`;
 function providers(){
  return `${S.introOff?'':`<div class="intro"><div class="tile" style="width:40px;height:40px;background:var(--pbg);color:var(--pc)">${ic('Sparkle','i20')}</div><div class="col g4 fill"><div class="mdb">Bring your own AI</div><div class="sm t2">Pick a provider for each task. Your keys stay encrypted on this computer and never pass through VOTANIC.</div></div><button class="iconbtn s28" data-introx data-tip="Hide this tip">${ic('Close','i16')}</button></div>`}
  <div class="col g12"><div class="row g8"><span class="lgb">Connected providers</span><span class="badge">${S.providers.length}</span><span class="fill"></span><button class="btn" data-add>Add provider</button></div>
