@@ -142,6 +142,11 @@ h2{font-size:20px}h3{font-size:15px}
 .pdeck .key{min-height:0!important;overflow:hidden}
 .preview{position:absolute;border:2px dashed var(--interactive);background:rgba(166,120,232,.15);border-radius:var(--r-md);pointer-events:none;z-index:4;transition:left .08s,top .08s}
 .preview.bad{border-color:var(--error);background:rgba(229,86,109,.15)}
+.editor .key .x{display:grid;place-items:center;opacity:0;width:20px;height:20px;border-radius:50%;background:var(--panel);border:1px solid var(--border);top:4px;left:4px;font-size:13px;line-height:1;z-index:3;transition:opacity .15s,background .15s,color .15s}
+.editor .key:hover .x,.editor .key.sel .x,.editor .key:focus-within .x{opacity:1}
+.editor .key .x:hover{background:var(--error);color:#fff;border-color:var(--error)}
+@media(hover:none){.editor .key .x{opacity:1}}
+.sizes .btn:disabled{opacity:.3}
 /* Settings */
 .field{display:flex;flex-direction:column;gap:6px;margin-top:12px}
 input[type=text],input[type=number]{background:var(--input);border:1px solid var(--border);border-radius:var(--r-sm);padding:9px 12px;color:var(--text);font:inherit;width:100%}
@@ -341,7 +346,9 @@ const genCode=()=>String(Math.floor(100000+Math.random()*900000));
 const save=()=>{try{localStorage.setItem('xrcc-rt-deck',JSON.stringify({deck:st.deck,labels:st.labels,sizes:st.sizes,pos:st.pos}))}catch(e){}};
 try{const s=JSON.parse(localStorage.getItem('xrcc-rt-deck')||'null');if(s){st.deck=s.deck.filter(i=>BYID[i]);st.labels=s.labels||{};st.sizes=s.sizes||{};st.pos=s.pos||{}}else st.deck=[...DEFAULT_DECK]}catch(e){st.deck=[...DEFAULT_DECK]}
 const label=id=>st.labels[id]||BYID[id].l;
-const sz=id=>st.sizes[id]||{w:BYID[id].w||1,h:BYID[id].h||1};
+const MINSZ={vector3:{w:2,h:2},dial:{w:2,h:1}};
+const minOf=id=>MINSZ[BYID[id].type]||{w:1,h:1};
+const sz=id=>{const m=minOf(id);const z=st.sizes[id]||{w:BYID[id].w||1,h:BYID[id].h||1};return{w:Math.max(m.w,z.w),h:Math.max(m.h,z.h)}};
 const PS=id=>st.pos[id]||{x:0,y:0};
 function fits(id,x,y,w,h){
   if(x<0||y<0||x+w>4||y+h>MAXROWS)return false;
@@ -443,7 +450,7 @@ function renderDeckE(){
       e.preventDefault();e.stopPropagation();rz.setPointerCapture(e.pointerId);
       const id=el.dataset.id,z0=sz(id),q=PS(id),r0=el.getBoundingClientRect(),dr=d.getBoundingClientRect();
       const cw=(dr.width-3*GAP)/4;let cur={w:z0.w,h:z0.h};el.classList.add('resizing');
-      const mv=ev=>{const w=Math.min(4-q.x,Math.max(1,Math.round((r0.width+(ev.clientX-e.clientX)+GAP)/(cw+GAP))));const hh=Math.min(MAXROWS-q.y,Math.max(1,Math.round((r0.height+(ev.clientY-e.clientY)+GAP)/(ROWH+GAP))));
+      const mv=ev=>{const mn=minOf(id);const w=Math.min(4-q.x,Math.max(mn.w,Math.round((r0.width+(ev.clientX-e.clientX)+GAP)/(cw+GAP))));const hh=Math.min(MAXROWS-q.y,Math.max(mn.h,Math.round((r0.height+(ev.clientY-e.clientY)+GAP)/(ROWH+GAP))));
         if(w!==cur.w||hh!==cur.h){cur={w,h:hh};el.style.gridColumn=(q.x+1)+' / span '+w;el.style.gridRow=(q.y+1)+' / span '+hh;el.classList.toggle('bad',!fits(id,q.x,q.y,w,hh))}};
       const up=()=>{rz.removeEventListener('pointermove',mv);rz.removeEventListener('pointerup',up);rz.removeEventListener('pointercancel',up);el.classList.remove('resizing');
         if(cur.w!==z0.w||cur.h!==z0.h)setSize(id,cur.w,cur.h)};
@@ -453,7 +460,7 @@ function renderDeckE(){
     $$('.btn[data-d]',el).forEach(b=>b.addEventListener('click',ev=>{ev.stopPropagation();perform(el.dataset.id,+b.dataset.d,'editor')}));
   });
 }
-function setSize(id,w,hh){const q=PS(id);
+function setSize(id,w,hh){const q=PS(id);const mn=minOf(id);if(w<mn.w||hh<mn.h){renderAll();toast(label(id)+' needs at least '+mn.w+'×'+mn.h+' to stay usable');return false}
   if(fits(id,q.x,q.y,w,hh)){st.sizes[id]={w,h:hh};st.layoutVer++;save();renderAll();toast(label(id)+' is now '+w+'×'+hh);return true}
   renderAll();toast('Not enough free space for '+w+'×'+hh);return false}
 function pdrag(el,id,e){
@@ -518,7 +525,7 @@ function renderSide(){
     inp.addEventListener('input',()=>{st.labels[id]=inp.value;save();$$('.key[data-id="'+id+'"] .lab').forEach(e=>e.textContent=inp.value)});
     f.append(inp);s.append(f);
     const z=sz(id);const fs=h('div',{class:'field'},h('label',{},'Size on the deck (columns × rows)'));const sg=h('div',{class:'sizes'});
-    [[1,1],[2,1],[3,1],[4,1],[1,2],[2,2]].forEach(([w,hh])=>sg.append(h('button',{class:'btn tertiary','aria-pressed':String(z.w===w&&z.h===hh),onclick:()=>{setSize(id,w,hh);setSide('settings')}},w+'×'+hh)));
+    [[1,1],[2,1],[3,1],[4,1],[1,2],[2,2]].forEach(([w,hh])=>sg.append(h('button',{class:'btn tertiary',disabled:(w<minOf(id).w||hh<minOf(id).h)?'':null,'aria-pressed':String(z.w===w&&z.h===hh),title:(w<minOf(id).w||hh<minOf(id).h)?'Too small for this key':'',onclick:()=>{setSize(id,w,hh);setSide('settings')}},w+'×'+hh)));
     fs.append(sg,h('div',{class:'muted',style:'font-size:12px'},'You can also drag the corner of a key.'));s.append(fs);
     if(k.type==='dial'){const f2=h('div',{class:'field'},h('label',{},'Value'));const n=h('input',{type:'number',min:0,max:100,value:st.vals[id]});n.addEventListener('input',()=>{const x=Math.min(100,Math.max(0,+n.value||0));st.vals[id]=x;applyScene();renderDeckE();renderPhone()});f2.append(n);s.append(f2)}
     s.append(h('div',{class:'row',style:'margin-top:16px'},h('button',{class:'btn danger',onclick:()=>removeKey(id)},'Remove from deck')));
