@@ -232,6 +232,45 @@ input:focus{outline:none;border-color:var(--interactive)}
 .tools .btn{padding:6px 12px;font-size:12px}
 .toast{position:fixed;left:50%;bottom:20px;transform:translate(-50%,40px);background:var(--elevated);border:1px solid var(--border);padding:10px 16px;border-radius:99px;opacity:0;transition:.25s;z-index:30}
 .toast.on{opacity:1;transform:translate(-50%,0)}
+
+/* ---- Polish ---- */
+[data-side]{padding:7px 12px!important;white-space:nowrap}
+.row:has([data-side]){flex-wrap:nowrap}
+
+:focus-visible{outline:2px solid var(--interactive);outline-offset:2px;border-radius:6px}
+.topbar{backdrop-filter:blur(10px);background:rgba(38,33,47,.88);border-bottom:1px solid var(--border-subtle)}
+.card{box-shadow:0 1px 0 rgba(255,255,255,.03) inset}
+h2{letter-spacing:-.01em}
+.key{border-radius:14px;background:linear-gradient(180deg,#2f2f33,#28282b);box-shadow:0 1px 0 rgba(255,255,255,.05) inset,0 2px 6px rgba(0,0,0,.25)}
+.key:hover{transform:translateY(-1px);box-shadow:0 1px 0 rgba(255,255,255,.07) inset,0 8px 18px rgba(0,0,0,.35)}
+.key:active{transform:scale(.96) translateY(0)}
+.key .ico{width:38px;height:38px;font-size:17px;box-shadow:0 0 0 1px rgba(255,255,255,.06) inset}
+.key .lab{letter-spacing:.005em}
+.key.sent .ico{animation:flash .5s}
+@keyframes flash{0%{box-shadow:0 0 0 0 rgba(63,184,104,.7)}100%{box-shadow:0 0 0 14px rgba(63,184,104,0)}}
+.editor .key .x{width:16px;height:16px;top:6px;left:6px;font-size:11px;font-weight:700;background:rgba(18,18,20,.9);border:0;color:var(--text2)}
+.editor .key .x:hover{background:var(--error);color:#fff}
+.editor .key .rz{right:3px;bottom:3px}
+.slot{border-radius:14px;font-size:20px;font-weight:300;color:#4a4a50;background:repeating-linear-gradient(135deg,transparent 0 8px,rgba(255,255,255,.015) 8px 16px)}
+.slot:hover{border-color:var(--border);color:var(--text2)}
+.libitem{border-radius:12px}
+.libitem:hover:not(.placed){transform:translateX(2px)}
+.libitem .t{font-size:10px;letter-spacing:.04em;text-transform:uppercase}
+.libitem.placed .t{color:var(--success);border-color:rgba(63,184,104,.4)}
+.libitem.placed{opacity:.55}
+.pill{background:rgba(255,255,255,.02)}
+.btn{border-radius:8px}
+.btn:active{transform:scale(.97)}
+.stage{background:radial-gradient(120% 140% at 50% 120%,#17131e,#0b0b0d 60%)}
+.stage::after{content:"";position:absolute;inset:auto 0 0 0;height:40%;background:linear-gradient(to top,rgba(255,255,255,.04),transparent);pointer-events:none}
+.phone{box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 0 6px #0c0c0e,0 0 0 7px var(--border-subtle)}
+.pdeck .key{border-radius:12px}
+.proj{border-radius:14px}
+.fb{backdrop-filter:blur(8px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.dlg{box-shadow:0 24px 70px rgba(0,0,0,.6)}
+.qr{box-shadow:0 8px 30px rgba(0,0,0,.45)}
+.toast{box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.kbd{font:11px ui-monospace,Menlo,monospace;border:1px solid var(--border);border-bottom-width:2px;border-radius:4px;padding:0 5px;color:var(--text2)}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -254,7 +293,7 @@ input:focus{outline:none;border-color:var(--interactive)}
           <div class="ed-grid">
             <div class="card editor">
               <div class="row" style="justify-content:space-between;margin-bottom:12px">
-                <div><h2>Remote deck</h2><div class="muted" id="edHint">Drag a variable onto any free cell. Drag keys to move them, corner to resize.</div></div>
+                <div><h2>Remote deck</h2><div class="muted" id="edHint" data-html>Drag a variable onto any free cell. Drag keys to move, the corner to resize, <span class="kbd">Del</span> to remove.</div></div>
                 <span class="pill" id="count"></span>
               </div>
               <div class="deck" id="deckE"></div>
@@ -314,7 +353,7 @@ input:focus{outline:none;border-color:var(--interactive)}
 <script>
 (()=>{
 const $=(s,e=document)=>e.querySelector(s),$$=(s,e=document)=>[...e.querySelectorAll(s)];
-const h=(t,a={},...k)=>{const e=document.createElement(t);for(const[n,v]of Object.entries(a)){if(n==='class')e.className=v;else if(n.startsWith('on'))e.addEventListener(n.slice(2),v);else if(n==='html')e.innerHTML=v;else e.setAttribute(n,v)}k.flat().forEach(c=>e.append(c));return e};
+const h=(t,a={},...k)=>{const e=document.createElement(t);for(const[n,v]of Object.entries(a)){if(v==null||v===false)continue;if(n==='class')e.className=v;else if(n.startsWith('on'))e.addEventListener(n.slice(2),v);else if(n==='html')e.innerHTML=v;else e.setAttribute(n,v)}k.flat().forEach(c=>e.append(c));return e};
 /* ---------- State ---------- */
 const LIB=[
  {id:'start',type:'trigger',l:'Start show',i:'▶',w:1},
@@ -512,7 +551,7 @@ function renderSide(){
     s.append(h('div',{class:'muted'},'Project and object variables'));
     const l=h('div',{class:'lib'});
     LIB.forEach(k=>{const placed=st.deck.includes(k.id);
-      const it=h('div',{class:'libitem'+(placed?' placed':''),title:placed?'Already on the deck':'Drag to a slot'},h('div',{class:'ico '+(k.tint||'')},k.i||'•'),h('span',{},k.l),h('span',{class:'t'},TYPELABEL[k.type]));
+      const it=h('div',{class:'libitem'+(placed?' placed':''),title:placed?'Already on the deck':'Drag to a slot'},h('div',{class:'ico '+(k.tint||'')},k.i||'•'),h('span',{},k.l),h('span',{class:'t'},placed?'On deck':TYPELABEL[k.type]));
       if(!placed)it.addEventListener('pointerdown',e=>pdrag(it,k.id,e));
       it.addEventListener('click',()=>!placed&&!pdrag.just&&addKey(k.id));l.append(it)});
     s.append(l);
@@ -681,6 +720,7 @@ function softPhone(){const g=P.querySelector('.pdeck');if(!g)return;
     if(k.type==='colour'){const s=$('.swatch',el);s&&(s.style.background=v);const x=$('.val',el);x&&(x.textContent=v.toUpperCase())}
   })}
 phoneApiInit();
+document.addEventListener('keydown',e=>{if((e.key==='Delete'||e.key==='Backspace')&&st.tab==='editor'&&st.selected&&st.deck.includes(st.selected)&&!/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||'')){e.preventDefault();removeKey(st.selected)}});
 try{window.addEventListener('storage',e=>{if(e.key==='xrcc-rt-deck'){try{const s=JSON.parse(e.newValue);st.deck=s.deck.filter(i=>BYID[i]);st.labels=s.labels||{};st.sizes=s.sizes||{};st.pos=s.pos||{};initPos();renderAll()}catch(_){}}})}catch(_){}
 let h0='editor';try{h0=(location.hash||'#editor').slice(1)}catch(e){}if(!/^(editor|play|phone)$/.test(h0))h0='editor';setTab(h0);
 renderAll();
