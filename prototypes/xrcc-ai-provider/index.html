@@ -344,10 +344,10 @@ function renderPanel(){
   <button class="btn pri m" data-add>Add a provider</button>
   <div class="caps" aria-label="What you can do once a provider is connected">${TASKS.map(t=>`<span class="pill">${ic(t.i,'i16')}${t.n}</span>`).join('')}</div></div></div>`);}
  const n=TASKS.filter(isReady).length;
- const tabs=[['tasks','Sparkle',`Tasks · ${n}/6`],['voices','Speech',`Voices · ${S.voices.length}`],['sessions','Chat',`Sessions · ${S.sessions.length}`],['providers','Plug',`Providers · ${S.providers.length}`]];
+ const tabs=[['tasks','Sparkle','Tasks',`${n}/6`],['voices','Speech','Voices',S.voices.length],['sessions','Chat','Sessions',S.sessions.length],['providers','Plug','Providers',S.providers.length]];
  const body={tasks,voices,sessions,providers}[S.tab]();
  const dock=`<button class="dock" data-tab="providers" data-tip="Open Providers">${S.providers.map(p=>lg(p.pid,20)).join('')}<span class="sm t2" style="padding:0 0 0 4px">${S.providers.length} provider${S.providers.length>1?'s':''}</span></button>`;
- show(`<div class="panel"><div class="phead">${ic('Sparkle','i20','color:var(--pc)')}<span class="hsm fill">AI Provider</span>${dock}${closeBtn}</div><div class="tabsrow"><div class="tabs">${tabs.map(t=>`<button class="tab md ${S.tab===t[0]?'on':''}" data-tab="${t[0]}">${ic(t[1],'i20')}${t[2]}</button>`).join('')}</div></div><div class="pbody">${body}</div></div>`);
+ show(`<div class="panel"><div class="phead">${ic('Sparkle','i20','color:var(--pc)')}<span class="hsm fill">AI Provider</span>${dock}${closeBtn}</div><div class="tabsrow"><div class="tabs">${tabs.map(t=>`<button class="tab md ${S.tab===t[0]?'on':''}" data-tab="${t[0]}">${ic(t[1],'i20')}${t[2]}<span class="badge">${t[3]}</span></button>`).join('')}</div></div><div class="pbody">${body}</div></div>`);
 }
 function tasks(){
  const n=TASKS.filter(isReady).length;
