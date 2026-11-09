@@ -233,3 +233,24 @@ img{display:block}
 #review{width:560px}
 .rrow .cbtn{min-width:80px}
 .rrow .tx span{white-space:nowrap}
+
+/* Asset Panel (filtered to Missing) */
+#apanel{position:absolute;left:664px;top:230px;width:592px;height:580px;z-index:8;display:none;background:#0e0d0d;border-radius:12px;overflow:hidden;filter:drop-shadow(8px 10px 25px rgba(0,0,0,.4))}
+#apanel.on{display:block}
+#apanel .ph{height:40px;background:#241b38;display:flex;align-items:center;gap:16px;padding:0 0 0 24px;font-size:14px}
+#apanel .ph img{width:24px;height:24px}#apanel .ph b{flex:1;font-weight:600;color:var(--lilac)}
+#apanel .x{width:40px;height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer}#apanel .x img{width:16px;height:16px}
+#apanel .ptabs{height:47px;background:#241b38;display:flex;align-items:flex-end;padding-left:24px;gap:8px;font-size:12px}
+#apanel .tb{padding:8px 24px;border-radius:8px 8px 0 0;color:var(--grey-400)}#apanel .tb.on{background:var(--band);color:#fff}
+#apanel .pline{height:6px;background:var(--band)}
+#apanel .pbody{padding:24px}
+#apanel .tgs{display:flex;gap:4px}#apanel .tg{padding:4px 12px;border-radius:16px;font-size:14px;color:var(--grey-400)}#apanel .tg.on{background:var(--band);color:#fff}
+#apanel .pfilter{display:flex;gap:8px;margin:16px 0 20px}
+#apanel .search{flex:1;border:1px solid var(--stroke);border-radius:4px;padding:8px;font-size:12px;color:var(--disable)}
+#apanel .dd{width:160px;border:1px solid var(--stroke);border-radius:4px;padding:8px;font-size:14px}
+#apanel .ptile{width:176px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+#apanel .ptile b{font-weight:400;padding:0 8px;color:var(--text)}
+#apanel .mth{width:160px;height:90px;margin:0 8px;border:2px solid var(--band);border-radius:4px;background:#0e0d0d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--citrus);font-size:12px}
+#apanel .mth img{width:24px;height:24px}#apanel .mth em{font-style:normal}
+#apanel .pbar{position:absolute;left:0;right:0;bottom:0;height:64px;background:#0e0d0d;border-top:1px solid var(--stroke);display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-size:14px}
+#apanel .ac{display:flex;gap:8px}

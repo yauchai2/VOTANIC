@@ -37,7 +37,7 @@ function mkFiles() {
 var S = {
   screen: "s1",
   mode: "loading",          /* loading | missing | done | ready */
-  open: false, review: false, menu: false,
+  open: false, review: false, menu: false, panel: null, panelFrom: "",
   scenes: [], files: [], sel: 1, scroll: 0,
   timer: null, auto: null, doneT: null
 };
@@ -73,7 +73,7 @@ function show(id) {
 }
 function enterEditor() {
   clearTimeout(S.doneT);
-  S.mode = "loading"; S.open = false; S.review = false; S.menu = false; S.sel = 1; S.scroll = 0;
+  S.mode = "loading"; S.open = false; S.review = false; S.menu = false; S.panel = null; S.sel = 1; S.scroll = 0;
   S.scenes = freshScenes(); S.files = []; show("editor");
 }
 
@@ -205,7 +205,7 @@ function renderAll() {
   var ed = $("#editor"), lk = locked();
   ed.classList.toggle("locked", lk); ed.classList.toggle("playlocked", lk); ed.classList.toggle("ready", !lk);
   $("#playBtn").setAttribute("aria-disabled", lk); $("#saveBtn").setAttribute("aria-disabled", lk);
-  renderRow(); updateFooter(); updateTips(); renderLoader(); renderReview(); renderPlaceholder(); renderMenu(); hideTips();
+  renderRow(); updateFooter(); updateTips(); renderLoader(); renderReview(); renderPlaceholder(); renderMenu(); renderPanel(); hideTips();
 }
 
 /* ---------- file actions ---------- */
@@ -224,7 +224,19 @@ function work(f, label, ms) {
   setTimeout(function () { if (S.files.indexOf(f) > -1) resolveFile(f); }, ms);
 }
 function retryAll() { S.files.slice().forEach(function (f) { work(f, "Retrying…", 900); }); }
-function pickFile(f) { work(f, "Replacing…", 1300); }
+function pickFile(f) { S.panel = f.id; S.panelFrom = S.review ? "review" : ""; S.review = false; renderAll(); }
+function renderPanel() {
+  var P = $("#apanel"), f = fileById(S.panel);
+  if (!f) { S.panel = null; P.classList.remove("on"); P.innerHTML = ""; return; }
+  var sc = f.scenes.length > 1 ? "Scenes " + f.scenes.slice(0, -1).join(", ") + " and " + f.scenes[f.scenes.length - 1] : "Scene " + f.scenes[0];
+  var tabs = ["Images", "Icons", "Videos", "Audio"].map(function (t) { return '<span class="tg' + (t === f.kind + "s" ? " on" : "") + '">' + t + "</span>"; }).join("");
+  P.innerHTML = '<div class="ph"><img alt="" src="' + A + 'media.svg"><b>Asset Panel</b><a class="x" data-act="pcancel"><img alt="" src="' + A + 'close.svg"></a></div>' +
+    '<div class="ptabs"><span class="tb on">Local</span><span class="tb">Online</span></div><div class="pline"></div>' +
+    '<div class="pbody"><div class="tgs">' + tabs + '</div><div class="pfilter"><span class="search">Search media…</span><span class="dd">Missing · ' + S.files.length + '</span></div>' +
+    '<div class="ptile"><div class="mth"><img alt="" src="' + A + 'warn-amber.svg"><span>Missing</span><em>' + f.kind + " · " + f.reason + "</em></div><b>" + f.name + "</b></div></div>" +
+    '<div class="pbar"><span>Replacing ' + f.name + " · " + sc + '</span><div class="ac"><a class="cbtn ter" data-act="pcancel">Cancel</a><a class="cbtn pri" data-act="pchoose" data-id="' + f.id + '">Choose file…</a></div></div>';
+  P.classList.add("on");
+}
 
 /* ---------- tooltips ---------- */
 function hideTips() { $("#tipPlay").classList.remove("show"); $("#tipNew").classList.remove("show"); $("#tipScene").classList.remove("show"); }
@@ -258,9 +270,11 @@ function act(ev) {
   if (a === "retryall") retryAll();
   if (a === "retry" && f) work(f, "Retrying…", 900);
   if (a === "replace" && f) pickFile(f);
+  if (a === "pcancel") { S.panel = null; S.review = S.panelFrom === "review"; renderAll(); }
+  if (a === "pchoose" && f) { S.panel = null; work(f, "Replacing…", 1300); S.review = S.panelFrom === "review"; renderAll(); }
   if (a === "play") { S.menu = false; show("s1"); }
 }
-["#loader", "#review", "#ph", "#playMenu"].forEach(function (s) { $(s).addEventListener("click", act); });
+["#loader", "#review", "#ph", "#playMenu", "#apanel"].forEach(function (s) { $(s).addEventListener("click", act); });
 document.addEventListener("click", function (ev) { if (S.menu && !ev.target.closest("#playMenu")) { S.menu = false; renderMenu(); } });
 
 $("#row").addEventListener("click", function (ev) {
@@ -308,7 +322,7 @@ document.addEventListener("keydown", function (ev) {
   }
   if (k === "f") simulate("missing");
   if (k === "a") simulate("ready");
-  if (k === "escape") { S.menu = false; S.review = false; if (S.screen === "editor") renderAll(); }
+  if (k === "escape") { S.menu = false; if (S.panel) { S.panel = null; S.review = S.panelFrom === "review"; } else S.review = false; if (S.screen === "editor") renderAll(); }
 });
 
 /* ---------- navigation ---------- */
