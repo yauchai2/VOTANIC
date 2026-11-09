@@ -146,7 +146,7 @@ function footerText() {
 function updateFooter() { $("#footer").textContent = footerText(); }
 function updateTips() {
   var left = TOTAL - loaded();
-  $("#tipPlay").innerHTML = (S.tipFor === "saveBtn" ? "" : "<p>Plays from the current scene while loading.</p>") + "<p>Play all and Save unlock when loading finishes. " + plural(left, "asset") + " left.</p>";
+  $("#tipPlay").innerHTML = "<p>Plays from the current scene while loading.</p><p>Play all unlocks when loading finishes. " + plural(left, "asset") + " left.</p>";
   $("#tipNew").innerHTML = "<p>New scene unlocks when loading finishes.</p><p>" + plural(left, "asset") + " left.</p>";
 }
 function chev(up) { return '<span class="chev" data-act="toggle"><img alt="" src="' + A + (up ? "chevup" : "chevron") + '.svg"></span>'; }
@@ -181,7 +181,7 @@ function checklist() {
   if (n <= NS) rows.push(row("clock", range(n, NS), "In queue"));
   return '<div class="clist">' + rows.join("") + "</div>";
 }
-function noteText() { return "Play all and Save unlock when loading finishes."; }
+function noteText() { return "Play all unlocks when loading finishes."; }
 function updateLoaderLive() {
   var r = loaded(), pct = Math.round(r / TOTAL * 100), e;
   if ((e = $("#pillTxt"))) e.textContent = "Loading assets " + r + "/" + TOTAL;
@@ -225,7 +225,7 @@ function renderMenu() {
 function renderAll() {
   var ed = $("#editor"), lk = locked();
   ed.classList.toggle("locked", lk); ed.classList.toggle("ready", !lk);
-  $("#playBtn").setAttribute("aria-disabled", false); $("#saveBtn").setAttribute("aria-disabled", lk);
+  $("#playBtn").setAttribute("aria-disabled", false); $("#saveBtn").setAttribute("aria-disabled", false);
   renderRow(); updateFooter(); updateTips(); renderLoader(); renderReview(); renderPlaceholder(); renderMenu(); renderPanel(); hideTips();
 }
 
@@ -263,7 +263,7 @@ function renderPanel() {
 function hideTips() { $("#tipPlay").classList.remove("show"); $("#tipNew").classList.remove("show"); $("#tipScene").classList.remove("show"); }
 function showPlayTip() { if (locked() && !S.menu) $("#tipPlay").classList.add("show"); }
 var scale = function () { return Math.min(innerWidth / 1920, innerHeight / 1080); };
-Array.prototype.slice.call(document.querySelectorAll("#playBtn,#saveBtn")).forEach(function (e) {
+Array.prototype.slice.call(document.querySelectorAll("#playBtn")).forEach(function (e) {
   var en = function () { S.tipFor = e.id; updateTips(); showPlayTip(); }; e.addEventListener("mouseenter", en); e.addEventListener("focus", en);
   e.addEventListener("mouseleave", hideTips); e.addEventListener("blur", hideTips);
   e.addEventListener("click", function (ev) {

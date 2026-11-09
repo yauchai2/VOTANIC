@@ -59,7 +59,7 @@ img{display:block}
 .play .b img{width:20px;height:20px;transform:rotate(90deg)}
 .save{padding:4px 16px;gap:8px;border-radius:8px;height:36px}
 .save img{width:24px;height:24px}
-.playlocked .play .a,.playlocked .play .b,.locked .save{background:var(--disable);color:var(--grey-400);cursor:not-allowed}
+.playlocked .play .a,.playlocked .play .b{background:var(--disable);color:var(--grey-400);cursor:not-allowed}
 .ready .fname{color:var(--text)}
 .ready .play .a:hover,.ready .play .b:hover,.ready .save:hover{filter:brightness(1.15)}
 
