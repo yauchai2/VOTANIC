@@ -146,7 +146,7 @@ function footerText() {
 function updateFooter() { var m = S.mode !== "loading" && missFor(S.sel)[0]; $("#footer").textContent = m ? "Scene " + S.sel + " · " + m.name + " is missing" : footerText(); }
 function updateTips() {
   var left = TOTAL - loaded();
-  $("#tipPlay").innerHTML = "<p>Plays from the current scene while loading.</p><p>Play all unlocks when loading finishes. " + plural(left, "asset") + " left.</p>";
+  $("#tipPlay").innerHTML = "<p>Plays from the current scene while loading.</p><p>Play in PC and VR unlock when loading finishes. " + plural(left, "asset") + " left.</p>";
   $("#tipNew").innerHTML = "<p>New scene unlocks when loading finishes.</p><p>" + plural(left, "asset") + " left.</p>";
 }
 function chev(up) { return '<span class="chev" data-act="toggle"><img alt="" src="' + A + (up ? "chevup" : "chevron") + '.svg"></span>'; }
@@ -181,7 +181,7 @@ function checklist() {
   if (n <= NS) rows.push(row("clock", range(n, NS), "In queue"));
   return '<div class="clist">' + rows.join("") + "</div>";
 }
-function noteText() { return "Play all unlocks when loading finishes."; }
+function noteText() { return "Play in PC and VR unlock when loading finishes."; }
 function updateLoaderLive() {
   var r = loaded(), pct = Math.round(r / TOTAL * 100), e;
   if ((e = $("#pillTxt"))) e.textContent = "Loading assets " + r + "/" + TOTAL;
@@ -219,8 +219,8 @@ function renderPlaceholder() {
 function renderMenu() {
   var M = $("#playMenu"), lk = locked();
   if (!S.menu) { M.classList.remove("on"); return; }
-  function it(id, t, off, hov) { return '<a class="mi' + (off ? " off" : "") + '" data-act="' + (off ? "" : "play") + '" data-id="' + id + '"><span>' + t + "</span>" + "</a>"; }
-  M.innerHTML = it("all", "Play all", lk) + it("cur", "Play from current scene", false) + it("vr", "Play with VR headset", lk);
+  function it(id, t, off, ic) { return '<a class="mi' + (off ? " off" : "") + '" data-act="' + (off ? "" : "play") + '" data-id="' + id + '"><img alt="" src="' + A + ic + '.svg"><span>' + t + "</span>" + "</a>"; }
+  M.innerHTML = it("all", "Play in PC", lk, "monitor") + it("cur", "Play from current scene", false, "monitor") + it("vr", "Play with VR device", lk, "vr");
   M.classList.add("on");
 }
 function renderAll() {
