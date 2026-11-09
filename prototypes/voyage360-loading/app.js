@@ -146,7 +146,7 @@ function footerText() {
 function updateFooter() { $("#footer").textContent = footerText(); }
 function updateTips() {
   var left = TOTAL - loaded();
-  $("#tipPlay").innerHTML = "<p>Play all and Save unlock when loading finishes. " + plural(left, "asset") + " left.</p><p>To preview now, use Play › Play from current scene.</p>";
+  $("#tipPlay").innerHTML = (S.tipFor === "saveBtn" ? "" : "<p>Plays from the current scene while loading.</p>") + "<p>Play all and Save unlock when loading finishes. " + plural(left, "asset") + " left.</p>";
   $("#tipNew").innerHTML = "<p>New scene unlocks when loading finishes.</p><p>" + plural(left, "asset") + " left.</p>";
 }
 function chev(up) { return '<span class="chev" data-act="toggle"><img alt="" src="' + A + (up ? "chevup" : "chevron") + '.svg"></span>'; }
@@ -224,8 +224,8 @@ function renderMenu() {
 }
 function renderAll() {
   var ed = $("#editor"), lk = locked();
-  ed.classList.toggle("locked", lk); ed.classList.toggle("playlocked", lk); ed.classList.toggle("ready", !lk);
-  $("#playBtn").setAttribute("aria-disabled", lk); $("#saveBtn").setAttribute("aria-disabled", lk);
+  ed.classList.toggle("locked", lk); ed.classList.toggle("ready", !lk);
+  $("#playBtn").setAttribute("aria-disabled", false); $("#saveBtn").setAttribute("aria-disabled", lk);
   renderRow(); updateFooter(); updateTips(); renderLoader(); renderReview(); renderPlaceholder(); renderMenu(); renderPanel(); hideTips();
 }
 
@@ -264,12 +264,12 @@ function hideTips() { $("#tipPlay").classList.remove("show"); $("#tipNew").class
 function showPlayTip() { if (locked() && !S.menu) $("#tipPlay").classList.add("show"); }
 var scale = function () { return Math.min(innerWidth / 1920, innerHeight / 1080); };
 Array.prototype.slice.call(document.querySelectorAll("#playBtn,#saveBtn")).forEach(function (e) {
-  e.addEventListener("mouseenter", showPlayTip); e.addEventListener("focus", showPlayTip);
+  var en = function () { S.tipFor = e.id; updateTips(); showPlayTip(); }; e.addEventListener("mouseenter", en); e.addEventListener("focus", en);
   e.addEventListener("mouseleave", hideTips); e.addEventListener("blur", hideTips);
   e.addEventListener("click", function (ev) {
     ev.stopPropagation();
     if (e.id === "playBtn") {
-      if (locked() || ev.target.closest(".b")) { S.menu = !S.menu; hideTips(); renderMenu(); }
+      if (ev.target.closest(".b")) { S.menu = !S.menu; hideTips(); renderMenu(); }
       else show("s1");
     }
   });
