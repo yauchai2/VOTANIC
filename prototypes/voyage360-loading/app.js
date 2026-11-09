@@ -253,7 +253,7 @@ function renderPanel() {
   var tabs = ["Images", "Icons", "Videos", "Audio"].map(function (t) { return '<span class="tg' + (t === f.kind + "s" ? " on" : "") + '">' + t + "</span>"; }).join("");
   P.innerHTML = '<div class="ph"><img alt="" src="' + A + 'media.svg"><b>Asset Panel</b><a class="x" data-act="pcancel"><img alt="" src="' + A + 'close.svg"></a></div>' +
     '<div class="ptabs"><span class="tb on">Local</span><span class="tb">Online</span></div><div class="pline"></div>' +
-    '<div class="pbody"><div class="tgs">' + tabs + '</div><div class="pfilter"><span class="search">Search media…</span><span class="dd">Missing</span></div>' +
+    '<div class="pbody"><div class="tgs">' + tabs + '</div><div class="pfilter"><span class="search">Search media…</span><span class="dd">All</span></div>' +
     '<div class="ptile"><div class="mth"><img alt="" src="' + A + 'warn-amber.svg"><span>Missing</span><em>' + f.kind + " · " + f.reason + "</em></div><b>" + f.name + "</b></div></div>" +
     '<div class="pbar"><span>Replacing ' + f.name + " · " + sc + '</span><div class="ac"><a class="cbtn ter" data-act="pcancel">Cancel</a><a class="cbtn pri" data-act="pchoose" data-id="' + f.id + '">Choose file…</a></div></div>';
   P.classList.add("on");
