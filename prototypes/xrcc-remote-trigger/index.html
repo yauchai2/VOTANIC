@@ -356,6 +356,17 @@ input:focus{outline:1px solid var(--interactive)}
 .key.ro .rail,.key.ro .step{pointer-events:none}
 .shape-rounded{border-radius:26px!important}.shape-pill{border-radius:999px!important}
 .pdeck.stack{grid-template-columns:1fr;grid-auto-rows:auto}.pdeck.stack .key{grid-column:auto!important;grid-row:auto!important;min-height:84px!important;flex-direction:row;justify-content:flex-start;gap:14px;padding:12px 16px;text-align:left}
+.v3in{width:100%;display:flex;flex-direction:column;gap:8px;text-align:left}
+.v3in .axes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.v3in .axf{display:flex;align-items:center;gap:6px;background:#1c1c1e;border-radius:8px;padding:0 6px}
+.v3in .axf b{font-size:11px;color:var(--text2)}
+.v3in input{width:100%;min-width:0;background:none;border:0;color:#fff;font:inherit;font-size:13px;padding:8px 0;text-align:right}
+.pdeck.stack .key.t-v3in{min-height:0!important;flex-direction:column;align-items:stretch}
+.ordrow{display:flex;align-items:center;gap:8px;padding:6px 8px;border-radius:8px;cursor:pointer}
+.ordrow:hover,.ordrow.sel{background:#1c1c1e}
+.ordrow .n{width:20px;color:var(--text2);font-size:12px;text-align:center}
+.ordrow .t{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ordrow .k{font-size:11px}
 .pdeck.stack .key.t-vector3,.pdeck.stack .key.t-dial{min-height:0!important}
 
 .stage .ghost{position:absolute;left:0;right:0;top:50%;transform:translateY(-50%);text-align:center;font-size:12px;color:#4b4b52;pointer-events:none;z-index:1}
@@ -413,6 +424,7 @@ input:focus{outline:1px solid var(--interactive)}
               <div class="row" style="gap:6px;margin-bottom:8px">
                 <button class="btn tertiary" data-side="keys" aria-pressed="true">Keys</button>
                 <button class="btn tertiary" data-side="settings">Settings</button>
+                <button class="btn tertiary" data-side="order">Phone order</button>
                 <button class="btn tertiary" data-side="issues">Issues <span class="pill" id="issueN">0</span></button>
               </div>
               <div id="side"></div>
@@ -451,7 +463,6 @@ input:focus{outline:1px solid var(--interactive)}
           <div class="tools">
             <button class="btn tertiary" id="tReconnect">Simulate network drop</button>
             <button class="btn tertiary" id="tStale">Edit deck in XRCC</button>
-            <button class="btn tertiary" id="tStack">Phone layout: Grid</button>
             <button class="btn tertiary" id="tLand">Rotate</button>
             <button class="btn tertiary" id="tReset">Restart phone</button>
           </div>
@@ -479,34 +490,38 @@ const LIB=[
  {id:'guests',src:'project',type:'stepper',l:'Guests',w:1},
  {id:'spot',src:'spotA',type:'dial',l:'Spotlight',i:'◉',w:2},
  {id:'pos',src:'spotA',type:'vector3',l:'Spotlight position',i:'⬡',w:2,h:2},
+ {id:'aim',src:'spotA',type:'v3in',l:'Spotlight target',i:'⌖',w:2,h:1},
  {id:'temp',src:'spotA',type:'stepper',l:'Lamp temp',i:'♨',w:1,ro:true,unit:'°C'},
  {id:'music',src:'speaker',type:'toggle',l:'Music',i:'♪',w:1}
 ];
 const BYID=Object.fromEntries(LIB.map(k=>[k.id,k]));
-const TYPELABEL={trigger:'Trigger button',toggle:'Boolean toggle',dial:'Number slider',stepper:'Number input',colour:'Colour input',vector3:'Vector3 slider'};
-const SHORT={trigger:'Trigger',toggle:'Toggle',dial:'Slider',stepper:'Number',colour:'Colour',vector3:'Vector3'};
+const TYPELABEL={trigger:'Trigger button',toggle:'Boolean toggle',dial:'Number slider',stepper:'Number input',colour:'Colour input',vector3:'Vector3 slider',v3in:'Vector3 input'};
+const SHORT={trigger:'Trigger',toggle:'Toggle',dial:'Slider',stepper:'Number',colour:'Colour',vector3:'Vector3',v3in:'Vector3 in'};
 const DEFAULT_DECK=['start','curtain','lights','mood','spot','guests','music','pos','applause','next','reset'];
 const DEFAULT_POS={start:[0,0],curtain:[1,0],lights:[2,0],mood:[3,0],spot:[0,1],guests:[2,1],music:[3,1],pos:[0,2],applause:[2,2],next:[3,2],reset:[2,3]};
 const MAXROWS=8;
 const st={
   tab:'editor',deck:[],labels:{},sizes:{},pos:{},selected:null,
-  vals:{lights:false,music:false,mood:'#e8467c',spot:64,guests:12,pos:[1.2,.8,-.4],temp:41},access:{temp:'read'},shape:{},bind:{},mobileMode:'grid',
+  vals:{lights:false,music:false,mood:'#e8467c',spot:64,guests:12,pos:[1.2,.8,-.4],aim:[0,1.5,3],temp:41},access:{temp:'read'},shape:{},bind:{},order:[],
   playing:false,publicOn:false,publicLink:'https://gallery-tiger-42.trycloudflare.com',phones:[],code:'',
   layoutVer:1,phoneVer:1,log:[]
 };
 const COLS=['#e5566d','#f0b429','#4ec27d','#4f8cf0','#8b5cf6','#c0392b','#d68a2c','#2e8b57','#4b3a78','#ffffff'];
 let ch;try{ch=new BroadcastChannel('xrcc-rt')}catch(e){ch={postMessage(){},set onmessage(f){}}}
 const genCode=()=>String(Math.floor(100000+Math.random()*900000));
-const save=()=>{try{localStorage.setItem('xrcc-rt-deck',JSON.stringify({deck:st.deck,labels:st.labels,sizes:st.sizes,pos:st.pos,access:st.access,shape:st.shape}))}catch(e){}};
-try{const s=JSON.parse(localStorage.getItem('xrcc-rt-deck')||'null');if(s){st.deck=s.deck.filter(i=>BYID[i]);st.labels=s.labels||{};st.sizes=s.sizes||{};st.pos=s.pos||{};if(s.access)st.access=s.access;st.shape=s.shape||{}}else st.deck=[...DEFAULT_DECK]}catch(e){st.deck=[...DEFAULT_DECK]}
+const save=()=>{try{localStorage.setItem('xrcc-rt-deck',JSON.stringify({deck:st.deck,labels:st.labels,sizes:st.sizes,pos:st.pos,access:st.access,shape:st.shape,order:st.order}))}catch(e){}};
+try{const s=JSON.parse(localStorage.getItem('xrcc-rt-deck')||'null');if(s){st.deck=s.deck.filter(i=>BYID[i]);st.labels=s.labels||{};st.sizes=s.sizes||{};st.pos=s.pos||{};if(s.access)st.access=s.access;st.shape=s.shape||{};st.order=s.order||[]}else st.deck=[...DEFAULT_DECK]}catch(e){st.deck=[...DEFAULT_DECK]}
 const label=id=>st.labels[id]||BYID[id].l;
 const isVar=id=>BYID[id].type!=='trigger';
 const acc=id=>isVar(id)?(st.access[id]||'readWrite'):'readWrite';
 const srcName=id=>(SRC.find(x=>x[0]===BYID[id].src)||[0,''])[1];
-const MINSZ={vector3:{w:2,h:2},dial:{w:2,h:1}};
+const MINSZ={v3in:{w:2,h:1},vector3:{w:2,h:2},dial:{w:2,h:1}};
 const minOf=id=>MINSZ[BYID[id].type]||{w:1,h:1};
 const sz=id=>{const m=minOf(id);const z=st.sizes[id]||{w:BYID[id].w||1,h:BYID[id].h||1};return{w:Math.max(m.w,z.w),h:Math.max(m.h,z.h)}};
 const PS=id=>st.pos[id]||{x:0,y:0};
+const byPos=(a,b)=>PS(a).y-PS(b).y||PS(a).x-PS(b).x;
+function mobOrder(){const o=st.order.filter(i=>st.deck.includes(i));return [...o,...st.deck.filter(i=>!o.includes(i)).sort(byPos)]}
+function moveOrder(id,d){const o=mobOrder(),i=o.indexOf(id),j=i+d;if(i<0||j<0||j>=o.length)return;[o[i],o[j]]=[o[j],o[i]];st.order=o;save();st.layoutVer++;renderSide();renderPhone()}
 function fits(id,x,y,w,h){
   if(x<0||y<0||x+w>4||y+h>MAXROWS)return false;
   for(const o of st.deck){if(o===id||!st.pos[o])continue;const q=PS(o),z=sz(o);if(x<q.x+z.w&&x+w>q.x&&y<q.y+z.h&&y+h>q.y)return false}
@@ -538,6 +553,7 @@ function perform(id,payload,from){
     case'dial':st.vals[id]=payload;log(`${label(id)} set to <b>${payload}%</b> from ${from}`);break;
     case'stepper':st.vals[id]=Math.max(0,st.vals[id]+payload);log(`${label(id)} <b>${payload>0?'+1':'−1'}</b> → ${st.vals[id]} from ${from}`);break;
     case'colour':st.vals[id]=payload;log(`${label(id)} → <b>${payload}</b> from ${from}`);break;
+    case'v3in':st.vals[id]=payload;log(`${label(id)} → <b>(${payload.map(n=>n.toFixed(1)).join(', ')})</b> from ${from}`);break;
     case'vector3':st.vals[id]=payload;log(`${label(id)} → <b>(${payload.map(n=>n.toFixed(1)).join(', ')})</b> from ${from}`);break;
     default:log(`<b>${label(id)}</b> pressed from ${from}`);
   }
@@ -563,6 +579,7 @@ function keyEl(id,mode){
   if(k.type==='stepper'){el.append(h('div',{class:'val'},label(id)),h('div',{class:'big'},String(v)+(k.unit||'')),acc(id)==='read'?'':h('div',{class:'step'},h('button',{class:'btn sq','data-d':-1,'aria-label':'Minus'},'−'),h('button',{class:'btn sq','data-d':1,'aria-label':'Plus'},'+')))}
   if(k.type==='dial'){el.append(dialEl(id,mode))}
   if(k.type==='vector3'){el.append(v3El(id,mode))}
+  if(k.type==='v3in'){el.append(v3inEl(id,mode))}
   if(k.ro||acc(id)==='read')el.append(h('span',{class:'tagro'},'Read only'));
   if(st.bind[id])el.append(h('span',{class:'tagb',title:st.bind[id]==='type'?'Type mismatch':'Variable missing'},st.bind[id]==='type'?'Type':'Missing'));
   if(mode==='editor')el.append(h('div',{class:'rz',title:'Drag to resize'}));
@@ -588,6 +605,15 @@ function dialEl(id,mode){
   w.append(railEl(v,0,100,dispatch,x=>{if(mode==='phone')phoneApi.press(id,Math.round(x),false,true);},()=>mode==='phone'&&phoneApi.dim(true)),h('div',{class:'scale'},h('span',{},'0'),h('span',{},'100')));
   return w;
 }
+function v3inEl(id,mode){
+  const v=st.vals[id];const w=h('div',{class:'v3in'});
+  w.append(h('div',{class:'row',style:'gap:10px'},h('div',{class:'ico'},BYID[id].i),h('b',{class:'lab'},label(id))));
+  const f=h('div',{class:'axes'});
+  ['X','Y','Z'].forEach((ax,i)=>{const inp=h('input',{type:'number',step:'0.1',value:String(v[i]),'aria-label':label(id)+' '+ax,disabled:acc(id)==='read'?'':null});
+    inp.addEventListener('change',()=>{const n=[...st.vals[id]];n[i]=Math.round((+inp.value||0)*10)/10;if(mode==='phone')phoneApi.press(id,n,false);else perform(id,n,'editor')});
+    ['pointerdown','click'].forEach(ev=>inp.addEventListener(ev,e=>e.stopPropagation()));
+    f.append(h('label',{class:'axf'},h('b',{},ax),inp))});
+  w.append(f);return w}
 function v3El(id,mode){
   const v=st.vals[id];const w=h('div',{class:'v3'});
   w.append(h('div',{class:'row',style:'gap:10px'},h('div',{class:'ico'},BYID[id].i),h('b',{class:'lab'},label(id))));
@@ -609,7 +635,7 @@ function renderDeckE(){
   if(!st.deck.length)d.append(h('div',{class:'emptyhint'},h('b',{},'Your deck is empty'),h('span',{},'Pick variables on the right, or try Preset layout.')));
   $('#count').textContent=st.deck.length+' of 128 keys';$('#presetBtn').textContent=presetPrev?'Undo preset':'Preset layout';
   $$('.key',d).forEach(el=>{
-    el.addEventListener('pointerdown',e=>{if(e.target.closest('.rail,.btn,.x,.rz'))return;pdrag(el,el.dataset.id,e)});
+    el.addEventListener('pointerdown',e=>{if(e.target.closest('.rail,.btn,.x,.rz,input'))return;pdrag(el,el.dataset.id,e)});
     const rz=$('.rz',el);
     if(rz){rz.addEventListener('pointerdown',e=>{
       e.preventDefault();e.stopPropagation();rz.setPointerCapture(e.pointerId);
@@ -691,6 +717,15 @@ function renderSide(){
         if(!placed)it.addEventListener('pointerdown',e=>pdrag(it,k.id,e));
         it.addEventListener('click',()=>!placed&&!pdrag.just&&addKey(k.id));l.append(it)});
       s.append(l)});
+  }else if(sideTab==='order'){
+    s.append(h('div',{class:'muted',style:'font-size:12px;margin-bottom:8px'},'On a phone held upright, keys stack in this order. Held sideways, phones show the deck as laid out.'));
+    const o=mobOrder();
+    o.forEach((id,i)=>s.append(h('div',{class:'ordrow'+(st.selected===id?' sel':''),onclick:()=>{st.selected=id;renderDeckE();renderSide()}},
+      h('span',{class:'n'},String(i+1)),h('span',{class:'t'},label(id)),h('span',{class:'k muted'},SHORT[BYID[id].type]),
+      h('button',{class:'btn sq tertiary','aria-label':'Move up',disabled:i?null:'',onclick:e=>{e.stopPropagation();moveOrder(id,-1)}},'▲'),
+      h('button',{class:'btn sq tertiary','aria-label':'Move down',disabled:i<o.length-1?null:'',onclick:e=>{e.stopPropagation();moveOrder(id,1)}},'▼'))));
+    if(!o.length)s.append(h('div',{class:'emptyside'},h('b',{},'Nothing to order yet'),h('span',{},'Add keys to the deck first.')));
+    if(st.order.length)s.append(h('button',{class:'btn tertiary',style:'margin-top:12px',onclick:()=>{st.order=[];save();st.layoutVer++;renderSide();renderPhone()}},'Reset to deck order'));
   }else if(sideTab==='settings'){
     const id=st.selected;
     if(!id||!st.deck.includes(id)){s.append(h('div',{class:'emptyside'},h('div',{class:'glyph'},'▢'),h('b',{},'No key selected'),h('span',{},'Click a key on the deck to rename it, change its size or phone access.')));return}
@@ -825,11 +860,11 @@ function renderPhone(){
     if(phone.stale)s.append(h('div',{class:'banner2 info'},h('b',{},'New keys are ready'),h('div',{class:'muted'},'Edited in XRCC. Refresh to get it.'),h('button',{class:'btn primary',style:'width:100%;margin-top:8px',onclick:()=>{phone.stale=false;renderPhone();toast('Deck refreshed')}},'Refresh deck')));
     if(phone.conn!=='local')s.append(h('div',{class:'banner2 warn'},h('b',{},'Lost ALAN-PC for a moment'),h('div',{class:'muted'},'Keys are paused so nothing fires twice.'),h('button',{class:'btn',style:'width:100%;margin-top:8px',onclick:()=>{phone.conn='local';renderPhone();toast('Back online')}},'Retry now')));
     if(!st.playing){phoneGoto('ended');return}
-    const g=h('div',{class:'pdeck'+(phone.conn!=='local'?' paused':'')+(st.mobileMode==='stack'?' stack':'')});(st.mobileMode==='stack'?[...st.deck].sort((a,b)=>PS(a).y-PS(b).y||PS(a).x-PS(b).x):st.deck).forEach(id=>g.append(keyEl(id,'phone')));s.append(g);
+    const g=h('div',{class:'pdeck'+(phone.conn!=='local'?' paused':'')+(phone.land?'':' stack')});(phone.land?st.deck:mobOrder()).forEach(id=>g.append(keyEl(id,'phone')));s.append(g);
     s.append(h('div',{class:'dots'},h('i',{class:'on'}),h('i')));
     $$('.key',g).forEach(el=>{const id=el.dataset.id,k=BYID[id];
       $$('.btn[data-d]',el).forEach(b=>b.addEventListener('click',ev=>{ev.stopPropagation();phoneApi.press(id,+b.dataset.d,false);const bp=h('span',{class:'bump'},(+b.dataset.d>0?'+1':'−1'));el.append(bp);setTimeout(()=>bp.remove(),600)}));
-      el.addEventListener('click',ev=>{if(ev.target.closest('.rail,.btn'))return;
+      el.addEventListener('click',ev=>{if(ev.target.closest('.rail,.btn,input'))return;
         if(k.type==='colour'){phone.sheet=true;renderSheet();return}
         if(k.type==='trigger'||k.type==='toggle')phoneApi.press(id,null,false)});
     });
@@ -853,7 +888,6 @@ function renderSheet(){
 }
 $('#tReconnect').onclick=()=>{if(phone.screen!=='deck'){toast('Open a deck on the phone first');return}phone.conn=phone.conn==='local'?'drop':'local';renderPhone();if(phone.conn==='drop'){log('Phone <b>lost connection</b>');clearTimeout(phone.rt);phone.rt=setTimeout(()=>{if(phone.conn==='drop'){phone.conn='local';renderPhone();toast('Reconnected')}},6000)}};
 $('#tStale').onclick=()=>{const free=LIB.find(k=>!st.deck.includes(k.id));if(free){addKey(free.id)}phone.stale=true;if(phone.screen==='deck')renderPhone();toast('Deck edited in XRCC')};
-$('#tStack').onclick=()=>{st.mobileMode=st.mobileMode==='stack'?'grid':'stack';$('#tStack').textContent='Phone layout: '+(st.mobileMode==='stack'?'Stack':'Grid');renderPhone()};
 $('#tLand').onclick=()=>{phone.land=!phone.land;renderPhone()};
 $('#tReset').onclick=()=>{st.phones=st.phones.filter(p=>!p.local);phone.conn='local';phone.stale=false;phoneGoto('join');renderLaunch()};
 /* ---------- Tabs and render ---------- */
@@ -872,7 +906,7 @@ function softPhone(){const g=P.querySelector('.pdeck');if(!g)return;
   })}
 phoneApiInit();
 document.addEventListener('keydown',e=>{if((e.key==='Delete'||e.key==='Backspace')&&st.tab==='editor'&&st.selected&&st.deck.includes(st.selected)&&!/INPUT|TEXTAREA/.test((document.activeElement||{}).tagName||'')){e.preventDefault();removeKey(st.selected)}});
-try{window.addEventListener('storage',e=>{if(e.key==='xrcc-rt-deck'){try{const s=JSON.parse(e.newValue);st.deck=s.deck.filter(i=>BYID[i]);st.labels=s.labels||{};st.sizes=s.sizes||{};st.pos=s.pos||{};initPos();renderAll()}catch(_){}}})}catch(_){}
+try{window.addEventListener('storage',e=>{if(e.key==='xrcc-rt-deck'){try{const s=JSON.parse(e.newValue);st.order=s.order||[];st.deck=s.deck.filter(i=>BYID[i]);st.labels=s.labels||{};st.sizes=s.sizes||{};st.pos=s.pos||{};initPos();renderAll()}catch(_){}}})}catch(_){}
 let h0='editor';try{h0=(location.hash||'#editor').slice(1)}catch(e){}if(!/^(editor|play|phone)$/.test(h0))h0='editor';setTab(h0);
 renderAll();
 })();
