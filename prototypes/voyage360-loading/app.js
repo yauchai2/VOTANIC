@@ -143,7 +143,7 @@ function footerText() {
   var k = readyScenes();
   return "Loading assets · " + r + " of " + TOTAL + " ready" + (k ? " · " + (k === 1 ? "Scene 1 can" : "Scenes 1–" + k + " can") + " be edited" : "");
 }
-function updateFooter() { $("#footer").textContent = footerText(); }
+function updateFooter() { var m = S.mode !== "loading" && missFor(S.sel)[0]; $("#footer").textContent = m ? "Scene " + S.sel + " · " + m.name + " is missing" : footerText(); }
 function updateTips() {
   var left = TOTAL - loaded();
   $("#tipPlay").innerHTML = "<p>Plays from the current scene while loading.</p><p>Play all unlocks when loading finishes. " + plural(left, "asset") + " left.</p>";
@@ -152,7 +152,7 @@ function updateTips() {
 function chev(up) { return '<span class="chev" data-act="toggle"><img alt="" src="' + A + (up ? "chevup" : "chevron") + '.svg"></span>'; }
 function renderLoader() {
   var m = S.mode, L = $("#loader"), h = "", r = loaded(), pct = Math.round(r / TOTAL * 100), f = S.files.length;
-  if (m === "ready" || S.review) { L.innerHTML = ""; return; }
+  if (m === "ready") { L.innerHTML = ""; return; }
   if (m === "done") { L.innerHTML = '<a class="pill ok"><img alt="" src="' + A + 'check.svg"><span>All assets ready</span></a>'; return; }
   var k = readyScenes(), cur = currentLoading();
   if (!S.open) {
@@ -203,22 +203,23 @@ function renderReview() {
     return '<div class="rrow"><img class="ic" alt="" src="' + A + x.icon + '.svg"><div class="tx"><b>' + x.name + "</b><span>" + x.kind + " · " + sc + " · " + (x.busy ? "Working…" : x.reason) + '</span></div><div class="ac">' + act + "</div></div>";
   }).join("");
   var busy = S.files.some(function (x) { return x.busy; });
-  P.innerHTML = '<div class="rhead"><img alt="" src="' + A + 'warn-amber.svg"><span>' + (f === 1 ? "Missing file" : "Missing files") + '</span><a class="x" data-act="rclose"><img alt="" src="' + A + 'close.svg"></a></div>' +
-    '<p class="lead">' + (f === 1 ? "This file couldn’t load. Its scenes still open, with placeholders where the file is used." : "These " + f + " files couldn’t load. Their scenes still open, with placeholders where the files are used.") + "</p>" +
-    '<div class="rlist">' + rows + '</div><div class="rfoot"><a class="cbtn ter" data-act="rclose">Close</a><a class="cbtn pri' + (busy ? " off" : "") + '" data-act="retryall">Retry all</a></div>';
+  P.innerHTML = '<div class="dh"><img alt="" src="' + A + 'warn-amber.svg"><span>' + (f === 1 ? "Missing file" : "Missing files") + '</span><a class="x" data-act="rclose"><img alt="" src="' + A + 'close.svg"></a></div>' +
+    '<div class="db"><p class="lead">' + (f === 1 ? "This file couldn’t load. Its scenes still open, with placeholders where the file is used." : "These " + f + " files couldn’t load. Their scenes still open, with placeholders where the files are used.") + "</p>" +
+    '<div class="rlist">' + rows + '</div></div><div class="df"><a class="cbtn ter" data-act="rclose">Close</a><a class="cbtn pri' + (busy ? " off" : "") + '" data-act="retryall">Retry all</a></div>';
   P.classList.add("on");
 }
 function renderPlaceholder() {
   var P = $("#ph"), f = missFor(S.sel)[0];
-  if (!f || S.mode === "loading" && false) { P.classList.remove("on"); P.innerHTML = ""; return; }
-  P.innerHTML = '<img alt="" src="' + A + f.icon + '.svg"><b>' + f.name + ' is missing</b><span>' + f.reason + ". The scene still plays, with this placeholder.</span>" +
-    '<div class="ac">' + (f.busy ? '<span class="busy"><img class="spin" alt="" src="' + A + 'load2.svg">' + f.busy + "</span>" : '<a class="cbtn ter" data-act="retry" data-id="' + f.id + '">Retry</a><a class="cbtn sec" data-act="replace" data-id="' + f.id + '">Replace…</a>') + "</div>";
+  if (!f || S.review || S.panel || S.phOff === S.sel) { P.classList.remove("on"); P.innerHTML = ""; return; }
+  P.innerHTML = '<div class="dh"><span>' + f.name + ' is missing</span><a class="x" data-act="phclose"><img alt="" src="' + A + 'close.svg"></a></div>' +
+    '<div class="db"><div class="dbrow"><img class="big" alt="" src="' + A + 'warn-big.svg"><p>This ' + f.kind.toLowerCase() + ' element keeps its place and settings. Replace the file or retry to bring it back.</p></div></div>' +
+    '<div class="df">' + (f.busy ? '<span class="busy"><img class="spin" alt="" src="' + A + 'load2.svg">' + f.busy + "</span>" : '<a class="cbtn ter" data-act="retry" data-id="' + f.id + '">Retry</a><a class="cbtn sec" data-act="replace" data-id="' + f.id + '">Replace…</a>') + "</div>";
   P.classList.add("on");
 }
 function renderMenu() {
   var M = $("#playMenu"), lk = locked();
   if (!S.menu) { M.classList.remove("on"); return; }
-  function it(id, t, off, hov) { return '<a class="mi' + (off ? " off" : "") + '" data-act="' + (off ? "" : "play") + '" data-id="' + id + '"><span>' + t + "</span>" + (off ? "<em>after loading</em>" : "") + "</a>"; }
+  function it(id, t, off, hov) { return '<a class="mi' + (off ? " off" : "") + '" data-act="' + (off ? "" : "play") + '" data-id="' + id + '"><span>' + t + (off ? " · after loading" : "") + "</span>" + "</a>"; }
   M.innerHTML = it("all", "Play all", lk) + it("cur", "Play from current scene", false) + it("vr", "Play with VR headset", lk);
   M.classList.add("on");
 }
@@ -252,9 +253,10 @@ function renderPanel() {
   var sc = f.scenes.length > 1 ? "Scenes " + f.scenes.slice(0, -1).join(", ") + " and " + f.scenes[f.scenes.length - 1] : "Scene " + f.scenes[0];
   var tabs = ["Images", "Icons", "Videos", "Audio"].map(function (t) { return '<span class="tg' + (t === f.kind + "s" ? " on" : "") + '">' + t + "</span>"; }).join("");
   P.innerHTML = '<div class="ph"><img alt="" src="' + A + 'media.svg"><b>Asset Panel</b><a class="x" data-act="pcancel"><img alt="" src="' + A + 'close.svg"></a></div>' +
-    '<div class="ptabs"><span class="tb on">Local</span><span class="tb">Online</span></div><div class="pline"></div>' +
-    '<div class="pbody"><div class="tgs">' + tabs + '</div><div class="pfilter"><span class="search">Search media…</span><span class="dd">All</span></div>' +
-    '<div class="ptile"><div class="mth"><img alt="" src="' + A + 'warn-amber.svg"><span>Missing</span><em>' + f.kind + " · " + f.reason + "</em></div><b>" + f.name + "</b></div></div>" +
+    '<div class="ptabs"><span class="tb on"><img alt="" src="' + A + 'monitor.svg">Local</span><span class="tb"><img alt="" src="' + A + 'globe.svg">Online</span>' +
+    '<div class="ptools"><span class="imp"><img alt="" src="' + A + 'upload.svg">Import</span><span class="sq cl"><img alt="" src="' + A + 'clean.svg"></span><span class="sq rm"><img alt="" src="' + A + 'trash.svg"></span></div></div><div class="pline"></div>' +
+    '<div class="pbody"><div class="tgs">' + tabs + '</div><div class="pfilter"><span class="search"><img alt="" src="' + A + 'search.svg">Search media…</span><span class="dd">All<img alt="" src="' + A + 'chevdown16.svg"></span></div>' +
+    '<div class="ptile"><div class="mth"><img alt="" src="' + A + 'warn-amber.svg"><span>Missing</span><em>' + f.kind + " · " + f.reason + "</em></div><b>" + f.name + '</b></div><div class="psb"><i></i></div></div>' +
     '<div class="pbar"><span>Replacing ' + f.name + " · " + sc + '</span><div class="ac"><a class="cbtn ter" data-act="pcancel">Cancel</a><a class="cbtn pri" data-act="pchoose" data-id="' + f.id + '">Choose file…</a></div></div>';
   P.classList.add("on");
 }
@@ -287,6 +289,7 @@ function act(ev) {
   var f = fileById(t.getAttribute("data-id"));
   if (a === "toggle") { S.open = !S.open; renderLoader(); }
   if (a === "review") { S.review = true; S.open = false; renderAll(); }
+  if (a === "phclose") { S.phOff = S.sel; renderAll(); }
   if (a === "rclose") { S.review = false; S.open = true; renderAll(); }
   if (a === "retryall") retryAll();
   if (a === "retry" && f) work(f, "Retrying…", 900);
@@ -307,7 +310,7 @@ $("#row").addEventListener("click", function (ev) {
     return;
   }
   if (S.scenes[n - 1].st !== "ready") return;
-  S.sel = n; renderRow(); renderPlaceholder();
+  S.sel = n; S.phOff = 0; renderRow(); renderPlaceholder(); updateFooter();
 });
 $("#row").addEventListener("mouseover", function (ev) {
   var c = ev.target.closest(".card.miss"), T = $("#tipScene");
@@ -328,7 +331,7 @@ function simulate(kind) {
   stopEngine(); clearTimeout(S.doneT); S.open = false; S.review = false; S.menu = false;
   S.scenes = S.scenes.map(function (s, i) { return { t: ASSETS[i], n: ASSETS[i], st: "ready" }; });
   if (kind === "missing") { S.files = mkFiles(); S.mode = "missing"; }
-  if (kind === "ready") { S.files = []; S.mode = "ready"; }
+  if (kind === "ready") { S.files = []; enterDone(); }
   renderAll();
 }
 document.addEventListener("keydown", function (ev) {
@@ -343,7 +346,7 @@ document.addEventListener("keydown", function (ev) {
   }
   if (k === "f") simulate("missing");
   if (k === "a") simulate("ready");
-  if (k === "escape") { S.menu = false; if (S.panel) { S.panel = null; S.review = S.panelFrom === "review"; } else S.review = false; if (S.screen === "editor") renderAll(); }
+  if (k === "escape") { S.menu = false; if (!S.panel && !S.review) S.phOff = S.sel; if (S.panel) { S.panel = null; S.review = S.panelFrom === "review"; } else S.review = false; if (S.screen === "editor") renderAll(); }
 });
 
 /* ---------- navigation ---------- */
