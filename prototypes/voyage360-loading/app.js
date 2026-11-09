@@ -39,7 +39,7 @@ var S = {
   mode: "loading",          /* loading | missing | done | ready */
   open: false, review: false, menu: false, panel: null, panelFrom: "",
   scenes: [], files: [], sel: 1, scroll: 0,
-  timer: null, auto: null, doneT: null
+  timer: null, auto: null, doneT: null, phOpen: 0, toastFor: null, toastT: null
 };
 function freshScenes() {
   return ASSETS.map(function (t, i) { var n = i + 1; return n <= 3 ? { t: t, n: t, st: "ready" } : n === 4 ? { t: t, n: 5, st: "loading" } : { t: t, n: 0, st: "queue" }; });
@@ -91,7 +91,7 @@ function tick() {
   var sc = S.scenes[n - 1];
   sc.n = Math.min(sc.t, sc.n + 1);
   if (sc.n >= sc.t) { sc.st = "ready"; if (!promote()) { finish(); return; } }
-  follow(); renderRow(); updateLoaderLive(); updateFooter(); updateTips();
+  follow(); renderRow(); updateLoaderLive(); updateFooter(); updateTips(); renderQ(); if (S.scenes[S.sel - 1].st === "ready" && document.querySelector("#editor.playlocked")) renderAll();
 }
 function follow() {
   if (S.userScroll) return;
@@ -117,14 +117,14 @@ function cardReady(n) {
   return '<div class="card' + (n === S.sel ? " sel" : "") + (miss ? " miss" : "") + '" data-n="' + n + '"><div class="thumb" style="background-image:url(' + thumbFor(n) + ')">' +
     (miss ? '<div class="mstrip"><img alt="" src="' + A + 'warn-amber.svg">' + miss + " file" + (miss > 1 ? "s" : "") + " missing</div>" : "") + '</div><div class="badge">' + n + "</div></div>";
 }
-function cardBox(n, cls, inner) { return '<div class="card state ' + cls + '" data-n="' + n + '"><div class="box">' + inner + '<div class="badge">' + n + "</div></div></div>"; }
+function cardBox(n, cls, inner) { return '<div class="card state ' + cls + (n === S.sel ? " sel" : "") + '" data-n="' + n + '"><div class="box">' + inner + '<div class="badge">' + n + "</div></div></div>"; }
 function renderRow() {
   var h = "";
   S.scenes.forEach(function (s, i) {
     var n = i + 1;
     if (failedScene(n)) h += cardBox(n, "failed", '<img class="ico" alt="" src="' + A + 'warn2.svg"><div class="lbl"><span class="t">Couldn’t load</span><span class="h">Retry</span></div>');
     else if (s.st === "ready") h += cardReady(n);
-    else if (s.st === "loading") h += cardBox(n, "loadingc", '<div class="blur"></div><div class="dim"></div><img class="ico" alt="" src="' + A + 'load.svg"><div class="track"></div><div class="fill" style="left:0;width:' + Math.round(140 * s.n / s.t) + 'px"></div><div class="lbl">' + s.n + " of " + s.t + " assets</div>");
+    else if (s.st === "loading") h += cardBox(n, "loadingc", '<img class="ico" alt="" src="' + A + 'load.svg"><div class="track"></div><div class="fill" style="left:0;width:' + Math.round(140 * s.n / s.t) + 'px"></div><div class="lbl">' + s.n + " of " + s.t + " assets</div>");
     else h += cardBox(n, "queue", '<img class="ico" alt="" src="' + A + 'clock.svg"><div class="lbl">In queue</div>');
   });
   var row = $("#row"); row.innerHTML = h;
@@ -146,7 +146,7 @@ function footerText() {
 function updateFooter() { var m = S.mode !== "loading" && missFor(S.sel)[0]; $("#footer").textContent = m ? "Scene " + S.sel + " · " + m.name + " is missing" : footerText(); }
 function updateTips() {
   var left = TOTAL - loaded();
-  $("#tipPlay").innerHTML = "<p>Plays from the current scene while loading.</p><p>Play in PC and VR unlock when loading finishes. " + plural(left, "asset") + " left.</p>";
+  $("#tipPlay").innerHTML = !curReady() ? "<p>Scene " + S.sel + " is still loading.</p>" : "<p>Plays from the current scene while loading.</p><p>Play in PC and VR unlock when loading finishes. " + plural(left, "asset") + " left.</p>";
   $("#tipNew").innerHTML = "<p>New scene unlocks when loading finishes.</p><p>" + plural(left, "asset") + " left.</p>";
 }
 function chev(up) { return '<span class="chev" data-act="toggle"><img alt="" src="' + A + (up ? "chevup" : "chevron") + '.svg"></span>'; }
@@ -163,7 +163,7 @@ function renderLoader() {
     if (m === "loading") h = '<div class="lcard"><div class="head" data-act="toggle"><img class="spin" alt="" src="' + A + 'load.svg"><span>Loading assets</span>' + chev(true) + "</div>" + bar + '<div id="cList">' + checklist() + "</div>" +
       '<p class="note" id="cNote">' + noteText() + "</p></div>";
     if (m === "missing") h = '<div class="lcard"><div class="head" data-act="toggle"><img alt="" src="' + A + 'warn-amber.svg"><span>' + plural(f, "file") + " " + (f === 1 ? "is" : "are") + " missing</span>" + chev(true) + "</div>" + bar +
-      '<div class="rule warn"><span>Their scenes still open, with placeholders. Play, Edit and Save are available.</span></div><div class="btns"><a class="cbtn sec" data-act="retryall">Retry ' + plural(f, "file") + '</a><a class="cbtn pri" data-act="review">Review</a></div></div>';
+      '<p class="note">Keep working. ' + plural(missScenes(), "scene") + ' show placeholders where ' + (f === 1 ? "this file is" : "these files are") + ' used.</p><div class="btns"><a class="cbtn sec" data-act="retryall">Retry ' + plural(f, "file") + '</a><a class="cbtn pri" data-act="review">Review</a></div></div>';
   }
   L.innerHTML = h;
 }
@@ -210,7 +210,9 @@ function renderReview() {
 }
 function renderPlaceholder() {
   var P = $("#ph"), f = missFor(S.sel)[0];
-  if (!f || S.review || S.panel || S.phOff === S.sel) { P.classList.remove("on"); P.innerHTML = ""; return; }
+  var B = $("#phbox"); if (!f || S.review || S.panel) { P.classList.remove("on"); P.innerHTML = ""; B.classList.remove("on"); return; }
+  B.innerHTML = '<img alt="" src="' + A + 'warn-amber.svg"><b>' + f.name + ' is missing</b><span>Click to retry or replace</span>'; B.classList.toggle("on", S.phOpen !== S.sel);
+  if (S.phOpen !== S.sel) { P.classList.remove("on"); P.innerHTML = ""; return; }
   P.innerHTML = '<div class="dh"><span>' + f.name + ' is missing</span><a class="x" data-act="phclose"><img alt="" src="' + A + 'close.svg"></a></div>' +
     '<div class="db"><div class="dbrow"><img class="big" alt="" src="' + A + 'warn-big.svg"><p>This ' + f.kind.toLowerCase() + ' element keeps its place and settings. Replace the file or retry to bring it back.</p></div></div>' +
     '<div class="df">' + (f.busy ? '<span class="busy"><img class="spin" alt="" src="' + A + 'load2.svg">' + f.busy + "</span>" : '<a class="cbtn ter" data-act="retry" data-id="' + f.id + '">Retry</a><a class="cbtn sec" data-act="replace" data-id="' + f.id + '">Replace…</a>') + "</div>";
@@ -226,13 +228,32 @@ function renderMenu() {
 function renderAll() {
   var ed = $("#editor"), lk = locked();
   ed.classList.toggle("locked", lk); ed.classList.toggle("ready", !lk);
-  $("#playBtn").setAttribute("aria-disabled", false); $("#saveBtn").setAttribute("aria-disabled", false);
-  renderRow(); updateFooter(); updateTips(); renderLoader(); renderReview(); renderPlaceholder(); renderMenu(); renderPanel(); hideTips();
+  var cr = curReady(); ed.classList.toggle("playlocked", !cr); $("#playBtn").setAttribute("aria-disabled", !cr); $("#saveBtn").setAttribute("aria-disabled", false);
+  renderRow(); updateFooter(); updateTips(); renderLoader(); renderReview(); renderPlaceholder(); renderMenu(); renderPanel(); renderQ(); hideTips();
 }
 
+
+function missScenes() { var u = {}; S.files.forEach(function (f) { if (!f.sceneFail) f.scenes.forEach(function (n) { u[n] = 1; }); }); return Object.keys(u).length; }
+function curReady() { return S.scenes[S.sel - 1].st === "ready"; }
+function scLabel(a) { return a.length > 1 ? "Scenes " + a.slice(0, -1).join(", ") + " and " + a[a.length - 1] : "Scene " + a[0]; }
+function toast(t) { var T = $("#toast"); T.innerHTML = '<img alt="" src="' + A + 'check.svg"><span>' + t + "</span>"; T.classList.add("on"); clearTimeout(S.toastT); S.toastT = setTimeout(function () { T.classList.remove("on"); }, 3000); }
+function renderQ() {
+  var Q = $("#qload"), n = S.sel, sc = S.scenes[n - 1];
+  if (failedScene(n)) {
+    var f = S.files.filter(function (x) { return x.sceneFail && x.scenes.indexOf(n) > -1; })[0];
+    Q.innerHTML = '<img class="big" alt="" src="' + A + 'warn.svg"><b>Scene ' + n + ' couldn’t load</b><span>' + f.name + " (360 image) · " + (f.busy || f.reason) + '. Other scenes are not affected.</span>' + (f.busy ? "" : '<div class="ac"><a class="cbtn ter" data-act="retry" data-id="' + f.id + '">Retry</a><a class="cbtn sec" data-act="replace" data-id="' + f.id + '">Replace…</a></div>');
+    Q.className = "on fail"; return;
+  }
+  if (sc.st !== "ready") {
+    Q.innerHTML = '<img class="spin" alt="" src="' + A + 'load.svg"><b>Loading Scene ' + n + "</b><span>" + sc.n + " of " + sc.t + " assets" + (sc.st === "loading" ? " · moved to the front of the queue" : "") + "</span>";
+    Q.className = "on"; return;
+  }
+  Q.className = ""; Q.innerHTML = "";
+}
 /* ---------- file actions ---------- */
 function fileById(id) { return S.files.filter(function (f) { return f.id === id; })[0]; }
 function resolveFile(f) {
+  if (S.toastFor === f) { S.toastFor = null; toast(f.name + " replaced in " + scLabel(f.scenes)); }
   S.files = S.files.filter(function (x) { return x !== f; });
   if (f.sceneFail) f.scenes.forEach(function (n) { S.scenes[n - 1].st = "queue"; S.scenes[n - 1].n = 0; });
   var pending = S.scenes.some(function (s) { return s.st !== "ready"; });
@@ -263,7 +284,7 @@ function renderPanel() {
 
 /* ---------- tooltips ---------- */
 function hideTips() { $("#tipPlay").classList.remove("show"); $("#tipNew").classList.remove("show"); $("#tipScene").classList.remove("show"); }
-function showPlayTip() { if (locked() && !S.menu) $("#tipPlay").classList.add("show"); }
+function showPlayTip() { if ((locked() || !curReady()) && !S.menu) $("#tipPlay").classList.add("show"); }
 var scale = function () { return Math.min(innerWidth / 1920, innerHeight / 1080); };
 Array.prototype.slice.call(document.querySelectorAll("#playBtn")).forEach(function (e) {
   var en = function () { S.tipFor = e.id; updateTips(); showPlayTip(); }; e.addEventListener("mouseenter", en); e.addEventListener("focus", en);
@@ -272,7 +293,7 @@ Array.prototype.slice.call(document.querySelectorAll("#playBtn")).forEach(functi
     ev.stopPropagation();
     if (e.id === "playBtn") {
       if (ev.target.closest(".b")) { S.menu = !S.menu; hideTips(); renderMenu(); }
-      else show("s1");
+      else if (curReady()) show("s1");
     }
   });
 });
@@ -289,28 +310,28 @@ function act(ev) {
   var f = fileById(t.getAttribute("data-id"));
   if (a === "toggle") { S.open = !S.open; renderLoader(); }
   if (a === "review") { S.review = true; S.open = false; renderAll(); }
-  if (a === "phclose") { S.phOff = S.sel; renderAll(); }
+  if (a === "phclose") { S.phOpen = 0; renderAll(); }
+  if (a === "phopen") { S.phOpen = S.sel; renderAll(); }
   if (a === "rclose") { S.review = false; S.open = true; renderAll(); }
   if (a === "retryall") retryAll();
   if (a === "retry" && f) work(f, "Retrying…", 900);
   if (a === "replace" && f) pickFile(f);
   if (a === "pcancel") { S.panel = null; S.review = S.panelFrom === "review"; renderAll(); }
-  if (a === "pchoose" && f) { S.panel = null; work(f, "Replacing…", 1300); S.review = S.panelFrom === "review"; renderAll(); }
+  if (a === "pchoose" && f) { S.panel = null; S.toastFor = f; work(f, "Replacing…", 1300); S.review = S.panelFrom === "review"; renderAll(); }
   if (a === "play") { S.menu = false; show("s1"); }
 }
-["#loader", "#review", "#ph", "#playMenu", "#apanel"].forEach(function (s) { $(s).addEventListener("click", act); });
+["#loader", "#review", "#ph", "#playMenu", "#apanel", "#qload", "#phbox", "#toast"].forEach(function (s) { $(s).addEventListener("click", act); });
 document.addEventListener("click", function (ev) { if (S.menu && !ev.target.closest("#playMenu")) { S.menu = false; renderMenu(); } });
 
 $("#row").addEventListener("click", function (ev) {
   var c = ev.target.closest(".card"); if (!c) return;
   var n = +c.getAttribute("data-n");
-  if (c.classList.contains("failed")) {
-    var f = S.files.filter(function (x) { return x.sceneFail && x.scenes.indexOf(n) > -1; })[0];
-    if (f) work(f, "Retrying…", 900);
-    return;
+  var st = S.scenes[n - 1].st;
+  if (st === "queue" && !failedScene(n) && S.mode === "loading") {
+    S.scenes.forEach(function (x) { if (x.st === "loading") x.st = "queue"; });
+    S.scenes[n - 1].st = "loading"; S.userScroll = true;
   }
-  if (S.scenes[n - 1].st !== "ready") return;
-  S.sel = n; S.phOff = 0; renderRow(); renderPlaceholder(); updateFooter();
+  S.sel = n; S.phOpen = 0; renderAll(); return;
 });
 $("#row").addEventListener("mouseover", function (ev) {
   var c = ev.target.closest(".card.miss"), T = $("#tipScene");
@@ -346,7 +367,7 @@ document.addEventListener("keydown", function (ev) {
   }
   if (k === "f") simulate("missing");
   if (k === "a") simulate("ready");
-  if (k === "escape") { S.menu = false; if (!S.panel && !S.review) S.phOff = S.sel; if (S.panel) { S.panel = null; S.review = S.panelFrom === "review"; } else S.review = false; if (S.screen === "editor") renderAll(); }
+  if (k === "escape") { S.menu = false; if (!S.panel && !S.review) S.phOpen = 0; if (S.panel) { S.panel = null; S.review = S.panelFrom === "review"; } else S.review = false; if (S.screen === "editor") renderAll(); }
 });
 
 /* ---------- navigation ---------- */

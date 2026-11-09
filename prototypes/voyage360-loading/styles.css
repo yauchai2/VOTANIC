@@ -192,8 +192,6 @@ img{display:block}
 .lcard .prog{display:flex;flex-direction:column;gap:8px}
 .lcard .prog .cnt{display:flex;justify-content:space-between;align-items:baseline;font-size:14px}
 .lcard .prog .cnt span:last-child{font-size:12px;color:var(--disable)}
-.lcard .rule.warn{border:1px solid var(--citrus)}
-.lcard .rule.warn::before{content:"";position:absolute;inset:0;background:var(--citrus);opacity:.12}
 .cbtn.ter{color:var(--text);border:1px solid var(--stroke)}
 .cbtn.off{opacity:.45;pointer-events:none}
 .busy{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--grey-400);white-space:nowrap}
@@ -266,3 +264,27 @@ img{display:block}
 .crow .cs{font-size:14px}
 
 .mi img{width:20px;height:20px}.mi.off img{opacity:.4}
+/* selected scene not ready: centred notice over the canvas */
+#qload{position:absolute;left:0;top:88px;width:1920px;height:992px;padding-bottom:300px;box-sizing:border-box;display:none;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(14,13,13,.82);z-index:1;color:var(--text);font-family:Roboto,sans-serif;text-align:center}
+#qload.on{display:flex}
+#qload img{width:32px;height:32px;margin-bottom:8px}
+#qload img.big{width:48px;height:48px}
+#qload b{font-size:20px;line-height:28px;font-weight:500}
+#qload span{font-size:14px;line-height:20px;color:var(--text-2,#b3b3b3);max-width:520px}
+#qload .ac{display:flex;gap:12px;margin-top:16px}
+/* in-scene placeholder: click to open the missing-element dialog */
+#phbox{position:absolute;left:980px;top:300px;width:400px;height:225px;display:none;flex-direction:column;align-items:center;justify-content:center;gap:6px;border:2px dashed #e8a33d;border-radius:8px;background:rgba(30,30,33,.72);z-index:3;cursor:pointer;font-family:Roboto,sans-serif;color:var(--text)}
+#phbox.on{display:flex}
+#phbox:hover{background:rgba(30,30,33,.88)}
+#phbox img{width:28px;height:28px}
+#phbox b{font-size:14px;line-height:20px;font-weight:500}
+#phbox span{font-size:12px;line-height:16px;color:#e8a33d}
+/* result toast */
+#toast{position:absolute;left:50%;top:104px;transform:translate(-50%,-8px);display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:999px;background:#1e1e21;border:1px solid #676767;color:var(--text);font-family:Roboto,sans-serif;font-size:14px;line-height:20px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:9}
+#toast.on{opacity:1;transform:translate(-50%,0)}
+#toast img{width:16px;height:16px}
+/* neutral loading thumb, no blurred preview */
+.card.loadingc .blur,.card.loadingc .dim{display:none}
+.card.loadingc .box{background:#1d1d1d}
+.card.state.sel .box{border:3px solid var(--citrus);opacity:1}
+.card.state.sel .box .badge{background:var(--citrus);color:#4d4b50;font-weight:600}
