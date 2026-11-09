@@ -286,8 +286,8 @@ function act(ev) {
   ev.stopPropagation();
   var f = fileById(t.getAttribute("data-id"));
   if (a === "toggle") { S.open = !S.open; renderLoader(); }
-  if (a === "review") { S.review = true; renderAll(); }
-  if (a === "rclose") { S.review = false; renderAll(); }
+  if (a === "review") { S.review = true; S.open = false; renderAll(); }
+  if (a === "rclose") { S.review = false; S.open = true; renderAll(); }
   if (a === "retryall") retryAll();
   if (a === "retry" && f) work(f, "Retrying…", 900);
   if (a === "replace" && f) pickFile(f);
