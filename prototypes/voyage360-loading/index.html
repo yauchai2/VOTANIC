@@ -44,7 +44,7 @@
       <p class="file">LSC_1_1.jpg didn’t load</p>
       <p class="desc">Trying the next scene so you can start working. The rest keeps loading in the background.</p>
       <div class="bar"><i id="s3bar"></i></div>
-      <p class="file" id="s3count">Trying scene 2 of 36</p>
+      <p class="file" id="s3count">Trying scene 2 of 16</p>
     </div>
   </div>
 </section>
@@ -56,7 +56,7 @@
     <div class="splash-content">
       <div class="loadlogo"><img alt="" src="assets/logo.png"></div>
       <h3>This project couldn’t be loaded</h3>
-      <p class="file">All 36 scenes failed to load</p>
+      <p class="file">None of the 16 scenes could be opened</p>
       <p class="desc">The files may be missing or damaged. You can try again, or close the project and check the files.</p>
       <div class="actions">
         <button class="sbtn pri" id="s3bretry"><img alt="" src="assets/rotate.svg">Try again</button>
@@ -96,8 +96,12 @@
   <div class="footer" id="footer"></div>
 
   <div id="loader"></div>
-  <div class="tip below" id="tipPlay"><p>Finish loading to play, edit and save.</p><p>28 assets are still loading. Open any ready scene to keep editing.</p></div>
-  <div class="tip above" id="tipNew"><p>New scene unlocks after loading.</p><p>28 assets are still loading. You can add a scene as soon as they finish.</p></div>
+  <div id="review"></div>
+  <div id="ph"></div>
+  <div id="playMenu"></div>
+  <div class="tip above" id="tipScene"></div>
+  <div class="tip below" id="tipPlay"></div>
+  <div class="tip above" id="tipNew"></div>
 </section>
 
 </div></div>
@@ -105,7 +109,7 @@
 <div id="chrome" aria-label="Prototype controls">
   <span>S2:</span> <kbd>F</kbd> first scene fails
   <span>S3:</span> <kbd>A</kbd> next scene loads <kbd>F</kbd> every scene fails
-  <span>Editor:</span> <kbd>F</kbd> fail <kbd>S</kbd> skipped <kbd>A</kbd> all ready
+  <span>Editor:</span> <kbd>F</kbd> finish with missing files <kbd>A</kbd> all ready
   <button data-go="s1">Restart</button>
 </div>
 
