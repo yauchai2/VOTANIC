@@ -21,7 +21,7 @@ var NS = 16, TICK_MS = 350;
 })();
 
 /* ---------- data ---------- */
-var ASSETS = [1,1,1,1,1,1,1,1,8,3,3,3,3,3,3,2];
+var ASSETS = [1,1,1,8,1,1,1,1,3,3,3,3,3,3,2,1];
 var TOTAL = ASSETS.reduce(function (a, b) { return a + b; }, 0);   /* 36 assets in 16 scenes */
 var thumbs = [A + "s1.png", A + "s2.jpg", A + "bg.jpg", A + "s4.jpg", A + "s5.jpg", A + "s6.png", A + "s7.png", A + "s8.png",
               A + "blurred.jpg", A + "s4.jpg", A + "s5.jpg", A + "s6.png", A + "s7.png", A + "s8.png", A + "s2.jpg", A + "s1.png"];
@@ -42,7 +42,7 @@ var S = {
   timer: null, auto: null, doneT: null
 };
 function freshScenes() {
-  return ASSETS.map(function (t, i) { var n = i + 1; return n <= 8 ? { t: t, n: t, st: "ready" } : n === 9 ? { t: t, n: 5, st: "loading" } : { t: t, n: 0, st: "queue" }; });
+  return ASSETS.map(function (t, i) { var n = i + 1; return n <= 3 ? { t: t, n: t, st: "ready" } : n === 4 ? { t: t, n: 5, st: "loading" } : { t: t, n: 0, st: "queue" }; });
 }
 var plural = function (n, w) { return n + " " + w + (n === 1 ? "" : "s"); };
 var openFiles = function () { return S.files; };
@@ -73,7 +73,7 @@ function show(id) {
 }
 function enterEditor() {
   clearTimeout(S.doneT);
-  S.mode = "loading"; S.open = false; S.review = false; S.menu = false; S.panel = null; S.sel = 1; S.scroll = 0;
+  S.mode = "loading"; S.open = false; S.review = false; S.menu = false; S.panel = null; S.userScroll = false; S.sel = 1; S.scroll = 0;
   S.scenes = freshScenes(); S.files = []; show("editor");
 }
 
@@ -91,7 +91,13 @@ function tick() {
   var sc = S.scenes[n - 1];
   sc.n = Math.min(sc.t, sc.n + 1);
   if (sc.n >= sc.t) { sc.st = "ready"; if (!promote()) { finish(); return; } }
-  renderRow(); updateLoaderLive(); updateFooter(); updateTips();
+  follow(); renderRow(); updateLoaderLive(); updateFooter(); updateTips();
+}
+function follow() {
+  if (S.userScroll) return;
+  var c = currentLoading(); if (!c) return;
+  var l = (c - 1) * 154, r = l + 146;
+  if (r > S.scroll + 1449) S.scroll = l - 600; else if (l < S.scroll) S.scroll = l;
 }
 function finish() {
   stopEngine();
@@ -154,14 +160,28 @@ function renderLoader() {
     if (m === "missing") h = '<a class="pill warn"><img alt="" src="' + A + 'warn-amber.svg"><span>' + plural(f, "file") + ' missing</span><span class="link" data-act="review">Review</span>' + chev(false) + "</a>";
   } else {
     var bar = '<div class="prog"><div class="track"><i id="cBar" style="width:' + pct + '%"></i></div><div class="cnt"><span id="cOf">' + r + " of " + TOTAL + ' assets ready</span><span id="cScene">' + (m === "loading" ? "Scene " + (cur || k + 1) + " of " + NS : "Loading finished") + "</span></div></div>";
-    if (m === "loading") h = '<div class="lcard"><div class="head" data-act="toggle"><img class="spin" alt="" src="' + A + 'load.svg"><span>Loading assets</span>' + chev(true) + "</div>" + bar +
+    if (m === "loading") h = '<div class="lcard"><div class="head" data-act="toggle"><img class="spin" alt="" src="' + A + 'load.svg"><span>Loading assets</span>' + chev(true) + "</div>" + bar + '<div id="cList">' + checklist() + "</div>" +
       '<p class="note" id="cNote">' + noteText() + "</p></div>";
     if (m === "missing") h = '<div class="lcard"><div class="head" data-act="toggle"><img alt="" src="' + A + 'warn-amber.svg"><span>' + plural(f, "file") + " " + (f === 1 ? "is" : "are") + " missing</span>" + chev(true) + "</div>" + bar +
       '<div class="rule warn"><span>Their scenes still open, with placeholders. Play, Edit and Save are available.</span></div><div class="btns"><a class="cbtn sec" data-act="retryall">Retry ' + plural(f, "file") + '</a><a class="cbtn pri" data-act="review">Review</a></div></div>';
   }
   L.innerHTML = h;
 }
-function noteText() { var k = readyScenes(); return (k === 1 ? "Scene 1 is ready to edit. " : "Scenes 1–" + k + " are ready to edit. ") + "Play all and Save unlock when loading finishes."; }
+function range(a, b) { return a === b ? "Scene " + a : "Scenes " + a + "–" + b; }
+function checklist() {
+  var rows = [], k = readyScenes();
+  function row(ic, lab, st, strong) { return '<div class="crow' + (strong ? " strong" : "") + '"><img' + (ic === "load" ? ' class="spin"' : "") + ' alt="" src="' + A + ic + '.svg"><span class="cl">' + lab + '</span><span class="cs">' + st + "</span></div>"; }
+  if (k) rows.push(row("check", range(1, k), "Ready"));
+  var shown = 0, n;
+  for (n = k + 1; n <= NS && shown < 3; n++, shown++) {
+    var sc = S.scenes[n - 1];
+    if (sc.st === "loading") rows.push(row("load", "Scene " + n + (n === 4 ? " · Kitchen Walkthrough" : ""), sc.n + " of " + sc.t + " assets", true));
+    else rows.push(row("clock", "Scene " + n, "In queue"));
+  }
+  if (n <= NS) rows.push(row("clock", range(n, NS), "In queue"));
+  return '<div class="clist">' + rows.join("") + "</div>";
+}
+function noteText() { return "Play all and Save unlock when loading finishes."; }
 function updateLoaderLive() {
   var r = loaded(), pct = Math.round(r / TOTAL * 100), e;
   if ((e = $("#pillTxt"))) e.textContent = "Loading assets " + r + "/" + TOTAL;
@@ -170,6 +190,7 @@ function updateLoaderLive() {
   if ((e = $("#cBar"))) e.style.width = pct + "%";
   if ((e = $("#cScene"))) e.textContent = "Scene " + (currentLoading() || readyScenes() + 1) + " of " + NS;
   if ((e = $("#cNote"))) e.textContent = noteText();
+  if ((e = $("#cList"))) e.innerHTML = checklist();
 }
 function renderReview() {
   var P = $("#review");
@@ -298,7 +319,7 @@ $("#row").addEventListener("mouseover", function (ev) {
 });
 $("#row").addEventListener("mouseleave", function () { $("#tipScene").classList.remove("show"); });
 $(".strip").addEventListener("wheel", function (ev) {
-  ev.preventDefault(); S.scroll += (Math.abs(ev.deltaX) > Math.abs(ev.deltaY) ? ev.deltaX : ev.deltaY); renderRow();
+  ev.preventDefault(); S.userScroll = true; S.scroll += (Math.abs(ev.deltaX) > Math.abs(ev.deltaY) ? ev.deltaX : ev.deltaY); renderRow();
 }, { passive: false });
 
 /* ---------- simulated events (keys F / A) ---------- */

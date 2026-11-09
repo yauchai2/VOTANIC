@@ -254,3 +254,11 @@ img{display:block}
 #apanel .mth img{width:24px;height:24px}#apanel .mth em{font-style:normal}
 #apanel .pbar{position:absolute;left:0;right:0;bottom:0;height:64px;background:#0e0d0d;border-top:1px solid var(--stroke);display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-size:14px}
 #apanel .ac{display:flex;gap:8px}
+
+/* scene checklist in card */
+.clist{display:flex;flex-direction:column;gap:2px}
+.crow{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:14px;color:var(--grey-400)}
+.crow img{width:16px;height:16px;flex:none}
+.crow .cl{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crow.strong .cl{color:var(--text)}
+.crow .cs{font-size:14px}
