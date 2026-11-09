@@ -219,7 +219,7 @@ function renderPlaceholder() {
 function renderMenu() {
   var M = $("#playMenu"), lk = locked();
   if (!S.menu) { M.classList.remove("on"); return; }
-  function it(id, t, off, hov) { return '<a class="mi' + (off ? " off" : "") + '" data-act="' + (off ? "" : "play") + '" data-id="' + id + '"><span>' + t + (off ? " · after loading" : "") + "</span>" + "</a>"; }
+  function it(id, t, off, hov) { return '<a class="mi' + (off ? " off" : "") + '" data-act="' + (off ? "" : "play") + '" data-id="' + id + '"><span>' + t + "</span>" + "</a>"; }
   M.innerHTML = it("all", "Play all", lk) + it("cur", "Play from current scene", false) + it("vr", "Play with VR headset", lk);
   M.classList.add("on");
 }
