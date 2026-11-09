@@ -37,10 +37,10 @@ img{display:block}
 .splash .file{font-size:14px}
 .splash .desc{font-size:16px}
 .actions{display:flex;gap:12px;justify-content:center;width:100%}
-.sbtn{min-height:36px;padding:8px 16px;border-radius:4px;display:flex;gap:8px;align-items:center;justify-content:center;font-size:14px;font-weight:600;white-space:nowrap;transition:filter .12s}
+.sbtn{min-height:36px;padding:8px 16px;border-radius:4px;display:flex;gap:8px;align-items:center;justify-content:center;font:500 14px Roboto,Inter,sans-serif;white-space:nowrap;transition:filter .12s}
 .sbtn:hover{filter:brightness(1.2)}
-.sbtn.pri{background:var(--band);color:var(--text)}
-.sbtn.sec{background:var(--button-bg);color:var(--lilac)}
+.sbtn.pri{background:#392e52;color:#cbb2f5}
+.sbtn.sec{background:transparent;color:#e5e5e5;box-shadow:inset 0 0 0 1px #545454}
 .sbtn img{width:16px;height:16px}
 
 /* editor */

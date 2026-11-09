@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Voyage 360 Loading Enhancement</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -34,18 +34,32 @@
   </div>
 </section>
 
-<!-- S3 First scene failed -->
+<!-- S3 Full load in progress (fallback after the first scene fails) -->
 <section class="screen" id="s3" data-screen="s3">
   <div class="menubar" data-menubar></div>
   <div class="splash">
     <div class="splash-content">
       <div class="loadlogo"><img alt="" src="assets/logo.png"></div>
-      <h3>Lobby didn’t load</h3>
-      <p class="file">LSC_1_1.jpg</p>
-      <p class="desc">The file may be missing or damaged. You can try again, or open the project and fix it from the scene strip.</p>
+      <h3>This project is taking longer to load</h3>
+      <p class="desc">Loading the whole project at once instead of scene by scene. Hang tight.</p>
+      <div class="bar"><i id="s3bar"></i></div>
+      <p class="file" id="s3count">Loading 14 of 36 assets</p>
+    </div>
+  </div>
+</section>
+
+<!-- S3b Full load failed -->
+<section class="screen" id="s3b" data-screen="s3b">
+  <div class="menubar" data-menubar></div>
+  <div class="splash">
+    <div class="splash-content">
+      <div class="loadlogo"><img alt="" src="assets/logo.png"></div>
+      <h3>Some files didn’t load</h3>
+      <p class="file">LSC_1_1.jpg and 2 more</p>
+      <p class="desc">They may be missing or damaged. You can try again, or open the project anyway and replace the files that failed.</p>
       <div class="actions">
-        <button class="sbtn pri" id="s3retry"><img alt="" src="assets/rotate.svg">Try again</button>
-        <button class="sbtn sec" id="s3skip">Open without Lobby</button>
+        <button class="sbtn pri" id="s3bretry"><img alt="" src="assets/rotate.svg">Try again</button>
+        <button class="sbtn sec" id="s3bopen">Open project anyway</button>
       </div>
     </div>
   </div>
@@ -88,8 +102,9 @@
 </div></div>
 
 <div id="chrome" aria-label="Prototype controls">
-  <span>Editor:</span>
-  <kbd>F</kbd> fail <kbd>S</kbd> skipped <kbd>A</kbd> all ready
+  <span>S2:</span> <kbd>F</kbd> first scene fails
+  <span>S3:</span> <kbd>F</kbd> full load fails <kbd>A</kbd> full load OK
+  <span>Editor:</span> <kbd>F</kbd> fail <kbd>S</kbd> skipped <kbd>A</kbd> all ready
   <button data-go="s1">Restart</button>
 </div>
 

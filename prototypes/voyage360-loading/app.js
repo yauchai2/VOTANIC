@@ -57,6 +57,10 @@ function show(id) {
     requestAnimationFrame(function () { requestAnimationFrame(function () { b.style.transition = "width 3.2s linear"; b.style.width = "100%"; }); });
     S.auto = setTimeout(function () { enterEditor(); }, 3400);
   }
+  if (id === "s3") {
+    var b3 = $("#s3bar"); b3.style.transition = "none"; b3.style.width = "0%";
+    requestAnimationFrame(function () { requestAnimationFrame(function () { b3.style.transition = "width 2.4s ease-out"; b3.style.width = Math.round(14 / TOTAL * 100) + "%"; }); });
+  }
   if (id === "editor") { renderAll(); if (S.mode === "loading") startEngine(); }
 }
 function enterEditor() { S.mode = "loading"; S.open = false; S.scenes = freshScenes(); S.scroll = 0; show("editor"); }
@@ -223,6 +227,8 @@ document.addEventListener("keydown", function (ev) {
   if (ev.metaKey || ev.ctrlKey || ev.altKey) return;
   var k = ev.key.toLowerCase();
   if (S.screen === "s2" && k === "f") { clearTimeout(S.auto); show("s3"); return; }
+  if (S.screen === "s3" && k === "f") { show("s3b"); return; }
+  if (S.screen === "s3" && k === "a") { enterEditor(); simulate("ready"); return; }
   if (k === "f") simulate("failed");
   if (k === "a") simulate("ready");
   if (k === "s") simulate("skipped");
@@ -231,8 +237,8 @@ document.addEventListener("keydown", function (ev) {
 /* ---------- navigation ---------- */
 $("#s1click").addEventListener("click", function () { show("s2"); });
 $("#s2").addEventListener("click", function () { clearTimeout(S.auto); enterEditor(); });
-$("#s3retry").addEventListener("click", function () { show("s2"); });
-$("#s3skip").addEventListener("click", function () { enterEditor(); });
+$("#s3bretry").addEventListener("click", function () { show("s3"); });
+$("#s3bopen").addEventListener("click", function () { enterEditor(); simulate("failed"); });
 $("#canvas").addEventListener("click", function () { if (S.mode === "ready") show("s1"); });
 $('[data-go="s1"]').addEventListener("click", function () { show("s1"); });
 
