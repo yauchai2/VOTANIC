@@ -91,7 +91,7 @@ function tick() {
   var sc = S.scenes[n - 1];
   sc.n = Math.min(sc.t, sc.n + 1);
   if (sc.n >= sc.t) { sc.st = "ready"; if (!promote()) { finish(); return; } }
-  follow(); renderRow(); updateLoaderLive(); updateFooter(); updateTips(); renderQ();
+  follow(); renderRow(); updateLoaderLive(); updateFooter(); updateTips(); renderQ(); if (S.panel === "browse") renderPanel();
 }
 function follow() {
   if (S.userScroll) return;
@@ -268,17 +268,28 @@ function work(f, label, ms) {
 }
 function retryAll() { S.files.slice().forEach(function (f) { work(f, "Retrying…", 900); }); }
 function pickFile(f) { S.panel = f.id; S.panelFrom = S.review ? "review" : ""; S.review = false; renderAll(); }
+var BROWSE = [["Kitchen-wide.jpg", 1], ["Sofa-corner.jpg", 2], ["Island-detail.jpg", 4], ["Bedroom-east.jpg", 6], ["Study-shelf.jpg", 9], ["Kitchen-island.jpg", 5]];
+function browseTile(a) {
+  var n = a[1], st = S.scenes[n - 1].st, miss = S.files.filter(function (f) { return f.name === a[0]; })[0], th;
+  if (miss) th = '<div class="mth"><img alt="" src="' + A + 'warn-amber.svg"><span>Missing</span><em>' + miss.kind + " · " + miss.reason + "</em></div>";
+  else if (st === "ready") th = '<div class="rth" style="background-image:url(' + thumbFor(n) + ')"></div>';
+  else if (st === "loading") th = '<div class="lth"><img class="spin" alt="" src="' + A + 'load.svg"><span>Loading</span></div>';
+  else th = '<div class="qth"><img alt="" src="' + A + 'clock.svg"><span>In queue</span></div>';
+  return '<div class="ptile">' + th + "<b>" + a[0] + "</b></div>";
+}
 function renderPanel() {
-  var P = $("#apanel"), f = fileById(S.panel);
-  if (!f) { S.panel = null; P.classList.remove("on"); P.innerHTML = ""; return; }
-  var sc = f.scenes.length > 1 ? "Scenes " + f.scenes.slice(0, -1).join(", ") + " and " + f.scenes[f.scenes.length - 1] : "Scene " + f.scenes[0];
-  var tabs = ["Images", "Icons", "Videos", "Audio"].map(function (t) { return '<span class="tg' + (t === f.kind + "s" ? " on" : "") + '">' + t + "</span>"; }).join("");
+  var P = $("#apanel"), browse = S.panel === "browse", f = browse ? null : fileById(S.panel);
+  if (!f && !browse) { S.panel = null; P.classList.remove("on"); P.innerHTML = ""; return; }
+  var kind = browse ? "Image" : f.kind;
+  var tabs = ["Images", "Icons", "Videos", "Audio"].map(function (t) { return '<span class="tg' + (t === kind + "s" ? " on" : "") + '">' + t + "</span>"; }).join("");
+  var tiles = browse ? '<div class="pgrid">' + BROWSE.map(browseTile).join("") + "</div>"
+    : '<div class="ptile"><div class="mth"><img alt="" src="' + A + 'warn-amber.svg"><span>Missing</span><em>' + f.kind + " · " + f.reason + "</em></div><b>" + f.name + "</b></div>";
   P.innerHTML = '<div class="ph"><img alt="" src="' + A + 'media.svg"><b>Asset Panel</b><a class="x" data-act="pcancel"><img alt="" src="' + A + 'close.svg"></a></div>' +
     '<div class="ptabs"><span class="tb on"><img alt="" src="' + A + 'monitor.svg">Local</span><span class="tb"><img alt="" src="' + A + 'globe.svg">Online</span>' +
     '<div class="ptools"><span class="imp"><img alt="" src="' + A + 'upload.svg">Import</span><span class="sq cl"><img alt="" src="' + A + 'clean.svg"></span><span class="sq rm"><img alt="" src="' + A + 'trash.svg"></span></div></div><div class="pline"></div>' +
     '<div class="pbody"><div class="tgs">' + tabs + '</div><div class="pfilter"><span class="search"><img alt="" src="' + A + 'search.svg">Search media…</span><span class="dd">All<img alt="" src="' + A + 'chevdown16.svg"></span></div>' +
-    '<div class="ptile"><div class="mth"><img alt="" src="' + A + 'warn-amber.svg"><span>Missing</span><em>' + f.kind + " · " + f.reason + "</em></div><b>" + f.name + '</b></div><div class="psb"><i></i></div></div>' +
-    '<div class="pbar"><span>Replacing ' + f.name + " · " + sc + '</span><div class="ac"><a class="cbtn ter" data-act="pcancel">Cancel</a><a class="cbtn pri" data-act="pchoose" data-id="' + f.id + '">Choose file…</a></div></div>';
+    tiles + '<div class="psb"><i></i></div></div>' +
+    (browse ? "" : '<div class="pbar"><span>Replacing ' + f.name + " · " + scLabel(f.scenes) + '</span><div class="ac"><a class="cbtn ter" data-act="pcancel">Cancel</a><a class="cbtn pri" data-act="pchoose" data-id="' + f.id + '">Choose file…</a></div></div>');
   P.classList.add("on");
 }
 
@@ -324,6 +335,11 @@ function act(ev) {
 ["#loader", "#review", "#ph", "#playMenu", "#apanel", "#qload", "#phbox", "#toast"].forEach(function (s) { $(s).addEventListener("click", act); });
 document.addEventListener("click", function (ev) { if (S.menu && !ev.target.closest("#playMenu")) { S.menu = false; renderMenu(); } });
 
+$("#assetBtn").addEventListener("click", function (ev) {
+  ev.stopPropagation(); if (S.review) return;
+  if (S.panel === "browse") S.panel = null; else if (!S.panel) { S.panel = "browse"; S.panelFrom = ""; S.phOpen = 0; }
+  renderAll();
+});
 $("#row").addEventListener("click", function (ev) {
   var c = ev.target.closest(".card"); if (!c) return;
   var n = +c.getAttribute("data-n");

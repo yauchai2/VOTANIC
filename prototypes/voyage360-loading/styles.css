@@ -288,3 +288,10 @@ img{display:block}
 .card.loadingc .box{background:#1d1d1d}
 .card.state.sel .box{border:3px solid var(--citrus);opacity:1}
 .card.state.sel .box .badge{background:var(--citrus);color:#4d4b50;font-weight:600}
+/* Asset Panel opened while loading: tiles follow the scene row states */
+#apanel .pgrid{display:flex;flex-wrap:wrap;gap:8px}
+#apanel .rth,#apanel .lth,#apanel .qth{width:160px;height:90px;border-radius:4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:14px;font-weight:600}
+#apanel .rth{background:#111 center/cover no-repeat}
+#apanel .lth{background:#1d1d1d;border:1px solid #545454;color:#d9b0fd}
+#apanel .qth{background:#1d1d1d;border:1px dashed #545454;color:#c8c8c8}
+#apanel .lth img,#apanel .qth img{width:24px;height:24px}
