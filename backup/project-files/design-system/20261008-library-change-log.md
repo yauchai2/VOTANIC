@@ -1393,3 +1393,119 @@ Page Button, Library file. Three sets: `Button / Dark / 40px` (17463:54657, Stat
 - 2026-11-06 AI Task Card (1367:1804): the six task icons replaced by the image sheet from Alan's 'icons' section 1537:19524 (each tile = image fill, old icon hidden, tile fill and stroke cleared) in the 4 variants and all 20 instances. Prototype uses the same six images (cropped, 96px, embedded). Picker dialog headers in Figma and first-run marquee still use old icons.
 - 2026-11-06 Task icons switched to the 'icons 2' sheet (section 1537:25493): AI Task Card variants and all 20 instances use the new image fills; prototype re-cropped from the same sheet.
 - 2026-11-06 Task icons switched to the 'icons 3' sheet (section 1561:25510, transparent line icons): AI Task Card variants and all 20 instances; prototype re-cropped.
+- 2026-11-06 AI Session Card: Prompt text now max 3 lines (ellipsis); the 8 instances stretch to equal height inside their grids (card height 166). Prototype uses a 3-line clamp.
+- 2026-11-06 B2 (Choose who runs a task) and B2b rebuilt as instances of the Library Dialog component (Type=Info, Size=Medium): title and description via properties, provider chips and models in the Content slot, buttons in the Actions slot, close returns to B1. Replaced the custom frames 1354:3011 and 1491:4264 (new 1587:5713 and 1587:5816). Prototype picker now uses the same dialog layout.
+
+## 2026-11-06 · Remote Trigger page (Workbench 1481:10758), prototype sync
+- Added Phone access field to A3/A4 docks, grouped palette in A5 dialog, "Preset layout" button on A1–A7 toolbars, resize grip in key components (Components page section 1491:3952). Labels renamed to spec terms. No Library changes, no new tokens.
+- 2026-11-06 Flow layout tidy (root 1354:2549): section 4 height fitted to D3 (1638), sections 5 to 7 moved down 650 to remove the overlap with section 4 (5 at 6249, 6 at 7323, 7 at 8543), root height 9710, M1-M6 arrows moved with them; D4 to D8 arrows re-aligned to the boards moved +160 earlier (D3 to D4, D5 to D6/D7/D8, D1 to D5); labels A4, A5, B4, B7, C3 to C6, D5 narrowed to their board widths so they no longer overlap (notes wrap).
+
+- 2026-11-06 Prototype audit vs Figma: added Gemini key helper text (A3) and the voice preview Failed state (C7: caption + "Could not play this voice. Try again."; Museum guide fails on first play).
+
+- 2026-11-06 Prototype: added tooltips to voice filter chips, New voice/session cards, panel tabs, provider tiles and chips, capability icons, Add key.
+
+- 2026-11-06 Prototype picker: now lists all providers; unconnected capable ones show "Not connected" and open Add a provider with that provider preselected; incapable ones dimmed. Figma B2/B2b not yet updated.
+
+- 2026-11-06 Figma B2/B2b + prototype picker: single 2-column provider grid (connected + not connected), "Turn off for this task" in B2 footer, Try a sample question removed. B2 board resized to 720 tall and dialog re-centred.
+
+- 2026-11-06 Figma B2/B2b + prototype picker simplified to the same provider tiles as A3 Add provider (logo, name, capability icons; unsupported dimmed, not connected dashed). B2/B2b dialogs now Size=Large.
+
+- 2026-11-06 Providers list: single column (Figma B3 provider grid now vertical, prototype .pgrid one column).
+
+- 2026-11-06 Provider order unified everywhere: Gemini, MiniMax, Poe, OpenRouter, Custom. Add a provider no longer reorders by capability (only dims); voice filters and Voice from chips put Gemini first; providers list and dock sort by this order.
+
+- 2026-11-06 Figma Section 5 tooltip spec: AI button text aligned, Capability icons row removed (only +N has a tip), added rows for panel tabs, voice filter chips, New voice/session cards, not-connected provider, Turn off for this task, Add key. Section grown by 228, sections 6-7 and their arrows moved down 228. Prototype AI button tip switches to "Add or change providers" once connected.
+
+- 2026-11-06 Removed hand-drawn Back frames on A6 and A6b (Custom provider) and reset the dialog header padding to 12. Waiting for the Library Dialog back property to be published and updated in this file, then enable it on the two A6 dialogs.
+
+- 2026-11-06 Dialog Show back property (Library): enabled on A6, A6b, D2, D6, D7, D8 (x2) and the two Delete preset/session dialogs. First-layer dialogs left off.
+
+- 2026-11-06 XRCC (PC) Library Dialog: Type=Default added by Alan (Large); Claude added Default Medium (480) and Small (360) copies. Needs Publish. Next: swap custom-built Workbench dialogs (A6/A6b, B2/B2b, D2, D4) to Default once library is updated.
+
+- 2026-11-06 Workbench: swapped A6, A6b, B2, B2b, D2, D4 dialogs from Type=Info to Type=Default; description text re-added as the first item of the Content slot (Default has no Description field).
+
+- 2026-11-06 Overall review: 642 prototype links, none broken; one flow start; no stale annotations or old wording; 13 unbound fills only in the Launcher D3 clone (kept from Alan reference). Section 7 grown to 1180 so board M5 is inside it.
+- 2026-11-06: Picker dialog footer (B2 `1587:5713` and prototype): Cancel moved next to the primary button; Turn off for this task stays left (absolute-positioned in Actions). B2b already correct.
+- 2026-11-06: Prototype Providers tab intro tile now uses the Figma glossy purple sparkle image (B3 `1619:26216`, embedded 48px PNG).
+- 2026-11-06: Launcher Connections (Figma D3 `1534:6437` and prototype) rebuilt with the new Settings Connections content (Head, AI keys, key rows, Wit.ai row) inside the Launcher shell; old per-provider tables removed; Clear unused connection information kept. D3 resized to 1100x952.
+- 2026-11-06: Add provider opened from a task picker now returns to the picker after Connect (prototype S.ret). Figma: new board A3b `1662:7596` (Section 1, x 5664) cloned from A3; Connect goes to B2, Cancel and Close go to B2b; B2b Add a provider points to A3b. Hover reactions on A3b buttons not copied.
+- 2026-11-06: Prototype: first provider connected (Add a provider or Custom) now lands on Tasks, not Providers; later additions from Providers stay there. Figma A3 Connect already goes to B1 Tasks.
+- 2026-11-06: Prototype: parent tooltip is suppressed while a child with its own tooltip is hovered (fixes double tooltip on the +N chip of unconnected provider tiles).
+- 2026-11-06: Prototype: API key dropdown in an expanded provider card is now selectable (lists that provider's saved keys, toast Key changed). Not yet drawn in Figma.
+- 2026-11-06: Launcher gate: new D4b `1668:5945` (no saved keys, below D4, Section 4) plus Chinese annotations on D4 and D4b; prototype gate now has a no-keys variant (debug link Gate: no keys) and Start without AI clears providers while Start XRCC keeps them.
+- 2026-11-06: D4b and prototype no-keys gate: removed per-row Add key buttons; rows show No key yet, single Add a key in the footer.
+- 2026-11-06: Team review of AI Provider applied (Figma page 1354:2549 and prototype):
+  - The 18 tab rows now run Providers, Models, Voices, Sessions. The Tasks tab is renamed Models.
+  - Headers now read "N of 6 tasks have a model".
+  - The intro now says "Bring your own key".
+  - Play all was removed from 6 boards. Its spec row and the Unsupported model spec row were removed.
+  - The B2 Flash-Lite disabled model row was removed. Session copy now covers AI characters and quizzes.
+  - Provider rows show monthly tokens. A Custom provider has no Test in the prototype.
+  - Voices boards C1, C2, M1, M2 and E6 gain a "Text to speech runs on" bar. Its fill is surface/input, imported by key, and the boards grew by 120.
+  - The C2 voice section adds a "Recommended for Cantonese" caption and a "Show all 40 voices" link.
+  - D2 uses a Library checkbox for "Protect this key with a password". In the prototype the field appears only after a key is pasted.
+  - Wit.ai tokens have no password. A new board, B2c `1696:6011`, shows Text chat with many models. Section 2 was widened to 8944.
+  - No broken links were found.
+
+- 2026-11-06 · Workbench ZBOB48n4eLsZABCTnhh5kk · XRCC AI Provider：新增 C2b `1700:7890`「All voices」（按 Show all 40 voices 後的畫面：搜尋欄、可捲動的聲音列表，頭四個標示 Recommended，連結改為 Show recommended only）。C2「Show all voices」連去 C2b，C2b「Show recommended only」連回 C2。Section 3 加闊至 9440，高度加 231，其後的 Section 一併向下移。已加中文 annotation。
+
+- 2026-11-06 · Prototype：Add a provider 內已連接的供應商（Custom 除外）顯示「Connected」並停用，每個供應商只連接一次，多把 key 由卡片的 key 下拉切換；Custom 對所有任務可選；從任務進入時不支援該能力的供應商停用。全聲音列表的列高、對齊與 Recommended 標籤整理。Figma 尚待對齊。
+
+- 2026-11-06 · Workbench · Figma 對齊 prototype：B2 `1449:2114`、B2b `1491:4226`、B2c `1696:6011` 內 Custom 磚塊改為可選（不再灰掉）；B2b 說明文字改為「Gemini, Poe, OpenRouter and Custom can.」；A3b `1662:7596`（由 Text to image 進入）MiniMax 磚塊停用（不透明度 .45），說明列加入「Showing who can generate images. The others are dimmed.」。key 下拉的左 key 右 Tick 只出現在 prototype 展開狀態，Figma 現有畫面（A4、B4）沒有已選中列，無需修改。已連接供應商於 Add a provider 顯示 Connected 並停用：Figma 目前沒有對應情境畫面，未新增。
+
+- 2026-11-06 · Figma A6b `1472:3182` 與 prototype：Custom server 的 Advanced 展開後，標題列與 Request format、Timeout、Extra header 一併放進同一個 Advanced 底框（新 frame「Advanced box」`1704:6679`，沿用原有 surface 變數填色，圓角 8）。C3 及聲音 Advanced（C2）原本已包在框內，無需修改。
+
+- 2026-11-06 · Prototype：Add a provider 的 key 下拉選到已鎖定的 key 時，彈出「Unlock this key」輸入密碼，成功後該 key 才被選取（原型密碼 xrcc），錯誤時顯示提示。Figma 尚待新增對應畫面。
+
+- 2026-11-06 · Prototype：所有設有密碼（Password set）的 key，在 Add a provider 內被選取或按 Connect 時，若本次尚未解鎖，一律先彈出「Unlock this key」；解鎖後本次不再詢問。新增 key 時剛輸入過密碼，視為已解鎖。下拉中這類 key 顯示 Lock 圖示與 LOCKED。
+
+- 2026-11-06 · Prototype：還原「在 Add a provider 選 key 時要求密碼」。團隊該意見指 Settings 的 Key Management（新增 key 的畫面），不是供應商選 key；解鎖只保留在供應商卡片 / Launcher 的鎖定 key 流程。
+
+- 2026-11-06 · Prototype：Add a provider 按 Custom 時，若已有儲存的 Custom 伺服器，顯示「Saved server」下拉（例：Studio LLM token · 192.168.1.20），清單底部有「Add a new server…」才進入「Add your own server」；沒有任何已存伺服器時才直接進入新增畫面。Figma 尚待新增對應畫面。
+
+- 2026-11-06 · Workbench Section 1：新增 A3c `1715:6681`「Add provider · Custom with a saved server」（由 A3 複製）與 Label · A3c `1715:6778`，位於 x 6504。Custom 磚塊選中、Gemini 取消選中，標題改為「Saved server」，值為 Studio LLM token，隱藏 Gemini VPN 提示，按鈕為「Connect Custom」，附中文 annotation。連結沿用 A3 複製的設定。Prototype 同步加入：Add your own server 輸入已存地址時，顯示「That address is already saved as …」。
+
+- 2026-11-06 · Workbench Section 1：新增 A6c `1718:6833`「Custom provider · Address already saved」與 Label · A6c `1718:6907`，位於 x 7344（由 A6 複製）。Base URL 欄使用 B6 錯誤狀態的紅色描邊與錯誤文字變數，提示「That address is already saved as Studio LLM token. Pick it from the list instead.」，附中文 annotation。未新增 token。
+
+- 2026-11-06 · Prototype：Providers 供應商卡片展開後的 key 下拉底部加入「Add a new key…」（Custom 為「Add a new server…」），新增後自動套用到該供應商並顯示「Key saved」。Figma B4 目前只畫收起的下拉，尚未畫展開狀態。
+
+- 2026-11-06 · Workbench Section 2：新增 B4b `1720:6946`「Provider card · Key list open」與 Label · B4b `1720:6973`，位於 x 8944（Section 2 加闊至 9736）。由 B4 複製並疊上 A4 的 Menu：左 key 圖示、右 Tick（沿用強調色 icon 變數）、底部「Add a new key…」。B4 的 Key select 連去 B4b，B4b 的 Key select 連回 B4。附中文 annotation，未新增 token。
+
+- 2026-11-06 · Figma + Prototype：Sessions 卡片的「Used in 3 behaviours / 1 behaviour」改為「Used in 3 places / 1 place」（共 8 處），刪除 session 的提示改為「Anything that uses it will fall back to no system prompt.」，新增 session 的說明改為「Characters, quizzes and behaviours pick one.」。原因：session 也供 AI character 與 Quiz 使用，不只 behaviour。
+
+- 2026-11-06 · Prototype 響應式：窄視窗（≤640px、≤980px）下，對話框與面板貼合視窗寬度，供應商磚塊可換行，Models / Voices 卡片改單欄，Tabs 只顯示文字並平均分配，聲音篩選列可換行，Launcher 側欄收起，除錯列縮小並放在對話框之下，頁面不再出現橫向捲動。桌面版外觀不變。Figma 維持單一桌面畫面，不做響應式（Alan 2026-11-02 決定）。
+
+- 2026-11-09 · Voyage 360 UI-PC+VR（KoJQjDPM4sjwsoMYEvCDkw）· 頁面「Voyage 360 Loading Enhancement」· Board · S3 · First scene failed `6393:91108`：「Try again」「Open without Lobby」原為自訂 Frame 按鈕（`6393:91117`、`6393:91120`，已刪除），改用 XRCC (PC) Library 的 Button / Dark / Primary（Medium 36，Leading Icon，icon 換成 `icon/outline/retry`）及 Button / Dark / Secondary（Medium 36）。原因：兩個按鈕外觀太接近，Figma 留言反映難以分辨；現為「有色填充 + 圖示」對「深灰描邊」，層級清楚，亦與 Board 04b 的 Retry 2 scenes / Skip for now 一致。新 instance：`6535:85383`、`6535:85389`。Prototype：按 Try again 連去 S2 `6393:91100`，按 Open without Lobby 連去 Board 01 `6393:91157`（與 Flow line 一致，因舊 Frame 刪除後重設），並保留 Library 原有 Hover 狀態。Icon 與文字沿用同一 token，未新增 token。
+  - 未改動（屬 Voyage 檔案級 component，改動會影響其他頁面，待 Alan 決定）：Header 的 Play / 下拉 / Save*（Frame「Dark Mode/ Primary」及 Save button）、Scene Map 按鈕（Mini Map Button）、視窗控制鈕（ClosePanel_Button）、選單列 Header Button-File/Project/Edit/View/Help。
+
+- 2026-11-09 · Voyage 360 Loading Enhancement · S3 `6393:91108`：依 unity4 的 Figma 留言修改文案。標題由「Lobby didn’t load」改為「This project is taking longer to load」，說明改為「We couldn’t load this file. It may be missing or damaged. You can try again, or open the project anyway and replace the files that failed.」，第二個按鈕由「Open without Lobby」改為「Open project anyway」（Prototype 連結不變，仍連去 Board 01）。原因：用戶不理解「Lobby」與「add a scene from the strip」，且需讓用戶知道是專案載入較慢、可能只是個別檔案有問題。
+
+- 2026-11-09 · Voyage 360 Loading Enhancement · Section 1：依 unity4 留言畫出「首個 scene 載入失敗 → 退回一般載入」流程（Alan 確認）。S3 `6393:91108` 改為「Full load in progress」（標題 This project is taking longer to load，進度條沿用 S2 的 Progress，附「Loading 14 of 36 assets」）；新增 S3b `6539:3157`「Full load failed」（Some files didn’t load，Try again = Primary，Open project anyway = Secondary，沿用 Library Button）。Prototype：S2 按 F → S3；S3 按 F → S3b，按 A → Board 06；S3b Try again → S3，Open project anyway → Board 04。Flow：移除舊「S3 skip to 01」線及標籤，新增 S3→S3b、S3b→04、S3→06 的虛線／標籤及「To board 04／06」目標標籤，Retry 弧線改為 S3b→S3，更新 Legend 與 Overview 文字，Section 1 加闊至 9440。S3、S3b 的 annotation 已改寫為說明新流程。未新增 token。
+
+- 2026-11-09 · Voyage 360 Loading Enhancement · Section 1：依 Alan 補充修訂上一條流程。首個場景失敗後改為嘗試下一個場景，任何一個載入成功即進入專案（01，其餘場景在背後繼續載入），所有場景都失敗才顯示失敗頁。S3 `6393:91108` 改為「Trying next scene」（This project is taking longer to load / LSC_1_1.jpg didn’t load / Trying the next scene…，附 Trying scene 2 of 36）；S3b `6539:3157` 改為「All scenes failed」（This project couldn’t be loaded，Try again = Primary 連回 S2，Close project = Secondary 連回 S1）。Prototype：S3 按 A → 01，按 F → S3b。Flow：Retry 弧線改為 S3b→S2，目標標籤改為「To board 01」「Back to S1」，Legend、Overview 與兩個 annotation 已同步。修正一個誤改：複製及改文案時曾把 S3、S3b 選單列的 File/Project/Edit/View/Help 文字改錯，已還原。Web prototype 同步更新（PR #8）。未新增 token。
+
+## 2026-11-09 · Voyage 360 Loading Enhancement 重新設計（依留言與整體方向）
+檔案 KoJQjDPM4sjwsoMYEvCDkw，頁面 Voyage 360 Loading Enhancement。方向文件：reports/20261109-voyage360-loading-redesign-direction.md。
+- 元件（本頁 Loading components 區，本地）：Loading Card 刪除百分比，進度條與「8 of 36 assets ready · Scene 9 of 16」合為一組（baseline），加入「現在可以做什麼」；Failed 改為「2 files are missing」，警告改用 amber（status/warning/*），按鈕 Retry 2 files、Review。Loading Pill：Failed 改「2 files missing · Review」，新增 State=Done（All assets ready，status/success/icon）。Loading Scene Thumb：Loading 顯示「5 of 8 assets」，新增 State=Missing files（縮圖保留、amber 警告、1 file missing）。
+- 畫面 60 個 instance 由遠端主元件改連本頁本地元件，並重設舊覆寫。
+- Scene Card（Design Guidelines 頁）新增 variant「Add New Scene_locked」（surface/disabled、虛線 border/disabled、icon/outline/lock、text/disabled）。用於 01、02、03、07、09。
+- 各 board：Edit 選單在載入期間啟用；04、04b、08、08b 載入結束即解鎖（header EditMode）；缺失檔案縮圖（場景 4、5、10）；狀態列文字；tooltip 文案；06 顯示 Done pill；08 加入場景內缺失元素佔位（Retry、Replace…）；08b 改為 hover 缺失場景縮圖。
+- 新增 board：04c Review missing files（檔案列表，Retry、Replace…，Close 返回 04b、Retry all 至 06）；09 Play from current scene while loading（Play 選單，menu-item 元件）。06 移至 x 8040；Section 2、3 加闊。
+- S3「Trying scene 2 of 16」，S3b「None of the 16 scenes could be opened」。
+- Section 改名：2 · The editor while assets load、3 · When files are missing、4 · Working with missing files。Flow line、標籤、Legend、Start points、flow starting points、prototype 連結、annotation（繁體中文）與 Overview 全部同步。
+- Token：新節點綁定 XRCC Theme 與 spacing/*；Missing strip padding 6/3 改用最近 token 4/2。未新增 token。
+- 未做：網頁 prototype（PR #8）尚未同步此輪改動。
+
+## 2026-11-09 · Voyage 360 Loading：Dialog 元件與 Asset Panel 流程
+- Review missing files（04c）與缺失元素佔位（08）改用 XRCC (PC) Library 的 Dialog（Type=Warning，Size=Large／Medium，Content 與 Actions slot）。
+- 新增 Board 10「Asset Panel, filtered to Missing」：Replace… → Asset Panel 篩選 Missing，目標檔案已選取，底部 Cancel／Choose file…；流程線、標籤、註解已加。
+- Web prototype 同步：Replace… 開啟 Asset Panel 畫面，Cancel 返回上一層，Choose file… 完成替換。
+
+## 2026-11-09 · Loading Card 加入 Scene 清單、示範由 Scene 4 開始
+- Loading Card（Loading 兩個變體）加入 Scene checklist：連續已完成與等待中的 scene 合併為區間，展開正在載入的 scene；note 縮短為「Play all and Save unlock when loading finishes.」。
+- 示範狀態改為 Scenes 1–3 完成、Scene 4 載入中（5 of 8 assets）、其餘等待；Board 01、02、03、07、09 的場景列、頁尾與卡片同步。Prototype 同步（assets 分佈 1,1,1,8,…，共 36）。
+
+## 2026-11-09 Voyage 360 Loading Enhancement：Board 重排
+- 預設為收合 pill，流程改為由左至右：01 Pill 收合、02 卡片展開、03 Hover 鎖定 Play、04 Play from current scene、05 Hover 鎖定 New scene、06 完成但有缺失檔案、07 缺失檔案展開、08 Review、09 全部完成、10 場景內缺失檔案、11 Hover 缺失場景、12 Asset Panel（篩選 Missing）。
+- 舊號對照：01→01、03→02、02→03、09→04、07→05、04→06、04b→07、04c→08、06→09、08→10、08b→11、10→12。
+- 連接線重畫（含原先起點錯誤的 Open Play menu）；Asset Panel 缺失 tile 排版微調。未新增 component 或 token。

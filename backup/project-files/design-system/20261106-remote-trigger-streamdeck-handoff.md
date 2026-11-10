@@ -51,3 +51,17 @@ https://www.figma.com/design/ZBOB48n4eLsZABCTnhh5kk/XRCC-Claude-Workbench?node-i
 
 - 舊頁面（1454:2615）保留了上一版設計，可供比較。如不再需要，可以刪除。
 - 隱藏的 `_rt_lib`、`_rt_lib2` 文字節點是建圖用的輔助腳本，不影響畫面。如不需要，可以刪除。
+
+## Prototype sync (2026-11-06, after Notion spec review)
+
+Source: Notion "Remote Trigger Implementation Spec". Remote control only reaches Triggers (scene-level) and Variables (project or instance scope), never instances, scenes or behaviours directly.
+
+- Variable palette is grouped: Triggers, Project variables, Instance · <object> (variables of every instance in the active scene).
+- Type names follow the spec: Trigger button, Boolean toggle, Number slider (was Dial), Number input (was Stepper), Colour input, Vector3 slider.
+- Phone access per variable key: Read & write or Read only (read-only keys show the value, phones cannot change it).
+- Preset layout button places every remote-controllable item automatically, with Undo.
+- Binding problems: Missing (warning) and Type mismatch (error), shown on the key and in the Issues tab, keys pause on phones.
+- Trigger buttons offer Square, Rounded and Pill shapes (prototype only, not yet in Figma).
+- Phone layout can be Grid or Stack (prototype toggle, stack order follows deck position; spec decision still open).
+- Vector3 slider minimum is 2 × 2 here, equal to 4 × 5 on the 12-column grid.
+- Figma synced: Phone access field (A3, A4), grouped palette dialog (A5), Preset layout button (A1–A7), renamed labels, resize grip on keys.
