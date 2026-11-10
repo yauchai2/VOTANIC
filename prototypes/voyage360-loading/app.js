@@ -28,7 +28,7 @@ var thumbs = [A + "s1.png", A + "s2.jpg", A + "bg.jpg", A + "s4.jpg", A + "s5.jp
 var thumbFor = function (n) { return thumbs[(n - 1) % thumbs.length]; };
 function mkFiles() {
   return [
-    { id: "f1", name: "Lobby-tour.mp4", kind: "Video", icon: "file", scenes: [4, 10], reason: "Timed out", busy: "" },
+    { id: "f1", name: "Lobby-tour.mp4", kind: "Video", icon: "video", scenes: [4, 10], reason: "Timed out", busy: "" },
     { id: "f2", name: "Kitchen-island.jpg", kind: "Image", icon: "image", scenes: [5], reason: "File not found", busy: "" }
   ];
 }
