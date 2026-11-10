@@ -1,0 +1,143 @@
+/* XRCC (PC) design tokens, Dark mode only.
+   Source of truth: Figma "XRCC (PC) Library" (De8nKqO81yciw4wH5xfpxA), read 2026-10-16.
+   Names mirror the Figma variables: surface/canvas -> --surface-canvas.
+   Use the semantic layer (surface, text, icon, border, action, status). Never use raw palette in UI. */
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&display=swap");
+
+:root {
+  color-scheme: dark;
+
+  /* ---- Palette (primitive, reference only) ---- */
+  --p-neutral-100:#f6f6f6; --p-neutral-200:#e5e5e5; --p-neutral-250:#d9d9d9; --p-neutral-300:#d3d3d3; --p-neutral-400:#c8c8c8;
+  --p-neutral-500:#818181; --p-neutral-600:#676767; --p-neutral-700:#545454; --p-neutral-800:#353535; --p-neutral-850:#1e1e21; --p-neutral-900:#161616;
+  --p-purple-100:#b89afa; --p-purple-200:#9c70ff; --p-purple-300:#5e59a7; --p-purple-400:#5f4b8b; --p-purple-500:#582da7; --p-purple-600:#4b387d; --p-purple-700:#392e52; --p-purple-800:#2a2531;
+  --p-red-50:#ff8a8a; --p-red-100:#ff453a; --p-red-300:#a32929; --p-red-500:#941e1e;
+  --p-green-100:#6fd855; --p-green-200:#37954b; --p-green-300:#084c31; --p-green-400:#1f4321; --p-green-500:#062208;
+  --p-blue-100:#4a79ac; --p-blue-200:#0c6785; --p-blue-300:#195190; --p-blue-400:#0d4f6c; --p-blue-500:#16273a; --p-blue-600:#051324; --p-blue-status:#4589ff;
+  --p-yellow-100:#f9ac2f; --p-yellow-200:#f4971d; --p-yellow-300:#bc6809; --p-yellow-400:#8f7509; --p-yellow-500:#684716; --p-yellow-600:#2e2417;
+  --p-amber-200:#c7843a; --p-orange-100:#d97706;
+  --p-cyan-100:#81f9f9; --p-cyan-200:#369db2; --p-cyan-300:#657474; --p-cyan-500:#2a4747; --p-cyan-accent:#0ec7f0; --p-cyan-400:#21686a; --p-magenta-100:#d644c7; --p-magenta-200:#ba3e96; --p-magenta-300:#7c299a; --p-magenta-400:#7506a8; --p-magenta-500:#940e6c; --p-magenta-600:#681974; --p-magenta-700:#562b52; --p-magenta-800:#510e69; --p-magenta-900:#2b0727;
+  --p-indigo-100:#354490; --p-indigo-200:#2c1484; --p-olive-100:#777c3e; --p-olive-200:#6a601c; --p-olive-300:#4f4a2d; --p-olive-400:#3b4f21;
+
+  /* ---- Surface ---- */
+  --surface-canvas:#1e1e21;      /* app background */
+  --surface-panel:#161616;       /* panels, dialogs body areas */
+  --surface-header:#2a2531;      /* title bars, rails, purple-tinted chrome */
+  --surface-input:#1e1e21;
+  --surface-elevated:#353535;
+  --surface-row-hover:#2a2531;
+  --surface-disabled:#1e1e21;
+  --surface-accent-muted:#5f4b8b; /* active chip, W/L toggle on */
+  --surface-inverse:#ffffff;
+  --surface-faded:rgba(255,255,255,.03);
+
+  /* ---- Text ---- */
+  --text-primary:#e5e5e5;
+  --text-secondary:#c8c8c8;
+  --text-subtle:#818181;         /* 4.2:1 on canvas, captions and meta only */
+  --text-placeholder:#818181;
+  --text-disabled:#676767;
+  --text-accent:#b89afa;         /* names you can click, section labels */
+  --text-inverse:#ffffff;
+  --text-on-light-primary:#161616;
+  --text-on-light-muted:#818181;
+  --text-debug-status:#c8c8c8;
+
+  /* ---- Icon ---- */
+  --icon-default:#e5e5e5; --icon-secondary:#818181; --icon-disabled:#676767; --icon-accent:#b89afa; --icon-inverse:#ffffff;
+
+  /* ---- Border ---- */
+  --border-default:#545454; --border-subtle:#676767; --border-strong:#e5e5e5; --border-disabled:#353535;
+  --border-interactive:#b89afa;  /* hover and focus */
+  --border-tooltip:#4b387d; --border-error:#ff453a; --border-faded:rgba(255,255,255,.07); --border-inverse:#ffffff;
+
+  /* ---- Action ---- */
+  --action-primary-bg:#392e52; --action-primary-bg-hover:#2a2531; --action-primary-bg-pressed:#4b387d; --action-primary-bg-focus:#392e52;
+  --action-primary-content:#b89afa; --action-primary-content-hover:#9c70ff;
+  --action-destructive-bg:#a32929; --action-destructive-bg-hover:#941e1e; --action-destructive-bg-pressed:#941e1e; --action-destructive-bg-focus:#a32929; --action-destructive-content:#ffffff;
+  --action-neutral-bg-hover:#2a2531;
+  --selection-bg:#392e52; --selection-content:#b89afa;
+
+  /* ---- Status (never reuse behaviour colours for status) ---- */
+  --status-success:#37954b; --status-success-text:#37954b; --status-success-icon:#37954b; --status-success-bg:rgba(55,149,75,.15);
+  --status-error:#a32929;   --status-error-hover:#941e1e;  --status-error-text:#ff453a;  --status-error-icon:#ff453a;  --status-error-bg:rgba(163,41,41,.15);
+  --status-warning:#c7843a; --status-warning-text:#c7843a; --status-warning-icon:#c7843a; --status-warning-bg:rgba(199,132,58,.15);
+  --status-info:#4589ff;
+
+  /* ---- Notification accents ---- */
+  --notification-accent-blue:#195190; --notification-accent-purple:#5f4b8b; --notification-accent-citrus:#f9ac2f; /* Citrus: toast underline, 2 uses per screen max */
+
+  /* ---- Hierarchy markers ---- */
+  --marker-yellow-bg:#684716; --marker-yellow-fg:#f9ac2f; --marker-yellow-nested:#2e2417;
+  --marker-green-bg:#1f4321;  --marker-green-fg:#6fd855;  --marker-green-nested:#062208;
+  --marker-blue-bg:#16273a;   --marker-blue-nested:#051324;
+  --marker-pink-bg:#562b52;   --marker-pink-nested:#2b0727;
+
+  /* ---- Avatar colours (initials and faded avatars only) ---- */
+  --avatar-blue-fg:#65a7ff; --avatar-blue-bg:#1a1f29;
+  --avatar-red-fg:#ff7a7e; --avatar-red-bg:#271c1c; --avatar-red-accent:#ca4951;
+  --avatar-green-fg:#76c28b; --avatar-green-bg:#1c211d; --avatar-green-accent:#357c4c;
+  --avatar-yellow-fg:#fcb200; --avatar-yellow-bg:#241e16; --avatar-yellow-accent:#ea9c00;
+
+  /* ---- Interaction (Library prototypes) ---- */
+  --motion-hover:100ms ease-out; /* Change to + Dissolve or Smart animate, same everywhere */
+
+  /* ---- Gradient (Assets Panel active pill and marketing only) ---- */
+  --gradient-xrcc: linear-gradient(90deg,#ba3e96,#369db2);
+
+  /* ---- Behaviour block colours (behaviour editor only, fixed on purpose) ---- */
+  --behaviour-general-event:#a32929; --behaviour-item-event:#d97706; --behaviour-flow-control:#6a601c; --behaviour-variable:#3b4f21;
+  --behaviour-math:#4f4a2d; --behaviour-motion:#084c31; --behaviour-effect:#21686a; --behaviour-scene:#0c6785; --behaviour-light:#0d4f6c;
+  --behaviour-sound:#354490; --behaviour-user:#582da7; --behaviour-time:#7c299a; --behaviour-physics:#582da7; --behaviour-3d-model:#354490;
+  --behaviour-specialized-objects:#941e1e; --behaviour-string:#777c3e; --behaviour-wit-ai:#510e69; --behaviour-poe:#7506a8;
+  --behaviour-microbit:#940e6c; --behaviour-item-attributes:#bc6809; --behaviour-project-variable:#8f7509;
+
+  /* ---- Spacing (4px base) ---- */
+  --spacing-0:0; --spacing-2:2px; --spacing-4:4px; --spacing-8:8px; --spacing-12:12px; --spacing-16:16px; --spacing-20:20px; --spacing-24:24px;
+  --spacing-28:28px; --spacing-32:32px; --spacing-36:36px; --spacing-40:40px; --spacing-48:48px; --spacing-56:56px; --spacing-64:64px; --spacing-72:72px; --spacing-80:80px;
+  --spacing-control-inset:10px;
+
+  /* ---- Radius ---- */
+  --radius-none:0; --radius-xs:2px; --radius-sm:4px; --radius-md:8px; --radius-lg:16px; --radius-xl:20px; --radius-2xl:24px; --radius-3xl:32px; --radius-4xl:40px; --radius-5xl:48px; --radius-full:9999px;
+  --radius-notification:10px; --radius-status-track:14px;
+
+  /* ---- Size ---- */
+  --control-h-sm:28px; --control-h-md:36px; --control-h-lg:48px;   /* Small / Medium / Large for Button, Text Input, Select */
+  --control-h-24:24px; --control-h-32:32px; --control-h-40:40px;   /* secondary heights (tabs 32, legacy 40) */
+  --icon-12:12px; --icon-16:16px; --icon-20:20px; --icon-24:24px; --icon-32:32px; --icon-48:48px;
+  --stroke-hairline:1px;
+
+  /* ---- Elevation (effect styles shadow/dark/1-5) ---- */
+  --shadow-1:0 1px 2px rgba(0,0,0,.30),0 1px 3px rgba(0,0,0,.15);
+  --shadow-2:0 1px 2px rgba(0,0,0,.30),0 2px 6px rgba(0,0,0,.15);
+  --shadow-3:0 1px 3px rgba(0,0,0,.30),0 4px 8px rgba(0,0,0,.15);
+  --shadow-4:0 2px 3px rgba(0,0,0,.30),0 6px 10px rgba(0,0,0,.15);
+  --shadow-5:0 4px 4px rgba(0,0,0,.30),0 8px 12px rgba(0,0,0,.15);
+
+  /* ---- Typography ---- */
+  --font-sans:"Roboto","Noto Sans TC",system-ui,sans-serif;       /* English first */
+  --font-zh:"Noto Sans TC","Roboto",system-ui,sans-serif;         /* only when copy is Chinese (zh-hant mode) */
+  --fw-regular:400; --fw-medium:500; --fw-bold:700;
+  --text-display-4xl:700 80px/88px var(--font-sans);
+  --text-display-3xl:700 64px/72px var(--font-sans);
+  --text-display-2xl:700 48px/56px var(--font-sans);
+  --text-heading-xl:700 32px/40px var(--font-sans);
+  --text-heading-lg:700 24px/32px var(--font-sans);
+  --text-heading-md:700 20px/28px var(--font-sans);
+  --text-heading-sm:700 18px/24px var(--font-sans);
+  --text-body-lg:400 16px/24px var(--font-sans);
+  --text-body-lg-bold:700 16px/24px var(--font-sans);
+  --text-body-md:400 14px/20px var(--font-sans);
+  --text-body-md-bold:700 14px/20px var(--font-sans);
+  --text-body-sm:400 12px/18px var(--font-sans);
+  --text-caption:400 11px/16px var(--font-sans);
+  --tracking:0;
+}
+
+html,body{background:var(--surface-canvas);color:var(--text-primary);font:var(--text-body-md);margin:0}
+:lang(zh-Hant){font-family:var(--font-zh)}
+.t-display-4xl{font:var(--text-display-4xl)} .t-display-3xl{font:var(--text-display-3xl)} .t-display-2xl{font:var(--text-display-2xl)}
+.t-heading-xl{font:var(--text-heading-xl)} .t-heading-lg{font:var(--text-heading-lg)} .t-heading-md{font:var(--text-heading-md)} .t-heading-sm{font:var(--text-heading-sm)}
+.t-body-lg{font:var(--text-body-lg)} .t-body-lg-bold{font:var(--text-body-lg-bold)} .t-body-md{font:var(--text-body-md)} .t-body-md-bold{font:var(--text-body-md-bold)}
+.t-body-sm{font:var(--text-body-sm)} .t-caption{font:var(--text-caption)}
+.t-eyebrow{font:var(--text-caption);text-transform:uppercase;color:var(--text-subtle)}

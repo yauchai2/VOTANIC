@@ -1,0 +1,61 @@
+{
+  "type": "flowchart",
+  "title": "XRCC user flow",
+  "subtitle": "From Launcher to a playable XR experience",
+  "eyebrow": "XRCC 4.x",
+  "motion": "trace",
+  "out": "20261012-xrcc-user-flow.html",
+  "nodes": [
+    {"id":"open","label":"Open Launcher","shape":"terminal","row":0,"col":1},
+    {"id":"lic","label":"License valid?","sub":"QLM / trial","shape":"decision","row":1,"col":1},
+    {"id":"act","label":"Activate licence","kind":"muted","row":1,"col":0},
+    {"id":"ver","label":"Pick XRCC version","sub":"side-by-side","row":2,"col":1},
+    {"id":"proj","label":"New or existing?","shape":"decision","row":3,"col":1},
+    {"id":"gal","label":"Download from xrcc.io","kind":"muted","row":3,"col":2},
+    {"id":"new","label":"Create project","sub":"+ asset packages","row":4,"col":0},
+    {"id":"open2","label":"Open project","sub":".ccdata","row":4,"col":1},
+    {
+      "id": "conn",
+      "label": "Set up connections",
+      "sub": "Poe / Wit.ai / MCU",
+      "shape": "decision",
+      "row": 5,
+      "col": 1
+    },
+    {"id":"skip","label":"Skip for now","kind":"muted","row":5,"col":2},
+    {"id":"prof","label":"Choose launch profile","sub":"PC / XR HMD / CAVE","row":6,"col":1},
+    {
+      "id": "edit",
+      "label": "Author in XRCC",
+      "sub": "scene, assets, behaviour, AI Gen",
+      "focal": true,
+      "row": 7,
+      "col": 1
+    },
+    {"id":"test","label":"Play and test","sub":"PC or headset","row":8,"col":1},
+    {"id":"ok","label":"Happy with it?","shape":"decision","row":9,"col":1},
+    {"id":"done","label":"Share or deploy","shape":"terminal","row":10,"col":1}
+  ],
+  "edges": [
+    ["open","lic"],
+    ["lic","act","no"],
+    ["act","ver"],
+    ["lic","ver","yes","primary"],
+    ["ver","proj","","primary"],
+    ["proj","new","new"],
+    ["proj","open2","existing","primary"],
+    ["proj","gal","from gallery"],
+    ["gal","open2"],
+    ["new","conn"],
+    ["open2","conn","","primary"],
+    ["conn","prof","set up","primary"],
+    ["conn","skip","later"],
+    ["skip","prof"],
+    ["prof","edit","","primary"],
+    ["edit","test","","primary"],
+    ["test","ok","","primary"],
+    ["ok","edit","no, tweak"],
+    ["ok","done","yes","primary"]
+  ],
+  "budget": "faithful"
+}
