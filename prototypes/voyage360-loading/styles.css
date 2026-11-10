@@ -223,7 +223,8 @@ img{display:block}
 .mi:hover{background:rgba(255,255,255,.1)}
 .mi.off{color:var(--disable);cursor:not-allowed}
 .mi.off:hover{background:none}
-.mi em{font-style:normal;font-size:12px}
+.mi em{font-style:normal;font-size:12px;margin-left:auto}
+.mi span,.mi em{white-space:nowrap}
 #tipScene{width:300px}
 .rrow .cbtn{min-width:80px}
 .rrow .tx span{white-space:nowrap}

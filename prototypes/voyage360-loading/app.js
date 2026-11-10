@@ -212,8 +212,8 @@ function renderPlaceholder() {
 function renderMenu() {
   var M = $("#playMenu"), lk = locked();
   if (!S.menu) { M.classList.remove("on"); return; }
-  function it(id, t, off, ic) { return '<a class="mi' + (off ? " off" : "") + '" data-act="' + (off ? "" : "play") + '" data-id="' + id + '"><img alt="" src="' + A + ic + '.svg"><span>' + t + "</span>" + "</a>"; }
-  M.innerHTML = it("all", "Play in PC", false, "monitor") + it("cur", "Play from current scene", false, "monitor") + it("vr", "Play with VR device", false, "vr");
+  function it(id, t, off, ic) { return '<a class="mi' + (off ? " off" : "") + '" data-act="' + (off ? "" : "play") + '" data-id="' + id + '"><img alt="" src="' + A + ic + '.svg"><span>' + t + "</span>" + (off ? "<em>After loading</em>" : "") + "</a>"; }
+  M.innerHTML = it("all", "Play in PC", false, "monitor") + it("cur", "Play from current scene", false, "monitor") + it("vr", "Play with VR device", lk, "vr");
   M.classList.add("on");
 }
 function renderAll() {
