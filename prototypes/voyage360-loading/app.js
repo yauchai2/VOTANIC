@@ -168,21 +168,13 @@ function renderLoader() {
 function sceneMeta() { return readyScenes() >= NS ? "Unused assets" : "Scene " + (currentLoading() || readyScenes() + 1) + " of " + NS; }
 function range(a, b) { return a === b ? "Scene " + a : "Scenes " + a + "–" + b; }
 function checklist() {
-  var rows = [], k = readyScenes();
+  var k = readyScenes(), ld = S.mode === "loading", un = ld && !currentLoading() && k >= NS - S.files.filter(function (f) { return f.sceneFail; }).length;
   function row(ic, lab, st, strong) { return '<div class="crow' + (strong ? " strong" : "") + '"><img' + (ic === "load" ? ' class="spin"' : "") + ' alt="" src="' + A + ic + '.svg"><span class="cl">' + lab + '</span><span class="cs">' + st + "</span></div>"; }
-  if (k) rows.push(row("check", range(1, k), "Ready"));
-  var shown = 0, n;
-  for (n = k + 1; n <= NS && shown < 2; n++, shown++) {
-    var sc = S.scenes[n - 1];
-    if (sc.st === "loading") rows.push(row("load", "Scene " + n + (n === 4 ? " · Kitchen Walkthrough" : ""), sc.n + " of " + sc.t + " assets", true));
-    else rows.push(row("clock", "Scene " + n, "In queue"));
-  }
-  if (n <= NS) rows.push(row("clock", range(n, NS), "In queue"));
-  var unl = k >= NS && S.mode === "loading";
-  rows.push(unl ? row("load", "Unused assets", (S.un || 0) + " of " + UNUSED + " assets", true) : row("clock", "Unused assets · " + UNUSED, "In queue"));
+  var rows = [un || !ld ? row("check", "Scenes", k + " of " + NS + " ready") : row("load", "Scenes", k + " of " + NS + " ready", true)];
+  rows.push(un ? row("load", "Unused assets", (S.un || 0) + " of " + UNUSED + " assets", true) : !ld ? row("check", "Unused assets", "Ready") : row("clock", "Unused assets", "In queue"));
   return '<div class="clist">' + rows.join("") + "</div>";
 }
-function noteText() { return "Play and Save unlock when loading finishes."; }
+function noteText() { var k = readyScenes(); return (k ? (k === 1 ? "Scene 1 is" : "Scenes 1–" + k + " are") + " ready to edit. " : "") + "Play and Save unlock when loading finishes."; }
 function updateLoaderLive() {
   var r = loaded(), pct = Math.round(r / TOTAL * 100), e;
   if ((e = $("#pillTxt"))) e.textContent = "Loading assets " + r + "/" + TOTAL;
