@@ -178,7 +178,6 @@ img{display:block}
 
 /* ---- redesign sync ---- */
 .locked .hdr .ibtn{opacity:1;cursor:pointer}.locked .hdr .ibtn:hover{background:rgba(255,255,255,.08)}
-.locked .save{background:var(--disable);color:var(--grey-400);cursor:not-allowed}
 .locked .newcard .bg{background:#1d1d1d;border:1px dashed var(--stroke)}
 .locked .newcard{opacity:1}
 .locked .newcard img{content:url(assets/lock.svg)}
@@ -191,7 +190,6 @@ img{display:block}
 .pill.ok{cursor:default}
 .lcard .prog{display:flex;flex-direction:column;gap:8px}
 .lcard .prog .cnt{display:flex;justify-content:space-between;align-items:baseline;font-size:14px}
-.lcard .prog .cnt span:last-child{font-size:12px;color:var(--disable)}
 .cbtn.ter{color:var(--text);border:1px solid var(--stroke)}
 .cbtn.off{opacity:.45;pointer-events:none}
 .busy{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--grey-400);white-space:nowrap}
@@ -295,3 +293,12 @@ img{display:block}
 #apanel .lth{background:#1d1d1d;border:1px solid #545454;color:#d9b0fd}
 #apanel .qth{background:#1d1d1d;border:1px dashed #545454;color:#c8c8c8}
 #apanel .lth img,#apanel .qth img{width:24px;height:24px}
+/* Play mode */
+#playView{position:absolute;inset:0;display:none;z-index:20;background:#222 url(assets/bg.jpg) center/cover no-repeat;font-family:Roboto,sans-serif;color:var(--text)}
+.playing #playView{display:block}
+#playView .pnote{position:absolute;left:50%;top:40px;transform:translateX(-50%);padding:12px 20px;border-radius:999px;background:#1e1e21;border:1px solid #676767;font-size:14px;line-height:20px;white-space:nowrap}
+#playView .pph{position:absolute;left:980px;top:300px;width:400px;height:225px;border-radius:4px;background:#1d1d1d;border:1px dashed #545454;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font-size:14px}
+#playView .pph img{width:24px;height:24px}#playView .pph b{font-weight:600;color:#c8c8c8}#playView .pph span{font-size:12px;color:#a3a3a3}
+#playView .pexit{position:absolute;right:24px;top:40px;padding:8px 12px;border-radius:8px;background:rgba(14,13,13,.72);font-size:14px;line-height:20px;display:flex;gap:8px;align-items:center;cursor:pointer}
+#playView .pexit:hover{background:rgba(14,13,13,.9)}
+#playView kbd{font:inherit;font-size:12px;padding:0 6px;border:1px solid #676767;border-radius:4px;color:#c8c8c8}

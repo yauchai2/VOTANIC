@@ -73,7 +73,7 @@ function show(id) {
 }
 function enterEditor() {
   clearTimeout(S.doneT);
-  S.mode = "loading"; S.open = false; S.review = false; S.menu = false; S.panel = null; S.userScroll = false; S.sel = 1; S.scroll = 0; S.un = 0;
+  S.mode = "loading"; S.open = false; S.review = false; S.menu = false; S.panel = null; S.userScroll = false; S.sel = 1; S.scroll = 0; S.un = 0; S.playing = false; S.resumed = false; $("#editor").classList.remove("playing");
   S.scenes = freshScenes(); S.files = []; show("editor");
 }
 
@@ -89,7 +89,7 @@ function tick() {
   var n = currentLoading() || promote();
   if (!n) { S.un = (S.un || 0) + 1; if (S.un >= UNUSED) { S.un = UNUSED; finish(); return; } }
   else { var sc = S.scenes[n - 1]; sc.n = Math.min(sc.t, sc.n + 1); if (sc.n >= sc.t) { sc.st = "ready"; promote(); } }
-  follow(); renderRow(); updateLoaderLive(); updateFooter(); updateTips(); renderQ(); if (S.panel === "browse") renderPanel();
+  follow(); renderRow(); updateLoaderLive(); updateFooter(); updateTips(); renderQ(); if (S.panel === "browse") renderPanel(); if (curReady() && document.querySelector("#editor.playlocked")) renderAll();
 }
 function follow() {
   if (S.userScroll) return;
@@ -136,16 +136,16 @@ function footerText() {
   if (S.mode === "ready" || S.mode === "done") return "All " + TOTAL + " assets ready";
   if (S.mode === "missing") {
     var sc = {}; S.files.forEach(function (f) { f.scenes.forEach(function (n) { sc[n] = 1; }); });
-    return "Loading finished · " + plural(S.files.length, "file") + " missing in " + plural(Object.keys(sc).length, "scene");
+    return plural(S.files.length, "file") + " missing in " + plural(Object.keys(sc).length, "scene");
   }
   var k = readyScenes();
-  return "Loading assets · " + r + " of " + TOTAL + " ready" + (k ? " · " + (k === 1 ? "Scene 1 can" : "Scenes 1–" + k + " can") + " be edited" : "");
+  return k ? (k === 1 ? "Scene 1 is" : "Scenes 1–" + k + " are") + " ready to edit" : "Loading the first scene";
 }
-function updateFooter() { var m = S.mode !== "loading" && missFor(S.sel)[0]; $("#footer").textContent = m ? "Scene " + S.sel + " · " + m.name + " is missing" : footerText(); }
+function updateFooter() { $("#footer").textContent = footerText(); }
 function updateTips() {
   var left = TOTAL - loaded();
-  $("#tipPlay").innerHTML = "<p>Play and Save unlock when loading finishes.</p><p>" + plural(left, "asset") + " left.</p>";
-  $("#tipNew").innerHTML = "<p>New scene unlocks when loading finishes.</p><p>" + plural(left, "asset") + " left.</p>";
+  $("#tipPlay").innerHTML = !curReady() ? "<p>Scene " + S.sel + " is still loading.</p>" : "<p>Assets that haven’t loaded show as placeholders.</p><p>Loading pauses while you play.</p>";
+  $("#tipNew").innerHTML = "<p>New scene unlocks when loading finishes.</p>";
 }
 function chev(up) { return '<span class="chev" data-act="toggle"><img alt="" src="' + A + (up ? "chevup" : "chevron") + '.svg"></span>'; }
 function renderLoader() {
@@ -154,10 +154,10 @@ function renderLoader() {
   if (m === "done") { L.innerHTML = '<a class="pill ok"><img alt="" src="' + A + 'check.svg"><span>All assets ready</span></a>'; return; }
   var k = readyScenes(), cur = currentLoading();
   if (!S.open) {
-    if (m === "loading") h = '<a class="pill" data-act="toggle"><img class="spin" alt="" src="' + A + 'load2.svg"><span id="pillTxt">Loading assets ' + r + "/" + TOTAL + '</span><span class="mini"><i id="pillBar" style="width:' + Math.round(48 * r / TOTAL) + 'px"></i></span>' + chev(false) + "</a>";
+    if (m === "loading") h = '<a class="pill" data-act="toggle"><img class="spin" alt="" src="' + A + 'load2.svg"><span id="pillTxt">' + pillLabel(r) + '</span><span class="mini"><i id="pillBar" style="width:' + Math.round(48 * r / TOTAL) + 'px"></i></span>' + chev(false) + "</a>";
     if (m === "missing") h = '<a class="pill warn"><img alt="" src="' + A + 'warn-amber.svg"><span>' + plural(f, "file") + ' missing</span><span class="link" data-act="review">Review</span>' + chev(false) + "</a>";
   } else {
-    var bar = '<div class="prog"><div class="track"><i id="cBar" style="width:' + pct + '%"></i></div><div class="cnt"><span id="cOf">' + r + " of " + TOTAL + ' assets ready</span><span id="cScene">' + (m === "loading" ? sceneMeta() : "Loading finished") + "</span></div></div>";
+    var bar = '<div class="prog"><div class="track"><i id="cBar" style="width:' + pct + '%"></i></div><div class="cnt"><span id="cOf">' + r + " of " + TOTAL + ' assets ' + (m === "loading" ? "ready" : "loaded") + "</span></div></div>";
     if (m === "loading") h = '<div class="lcard"><div class="head" data-act="toggle"><img class="spin" alt="" src="' + A + 'load.svg"><span>Loading assets</span>' + chev(true) + "</div>" + bar + '<div id="cList">' + checklist() + "</div>" +
       '<p class="note" id="cNote">' + noteText() + "</p></div>";
     if (m === "missing") h = '<div class="lcard"><div class="head" data-act="toggle"><img alt="" src="' + A + 'warn-amber.svg"><span>' + plural(f, "file") + " " + (f === 1 ? "is" : "are") + " missing</span>" + chev(true) + "</div>" + bar +
@@ -165,7 +165,6 @@ function renderLoader() {
   }
   L.innerHTML = h;
 }
-function sceneMeta() { return readyScenes() >= NS ? "Unused assets" : "Scene " + (currentLoading() || readyScenes() + 1) + " of " + NS; }
 function range(a, b) { return a === b ? "Scene " + a : "Scenes " + a + "–" + b; }
 function checklist() {
   var k = readyScenes(), ld = S.mode === "loading", un = ld && !currentLoading() && k >= NS - S.files.filter(function (f) { return f.sceneFail; }).length;
@@ -174,14 +173,13 @@ function checklist() {
   rows.push(un ? row("load", "Unused assets", (S.un || 0) + " of " + UNUSED + " assets", true) : !ld ? row("check", "Unused assets", "Ready") : row("clock", "Unused assets", "In queue"));
   return '<div class="clist">' + rows.join("") + "</div>";
 }
-function noteText() { var k = readyScenes(); return (k ? (k === 1 ? "Scene 1 is" : "Scenes 1–" + k + " are") + " ready to edit. " : "") + "Play and Save unlock when loading finishes."; }
+function noteText() { return "New scene unlocks when loading finishes."; }
 function updateLoaderLive() {
   var r = loaded(), pct = Math.round(r / TOTAL * 100), e;
-  if ((e = $("#pillTxt"))) e.textContent = "Loading assets " + r + "/" + TOTAL;
+  if ((e = $("#pillTxt"))) e.textContent = pillLabel(r);
   if ((e = $("#pillBar"))) e.style.width = Math.round(48 * r / TOTAL) + "px";
   if ((e = $("#cOf"))) e.textContent = r + " of " + TOTAL + " assets ready";
   if ((e = $("#cBar"))) e.style.width = pct + "%";
-  if ((e = $("#cScene"))) e.textContent = sceneMeta();
   if ((e = $("#cNote"))) e.textContent = noteText();
   if ((e = $("#cList"))) e.innerHTML = checklist();
 }
@@ -221,7 +219,7 @@ function renderMenu() {
 function renderAll() {
   var ed = $("#editor"), lk = locked();
   ed.classList.toggle("locked", lk); ed.classList.toggle("ready", !lk);
-  ed.classList.toggle("playlocked", lk); $("#playBtn").setAttribute("aria-disabled", lk); $("#saveBtn").setAttribute("aria-disabled", lk);
+  var cr = curReady(); ed.classList.toggle("playlocked", !cr); $("#playBtn").setAttribute("aria-disabled", !cr); $("#saveBtn").setAttribute("aria-disabled", false);
   renderRow(); updateFooter(); updateTips(); renderLoader(); renderReview(); renderPlaceholder(); renderMenu(); renderPanel(); renderQ(); hideTips();
 }
 
@@ -286,20 +284,36 @@ function renderPanel() {
   P.classList.add("on");
 }
 
+/* ---------- Play mode: background loading pauses, unloaded assets show as placeholders ---------- */
+function enterPlay() {
+  if (S.playing || !curReady()) return;
+  S.playing = true; S.menu = false; S.open = false; S.review = false; S.panel = null; S.wasLoading = S.mode === "loading";
+  if (S.wasLoading) stopEngine();
+  var left = TOTAL - loaded(), P = $("#playView");
+  P.innerHTML = (S.wasLoading ? '<div class="pnote">' + plural(left, "asset") + (left === 1 ? " hasn’t" : " haven’t") + ' loaded yet and ' + (left === 1 ? "shows as a placeholder" : "show as placeholders") + '</div><div class="pph"><img alt="" src="' + A + 'clock.svg"><b>Lobby-tour.mp4</b><span>Not loaded yet</span></div>' : "") + '<a class="pexit" data-act="exitplay">Exit Play<kbd>Esc</kbd></a>';
+  $("#editor").classList.add("playing"); hideTips(); renderMenu();
+}
+function exitPlay() {
+  if (!S.playing) return;
+  S.playing = false; $("#editor").classList.remove("playing"); $("#playView").innerHTML = "";
+  if (S.wasLoading && S.mode === "loading") { S.resumed = true; clearTimeout(S.resT); S.resT = setTimeout(function () { S.resumed = false; updateLoaderLive(); }, 2600); startEngine(); }
+  renderAll();
+}
+function pillLabel(r) { return (S.resumed ? "Loading resumed " : "Loading assets ") + r + "/" + TOTAL; }
+
 /* ---------- tooltips ---------- */
 function hideTips() { $("#tipPlay").classList.remove("show"); $("#tipNew").classList.remove("show"); $("#tipScene").classList.remove("show"); }
-function showPlayTip() { if (locked() && !S.menu) $("#tipPlay").classList.add("show"); }
+function showPlayTip() { if ((locked() || !curReady()) && !S.menu && S.tipFor === "playBtn") $("#tipPlay").classList.add("show"); }
 var scale = function () { return Math.min(innerWidth / 1920, innerHeight / 1080); };
 Array.prototype.slice.call(document.querySelectorAll("#playBtn, #saveBtn")).forEach(function (e) {
   var en = function () { S.tipFor = e.id; updateTips(); showPlayTip(); }; e.addEventListener("mouseenter", en); e.addEventListener("focus", en);
   e.addEventListener("mouseleave", hideTips); e.addEventListener("blur", hideTips);
   e.addEventListener("click", function (ev) {
     ev.stopPropagation();
-    if (locked()) return;
-    if (e.id === "playBtn") {
-      if (ev.target.closest(".b")) { S.menu = !S.menu; hideTips(); renderMenu(); }
-      else show("s1");
-    }
+    if (e.id === "saveBtn") { toast("Project saved"); return; }
+    if (!curReady()) return;
+    if (ev.target.closest(".b")) { S.menu = !S.menu; hideTips(); renderMenu(); }
+    else enterPlay();
   });
 });
 var ns = $("#newScene");
@@ -323,7 +337,7 @@ function act(ev) {
   if (a === "replace" && f) pickFile(f);
   if (a === "pcancel") { S.panel = null; S.review = S.panelFrom === "review"; renderAll(); }
   if (a === "pchoose" && f) { S.panel = null; S.toastFor = f; work(f, "Replacing…", 1300); S.review = S.panelFrom === "review"; renderAll(); }
-  if (a === "play") { S.menu = false; show("s1"); }
+  if (a === "play") { S.menu = false; enterPlay(); }
 }
 ["#loader", "#review", "#ph", "#playMenu", "#apanel", "#qload", "#phbox", "#toast"].forEach(function (s) { $(s).addEventListener("click", act); });
 document.addEventListener("click", function (ev) { if (S.menu && !ev.target.closest("#playMenu")) { S.menu = false; renderMenu(); } });
@@ -347,8 +361,8 @@ $("#row").addEventListener("mouseover", function (ev) {
   var c = ev.target.closest(".card.miss"), T = $("#tipScene");
   if (!c) { T.classList.remove("show"); return; }
   var n = +c.getAttribute("data-n"), fs = missFor(n), r = c.getBoundingClientRect(), sr = $("#stage").getBoundingClientRect(), k = scale();
-  T.innerHTML = "<p>Scene " + n + " · " + plural(fs.length, "file") + " missing</p><p>" + fs.map(function (x) { return x.name; }).join(", ") + " couldn’t load. The scene opens with a placeholder.</p>";
-  T.style.left = Math.round((r.left - sr.left) / k) + "px"; T.style.top = Math.round((r.top - sr.top) / k - 92) + "px";
+  T.innerHTML = "<p>" + fs.map(function (x) { return x.name; }).join(", ") + " couldn’t load.</p><p>The scene shows a placeholder.</p>";
+  T.style.left = Math.round((r.left + r.width / 2 - sr.left) / k + 16 - 320) + "px"; T.style.top = Math.round((r.top - sr.top) / k - 64) + "px";
   T.classList.add("show");
 });
 $("#row").addEventListener("mouseleave", function () { $("#tipScene").classList.remove("show"); });
@@ -377,6 +391,8 @@ document.addEventListener("keydown", function (ev) {
   }
   if (k === "f") simulate("missing");
   if (k === "a") simulate("ready");
+  if (k === "escape" && S.playing) { exitPlay(); return; }
+  if (S.playing) return;
   if (k === "escape") { S.menu = false; if (!S.panel && !S.review) S.phOpen = 0; if (S.panel) { S.panel = null; S.review = S.panelFrom === "review"; } else S.review = false; if (S.screen === "editor") renderAll(); }
 });
 
@@ -385,7 +401,7 @@ $("#s1click").addEventListener("click", function () { show("s2"); });
 $("#s2").addEventListener("click", function () { clearTimeout(S.auto); enterEditor(); });
 $("#s3bretry").addEventListener("click", function () { show("s2"); });
 $("#s3bclose").addEventListener("click", function () { show("s1"); });
-$("#canvas").addEventListener("click", function () { if (S.mode === "ready") show("s1"); });
+$("#playView").addEventListener("click", function (ev) { if (ev.target.closest("[data-act=exitplay]")) exitPlay(); });
 $('[data-go="s1"]').addEventListener("click", function () { show("s1"); });
 
 /* ---------- fit 1920x1080 stage ---------- */
