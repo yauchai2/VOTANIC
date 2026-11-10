@@ -178,7 +178,7 @@ img{display:block}
 
 /* ---- redesign sync ---- */
 .locked .hdr .ibtn{opacity:1;cursor:pointer}.locked .hdr .ibtn:hover{background:rgba(255,255,255,.08)}
-.playlocked .play .a,.playlocked .play .b{cursor:pointer}
+.locked .save{background:var(--disable);color:var(--grey-400);cursor:not-allowed}
 .locked .newcard .bg{background:#1d1d1d;border:1px dashed var(--stroke)}
 .locked .newcard{opacity:1}
 .locked .newcard img{content:url(assets/lock.svg)}

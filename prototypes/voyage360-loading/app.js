@@ -91,7 +91,7 @@ function tick() {
   var sc = S.scenes[n - 1];
   sc.n = Math.min(sc.t, sc.n + 1);
   if (sc.n >= sc.t) { sc.st = "ready"; if (!promote()) { finish(); return; } }
-  follow(); renderRow(); updateLoaderLive(); updateFooter(); updateTips(); renderQ(); if (S.scenes[S.sel - 1].st === "ready" && document.querySelector("#editor.playlocked")) renderAll();
+  follow(); renderRow(); updateLoaderLive(); updateFooter(); updateTips(); renderQ();
 }
 function follow() {
   if (S.userScroll) return;
@@ -146,7 +146,7 @@ function footerText() {
 function updateFooter() { var m = S.mode !== "loading" && missFor(S.sel)[0]; $("#footer").textContent = m ? "Scene " + S.sel + " · " + m.name + " is missing" : footerText(); }
 function updateTips() {
   var left = TOTAL - loaded();
-  $("#tipPlay").innerHTML = !curReady() ? "<p>Scene " + S.sel + " is still loading.</p>" : "<p>Plays from the current scene while loading.</p><p>Play in PC and VR unlock when loading finishes. " + plural(left, "asset") + " left.</p>";
+  $("#tipPlay").innerHTML = "<p>Play and Save unlock when loading finishes.</p><p>" + plural(left, "asset") + " left.</p>";
   $("#tipNew").innerHTML = "<p>New scene unlocks when loading finishes.</p><p>" + plural(left, "asset") + " left.</p>";
 }
 function chev(up) { return '<span class="chev" data-act="toggle"><img alt="" src="' + A + (up ? "chevup" : "chevron") + '.svg"></span>'; }
@@ -181,7 +181,7 @@ function checklist() {
   if (n <= NS) rows.push(row("clock", range(n, NS), "In queue"));
   return '<div class="clist">' + rows.join("") + "</div>";
 }
-function noteText() { return "Play in PC and VR unlock when loading finishes."; }
+function noteText() { return "Play and Save unlock when loading finishes."; }
 function updateLoaderLive() {
   var r = loaded(), pct = Math.round(r / TOTAL * 100), e;
   if ((e = $("#pillTxt"))) e.textContent = "Loading assets " + r + "/" + TOTAL;
@@ -222,13 +222,13 @@ function renderMenu() {
   var M = $("#playMenu"), lk = locked();
   if (!S.menu) { M.classList.remove("on"); return; }
   function it(id, t, off, ic) { return '<a class="mi' + (off ? " off" : "") + '" data-act="' + (off ? "" : "play") + '" data-id="' + id + '"><img alt="" src="' + A + ic + '.svg"><span>' + t + "</span>" + "</a>"; }
-  M.innerHTML = it("all", "Play in PC", lk, "monitor") + it("cur", "Play from current scene", false, "monitor") + it("vr", "Play with VR device", lk, "vr");
+  M.innerHTML = it("all", "Play in PC", false, "monitor") + it("cur", "Play from current scene", false, "monitor") + it("vr", "Play with VR device", false, "vr");
   M.classList.add("on");
 }
 function renderAll() {
   var ed = $("#editor"), lk = locked();
   ed.classList.toggle("locked", lk); ed.classList.toggle("ready", !lk);
-  var cr = curReady(); ed.classList.toggle("playlocked", !cr); $("#playBtn").setAttribute("aria-disabled", !cr); $("#saveBtn").setAttribute("aria-disabled", false);
+  ed.classList.toggle("playlocked", lk); $("#playBtn").setAttribute("aria-disabled", lk); $("#saveBtn").setAttribute("aria-disabled", lk);
   renderRow(); updateFooter(); updateTips(); renderLoader(); renderReview(); renderPlaceholder(); renderMenu(); renderPanel(); renderQ(); hideTips();
 }
 
@@ -284,16 +284,17 @@ function renderPanel() {
 
 /* ---------- tooltips ---------- */
 function hideTips() { $("#tipPlay").classList.remove("show"); $("#tipNew").classList.remove("show"); $("#tipScene").classList.remove("show"); }
-function showPlayTip() { if ((locked() || !curReady()) && !S.menu) $("#tipPlay").classList.add("show"); }
+function showPlayTip() { if (locked() && !S.menu) $("#tipPlay").classList.add("show"); }
 var scale = function () { return Math.min(innerWidth / 1920, innerHeight / 1080); };
-Array.prototype.slice.call(document.querySelectorAll("#playBtn")).forEach(function (e) {
+Array.prototype.slice.call(document.querySelectorAll("#playBtn, #saveBtn")).forEach(function (e) {
   var en = function () { S.tipFor = e.id; updateTips(); showPlayTip(); }; e.addEventListener("mouseenter", en); e.addEventListener("focus", en);
   e.addEventListener("mouseleave", hideTips); e.addEventListener("blur", hideTips);
   e.addEventListener("click", function (ev) {
     ev.stopPropagation();
+    if (locked()) return;
     if (e.id === "playBtn") {
       if (ev.target.closest(".b")) { S.menu = !S.menu; hideTips(); renderMenu(); }
-      else if (curReady()) show("s1");
+      else show("s1");
     }
   });
 });
