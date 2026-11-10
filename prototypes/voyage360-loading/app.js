@@ -21,8 +21,8 @@ var NS = 16, TICK_MS = 350;
 })();
 
 /* ---------- data ---------- */
-var ASSETS = [1,1,1,8,1,1,1,1,3,3,3,3,3,3,2,1];
-var TOTAL = ASSETS.reduce(function (a, b) { return a + b; }, 0);   /* 36 assets in 16 scenes */
+var ASSETS = [1,1,1,8,1,1,1,1,3,3,2,2,2,2,2,1], UNUSED = 4;   /* 4 assets are not used by any scene and load last */
+var TOTAL = ASSETS.reduce(function (a, b) { return a + b; }, 0) + UNUSED;   /* 36 assets in 16 scenes */
 var thumbs = [A + "s1.png", A + "s2.jpg", A + "bg.jpg", A + "s4.jpg", A + "s5.jpg", A + "s6.png", A + "s7.png", A + "s8.png",
               A + "blurred.jpg", A + "s4.jpg", A + "s5.jpg", A + "s6.png", A + "s7.png", A + "s8.png", A + "s2.jpg", A + "s1.png"];
 var thumbFor = function (n) { return thumbs[(n - 1) % thumbs.length]; };
@@ -47,7 +47,7 @@ function freshScenes() {
 var plural = function (n, w) { return n + " " + w + (n === 1 ? "" : "s"); };
 var openFiles = function () { return S.files; };
 function lostAssets() { var x = 0; S.files.forEach(function (f) { if (!f.sceneFail) x++; }); return x; }
-function loaded() { var x = 0; S.scenes.forEach(function (s) { x += s.n; }); return x - lostAssets(); }
+function loaded() { var x = 0; S.scenes.forEach(function (s) { x += s.n; }); return x + (S.un || 0) - lostAssets(); }
 function readyScenes() { var k = 0; for (var i = 0; i < NS && S.scenes[i].st === "ready"; i++) k++; return k; }
 function currentLoading() { for (var i = 0; i < NS; i++) if (S.scenes[i].st === "loading") return i + 1; return 0; }
 function failedScene(n) { return S.files.some(function (f) { return f.sceneFail && f.scenes.indexOf(n) > -1; }); }
@@ -73,7 +73,7 @@ function show(id) {
 }
 function enterEditor() {
   clearTimeout(S.doneT);
-  S.mode = "loading"; S.open = false; S.review = false; S.menu = false; S.panel = null; S.userScroll = false; S.sel = 1; S.scroll = 0;
+  S.mode = "loading"; S.open = false; S.review = false; S.menu = false; S.panel = null; S.userScroll = false; S.sel = 1; S.scroll = 0; S.un = 0;
   S.scenes = freshScenes(); S.files = []; show("editor");
 }
 
@@ -87,10 +87,8 @@ function promote() {
 function tick() {
   if (S.mode !== "loading") return;
   var n = currentLoading() || promote();
-  if (!n) { finish(); return; }
-  var sc = S.scenes[n - 1];
-  sc.n = Math.min(sc.t, sc.n + 1);
-  if (sc.n >= sc.t) { sc.st = "ready"; if (!promote()) { finish(); return; } }
+  if (!n) { S.un = (S.un || 0) + 1; if (S.un >= UNUSED) { S.un = UNUSED; finish(); return; } }
+  else { var sc = S.scenes[n - 1]; sc.n = Math.min(sc.t, sc.n + 1); if (sc.n >= sc.t) { sc.st = "ready"; promote(); } }
   follow(); renderRow(); updateLoaderLive(); updateFooter(); updateTips(); renderQ(); if (S.panel === "browse") renderPanel();
 }
 function follow() {
@@ -159,7 +157,7 @@ function renderLoader() {
     if (m === "loading") h = '<a class="pill" data-act="toggle"><img class="spin" alt="" src="' + A + 'load2.svg"><span id="pillTxt">Loading assets ' + r + "/" + TOTAL + '</span><span class="mini"><i id="pillBar" style="width:' + Math.round(48 * r / TOTAL) + 'px"></i></span>' + chev(false) + "</a>";
     if (m === "missing") h = '<a class="pill warn"><img alt="" src="' + A + 'warn-amber.svg"><span>' + plural(f, "file") + ' missing</span><span class="link" data-act="review">Review</span>' + chev(false) + "</a>";
   } else {
-    var bar = '<div class="prog"><div class="track"><i id="cBar" style="width:' + pct + '%"></i></div><div class="cnt"><span id="cOf">' + r + " of " + TOTAL + ' assets ready</span><span id="cScene">' + (m === "loading" ? "Scene " + (cur || k + 1) + " of " + NS : "Loading finished") + "</span></div></div>";
+    var bar = '<div class="prog"><div class="track"><i id="cBar" style="width:' + pct + '%"></i></div><div class="cnt"><span id="cOf">' + r + " of " + TOTAL + ' assets ready</span><span id="cScene">' + (m === "loading" ? sceneMeta() : "Loading finished") + "</span></div></div>";
     if (m === "loading") h = '<div class="lcard"><div class="head" data-act="toggle"><img class="spin" alt="" src="' + A + 'load.svg"><span>Loading assets</span>' + chev(true) + "</div>" + bar + '<div id="cList">' + checklist() + "</div>" +
       '<p class="note" id="cNote">' + noteText() + "</p></div>";
     if (m === "missing") h = '<div class="lcard"><div class="head" data-act="toggle"><img alt="" src="' + A + 'warn-amber.svg"><span>' + plural(f, "file") + " " + (f === 1 ? "is" : "are") + " missing</span>" + chev(true) + "</div>" + bar +
@@ -167,18 +165,21 @@ function renderLoader() {
   }
   L.innerHTML = h;
 }
+function sceneMeta() { return readyScenes() >= NS ? "Unused assets" : "Scene " + (currentLoading() || readyScenes() + 1) + " of " + NS; }
 function range(a, b) { return a === b ? "Scene " + a : "Scenes " + a + "–" + b; }
 function checklist() {
   var rows = [], k = readyScenes();
   function row(ic, lab, st, strong) { return '<div class="crow' + (strong ? " strong" : "") + '"><img' + (ic === "load" ? ' class="spin"' : "") + ' alt="" src="' + A + ic + '.svg"><span class="cl">' + lab + '</span><span class="cs">' + st + "</span></div>"; }
   if (k) rows.push(row("check", range(1, k), "Ready"));
   var shown = 0, n;
-  for (n = k + 1; n <= NS && shown < 3; n++, shown++) {
+  for (n = k + 1; n <= NS && shown < 2; n++, shown++) {
     var sc = S.scenes[n - 1];
     if (sc.st === "loading") rows.push(row("load", "Scene " + n + (n === 4 ? " · Kitchen Walkthrough" : ""), sc.n + " of " + sc.t + " assets", true));
     else rows.push(row("clock", "Scene " + n, "In queue"));
   }
   if (n <= NS) rows.push(row("clock", range(n, NS), "In queue"));
+  var unl = k >= NS && S.mode === "loading";
+  rows.push(unl ? row("load", "Unused assets", (S.un || 0) + " of " + UNUSED + " assets", true) : row("clock", "Unused assets · " + UNUSED, "In queue"));
   return '<div class="clist">' + rows.join("") + "</div>";
 }
 function noteText() { return "Play and Save unlock when loading finishes."; }
@@ -188,7 +189,7 @@ function updateLoaderLive() {
   if ((e = $("#pillBar"))) e.style.width = Math.round(48 * r / TOTAL) + "px";
   if ((e = $("#cOf"))) e.textContent = r + " of " + TOTAL + " assets ready";
   if ((e = $("#cBar"))) e.style.width = pct + "%";
-  if ((e = $("#cScene"))) e.textContent = "Scene " + (currentLoading() || readyScenes() + 1) + " of " + NS;
+  if ((e = $("#cScene"))) e.textContent = sceneMeta();
   if ((e = $("#cNote"))) e.textContent = noteText();
   if ((e = $("#cList"))) e.innerHTML = checklist();
 }
@@ -367,7 +368,7 @@ $(".strip").addEventListener("wheel", function (ev) {
 function simulate(kind) {
   if (S.screen !== "editor") return;
   stopEngine(); clearTimeout(S.doneT); S.open = false; S.review = false; S.menu = false;
-  S.scenes = S.scenes.map(function (s, i) { return { t: ASSETS[i], n: ASSETS[i], st: "ready" }; });
+  S.scenes = S.scenes.map(function (s, i) { return { t: ASSETS[i], n: ASSETS[i], st: "ready" }; }); S.un = UNUSED;
   if (kind === "missing") { S.files = mkFiles(); S.mode = "missing"; }
   if (kind === "ready") { S.files = []; enterDone(); }
   renderAll();
