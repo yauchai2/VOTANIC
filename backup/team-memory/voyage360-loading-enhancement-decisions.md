@@ -1,23 +1,28 @@
 ---
 name: voyage360-loading-enhancement-decisions
-description: Decisions for the Voyage 360 Loading Enhancement redesign (2026-11-09): progress unit is assets, scene strip as checklist, progressive unlock
+description: Current decisions and board map for the Voyage 360 Loading Enhancement redesign (state as of 2026-11-10); assets as unit, Play/Save open while loading, stage checklist
 metadata:
   type: project
-  modified: 2026-11-09T07:53:04.154Z
+  modified: 2026-11-10T09:34:52.337Z
 ---
 
-Figma file KoJQjDPM4sjwsoMYEvCDkw, page "Voyage 360 Loading Enhancement" (6299:12901). Reviewer comments by unity4.
+Figma file KoJQjDPM4sjwsoMYEvCDkw, page "Voyage 360 Loading Enhancement" (6299:12901), outer section 6393:91092. Reviewer comments by unity4 (dev). Web prototype: prototypes/voyage360-loading, draft PR https://github.com/yauchai2/VOTANIC/pull/8, keep in sync with Figma. Paste-ready comment replies: /mnt/project-files/reports/20261109-voyage360-loading-comment-replies.md (Claude cannot post Figma comments).
 
-- Progress unit = assets (Alan, 2026-11-09): "36" means all assets inside all scenes (images, icons, audio, waypoint, video...). Title "Loading assets", count "8 of 36 assets ready".
-- Alan (2026-11-09): look past the surface of comments to the real problem; big changes allowed, the goal is good final UI/UX. He approved starting Figma changes on the redesign direction doc /mnt/project-files/reports/20261109-voyage360-loading-redesign-direction.md.
-- Direction: scene strip is the checklist (thumb states Ready/Loading with asset progress/Queued/Failed); smaller progress card; pill state-first; progressive unlock (ready scene can Edit and "Play from current scene"; whole Play and Save unlock when loading ends, even with failures); failures counted by file with impact; Review opens a small Recover-List-style panel; reuse lock-icon language from Locked Asset.
-- Components: Loading Card/Pill/Scene Thumb are now the LOCAL sets on that page (section 6545:1916); on 2026-11-09 all 60 board instances were swapped off the remote mains (6323:*). Edit the local sets, no Publish needed for this page. New variants: Pill State=Done, Thumb State=Missing files, Scene Card "Add New Scene_locked" (set 1589:36570 on Design Guidelines page).
-- Built 2026-11-09: boards 04c (Review missing files, 6563:4112) and 09 (Play from current scene, 6563:4334). Amber = missing file (scene still opens), red = scene couldn't load. Web prototype PR #8 not yet synced to this redesign.
-- 2026-11-09 later: 04c and 08 use XRCC Dialog (Warning); new board 10 = Asset Panel filtered to Missing (Replace… target, Cancel→04c, Choose file…→06). Prototype PR #8 synced (commit after 3757137).
+Settled decisions (Alan):
+- Progress unit = assets ("8 of 36 assets ready"; 36 = every asset in all scenes plus unused ones). One bar, no percentage.
+- Look past the surface of comments to the real problem; big changes allowed.
+- Scene row is the per-scene checklist (Ready, Loading with asset count, In queue, amber "1 file missing" = scene still opens, red "Couldn't load" = 360 image failed). Default view is the collapsed pill.
+- Loading Card lists loading STAGES only (unity4 idea, 2026-11-10): "Scenes · 3 of 16 ready", then "Unused assets · In queue". Assets not used by any scene load last. Add stage rows only when dev names real processes.
+- Play and Save stay OPEN while loading (2026-11-10, final after a short lock): in Play, unloaded assets show as XRCC-style placeholders with a top notice; background loading pauses during Play and resumes on exit (pill shows "Loading resumed"). New scene stays locked until loading ends (lock style, tooltip). After loading ends everything unlocks even with missing files.
+- Missing files are counted per file with affected scenes; Review dialog (XRCC Dialog) offers Retry, Replace… (Asset Panel filtered to Missing), Retry all; in-scene amber placeholder opens a dialog on click.
+- Asset Panel can open while loading; tiles reuse the scene-row states.
+- Information review (2026-11-10, Alan asked to trim duplicates): each fact appears once. Pill = asset count; card = stages plus "New scene unlocks when loading finishes."; footer = one line ("Scenes 1–3 are ready to edit", "2 files missing in 3 scenes", "All 36 assets ready"); tooltips do not repeat counts shown elsewhere. Keep this when adding copy.
+
+Board map (01–16, no letters): section 1 S1, S2, S3, S3b; section 2: 01 collapsed, 02 card expanded, 03 hover New scene, 04 Asset Panel while loading; section 3: 05 hover Play, 06 Play while loading, 07 back from Play; section 4: 08 finished with missing files, 09 expanded, 10 Review, 11 Asset Panel Missing filter, 12 after Replace, 13 all ready; section 5: 14 scene with missing file, 15 click placeholder, 16 hover scene. Alan removed the "More states" boards himself; do not re-add them.
+
+Components (LOCAL, in section 6545:1916 on that page, no Publish needed; Alan allowed new ones 2026-11-10): Loading Card, Pill, Scene Thumb, Status Bar (footer), Placeholder (Missing / Not loaded yet), Loading Asset Tile (Loading / Queued / Missing), Review Row (icon swap). Use instances, not frames, on boards.
+
+Open dev questions: can loading pause during Play and resume; load a scene on demand when reached by waypoint in Play; does Save keep references to unloaded or missing files; must New scene be locked; can Asset Panel open while loading; other loading stages.
 
 **Why:** avoid re-asking Alan settled decisions.
-**How to apply:** follow these when touching the Loading boards or the prototype (prototypes/voyage360-loading, PR #8).
-- 2026-11-09 final: default is the collapsed pill; boards renumbered 01-12 left to right. Old to new: 04c->08, 09->04, 10->12, 04->06, 04b->07, 03->02, 02->03, 07->05, 06->09, 08->10, 08b->11. Older notes above use old numbers. Prototype demo starts loading at Scene 4; card has scene checklist.
-- 2026-11-09: Play button stays purple/enabled during loading; main click = Play from current scene; Play all/VR disabled in menu. Board 03 renamed "Hover on Play while loading". Save is AVAILABLE during loading (Alan chose 2026-11-09; dev must confirm Save keeps references to unloaded assets). Only Play all, VR and New scene wait for loading. Review dialog is centred with scrim; old orphan variable Primary/Sur BG rebound to Voyage surface/base.
-- 2026-11-09 (Alan approved review doc items): new boards 10b (placeholder dialog after click), 08b (Retry/Replace result toast), 13 (selected queued scene jumps to front of queue, Play greyed until that scene is ready), 14 (scene whose 360 image failed: Retry/Replace over canvas). Board 10 now shows a dashed in-scene placeholder; dialog only on click. Loading thumb is neutral (no blurred preview). Play menu labels match product: Play in PC, Play from current scene, Play with VR device. Open dev questions: priority loading feasibility, Save with unloaded refs, New scene lock.
-- 2026-11-10 (Alan, after dev team feedback that background loading plus Play/Save may lag or bug): Play AND Save are LOCKED again while loading (grey disabled style, tooltip "Play and Save unlock when loading finishes."). This supersedes the 2026-11-09 Save/Play-available decision; it is temporary until dev confirms. Board "Play from current scene while loading" removed (restore from Figma version history if dev approves). Boards renumbered 01-13 left to right with no letters: 04 hover New scene, 05 finished with missing files, 06 expanded, 07 review, 08 asset panel, 09 after replace, 10 all assets ready, 11 scene with missing file, 12 click placeholder, 13 hover scene. Figma section "5 · More states" removed; Overview texts and annotations updated.
+**How to apply:** follow these when touching the Loading boards or the prototype.
