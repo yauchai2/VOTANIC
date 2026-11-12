@@ -55,7 +55,13 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .lhead h2{margin:0;font-size:18px;color:var(--text2)}
 .min{display:flex;gap:2px;margin-left:4px}.min .ib{width:28px;height:28px;color:var(--text3)}.min .ib.on{color:var(--accent)}
 .lhead .btn.big{height:44px;padding:0 20px;font-size:15px}
-.list{display:flex;flex-direction:column}
+.list{display:flex;flex-direction:column;gap:28px}
+.gblk{display:flex;flex-direction:column;gap:4px;--gc:#6d4fc0}
+.gblk .items{display:flex;flex-direction:column;gap:4px;margin-left:20px;padding-left:12px;border-left:3px solid var(--gc)}
+.gblk .grow2{border-left:6px solid var(--gc);border-radius:4px;height:48px;background:color-mix(in srgb,var(--gc) 16%,var(--grp));margin-top:0}
+.gblk .grow2 .nm{font-size:14px;font-weight:600}
+.gblk .irow{height:44px;border-radius:4px}
+.gblk .sett{border-radius:4px}
 .grow2{display:flex;align-items:center;gap:12px;background:var(--grp);padding:0 8px;height:44px;cursor:pointer;margin-top:2px}
 .grow2:first-child{margin-top:0}.grow2.sel{background:var(--sel);color:var(--accent)}
 .grow2 .nm{flex:1;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -68,7 +74,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .tag{font-size:11px;padding:1px 8px;border-radius:99px;border:1px solid var(--border);color:var(--text2);white-space:nowrap}
 .tag.w{color:var(--warn);border-color:var(--warn)}.tag.e{color:var(--err);border-color:var(--err)}.tag.ok{color:var(--ok);border-color:var(--ok)}
 .hint{padding:12px 8px;color:var(--text2);font-size:13px;background:var(--panel)}
-.sett{background:var(--panel);border-top:1px solid var(--subtle);padding:14px 16px 14px 44px;display:flex;flex-direction:column;gap:10px}
+.sett{background:var(--panel);border-top:1px solid var(--subtle);padding:14px 16px 14px 16px;display:flex;flex-direction:column;gap:10px}
 .sett h5{margin:0;font-size:12px;color:var(--text2);font-weight:400}
 .ctl{background:var(--canvas);border:1px solid var(--subtle);border-radius:6px}
 .ctl .ch{display:flex;align-items:center;gap:10px;padding:8px 10px}
@@ -277,8 +283,9 @@ function itemRow(g,it){
   return r}
 function rtDialog(){
   const list=h('div',{class:'list'});
-  st.groups.forEach((g,gi)=>{list.append(groupHead(g,gi));g.items.forEach(it=>{list.append(itemRow(g,it));if(st.panel===g.id+'|'+it.inst)list.append(ctlPanel(g,it))});
-    if(!g.items.length)list.append(h('div',{class:'hint'},'No instances yet. Select the group, then use the add-instance button.'))});
+  st.groups.forEach((g,gi)=>{const blk=h('div',{class:'gblk',style:'--gc:'+g.color}),its=h('div',{class:'items'});blk.append(groupHead(g,gi),its);
+    g.items.forEach(it=>{its.append(itemRow(g,it));if(st.panel===g.id+'|'+it.inst)its.append(ctlPanel(g,it))});
+    if(!g.items.length)its.append(h('div',{class:'hint'},'No instances yet. Select the group, then use the add-instance button.'));list.append(blk)});
   list.append(h('div',{class:'hint'},'Add Item to remote them by your mobile'));
   const n=issues();const anyS=st.sens.gyro||st.sens.accel||st.sens.mic;
   const sensRow=(k,t)=>h('div',{class:'tgl'},t,h('button',{class:'sw2'+(st.sens[k]?' on':''),role:'switch','aria-checked':String(st.sens[k]),onclick:()=>{st.sens[k]=!st.sens[k];touch();render()}}));
