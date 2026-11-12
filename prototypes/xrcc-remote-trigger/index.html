@@ -206,12 +206,12 @@ const INST=[
  {id:'textobj',n:'Text Object',i:'text',lv:0,ctl:[V('Content','Text','text','Instance variable')]}
 ];
 const IB=Object.fromEntries(INST.map(x=>[x.id,x]));
-const PAL=['#ff0000','#ff5a00','#ff9f00','#ffff00','#c8ff00','#00ff00','#00ffff','#4f8cf0','#0000ff','#a000ff','#ff00ff','#ff006e','#ffffff'];
-const COLS=['#378FFA','#ff006e','#4ec27d','#f0b429','#a000ff','#ffffff'];
+const PAL=['#ff0000','#ff5a00','#ff9f00','#ffff00','#c8ff00','#00ff00','#00ffff','#4f8cf0','#0000ff','#a000ff','#ff00ff','#a62b2b','#ffffff'];
+const COLS=['#65a7ff','#a62b2b','#4ec27d','#f0b429','#a000ff','#ffffff'];
 const mkCtl=(c,i)=>({on:true,label:c.n,control:/Intensity|Volume/.test(c.n)?'slider':'input',size:c.kind==='Text'||/Intensity|Volume/.test(c.n)?2:1,min:0,max:100,dec:0,maxc:40,ro:false,color:COLS[i%COLS.length]});
 const sample=()=>[
- {id:'g1',name:'Show controls',color:'#378FFA',items:[{inst:'scene',issue:'',ctl:{'Start show':mkCtl(T('Start show'),0),'Open curtains':mkCtl(T('Open curtains'),0),'Lights':mkCtl(V('Lights','Toggle'),0),'Show title':mkCtl(V('Show title','Text'),0),'Reset scene':mkCtl(T('Reset scene'),0)}}]},
- {id:'g2',name:'Stage',color:'#ff006e',items:[{inst:'spot',issue:'',ctl:{'Intensity':mkCtl(V('Intensity','Number'),0),'Colour':mkCtl(V('Colour','Colour'),0)}},{inst:'speaker',issue:'',ctl:{'Music':mkCtl(V('Music','Toggle'),0)}}]}];
+ {id:'g1',name:'Show controls',color:'#65a7ff',items:[{inst:'scene',issue:'',ctl:{'Start show':mkCtl(T('Start show'),0),'Open curtains':mkCtl(T('Open curtains'),0),'Lights':mkCtl(V('Lights','Toggle'),0),'Show title':mkCtl(V('Show title','Text'),0),'Reset scene':mkCtl(T('Reset scene'),0)}}]},
+ {id:'g2',name:'Stage',color:'#a62b2b',items:[{inst:'spot',issue:'',ctl:{'Intensity':mkCtl(V('Intensity','Number'),0),'Colour':mkCtl(V('Colour','Colour'),0)}},{inst:'speaker',issue:'',ctl:{'Music':mkCtl(V('Music','Toggle'),0)}}]}];
 const st={tab:'editor',orient:'portrait',groups:sample(),selG:null,selI:null,panel:null,rename:null,colorFor:null,
   open:{rt:true,pick:false,ln:true,confirm:false,sens:false},pickFor:null,pick:{sel:null,q:''},
   playing:false,code:'',pub:'off',pubTab:'local',failNext:false,phones:[],snap:null,sens:{gyro:false,accel:false,mic:false},sensUser:null,
@@ -298,7 +298,7 @@ function rtDialog(){
       h('div',{class:'intro'},h('div',{class:'ph'},ic('wifi')),h('div',{class:'grow'},h('h3',{},'Please confirm the remote connection with XRCC Mobile'),h('p',{},'You can check with your server Admin for permissions and your connection website. Phones follow device rotation.')),
 ),
       n?h('div',{class:'banner'},ic('info'),`${n} item${n>1?'s':''} need attention. Phones can't use ${n>1?'them':'it'} until fixed.`):null,
-      h('div',{class:'lhead'},h('h2',{},'Remote List'),h('div',{class:'min','aria-label':'Phone orientation'},['portrait','landscape'].map(o=>h('button',{class:'ib'+(st.orient===o?' on':''),title:o==='portrait'?'Portrait layout':'Landscape layout','aria-label':o==='portrait'?'Portrait layout':'Landscape layout','aria-pressed':String(st.orient===o),onclick:()=>{st.orient=o;ph.land=o==='landscape';save();render()}},ic(o==='portrait'?'port':'land',18)))),h('span',{class:'sp'}),h('button',{class:'btn pri big',disabled:st.playing?true:null,title:st.playing?'Stop Play to add groups':'',onclick:()=>{const g={id:gid(),name:'New Remote Trigger'+(st.groups.length?` (${st.groups.length})`:''),color:'#378FFA',items:[]};st.groups.push(g);st.selG=g.id;touch();render()}},ic('plus'),'Add New Remote Trigger')),
+      h('div',{class:'lhead'},h('h2',{},'Remote List'),h('div',{class:'min','aria-label':'Phone orientation'},['portrait','landscape'].map(o=>h('button',{class:'ib'+(st.orient===o?' on':''),title:o==='portrait'?'Portrait layout':'Landscape layout','aria-label':o==='portrait'?'Portrait layout':'Landscape layout','aria-pressed':String(st.orient===o),onclick:()=>{st.orient=o;ph.land=o==='landscape';save();render()}},ic(o==='portrait'?'port':'land',18)))),h('span',{class:'sp'}),h('button',{class:'btn pri big',disabled:st.playing?true:null,title:st.playing?'Stop Play to add groups':'',onclick:()=>{const g={id:gid(),name:'New Remote Trigger'+(st.groups.length?` (${st.groups.length})`:''),color:'#65a7ff',items:[]};st.groups.push(g);st.selG=g.id;touch();render()}},ic('plus'),'Add New Remote Trigger')),
       list,
       h('div',{class:'sens'},h('h4',{},'Phone sensors',h('span',{class:'tag'},'One phone at a time'),h('span',{class:'sp'}),h('button',{class:'btn ter sm',onclick:()=>{st.open.sens=!st.open.sens;render()}},st.open.sens?'Hide':'Show')),
         st.open.sens?h('div',{style:'display:flex;flex-direction:column;gap:10px'},sensRow('gyro','Gyroscope'),sensRow('accel','Accelerometer'),sensRow('mic','Microphone volume'),
