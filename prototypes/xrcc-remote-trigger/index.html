@@ -223,7 +223,7 @@ try{const s=JSON.parse(localStorage.getItem('xrcc-rt4')||'null');if(s&&Array.isA
 const save=()=>{try{localStorage.setItem('xrcc-rt4',JSON.stringify({groups:st.groups,orient:st.orient}))}catch(e){}};
 const gid=()=>'g'+Math.random().toString(36).slice(2,7);
 /* flatten groups into phone cells */
-function cellsOf(groups){const out=[];groups.forEach(g=>{const rows=[];g.items.forEach(it=>{const inst=IB[it.inst];if(!inst)return;inst.ctl.forEach(c=>{const s=it.ctl[c.n];if(s&&s.on)rows.push({key:key(it.inst,c.n),label:s.label||c.n,kind:c.kind,i:c.i,s,color:g.color,issue:it.issue,iname:inst.n})})});
+function cellsOf(groups){const out=[];groups.forEach(g=>{const rows=[];g.items.forEach(it=>{const inst=IB[it.inst];if(!inst)return;rows.push({key:key(it.inst,'item'),label:inst.n,kind:'Trigger',i:inst.i,s:{size:1,ro:false,color:'#d9b0fd'},color:g.color,issue:it.issue,iname:inst.n})});
   if(rows.length){out.push({sec:g});out.push(...rows)}});return out}
 const w2=c=>c.s.size===2||(c.kind==='Number'&&c.s.control==='slider')||c.kind==='Text';
 const issues=()=>st.groups.reduce((a,g)=>a+g.items.filter(i=>i.issue).length,0);
@@ -278,16 +278,14 @@ function itemRow(g,it){
   const n=Object.values(it.ctl).filter(x=>x.on).length;
   const r=h('div',{class:'irow'+(sel?' sel':'')+(it.issue?(it.issue==='type'?' err':' warn'):''),onclick:()=>{st.selI=sel?null:g.id+'|'+it.inst;st.selG=null;render()}},
     ic(inst.i,18),h('div',{class:'nm'},inst.n),
-    st.playing&&n?h('span',{class:'tag ok'},'Live'):null,
+    st.playing?h('span',{class:'tag ok'},'Live'):null,
     it.issue?h('span',{class:'tag '+(it.issue==='type'?'e':'w')},it.issue==='type'?'Type mismatch':'Missing'):null,
-    !n&&!it.issue?h('span',{class:'tag w'},'Nothing remoted'):h('span',{class:'tag'},n+' remoted'),
-    h('div',{class:'acts'},h('button',{class:'ib tint'+(open?' on':''),title:'Choose what to remote','aria-label':'Choose what to remote',onclick:e=>{e.stopPropagation();st.panel=open?null:g.id+'|'+it.inst;render()}},ic('conn')),
-      h('button',{class:'ib del',title:'Remove','aria-label':'Remove',onclick:e=>{e.stopPropagation();g.items=g.items.filter(x=>x!==it);st.selI=null;if(open)st.panel=null;touch();render()}},ic('trash'))));
+    h('div',{class:'acts'},h('button',{class:'ib del',title:'Remove','aria-label':'Remove',disabled:st.playing?true:null,onclick:e=>{e.stopPropagation();g.items=g.items.filter(x=>x!==it);st.selI=null;touch();render()}},ic('trash'))));
   return r}
 function rtDialog(){
   const list=h('div',{class:'list'});
   st.groups.forEach((g,gi)=>{const blk=h('div',{class:'gblk',style:'--gc:'+g.color}),its=h('div',{class:'items'});blk.append(groupHead(g,gi),its);
-    g.items.forEach(it=>{its.append(itemRow(g,it));if(st.panel===g.id+'|'+it.inst)its.append(ctlPanel(g,it))});
+    g.items.forEach(it=>{its.append(itemRow(g,it));});
     if(!g.items.length)its.append(h('div',{class:'hint'},'No instances yet. Select the group, then use the add-instance button.'));list.append(blk)});
   list.append(h('div',{class:'hint'},'Add Item to remote them by your mobile'));
   const n=issues();const anyS=st.sens.gyro||st.sens.accel||st.sens.mic;
@@ -307,7 +305,7 @@ function rtDialog(){
 function previewCard(){
   const c=st.orient==='landscape'?6:3;const cs=cellsOf(st.groups);
   return h('div',{class:'pv'},h('div',{class:'h'},'Phone preview',h('span',{class:'pill'},(st.orient==='landscape'?'Landscape':'Portrait')+' · '+c+' columns')),
-    cs.length?h('div',{class:'pvg',style:'--c:'+c},cs.filter(x=>!x.sec).map(x=>h('div',{class:'pvc'+(w2(x)?' w2':'')},h('span',{style:'color:#d9b0fd'},ic(x.i,16)),x.label))):h('small',{},'Nothing remoted yet. Use the connect button on an instance.'),
+    cs.length?h('div',{class:'pvg',style:'--c:'+c},cs.filter(x=>!x.sec).map(x=>h('div',{class:'pvc'+(w2(x)?' w2':'')},h('span',{style:'color:#d9b0fd'},ic(x.i,16)),x.label))):h('small',{},'Nothing added yet. Add an instance to a group.'),
     h('small',{},'Items flow left to right, then down, in list order.'))}
 function colorPop(){const g=st.groups.find(x=>x.id===st.colorFor);if(!g)return null;
   const set=c=>{g.color=c;touch();render()};
