@@ -395,6 +395,30 @@ input:focus{outline:1px solid var(--interactive)}
 .stage.collapsed{height:44px}.stage.collapsed .scene,.stage.collapsed .ghost,.stage.collapsed .beam{display:none}.stage.collapsed .stg{bottom:8px;top:auto}
 .stage .banner{right:12px;top:10px}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.rlist{display:flex;flex-direction:column;gap:6px}
+.rrow{display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:8px;background:#1c1c1e;border:1px solid transparent;cursor:pointer;text-align:left;color:inherit;font:inherit}
+.rrow:hover{background:#232326}.rrow.sel{background:#2a2147;border-color:#6d4fc0}
+.rrow .ico{width:34px;height:34px;display:grid;place-items:center;border-radius:8px;background:#2a2a2d;font-size:16px;flex:none}
+.rrow .grow{flex:1;min-width:0}.rrow .grow b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rrow .ord{width:18px;text-align:center;font-size:12px}
+.rrow .btn.sq{width:30px;height:30px;padding:0;font-size:11px}
+.rrow.b-warn{border-color:#8a6a1f}.rrow.b-err{border-color:#a33}
+.tagro2,.tagb2{font-size:11px;padding:2px 8px;border-radius:99px;background:#2a2a2d;color:var(--text2)}
+.tagb2{background:#3a2a10;color:#f0b429}.b-err .tagb2{background:#3a1515;color:#ff7a7a}
+.rrow.empty{background:none;border:1px dashed #3a3a3e;color:var(--text2);justify-content:center;min-height:52px}
+.rrow.empty:hover{border-color:#6d4fc0;color:#fff}
+.rrow .plus{font-size:18px}
+.pdeck{grid-auto-flow:row dense}
+.phone .pdeck{grid-template-columns:repeat(var(--cols,3),minmax(0,1fr));grid-auto-rows:var(--cell,100px);gap:8px}
+.phone .pdeck .key{min-height:0;padding:8px;overflow:hidden}
+.phone .pdeck .key input{width:100%;min-width:0;background:#0e0e10;border:1px solid var(--border);border-radius:8px;color:#fff;font:inherit;font-size:13px;padding:6px 8px}
+.phone .pdeck .key.t-text{align-items:stretch;text-align:left;gap:6px}
+.orient{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px;margin-bottom:12px;border-radius:8px;background:#1c1c1e}
+.orient .muted{font-size:12px;margin-top:2px}
+.seg{display:flex;gap:4px;padding:4px;border-radius:8px;background:#0e0e10}
+.seg button{background:none;border:0;color:var(--text2);font:inherit;font-size:13px;padding:6px 14px;border-radius:6px;cursor:pointer}
+.seg button.on{background:#392e52;color:#d9b0fd}
+.orient-hint{font-size:12px;text-align:center;padding:6px 0}
 </style>
 </head>
 <body data-tab="editor">
@@ -415,16 +439,16 @@ input:focus{outline:1px solid var(--interactive)}
                     <div class="ed-grid">
             <div class="card editor">
               <div class="row" style="justify-content:space-between;margin-bottom:12px">
-                <div><h2>Remote deck</h2><div class="muted" id="edHint" data-html>Drag a variable onto any free cell. Drag keys to move, the corner to resize. Select a key to remove it.</div></div>
-                <div class="row" style="gap:8px"><button class="btn tertiary" id="presetBtn">Preset layout</button><span class="pill" id="count"></span></div>
+                <div><h2>Remote List</h2><div class="muted" id="edHint">Items run top to bottom here. Phones show them left to right, top to bottom, in this order.</div></div>
+                <div class="row" style="gap:8px"><span class="pill" id="count"></span><button class="btn primary" id="addNew">＋ Add item</button></div>
               </div>
+              <div class="orient"><div><b>Phone orientation</b><div class="muted">Sets the preview and default. Phones follow rotation and reflow the list.</div></div><div class="seg" id="orientSeg"><button data-o="portrait">Portrait</button><button data-o="landscape">Landscape</button></div></div>
               <div class="deck" id="deckE"></div>
             </div>
             <div class="card">
               <div class="row" style="gap:6px;margin-bottom:8px">
                 <button class="btn tertiary" data-side="keys" aria-pressed="true">Keys</button>
                 <button class="btn tertiary" data-side="settings">Settings</button>
-                <button class="btn tertiary" data-side="order">Phone order</button>
                 <button class="btn tertiary" data-side="issues">Issues <span class="pill" id="issueN">0</span></button>
               </div>
               <div id="side"></div>
@@ -463,6 +487,7 @@ input:focus{outline:1px solid var(--interactive)}
           <div class="tools">
             <button class="btn tertiary" id="tReconnect">Simulate network drop</button>
             <button class="btn tertiary" id="tStale">Edit deck in XRCC</button>
+            <button class="btn tertiary" id="tDev">Device: Phone</button>
             <button class="btn tertiary" id="tLand">Rotate</button>
             <button class="btn tertiary" id="tReset">Restart phone</button>
           </div>
@@ -489,39 +514,38 @@ const LIB=[
  {id:'mood',src:'project',type:'colour',l:'Mood colour',w:1},
  {id:'guests',src:'project',type:'stepper',l:'Guests',w:1},
  {id:'spot',src:'spotA',type:'dial',l:'Spotlight',i:'◉',w:2},
- {id:'pos',src:'spotA',type:'vector3',l:'Spotlight position',i:'⬡',w:2,h:2},
- {id:'aim',src:'spotA',type:'v3in',l:'Spotlight target',i:'⌖',w:2,h:1},
+ {id:'title',src:'project',type:'text',l:'Show title',i:'T',w:2,max:40},
  {id:'temp',src:'spotA',type:'stepper',l:'Lamp temp',i:'♨',w:1,ro:true,unit:'°C'},
  {id:'music',src:'speaker',type:'toggle',l:'Music',i:'♪',w:1}
 ];
 const BYID=Object.fromEntries(LIB.map(k=>[k.id,k]));
-const TYPELABEL={trigger:'Trigger button',toggle:'Boolean toggle',dial:'Number slider',stepper:'Number input',colour:'Colour input',vector3:'Vector3 slider',v3in:'Vector3 input'};
-const SHORT={trigger:'Trigger',toggle:'Toggle',dial:'Slider',stepper:'Number',colour:'Colour',vector3:'Vector3',v3in:'Vector3 in'};
-const DEFAULT_DECK=['start','curtain','lights','mood','spot','guests','music','pos','applause','next','reset'];
+const TYPELABEL={trigger:'Trigger button',toggle:'Boolean toggle',dial:'Number slider',stepper:'Number input',colour:'Colour input',text:'Text input'};
+const SHORT={trigger:'Trigger',toggle:'Toggle',dial:'Slider',stepper:'Number',colour:'Colour',text:'Text'};
+const DEFAULT_DECK=['start','curtain','lights','mood','spot','guests','title','reset'];
 const DEFAULT_POS={start:[0,0],curtain:[1,0],lights:[2,0],mood:[3,0],spot:[0,1],guests:[2,1],music:[3,1],pos:[0,2],applause:[2,2],next:[3,2],reset:[2,3]};
 const MAXROWS=8;
 const st={
-  tab:'editor',deck:[],labels:{},sizes:{},pos:{},selected:null,
-  vals:{lights:false,music:false,mood:'#e8467c',spot:64,guests:12,pos:[1.2,.8,-.4],aim:[0,1.5,3],temp:41},access:{temp:'read'},shape:{},bind:{},order:[],
+  tab:'editor',orient:'portrait',deck:[],labels:{},sizes:{},pos:{},selected:null,
+  vals:{lights:false,music:false,mood:'#e8467c',spot:64,guests:12,title:'Welcome to the gallery',temp:41},access:{temp:'read'},shape:{},bind:{},order:[],
   playing:false,publicOn:false,publicLink:'https://gallery-tiger-42.trycloudflare.com',phones:[],code:'',
   layoutVer:1,phoneVer:1,log:[]
 };
 const COLS=['#e5566d','#f0b429','#4ec27d','#4f8cf0','#8b5cf6','#c0392b','#d68a2c','#2e8b57','#4b3a78','#ffffff'];
 let ch;try{ch=new BroadcastChannel('xrcc-rt')}catch(e){ch={postMessage(){},set onmessage(f){}}}
 const genCode=()=>String(Math.floor(100000+Math.random()*900000));
-const save=()=>{try{localStorage.setItem('xrcc-rt-deck',JSON.stringify({deck:st.deck,labels:st.labels,sizes:st.sizes,pos:st.pos,access:st.access,shape:st.shape,order:st.order}))}catch(e){}};
-try{const s=JSON.parse(localStorage.getItem('xrcc-rt-deck')||'null');if(s){st.deck=s.deck.filter(i=>BYID[i]);st.labels=s.labels||{};st.sizes=s.sizes||{};st.pos=s.pos||{};if(s.access)st.access=s.access;st.shape=s.shape||{};st.order=s.order||[]}else st.deck=[...DEFAULT_DECK]}catch(e){st.deck=[...DEFAULT_DECK]}
+const save=()=>{try{localStorage.setItem('xrcc-rt-deck2',JSON.stringify({orient:st.orient,deck:st.deck,labels:st.labels,sizes:st.sizes,pos:st.pos,access:st.access,shape:st.shape,order:st.order}))}catch(e){}};
+try{const s=JSON.parse(localStorage.getItem('xrcc-rt-deck2')||'null');if(s){st.orient=s.orient||'portrait';st.deck=s.deck.filter(i=>BYID[i]);st.labels=s.labels||{};st.sizes=s.sizes||{};st.pos=s.pos||{};if(s.access)st.access=s.access;st.shape=s.shape||{};st.order=s.order||[]}else st.deck=[...DEFAULT_DECK]}catch(e){st.deck=[...DEFAULT_DECK]}
 const label=id=>st.labels[id]||BYID[id].l;
 const isVar=id=>BYID[id].type!=='trigger';
 const acc=id=>isVar(id)?(st.access[id]||'readWrite'):'readWrite';
 const srcName=id=>(SRC.find(x=>x[0]===BYID[id].src)||[0,''])[1];
-const MINSZ={v3in:{w:2,h:1},vector3:{w:2,h:2},dial:{w:2,h:1}};
+const MINSZ={text:{w:2,h:1},dial:{w:2,h:1}};
 const minOf=id=>MINSZ[BYID[id].type]||{w:1,h:1};
 const sz=id=>{const m=minOf(id);const z=st.sizes[id]||{w:BYID[id].w||1,h:BYID[id].h||1};return{w:Math.max(m.w,z.w),h:Math.max(m.h,z.h)}};
 const PS=id=>st.pos[id]||{x:0,y:0};
 const byPos=(a,b)=>PS(a).y-PS(b).y||PS(a).x-PS(b).x;
-function mobOrder(){const o=st.order.filter(i=>st.deck.includes(i));return [...o,...st.deck.filter(i=>!o.includes(i)).sort(byPos)]}
-function moveOrder(id,d){const o=mobOrder(),i=o.indexOf(id),j=i+d;if(i<0||j<0||j>=o.length)return;[o[i],o[j]]=[o[j],o[i]];st.order=o;save();st.layoutVer++;renderSide();renderPhone()}
+function mobOrder(){return [...st.deck]}
+function moveOrder(id,d){const i=st.deck.indexOf(id),j=i+d;if(i<0||j<0||j>=st.deck.length)return;[st.deck[i],st.deck[j]]=[st.deck[j],st.deck[i]];save();st.layoutVer++;renderAll()}
 function fits(id,x,y,w,h){
   if(x<0||y<0||x+w>4||y+h>MAXROWS)return false;
   for(const o of st.deck){if(o===id||!st.pos[o])continue;const q=PS(o),z=sz(o);if(x<q.x+z.w&&x+w>q.x&&y<q.y+z.h&&y+h>q.y)return false}
@@ -552,6 +576,7 @@ function perform(id,payload,from){
     case'toggle':st.vals[id]=!st.vals[id];log(`${label(id)} <b>${st.vals[id]?'On':'Off'}</b> from ${from}`);break;
     case'dial':st.vals[id]=payload;log(`${label(id)} set to <b>${payload}%</b> from ${from}`);break;
     case'stepper':st.vals[id]=Math.max(0,st.vals[id]+payload);log(`${label(id)} <b>${payload>0?'+1':'−1'}</b> → ${st.vals[id]} from ${from}`);break;
+    case'text':st.vals[id]=String(payload).slice(0,BYID[id].max||40);log(`${label(id)} → <b>${st.vals[id]}</b> from ${from}`);break;
     case'colour':st.vals[id]=payload;log(`${label(id)} → <b>${payload}</b> from ${from}`);break;
     case'v3in':st.vals[id]=payload;log(`${label(id)} → <b>(${payload.map(n=>n.toFixed(1)).join(', ')})</b> from ${from}`);break;
     case'vector3':st.vals[id]=payload;log(`${label(id)} → <b>(${payload.map(n=>n.toFixed(1)).join(', ')})</b> from ${from}`);break;
@@ -571,12 +596,17 @@ function keyEl(id,mode){
   if(acc(id)==='read')cls.push('ro');
   if(st.bind[id])cls.push(st.bind[id]==='type'?'b-err':'b-warn');
   if(st.shape[id])cls.push('shape-'+st.shape[id]);
-  const z=sz(id);const el=h('div',{class:cls.join(' '),'data-id':id,tabindex:'0',role:'button','aria-label':label(id),style:`grid-column:${PS(id).x+1} / span ${z.w};grid-row:${PS(id).y+1} / span ${z.h}`});
+  const z=sz(id);const el=h('div',{class:cls.join(' '),'data-id':id,tabindex:'0',role:'button','aria-label':label(id),style:`grid-column:span ${z.w};grid-row:span ${z.h}`});
   const ico=()=>h('div',{class:'ico '+(k.tint||'')},k.i||'•');
   if(k.type==='trigger')el.append(ico(),h('div',{class:'lab'},label(id)));
   if(k.type==='toggle')el.append(h('i',{class:'led'}),ico(),h('div',{class:'lab'},label(id)),h('div',{class:'val'},v?'On':'Off'));
   if(k.type==='colour')el.append(h('div',{class:'swatch',style:`background:${v}`}),h('div',{class:'lab'},label(id)),h('div',{class:'val'},v.toUpperCase()));
   if(k.type==='stepper'){el.append(h('div',{class:'val'},label(id)),h('div',{class:'big'},String(v)+(k.unit||'')),acc(id)==='read'?'':h('div',{class:'step'},h('button',{class:'btn sq','data-d':-1,'aria-label':'Minus'},'−'),h('button',{class:'btn sq','data-d':1,'aria-label':'Plus'},'+')))}
+  if(k.type==='text'){const inp=h('input',{type:'text',maxlength:String(k.max||40),value:v,'aria-label':label(id),disabled:acc(id)==='read'?'':null});const cnt=h('div',{class:'val'},`${v.length} / ${k.max||40}`);
+    inp.addEventListener('input',()=>{cnt.textContent=`${inp.value.length} / ${k.max||40}`});
+    inp.addEventListener('change',()=>{if(mode==='phone')phoneApi.press(id,inp.value,false);else perform(id,inp.value,'editor')});
+    ['pointerdown','click'].forEach(ev=>inp.addEventListener(ev,e=>e.stopPropagation()));
+    el.append(h('div',{class:'val'},label(id)),inp,cnt)}
   if(k.type==='dial'){el.append(dialEl(id,mode))}
   if(k.type==='vector3'){el.append(v3El(id,mode))}
   if(k.type==='v3in'){el.append(v3inEl(id,mode))}
@@ -625,81 +655,28 @@ function v3El(id,mode){
 /* ---------- Editor ---------- */
 const GAP=10,ROWH=108;
 function deckRows(){let bt=0;for(const id of st.deck)bt=Math.max(bt,PS(id).y+sz(id).h);return Math.min(MAXROWS,Math.max(4,bt+(bt>=4?1:0)))}
+const pdrag={just:false};
 function renderDeckE(){
-  const d=$('#deckE');d.innerHTML='';
-  const rows=deckRows();d.style.gridTemplateRows='repeat('+rows+','+ROWH+'px)';
-  st.deck.forEach(id=>d.append(keyEl(id,'editor')));
-  const occ=new Set();for(const id of st.deck){const q=PS(id),z=sz(id);for(let i=0;i<z.w;i++)for(let j=0;j<z.h;j++)occ.add((q.x+i)+','+(q.y+j))}
-  for(let y=0;y<rows;y++)for(let x=0;x<4;x++){if(occ.has(x+','+y))continue;
-    d.append(h('div',{class:'slot'+(targetSlot&&targetSlot.x===x&&targetSlot.y===y?' target':''),'data-x':x,'data-y':y,onclick:()=>{if(pdrag.just)return;targetSlot={x,y};setSide('keys');renderAll();toast('Pick a variable for this cell')},style:`grid-column:${x+1};grid-row:${y+1}`},'＋'))}
-  if(!st.deck.length)d.append(h('div',{class:'emptyhint'},h('b',{},'Your deck is empty'),h('span',{},'Pick variables on the right, or try Preset layout.')));
-  $('#count').textContent=st.deck.length+' of 128 keys';$('#presetBtn').textContent=presetPrev?'Undo preset':'Preset layout';
-  $$('.key',d).forEach(el=>{
-    el.addEventListener('pointerdown',e=>{if(e.target.closest('.rail,.btn,.x,.rz,input'))return;pdrag(el,el.dataset.id,e)});
-    const rz=$('.rz',el);
-    if(rz){rz.addEventListener('pointerdown',e=>{
-      e.preventDefault();e.stopPropagation();rz.setPointerCapture(e.pointerId);
-      const id=el.dataset.id,z0=sz(id),q=PS(id),r0=el.getBoundingClientRect(),dr=d.getBoundingClientRect();
-      const cw=(dr.width-3*GAP)/4;let cur={w:z0.w,h:z0.h};el.classList.add('resizing');
-      const mv=ev=>{const mn=minOf(id);const w=Math.min(4-q.x,Math.max(mn.w,Math.round((r0.width+(ev.clientX-e.clientX)+GAP)/(cw+GAP))));const hh=Math.min(MAXROWS-q.y,Math.max(mn.h,Math.round((r0.height+(ev.clientY-e.clientY)+GAP)/(ROWH+GAP))));
-        if(w!==cur.w||hh!==cur.h){cur={w,h:hh};el.style.gridColumn=(q.x+1)+' / span '+w;el.style.gridRow=(q.y+1)+' / span '+hh;el.classList.toggle('bad',!fits(id,q.x,q.y,w,hh))}};
-      const up=()=>{rz.removeEventListener('pointermove',mv);rz.removeEventListener('pointerup',up);rz.removeEventListener('pointercancel',up);el.classList.remove('resizing');
-        if(cur.w!==z0.w||cur.h!==z0.h)setSize(id,cur.w,cur.h)};
-      rz.addEventListener('pointermove',mv);rz.addEventListener('pointerup',up);rz.addEventListener('pointercancel',up);});
-      rz.addEventListener('click',ev=>ev.stopPropagation())}
-    el.addEventListener('click',ev=>{if(pdrag.just||ev.target.closest('.rail,.btn,.x'))return;const was=st.selected===el.dataset.id;st.selected=el.dataset.id;setSide('settings');renderDeckE();if(!was&&matchMedia('(pointer:coarse)').matches)toast('Drag to move, or use the corner to resize')});
-    $$('.btn[data-d]',el).forEach(b=>b.addEventListener('click',ev=>{ev.stopPropagation();perform(el.dataset.id,+b.dataset.d,'editor')}));
-  });
+  const d=$('#deckE');d.innerHTML='';d.className='rlist';
+  st.deck.forEach((id,i)=>{const k=BYID[id];
+    const row=h('div',{class:'rrow'+(st.selected===id?' sel':'')+(st.bind[id]?(st.bind[id]==='type'?' b-err':' b-warn'):''),'data-id':id,tabindex:'0',role:'button','aria-label':label(id)},
+      h('div',{class:'ico '+(k.tint||'')},k.i||'•'),
+      h('div',{class:'grow'},h('b',{},label(id)),h('div',{class:'muted',style:'font-size:12px'},(k.type==='trigger'?'Scene trigger':srcName(id))+' · '+TYPELABEL[k.type])),
+      acc(id)==='read'?h('span',{class:'tagro2'},'Read only'):'',
+      st.bind[id]?h('span',{class:'tagb2'},st.bind[id]==='type'?'Type mismatch':'Missing'):'',
+      h('span',{class:'ord muted'},String(i+1)),
+      h('button',{class:'btn sq tertiary','aria-label':'Move up',title:'Move up',disabled:i?null:'',onclick:e=>{e.stopPropagation();moveOrder(id,-1)}},'▲'),
+      h('button',{class:'btn sq tertiary','aria-label':'Move down',title:'Move down',disabled:i<st.deck.length-1?null:'',onclick:e=>{e.stopPropagation();moveOrder(id,1)}},'▼'),
+      h('button',{class:'btn sq danger','aria-label':'Remove',title:'Remove from list',onclick:e=>{e.stopPropagation();removeKey(id)}},'✕'));
+    row.addEventListener('click',()=>{st.selected=id;setSide('settings');renderDeckE()});
+    d.append(row)});
+  d.append(h('button',{class:'rrow empty',onclick:()=>{setSide('keys');toast('Pick a trigger or variable on the right')}},h('span',{class:'plus'},'＋'),h('span',{},st.deck.length?'Add item':'Add Item to remote them by your mobile')));
+  $('#count').textContent=st.deck.length+(st.deck.length===1?' item':' items');
 }
-function setSize(id,w,hh){const q=PS(id);const mn=minOf(id);if(w<mn.w||hh<mn.h){renderAll();toast(label(id)+' needs at least '+mn.w+'×'+mn.h+' to stay usable');return false}
-  if(fits(id,q.x,q.y,w,hh)){st.sizes[id]={w,h:hh};st.layoutVer++;save();renderAll();toast(label(id)+' is now '+w+'×'+hh);return true}
-  renderAll();toast('Not enough free space for '+w+'×'+hh);return false}
-function pdrag(el,id,e){
-  if(e.button!==0)return;
-  if(e.pointerType==='touch'&&(!st.deck.includes(id)||!el.classList.contains('sel')))return;
-  const lib=!st.deck.includes(id);
-  const sx=e.clientX,sy=e.clientY,d=$('#deckE');let ghost=null,pv=null,started=false,tgt=null,off={x:0,y:0};
-  const z=sz(id);
-  const cellAt=(cx,cy)=>{const r=d.getBoundingClientRect();const cw=(r.width-3*GAP)/4;return{x:Math.floor((cx-r.left)/(cw+GAP)),y:Math.floor((cy-r.top)/(ROWH+GAP))}};
-  if(!lib){const c=cellAt(sx,sy),q=PS(id);off={x:Math.max(0,Math.min(z.w-1,c.x-q.x)),y:Math.max(0,Math.min(z.h-1,c.y-q.y))}}
-  const mv=ev=>{
-    if(!started){if(Math.hypot(ev.clientX-sx,ev.clientY-sy)<6)return;started=true;
-      ghost=el.cloneNode(true);ghost.removeAttribute('data-id');ghost.style.cssText='position:fixed;left:0;top:0;width:'+Math.min(el.offsetWidth,200)+'px;height:auto;pointer-events:none;z-index:50;opacity:.92;box-shadow:0 14px 34px rgba(0,0,0,.55);grid-column:auto;grid-row:auto;min-height:0';
-      document.body.append(ghost);el.classList.add('dragging-src');document.body.style.userSelect='none';document.body.style.cursor='grabbing';
-      pv=h('div',{class:'preview'});d.append(pv)}
-    ghost.style.transform='translate('+(ev.clientX-ghost.offsetWidth/2)+'px,'+(ev.clientY-24)+'px) rotate(-3deg)';
-    const r=d.getBoundingClientRect();const inside=ev.clientX>=r.left-8&&ev.clientX<=r.right+8&&ev.clientY>=r.top-8&&ev.clientY<=r.bottom+40;
-    if(!inside){pv.style.display='none';tgt=null;return}
-    const c=cellAt(ev.clientX,ev.clientY);let x=Math.max(0,Math.min(4-z.w,c.x-off.x)),y=Math.max(0,c.y-off.y);y=Math.min(y,MAXROWS-z.h);
-    const cw=(r.width-3*GAP)/4;const ok=fits(id,x,y,z.w,z.h);
-    pv.style.display='block';pv.className='preview'+(ok?'':' bad');
-    pv.style.left=x*(cw+GAP)+'px';pv.style.top=y*(ROWH+GAP)+'px';pv.style.width=(z.w*cw+(z.w-1)*GAP)+'px';pv.style.height=(z.h*ROWH+(z.h-1)*GAP)+'px';
-    tgt={x,y,ok};
-  };
-  const up=()=>{
-    window.removeEventListener('pointermove',mv);window.removeEventListener('pointerup',up);window.removeEventListener('pointercancel',up);
-    if(!started)return;
-    ghost.remove();pv&&pv.remove();el.classList.remove('dragging-src');document.body.style.userSelect='';document.body.style.cursor='';
-    pdrag.just=true;setTimeout(()=>{pdrag.just=false},0);
-    if(tgt)placeKey(id,tgt.x,tgt.y)};
-  window.addEventListener('pointermove',mv);window.addEventListener('pointerup',up);window.addEventListener('pointercancel',up);
-}
-function placeKey(id,x,y){
-  const zz=sz(id);const isNew=!st.deck.includes(id);
-  if(fits(id,x,y,zz.w,zz.h)){if(isNew)st.deck.push(id);st.pos[id]={x,y};st.selected=id;st.layoutVer++;save();renderAll();toast(label(id)+(isNew?' added':' moved'));return}
-  // swap with a single key of the same size that sits at the target origin
-  if(!isNew){const other=st.deck.find(o=>o!==id&&PS(o).x===x&&PS(o).y===y&&sz(o).w===zz.w&&sz(o).h===zz.h);
-    if(other){const a=PS(id);st.pos[id]={x,y};st.pos[other]=a;st.layoutVer++;save();renderAll();toast(label(id)+' swapped with '+label(other));return}}
-  renderAll();toast('Not enough free space there')}
-let targetSlot=null;
-function addKey(id){if(!BYID[id]||st.deck.includes(id))return;const z=sz(id);let f=null;if(targetSlot&&fits(id,targetSlot.x,targetSlot.y,z.w,z.h))f=targetSlot;targetSlot=null;if(!f)f=findFree(id,z.w,z.h);if(!f){toast('The deck is full');return}
-  st.deck.push(id);st.pos[id]=f;st.selected=id;st.layoutVer++;save();renderAll();toast(`${label(id)} added as a ${TYPELABEL[BYID[id].type].toLowerCase()} key`)}
-let presetPrev=null;
-function presetLayout(){if(presetPrev){st.deck=presetPrev.deck;st.pos=presetPrev.pos;st.sizes=presetPrev.sizes;presetPrev=null;st.selected=null;st.layoutVer++;save();renderAll();toast('Preset undone');return}
-  presetPrev={deck:[...st.deck],pos:{...st.pos},sizes:{...st.sizes}};st.deck=[];st.pos={};st.sizes={};st.selected=null;
-  const order=['trigger','project','spotA','speaker'];LIB.slice().sort((a,b)=>order.indexOf(a.src)-order.indexOf(b.src)).forEach(k=>{if(k.ro)return;const z=sz(k.id);const f=findFree(k.id,z.w,z.h);if(f){st.deck.push(k.id);st.pos[k.id]=f}});
-  st.layoutVer++;save();renderAll();toast('Preset layout applied · '+st.deck.length+' keys')}
-function removeKey(id){presetPrev=null;st.deck=st.deck.filter(x=>x!==id);delete st.pos[id];if(st.selected===id)st.selected=null;st.layoutVer++;save();renderAll();toast(`${label(id)} removed`)}
+function setSize(id,w,hh){const mn=minOf(id);if(w<mn.w||hh<mn.h){renderAll();toast(label(id)+' needs at least '+mn.w+'×'+mn.h+' to stay usable');return false}
+  st.sizes[id]={w,h:hh};st.layoutVer++;save();renderAll();toast(label(id)+' is now '+w+'×'+hh);return true}
+function addKey(id){if(!BYID[id]||st.deck.includes(id))return;st.deck.push(id);st.selected=id;st.layoutVer++;save();renderAll();toast(`${label(id)} added to the list`)}
+function removeKey(id){st.deck=st.deck.filter(x=>x!==id);delete st.pos[id];if(st.selected===id)st.selected=null;st.layoutVer++;save();renderAll();toast(`${label(id)} removed`)}
 let sideTab='keys';
 function setSide(s){sideTab=s;$$('[data-side]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.side===s));renderSide()}
 function issues(){const a=[];st.deck.forEach(id=>{if(st.bind[id]==='missing')a.push({id,lvl:'warn',t:`${label(id)} is bound to a variable that no longer exists in XRCC`});if(st.bind[id]==='type')a.push({id:id,lvl:'err',t:`${label(id)} expects a number, but the bound variable is now text`})});st.deck.forEach(id=>{if(BYID[id].type==='dial'&&st.vals[id]==null)a.push({id,t:`${label(id)} has no value`});if(label(id).trim()==='')a.push({id,t:'A key needs a label'})});if(!st.deck.length)a.push({id:null,t:'The deck is empty — add a key'});return a}
@@ -707,37 +684,27 @@ function renderSide(){
   const s=$('#side');s.innerHTML='';
   const iss=issues();$('#issueN').textContent=iss.length;
   if(sideTab==='keys'){
-    s.append(h('div',{class:'muted',style:'font-size:12px'},'Drag onto the deck, or click a cell first. Only what you place can be controlled remotely.'));
+    s.append(h('div',{class:'muted',style:'font-size:12px'},'Click an item to add it to the list. Only what you add can be controlled from phones.'));
     SRC.forEach(([sid,name,sub])=>{
       const items=LIB.filter(k=>k.src===sid);const left=items.filter(k=>!st.deck.includes(k.id)).length;
       s.append(h('div',{class:'sec'},h('b',{},name),h('span',{class:'muted'},left+' of '+items.length+' left')));
       const l=h('div',{class:'lib'});
       items.forEach(k=>{const placed=st.deck.includes(k.id);
-        const it=h('div',{class:'libitem'+(placed?' placed':''),title:placed?'Already on the deck':'Drag to a slot'},h('div',{class:'ico '+(k.tint||'')},k.i||'•'),h('span',{},k.l),h('span',{class:'t'},placed?'On deck':(k.ro?'Read · ':'')+SHORT[k.type]));
-        if(!placed)it.addEventListener('pointerdown',e=>pdrag(it,k.id,e));
+        const it=h('div',{class:'libitem'+(placed?' placed':''),title:placed?'Already on the deck':'Drag to a slot'},h('div',{class:'ico '+(k.tint||'')},k.i||'•'),h('span',{},k.l),h('span',{class:'t'},placed?'On the list':(k.ro?'Read · ':'')+SHORT[k.type]));
         it.addEventListener('click',()=>!placed&&!pdrag.just&&addKey(k.id));l.append(it)});
       s.append(l)});
-  }else if(sideTab==='order'){
-    s.append(h('div',{class:'muted',style:'font-size:12px;margin-bottom:8px'},'On a phone held upright, keys stack in this order. Held sideways, phones show the deck as laid out.'));
-    const o=mobOrder();
-    o.forEach((id,i)=>s.append(h('div',{class:'ordrow'+(st.selected===id?' sel':''),onclick:()=>{st.selected=id;renderDeckE();renderSide()}},
-      h('span',{class:'n'},String(i+1)),h('span',{class:'t'},label(id)),h('span',{class:'k muted'},SHORT[BYID[id].type]),
-      h('button',{class:'btn sq tertiary','aria-label':'Move up',disabled:i?null:'',onclick:e=>{e.stopPropagation();moveOrder(id,-1)}},'▲'),
-      h('button',{class:'btn sq tertiary','aria-label':'Move down',disabled:i<o.length-1?null:'',onclick:e=>{e.stopPropagation();moveOrder(id,1)}},'▼'))));
-    if(!o.length)s.append(h('div',{class:'emptyside'},h('b',{},'Nothing to order yet'),h('span',{},'Add keys to the deck first.')));
-    if(st.order.length)s.append(h('button',{class:'btn tertiary',style:'margin-top:12px',onclick:()=>{st.order=[];save();st.layoutVer++;renderSide();renderPhone()}},'Reset to deck order'));
   }else if(sideTab==='settings'){
     const id=st.selected;
-    if(!id||!st.deck.includes(id)){s.append(h('div',{class:'emptyside'},h('div',{class:'glyph'},'▢'),h('b',{},'No key selected'),h('span',{},'Click a key on the deck to rename it, change its size or phone access.')));return}
+    if(!id||!st.deck.includes(id)){s.append(h('div',{class:'emptyside'},h('div',{class:'glyph'},'▢'),h('b',{},'No key selected'),h('span',{},'Click an item in the list to rename it, change its size or phone access.')));return}
     const k=BYID[id];
     s.append(h('h3',{style:'margin-top:8px'},label(id)),h('div',{class:'muted'},TYPELABEL[k.type]+' · '+(k.type==='trigger'?'Scene trigger':srcName(id))));
     if(st.bind[id])s.append(h('div',{class:'alert'+(st.bind[id]==='type'?' crit':'')},st.bind[id]==='type'?'✕ The bound variable changed type. Pick another variable or fix it in XRCC.':'⚠ This variable no longer exists in XRCC. The key is paused on phones.'));
     const f=h('div',{class:'field'},h('label',{},'Label'));const inp=h('input',{type:'text',value:label(id),maxlength:'24'});
     inp.addEventListener('input',()=>{st.labels[id]=inp.value;save();$$('.key[data-id="'+id+'"] .lab').forEach(e=>e.textContent=inp.value)});
     f.append(inp);s.append(f);
-    const z=sz(id);const fs=h('div',{class:'field'},h('label',{},'Size on the deck (columns × rows)'));const sg=h('div',{class:'sizes'});
+    const z=sz(id);const fs=h('div',{class:'field'},h('label',{},'Size on phones (columns × rows)'));const sg=h('div',{class:'sizes'});
     [[1,1],[2,1],[3,1],[4,1],[1,2],[2,2]].forEach(([w,hh])=>sg.append(h('button',{class:'btn tertiary',disabled:(w<minOf(id).w||hh<minOf(id).h)?'':null,'aria-pressed':String(z.w===w&&z.h===hh),title:(w<minOf(id).w||hh<minOf(id).h)?'Too small for this key':'',onclick:()=>{setSize(id,w,hh);setSide('settings')}},w+'×'+hh)));
-    fs.append(sg,h('div',{class:'muted',style:'font-size:12px'},'You can also drag the corner of a key.'));s.append(fs);
+    fs.append(sg,h('div',{class:'muted',style:'font-size:12px'},'Phones place items left to right, top to bottom, in list order.'));s.append(fs);
     if(isVar(id)){const fa=h('div',{class:'field'},h('label',{},'Phone access'));const ag=h('div',{class:'sizes'});
       [['readWrite','Read & write'],['read','Read only']].forEach(([v,t])=>ag.append(h('button',{class:'btn tertiary','aria-pressed':String(acc(id)===v),onclick:()=>{st.access[id]=v;save();st.layoutVer++;renderAll();setSide('settings')}},t)));
       fa.append(ag,h('div',{class:'muted',style:'font-size:12px'},acc(id)==='read'?'Phones can see the value but not change it.':'Phones can change the value. XRCC stays the source of truth.'));s.append(fa)}
@@ -757,7 +724,10 @@ function renderSide(){
   }
 }
 $$('[data-side]').forEach(b=>b.addEventListener('click',()=>setSide(b.dataset.side)));
-$('#presetBtn').addEventListener('click',presetLayout);
+$('#addNew').addEventListener('click',()=>setSide('keys'));
+function syncOrient(){$$('#orientSeg button').forEach(b=>b.classList.toggle('on',b.dataset.o===st.orient))}
+$$('#orientSeg button').forEach(b=>b.addEventListener('click',()=>{st.orient=b.dataset.o;phone.land=st.orient==='landscape';save();syncOrient();renderPhone();toast('Phone layout: '+st.orient)}));
+syncOrient();
 /* ---------- QR (decorative pseudo code seeded by link) ---------- */
 function drawQR(seed){
   const c=$('#qr'),x=c.getContext('2d'),N=29;x.clearRect(0,0,N,N);x.fillStyle='#111';
@@ -802,7 +772,7 @@ $('#playBtn').onclick=()=>{
   applyScene();renderAll();broadcast();
 };
 /* ---------- Phone ---------- */
-const phone={screen:'join',land:false,conn:'local',stale:false,sheet:false,fb:null,dimmed:false};
+const phone={screen:'join',dev:'phone',land:st.orient==='landscape',conn:'local',stale:false,sheet:false,fb:null,dimmed:false};
 const P=$('#phone');
 function phoneGoto(s){phone.screen=s;phone.sheet=false;renderPhone()}
 function phoneApiInit(){phoneApi={
@@ -820,9 +790,12 @@ function top(title,sub,back){
   return h('div',{class:'ptop'},back?h('button',{class:'btn sq tertiary',style:'border:0','aria-label':'Back',onclick:back},'‹'):'',h('div',{class:'t'},h('b',{},title),h('small',{},sub)),
     h('span',{class:'pill'},phone.conn==='local'?h('span',{class:'dot'}):h('span',{class:'dot warn'}),phone.conn==='local'?'Local · 6 ms':'Reconnecting…'));
 }
+const colsFor=()=>({phone:{p:3,l:6},ipad:{p:6,l:8}}[phone.dev][phone.land?'l':'p']);
+function fitDeck(g){g.style.setProperty('--cols',colsFor());const f=()=>{const c=colsFor();const w=g.clientWidth;if(w)g.style.setProperty('--cell',Math.floor((w-8*(c-1))/c)+'px')};f();try{new ResizeObserver(f).observe(g)}catch(e){}}
 function renderPhone(){
   P.innerHTML='';P.className='phone'+(phone.land?' land':'');
-  if(phone.land&&window.innerWidth>600){P.style.width='min(100%,844px)';P.style.height='390px';P.style.minHeight='390px'}else{P.style.width='';P.style.height='';P.style.minHeight=''}
+  const DIM={phone:{p:[390,844],l:[844,390]},ipad:{p:[820,1180],l:[1180,820]}}[phone.dev][phone.land?'l':'p'];
+  if(window.innerWidth>600){P.style.width=`min(100%,${DIM[0]}px)`;P.style.height=`min(${DIM[1]}px,calc(100dvh - 90px))`;P.style.minHeight='360px'}else{P.style.width='';P.style.height='';P.style.minHeight=''}
   P.append(h('div',{class:'sb'},h('span',{},'9:41'),h('span',{},'5G ▮▮▮')));
   const s=h('div',{class:'screen'});P.append(s);
   const sc=phone.screen;
@@ -845,7 +818,7 @@ function renderPhone(){
   }
   if(sc==='connecting'){
     P.append(top('Pop-up Gallery','Connecting to ALAN-PC…'));P.insertBefore(P.lastChild,s);
-    const g=h('div',{class:'pdeck'});st.deck.forEach((id,i)=>{const z=sz(id),q=PS(id);const e=h('div',{class:'sk',style:`animation-delay:${i*40}ms;opacity:${Math.max(.2,1-i*.08)};grid-column:${q.x+1} / span ${z.w};grid-row:${q.y+1} / span ${z.h}`});g.append(e)});
+    const g=h('div',{class:'pdeck'});fitDeck(g);st.deck.forEach((id,i)=>{const z=sz(id),q=PS(id);const e=h('div',{class:'sk',style:`animation-delay:${i*40}ms;opacity:${Math.max(.2,1-i*.08)};grid-column:span ${z.w};grid-row:span ${z.h}`});g.append(e)});
     s.append(g,h('div',{class:'row',style:'justify-content:center'},h('span',{class:'dot warn'}),h('span',{class:'muted'},`Setting up ${st.deck.length} keys…`)));
     clearTimeout(phone.t);phone.t=setTimeout(()=>{st.phones.push({name:"Alan's iPhone",sub:'Joined just now',via:'Local',ms:6,local:true});log("Alan's iPhone <b>joined</b>");renderLaunch();phoneGoto('projects')},1500);
   }
@@ -860,7 +833,8 @@ function renderPhone(){
     if(phone.stale)s.append(h('div',{class:'banner2 info'},h('b',{},'New keys are ready'),h('div',{class:'muted'},'Edited in XRCC. Refresh to get it.'),h('button',{class:'btn primary',style:'width:100%;margin-top:8px',onclick:()=>{phone.stale=false;renderPhone();toast('Deck refreshed')}},'Refresh deck')));
     if(phone.conn!=='local')s.append(h('div',{class:'banner2 warn'},h('b',{},'Lost ALAN-PC for a moment'),h('div',{class:'muted'},'Keys are paused so nothing fires twice.'),h('button',{class:'btn',style:'width:100%;margin-top:8px',onclick:()=>{phone.conn='local';renderPhone();toast('Back online')}},'Retry now')));
     if(!st.playing){phoneGoto('ended');return}
-    const g=h('div',{class:'pdeck'+(phone.conn!=='local'?' paused':'')+(phone.land?'':' stack')});(phone.land?st.deck:mobOrder()).forEach(id=>g.append(keyEl(id,'phone')));s.append(g);
+    if((phone.land?'landscape':'portrait')!==st.orient)s.append(h('div',{class:'muted orient-hint'},'Best in '+st.orient));
+    const g=h('div',{class:'pdeck'+(phone.conn!=='local'?' paused':'')});(st.deck).forEach(id=>g.append(keyEl(id,'phone')));s.append(g);fitDeck(g);
     s.append(h('div',{class:'dots'},h('i',{class:'on'}),h('i')));
     $$('.key',g).forEach(el=>{const id=el.dataset.id,k=BYID[id];
       $$('.btn[data-d]',el).forEach(b=>b.addEventListener('click',ev=>{ev.stopPropagation();phoneApi.press(id,+b.dataset.d,false);const bp=h('span',{class:'bump'},(+b.dataset.d>0?'+1':'−1'));el.append(bp);setTimeout(()=>bp.remove(),600)}));
@@ -889,6 +863,7 @@ function renderSheet(){
 $('#tReconnect').onclick=()=>{if(phone.screen!=='deck'){toast('Open a deck on the phone first');return}phone.conn=phone.conn==='local'?'drop':'local';renderPhone();if(phone.conn==='drop'){log('Phone <b>lost connection</b>');clearTimeout(phone.rt);phone.rt=setTimeout(()=>{if(phone.conn==='drop'){phone.conn='local';renderPhone();toast('Reconnected')}},6000)}};
 $('#tStale').onclick=()=>{const free=LIB.find(k=>!st.deck.includes(k.id));if(free){addKey(free.id)}phone.stale=true;if(phone.screen==='deck')renderPhone();toast('Deck edited in XRCC')};
 $('#tLand').onclick=()=>{phone.land=!phone.land;renderPhone()};
+$('#tDev').onclick=()=>{phone.dev=phone.dev==='phone'?'ipad':'phone';$('#tDev').textContent='Device: '+(phone.dev==='phone'?'Phone':'iPad');renderPhone()};
 $('#tReset').onclick=()=>{st.phones=st.phones.filter(p=>!p.local);phone.conn='local';phone.stale=false;phoneGoto('join');renderLaunch()};
 /* ---------- Tabs and render ---------- */
 function setTab(t){st.tab=t;document.body.dataset.tab=t;$$('.tab').forEach(b=>b.setAttribute('aria-selected',b.dataset.t===t));
