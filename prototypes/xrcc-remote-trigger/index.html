@@ -127,8 +127,8 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .pk{width:480px;max-width:100%}.pk .body{gap:12px}
 .sr{display:flex;gap:8px}.sr .fld{flex:1;height:36px}
 .tree{max-height:380px;overflow:auto;display:flex;flex-direction:column;gap:2px;min-height:240px}
-.tn{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:6px;font-size:13px;border:0;background:none;text-align:left;width:100%}
-.tn.leaf:hover{background:var(--elev)}.tn.sel{background:var(--sel)}.tn.dis{opacity:.5;cursor:default}.tn .g{flex:1}
+.tn{position:relative;height:36px;padding-top:0!important;padding-bottom:0!important;display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:6px;font-size:13px;border:0;background:none;text-align:left;width:100%}
+.tn.grpn{font-weight:700;opacity:1!important}.tn .br{position:absolute;background:#6b6b73;pointer-events:none}.tn.leaf:hover{background:var(--elev)}.tn.sel{background:var(--sel)}.tn.dis{opacity:.5;cursor:default}.tn .g{flex:1}
 .ln{width:880px;max-width:100%}.ln .body{flex-direction:row;gap:32px;padding:32px 32px 24px}
 .qrc{display:flex;flex-direction:column;align-items:center;gap:12px;flex:none;width:248px}
 .halo{border:1px solid var(--interactive);border-radius:16px;padding:12px;background:var(--canvas)}
@@ -327,9 +327,10 @@ function itemRow(g,it){
   return r}
 function rtDialog(){
   const list=h('div',{class:'list'});
+  const footEl=h('div',{class:'foot'},ic('info',16),st.playing?'Play is running. Edits show up next time Play starts.':'Saved with the project. Play uses a snapshot, so edits made during Play show up next time.');
   st.groups.forEach((g,gi)=>{const blk=h('div',{class:'gblk',style:'--gc:'+g.color}),its=h('div',{class:'items'});blk.append(groupHead(g,gi),its);
     g.items.forEach(it=>{its.append(itemRow(g,it));if(st.panel===g.id+'|'+it.inst)its.append(ctlPanel(g,it))});
-    if(!g.items.length)its.append(h('div',{class:'hint'},'Add Item to remote them by your mobile'));list.append(blk)});
+    if(!g.items.length)its.append(h('div',{class:'hint'},'Add Item to remote them by your mobile'));if(gi===0)blk.append(footEl);list.append(blk)});
   const n=issues();const anyS=st.sens.gyro||st.sens.accel||st.sens.mic;
   const sensRow=(k,t)=>h('div',{class:'tgl'},t,h('button',{class:'sw2'+(st.sens[k]?' on':''),role:'switch','aria-checked':String(st.sens[k]),onclick:()=>{st.sens[k]=!st.sens[k];touch();render()}}));
   return h('div',{class:'dlg rt'},
@@ -343,7 +344,7 @@ function rtDialog(){
       h('div',{class:'sens'},h('h4',{},'Phone sensors',h('span',{class:'tag'},'One phone at a time'),h('span',{class:'sp'}),h('button',{class:'btn ter sm',onclick:()=>{st.open.sens=!st.open.sens;render()}},st.open.sens?'Hide':'Show')),
         st.open.sens?h('div',{style:'display:flex;flex-direction:column;gap:10px'},sensRow('gyro','Gyroscope'),sensRow('accel','Accelerometer'),sensRow('mic','Microphone volume'),
           anyS?h('div',{class:'banner info'},ic('phone'),h('span',{style:'flex:1'},st.sensUser?`In use by ${st.sensUser}`:'No phone is using sensors'),st.sensUser?h('button',{class:'btn ter sm',onclick:()=>{st.sensUser=null;ph.sensor=false;render()}},'Release'):null):null):null),
-      h('div',{class:'foot'},ic('info',16),st.playing?'Play is running. Edits show up next time Play starts.':'Saved with the project. Play uses a snapshot, so edits made during Play show up next time.')))}
+      (list.children.length?null:footEl)))}
 function previewCard(){
   const c=st.orient==='landscape'?6:3;const cs=cellsOf(st.groups);
   return h('div',{class:'pv'},h('div',{class:'h'},'Phone preview',h('span',{class:'pill'},(st.orient==='landscape'?'Landscape':'Portrait')+' · '+c+' columns')),
@@ -354,14 +355,23 @@ function colorPop(){const g=st.groups.find(x=>x.id===st.colorFor);if(!g)return n
   const hex=h('input',{class:'fld',value:g.color.replace('#','').toUpperCase(),'aria-label':'Hex'});hex.addEventListener('change',()=>{const v=hex.value.replace('#','');if(/^[0-9a-f]{6}$/i.test(v))set('#'+v);else toast('Use a 6-digit hex colour')});
   const pal=[];[0,1,2].forEach(r=>PAL.forEach(c=>pal.push(h('i',{class:g.color.toLowerCase()===c.toLowerCase()?'on':'',style:`background:${c};opacity:${[1,.65,.4][r]}`,onclick:()=>set(c)}))));
   return h('div',{class:'cpop'},h('div',{class:'cur'},h('i',{style:'background:'+g.color}),hex),h('span',{class:'lab'},'Customize'),h('div',{class:'pal'},pal),h('div',{class:'sw'},COLS.map(c=>h('i',{class:g.color.toLowerCase()===c.toLowerCase()?'on':'',style:'background:'+c,onclick:()=>set(c)}))),h('button',{class:'btn ter sm',onclick:()=>{st.colorFor=null;render()}},'Done'))}
+const PADS=[8,24,48];
+function treeLines(b,arr,i){
+  const x=arr[i],ln=(l,t,w,hh)=>b.append(h('i',{class:'br',style:`left:${l}px;top:${t}px;width:${w}px;height:${hh}px`}));
+  const nextAt=lv=>{for(let j=i+1;j<arr.length;j++){if(arr[j].lv<lv)return false;if(arr[j].lv===lv)return true}return false};
+  for(let k=1;k<=Math.min(x.lv,2);k++){
+    const cx=PADS[k-1]+9;
+    if(k<x.lv){if(nextAt(k))ln(cx,-1,1,38);continue}
+    ln(cx,-1,1,nextAt(k)?38:19);ln(cx,18,12,1)}
+  const nx=arr[i+1];if(nx&&nx.lv>x.lv)ln(PADS[Math.min(x.lv,2)]+9,27,1,11)}
 function picker(){
   const g=st.groups.find(x=>x.id===st.pickFor);const q=st.pick.q.toLowerCase();
   const tree=h('div',{class:'tree'});
-  (st.pick.tab==='pv'?PV:INST).filter(x=>!q||x.n.toLowerCase().includes(q)).forEach(x=>{
+  const arr=(st.pick.tab==='pv'?PV:INST).filter(x=>!q||x.n.toLowerCase().includes(q));arr.forEach((x,idx)=>{
     const added=g&&g.items.some(i=>i.inst===x.id);const on=st.pick.sel===x.id;const dis=x.grp||added;
-    const b=h('button',{class:'tn leaf'+(on?' sel':'')+(dis?' dis':''),style:`padding-left:${8+x.lv*20}px`,onclick:()=>{if(dis)return;st.pick.sel=x.id;render()}},ic(x.i,18),h('span',{class:'g'},x.n),
+    const b=h('button',{class:'tn leaf'+(on?' sel':'')+(dis?' dis':'')+(x.grp?' grpn':''),style:`padding-left:${PADS[Math.min(x.lv,2)]}px`,onclick:()=>{if(dis)return;st.pick.sel=x.id;render()}},ic(x.i,18),h('span',{class:'g'},x.n),
       added?h('span',{title:'Already in this group',style:'display:flex;color:var(--accent)'},ic('link',16)):null,st.pick.tab==='pv'?h('span',{class:'tag'},x.ctl[0].kind==='Toggle'?'Bool':x.ctl[0].kind):(x.ctl&&x.ctl.length?h('span',{title:'Has things to remote',style:'display:flex;color:var(--text2)'},ic('conn',16)):null));
-    tree.append(b)});
+    treeLines(b,arr,idx);tree.append(b)});
   if(!tree.children.length)tree.append(h('div',{class:'muted',style:'padding:20px;text-align:center'},'Nothing matches "'+st.pick.q+'".'));
   const f=h('input',{class:'fld',placeholder:'Find...',value:st.pick.q,'aria-label':'Find'});f.addEventListener('input',()=>{st.pick.q=f.value;const p=f.selectionStart;render();const n=$('.pk .fld');n.focus();n.setSelectionRange(p,p)});
   const close=()=>{st.open.pick=false;st.pick.q='';render()};
@@ -493,7 +503,7 @@ function render(){
   const stage=h('div',{class:'xstage'},bar());
   const showRt=st.tab==='editor'&&st.open.rt,showLn=st.tab==='launcher'&&st.open.ln;
   if(showRt||showLn){stage.append(h('div',{class:'xscrim'}));
-    if(showRt)stage.append(h('div',{class:'xmain'},colorPop(),rtDialog(),nCells()?previewCard():null));else stage.append(h('div',{class:'xmain'},launcher()))}
+    if(showRt)stage.append(h('div',{class:'xmain'},colorPop(),rtDialog()));else stage.append(h('div',{class:'xmain'},launcher()))}
   if(showRt&&st.open.pick)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},picker()));
   if(showLn&&st.open.confirm)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},confirmDlg()));
   v.append(stage);
