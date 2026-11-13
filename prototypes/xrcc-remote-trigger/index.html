@@ -173,6 +173,9 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .bnode .br{display:flex;gap:8px;align-items:center}
 .bnode .br i{width:12px;height:12px;border-radius:50%;background:#d9b0fd}
 .bline{position:absolute;left:360px;top:134px;width:60px;height:2px;background:#7a5bd0}
+.ptabs{align-self:flex-start}
+.ptabs button{white-space:nowrap}
+.pk .tn .tag{margin-left:auto}
 </style>
 </head>
 <body>
@@ -212,19 +215,25 @@ const INST=[
  {id:'restart',n:'Restart',i:'cube',lv:1,ctl:[V('Restart','Trigger','undo','Instance trigger')]},
  {id:'result',n:'Result1',i:'cube',lv:1,ctl:[V('Result text','Text','text','Instance variable')]},
  {id:'score',n:'Score',i:'cube',lv:2,ctl:[V('Score','Number','user','Instance variable')]},
- {id:'spot',n:'Spotlight A',i:'cube',lv:0,ctl:[V('Intensity','Number','sun','Instance variable'),V('Beam width','Number','sun','Instance variable'),V('Enabled','Toggle','bulb','Instance variable')]},
+ {id:'spot',n:'Spotlight A',i:'cube',lv:0,ctl:[V('Intensity','Number','sun','Instance variable'),V('Beam width','Number','sun','Instance variable'),V('Caption','Text','text','Instance variable'),V('Lamp on','Toggle','bulb','Instance variable')]},
  {id:'speaker',n:'Stage speaker',i:'cube',lv:0,ctl:[V('Music','Toggle','music','Instance variable'),V('Volume','Number','vol','Instance variable')]},
  {id:'ground',n:'Ground',i:'cube',lv:0,ctl:[]},
  {id:'mallet',n:'Wooden Mallet',i:'cube',lv:0,ctl:[V('Hit','Trigger','hand','Instance trigger')]},
  {id:'textobj',n:'Text Object',i:'cube',lv:0,ctl:[V('Content','Text','text','Instance variable')]}
 ];
-const IB=Object.fromEntries(INST.map(x=>[x.id,x]));
+const PV=[
+ {id:'pv1',n:'Gallery open',i:'cube',lv:0,ctl:[V('Gallery open','Toggle','bulb','Project variable')]},
+ {id:'pv2',n:'Visitor count',i:'cube',lv:0,ctl:[V('Visitor count','Number','user','Project variable')]},
+ {id:'pv3',n:'Welcome text',i:'cube',lv:0,ctl:[V('Welcome text','Text','text','Project variable')]},
+ {id:'pv4',n:'Light level',i:'cube',lv:0,ctl:[V('Light level','Number','sun','Project variable')]},
+ {id:'pv5',n:'Show started',i:'cube',lv:0,ctl:[V('Show started','Toggle','bulb','Project variable')]}];
+const IB=Object.fromEntries(INST.concat(PV).map(x=>[x.id,x]));
 const PAL=['#ff0000','#ff5a00','#ff9f00','#ffff00','#c8ff00','#00ff00','#00ffff','#4f8cf0','#0000ff','#a000ff','#ff00ff','#a62b2b','#ffffff'];
 const COLS=['#65a7ff','#a62b2b','#4ec27d','#f0b429','#a000ff','#ffffff'];
 const mkCtl=(c,i)=>({on:true,label:c.n,control:/Intensity|Volume/.test(c.n)?'slider':'input',size:c.kind==='Text'||/Intensity|Volume/.test(c.n)?2:1,min:0,max:100,dec:0,maxc:40,ro:false,color:COLS[i%COLS.length]});
 const sample=()=>[
  {id:'g1',name:'Show controls',color:'#65a7ff',items:[{inst:'scene',issue:'',ctl:{'Start show':mkCtl(T('Start show'),0),'Curtains':mkCtl(T('Curtains'),0),'Lights':mkCtl(V('Lights','Toggle'),0),'Show title':mkCtl(V('Show title','Text'),0),'Reset scene':mkCtl(T('Reset scene'),0)}}]},
- {id:'g2',name:'Stage',color:'#a62b2b',items:[{inst:'spot',issue:'',ctl:{'Intensity':mkCtl(V('Intensity','Number'),0),'Beam width':Object.assign(mkCtl(V('Beam width','Number'),0),{max:10,dec:1})}},{inst:'speaker',issue:'',ctl:{'Music':mkCtl(V('Music','Toggle'),0)}}]}];
+ {id:'g2',name:'Stage',color:'#a62b2b',items:[{inst:'spot',issue:'',ctl:{'Intensity':mkCtl(V('Intensity','Number'),0),'Beam width':Object.assign(mkCtl(V('Beam width','Number'),0),{max:10,dec:1}),'Caption':mkCtl(V('Caption','Text'),0)}},{inst:'speaker',issue:'',ctl:{'Music':mkCtl(V('Music','Toggle'),0)}}]}];
 const st={tab:'editor',orient:'portrait',groups:sample(),selG:null,selI:null,panel:null,rename:null,colorFor:null,
   open:{rt:true,pick:false,ln:true,confirm:false,sens:false},pickFor:null,pick:{sel:null,q:''},
   playing:false,code:'',pub:'off',pubTab:'local',failNext:false,phones:[],snap:null,sens:{gyro:false,accel:false,mic:false},sensUser:null,
@@ -325,16 +334,16 @@ function colorPop(){const g=st.groups.find(x=>x.id===st.colorFor);if(!g)return n
 function picker(){
   const g=st.groups.find(x=>x.id===st.pickFor);const q=st.pick.q.toLowerCase();
   const tree=h('div',{class:'tree'});
-  INST.filter(x=>!q||x.n.toLowerCase().includes(q)).forEach(x=>{
+  (st.pick.tab==='pv'?PV:INST).filter(x=>!q||x.n.toLowerCase().includes(q)).forEach(x=>{
     const added=g&&g.items.some(i=>i.inst===x.id);const on=st.pick.sel===x.id;const dis=x.grp||added;
     const b=h('button',{class:'tn leaf'+(on?' sel':'')+(dis?' dis':''),style:`padding-left:${8+x.lv*20}px`,onclick:()=>{if(dis)return;st.pick.sel=x.id;render()}},ic(x.i,18),h('span',{class:'g'},x.n),
-      added?h('span',{title:'Already in this group',style:'display:flex;color:var(--accent)'},ic('link',16)):null,x.ctl&&x.ctl.length?h('span',{title:'Has things to remote',style:'display:flex;color:var(--text2)'},ic('conn',16)):null);
+      added?h('span',{title:'Already in this group',style:'display:flex;color:var(--accent)'},ic('link',16)):null,st.pick.tab==='pv'?h('span',{class:'tag'},x.ctl[0].kind==='Toggle'?'Bool':x.ctl[0].kind):(x.ctl&&x.ctl.length?h('span',{title:'Has things to remote',style:'display:flex;color:var(--text2)'},ic('conn',16)):null));
     tree.append(b)});
   if(!tree.children.length)tree.append(h('div',{class:'muted',style:'padding:20px;text-align:center'},'Nothing matches "'+st.pick.q+'".'));
   const f=h('input',{class:'fld',placeholder:'Find...',value:st.pick.q,'aria-label':'Find'});f.addEventListener('input',()=>{st.pick.q=f.value;const p=f.selectionStart;render();const n=$('.pk .fld');n.focus();n.setSelectionRange(p,p)});
   const close=()=>{st.open.pick=false;st.pick.q='';render()};
-  return h('div',{class:'dlg pk'},h('div',{class:'head'},ic('cube',18),'Select Instance',h('span',{class:'sp'}),h('button',{class:'ib',onclick:close},ic('close'))),h('div',{class:'acc'}),
-    h('div',{class:'body'},h('div',{class:'sr'},f,h('button',{class:'ib tint',style:'width:36px;height:36px','aria-label':'Search'},ic('search')),h('button',{class:'ib',style:'width:36px;height:36px;color:var(--accent)','aria-label':'Sort',onclick:()=>toast('Sorted by name')},ic('sort')),h('button',{class:'ib',style:'width:36px;height:36px;color:var(--accent)','aria-label':'Filter',onclick:()=>toast('Filter: all instances')},ic('filter'))),tree,
+  return h('div',{class:'dlg pk'},h('div',{class:'head'},ic('cube',18),'Select Item',h('span',{class:'sp'}),h('button',{class:'ib',onclick:close},ic('close'))),h('div',{class:'acc'}),
+    h('div',{class:'body'},h('div',{class:'seg ptabs'},[['inst','Instances'],['pv','Project variables']].map(([k,t])=>h('button',{class:(st.pick.tab||'inst')===k?'on':'',onclick:()=>{st.pick.tab=k;st.pick.sel=null;render()}},t))),h('div',{class:'sr'},f,h('button',{class:'ib tint',style:'width:36px;height:36px','aria-label':'Search'},ic('search')),h('button',{class:'ib',style:'width:36px;height:36px;color:var(--accent)','aria-label':'Sort',onclick:()=>toast('Sorted by name')},ic('sort')),h('button',{class:'ib',style:'width:36px;height:36px;color:var(--accent)','aria-label':'Filter',onclick:()=>toast('Filter: all instances')},ic('filter'))),tree,
       h('button',{class:'btn ter wide',disabled:st.pick.sel?null:true,onclick:()=>{const inst=IB[st.pick.sel];const it={inst:inst.id,issue:'',ctl:{}};g.items.push(it);st.selI=g.id+'|'+inst.id;st.panel=inst.ctl.length?g.id+'|'+inst.id:null;st.open.pick=false;st.pick.q='';touch();render();toast(inst.n+' added. Choose what phones can control.')}},'Select Item')))}
 /* ---------- launcher ---------- */
 function drawQr(cv,seed){const n=29,g=cv.getContext('2d');cv.width=cv.height=n;g.fillStyle='#fff';g.fillRect(0,0,n,n);g.fillStyle='#000';let s=+seed||123456;const r=()=>(s=(s*1103515245+12345)&0x7fffffff)/0x7fffffff;
@@ -361,6 +370,7 @@ function launcher(){
   const foot=h('div',{class:'lf'});
   if(on&&pub&&st.pub==='on')foot.append(h('button',{class:'btn ter',onclick:()=>{st.pub='off';st.phones=st.phones.filter(p=>p.via!=='Public');render()}},'Turn off public link'));
   if(on&&pub&&(st.pub==='off'||st.pub==='failed'))foot.append(h('button',{class:'btn sec',onclick:()=>{st.open.confirm=true;render()}},st.pub==='failed'?'Try again':'Turn on public link'));
+  if(on)foot.append(h('div',{style:'display:flex;gap:8px;align-items:center;margin-right:auto;font-size:12px;color:var(--text2)'},h('span',{class:'pill'},h('span',{class:'dot'}),'Linked to XRCC'),'localhost:8731'));
   foot.append(h('button',{class:'btn ter',disabled:on?null:true,onclick:()=>{st.tab='phone';render()}},'Open in browser'));
   return h('div',{class:'dlg ln'},h('div',{class:'head'},ic('rt',18),'Phone remote',h('span',{class:'pill',style:'font-weight:400'},'Launcher · Connections'),h('span',{class:'sp'}),h('button',{class:'ib',onclick:()=>{st.open.ln=false;render()}},ic('close'))),h('div',{class:'acc'}),
     h('div',{class:'body'},
