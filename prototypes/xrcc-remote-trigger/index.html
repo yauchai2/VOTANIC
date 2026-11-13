@@ -55,13 +55,13 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .lhead h2{margin:0;font-size:18px;color:var(--text2)}
 .min{display:flex;gap:2px;margin-left:4px}.min .ib{width:28px;height:28px;color:var(--text3)}.min .ib.on{color:var(--accent)}
 .lhead .btn.big{height:44px;padding:0 20px;font-size:15px}
-.list{display:flex;flex-direction:column;gap:28px}
-.gblk{display:flex;flex-direction:column;gap:4px;--gc:#6d4fc0}
-.gblk .items{display:flex;flex-direction:column;gap:4px}
-.gblk .grow2{border-radius:4px;height:48px;margin-top:0}
-.gblk .grow2 .nm{font-size:14px;font-weight:400;height:36px;line-height:34px;padding:0 12px;border:1px solid var(--interactive);border-radius:4px;background:var(--canvas)}
-.gblk .irow{height:44px;border-radius:4px}
-.gblk .sett{border-radius:4px}
+.list{display:flex;flex-direction:column;gap:16px}
+.gblk{display:flex;flex-direction:column;gap:0;border-radius:8px;overflow:hidden;--gc:#6d4fc0}
+.gblk .items{display:flex;flex-direction:column;gap:0}
+.gblk .grow2{border-radius:0;height:52px;margin-top:0}
+.gblk .grow2 .nm{font-size:14px;font-weight:400;height:36px;line-height:34px;padding:0 12px;border:1px solid var(--interactive);border-radius:8px;background:rgba(109,79,192,.14)}
+.gblk .irow{height:40px;border-radius:0}
+.gblk .sett{border-radius:8px;margin:8px}
 .grow2{display:flex;align-items:center;gap:12px;background:var(--grp);padding:0 8px;height:44px;cursor:pointer;margin-top:2px}
 .grow2:first-child{margin-top:0}.grow2.sel{background:var(--sel);color:var(--accent)}
 .grow2 .nm{flex:1;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -69,7 +69,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .grow2 input{flex:1;height:28px;background:var(--canvas);border:1px solid var(--interactive);border-radius:4px;padding:0 8px;color:var(--text)}
 .irow{display:flex;align-items:center;gap:12px;background:var(--panel);padding:0 8px;height:39px;border-top:1px solid transparent}
 .irow:hover{background:#1c1c20}.irow.sel{background:var(--sel2)}.irow.warn{box-shadow:inset 2px 0 var(--warn)}.irow.err{box-shadow:inset 2px 0 var(--err)}
-.irow .nm{flex:1;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.irow .nm{flex:1;font-size:12px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .irow .acts{display:flex;gap:6px;align-items:center}
 .irow .acts .ib,.grow2>.ib{opacity:0;pointer-events:none;transition:opacity .12s}
 .irow:hover .acts .ib,.irow.sel .acts .ib,.irow:focus-within .acts .ib,.irow .acts .ib.on,.grow2:hover>.ib,.grow2:focus-within>.ib{opacity:1;pointer-events:auto}
@@ -303,8 +303,7 @@ function rtDialog(){
   const list=h('div',{class:'list'});
   st.groups.forEach((g,gi)=>{const blk=h('div',{class:'gblk',style:'--gc:'+g.color}),its=h('div',{class:'items'});blk.append(groupHead(g,gi),its);
     g.items.forEach(it=>{its.append(itemRow(g,it));if(st.panel===g.id+'|'+it.inst)its.append(ctlPanel(g,it))});
-    if(!g.items.length)its.append(h('div',{class:'hint'},'No instances yet. Select the group, then use the add-instance button.'));list.append(blk)});
-  list.append(h('div',{class:'hint'},'Add Item to remote them by your mobile'));
+    if(!g.items.length)its.append(h('div',{class:'hint'},'Add Item to remote them by your mobile'));list.append(blk)});
   const n=issues();const anyS=st.sens.gyro||st.sens.accel||st.sens.mic;
   const sensRow=(k,t)=>h('div',{class:'tgl'},t,h('button',{class:'sw2'+(st.sens[k]?' on':''),role:'switch','aria-checked':String(st.sens[k]),onclick:()=>{st.sens[k]=!st.sens[k];touch();render()}}));
   return h('div',{class:'dlg rt'},
