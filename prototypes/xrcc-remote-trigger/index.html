@@ -72,7 +72,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .gblk .grow2 .nm{font-size:13px;font-weight:400;height:36px;line-height:36px;padding:0 12px;border:0;border-radius:8px;background:transparent}
 .gblk .irow{height:44px;border-radius:0}
 .gblk .sett{border-radius:0;margin:0}
-.grow2{display:flex;align-items:center;gap:12px;background:var(--grp);padding:0 8px;height:44px;cursor:pointer;margin-top:2px}
+.grow2{display:flex;align-items:center;gap:12px;background:var(--grp);padding:0 8px;height:44px;cursor:default;margin-top:2px}
 .grow2:first-child{margin-top:0}.grow2.sel{background:var(--sel);color:var(--accent)}
 .grow2 .nm{flex:1;font-size:13px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .grow2 .cs{width:24px;height:24px;border:1px solid rgba(255,255,255,.2);border-radius:8px;flex:none}
@@ -82,7 +82,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .irow .nm{flex:1;font-size:12px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .irow .acts{display:flex;gap:6px;align-items:center}
 .irow .acts .ib,.grow2>.ib{opacity:0;pointer-events:none;transition:opacity .12s}
-.irow:hover .acts .ib,.irow.sel .acts .ib,.irow:focus-within .acts .ib,.irow .acts .ib.on,.grow2:hover>.ib,.grow2:focus-within>.ib{opacity:1;pointer-events:auto}
+.irow:hover .acts .ib,.irow:focus-within .acts .ib,.grow2:hover>.ib,.grow2:focus-within>.ib{opacity:1;pointer-events:auto}
 @media (hover:none){.irow .acts .ib,.grow2>.ib{opacity:1;pointer-events:auto}}
 .setrow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
 .setrow .lab{font-size:11px;color:var(--text2);margin-bottom:4px}
@@ -289,7 +289,7 @@ const cbx=(on,fn)=>h('button',{class:'cbx'+(on?' on':''),role:'checkbox','aria-c
 function groupHead(g,idx){
   const sel=st.selG===g.id;
   const name=st.rename===g.id?(()=>{const x=h('input',{value:g.name,'aria-label':'Group name'});const done=()=>{g.name=x.value.trim()||g.name;st.rename=null;touch();render()};x.addEventListener('blur',done);x.addEventListener('keydown',e=>{if(e.key==='Enter')x.blur();if(e.key==='Escape'){x.value=g.name;x.blur()}});setTimeout(()=>{x.focus();x.select()},0);x.addEventListener('click',e=>e.stopPropagation());return x})():h('div',{class:'nm'},g.name);
-  const r=h('div',{class:'grow2'+(sel?' sel':''),onclick:()=>{st.selG=sel?null:g.id;st.selI=null;render()}},
+  const r=h('div',{class:'grow2'},
     h('button',{class:'cs',style:'background:'+g.color,title:'Group colour','aria-label':'Group colour',onclick:e=>{e.stopPropagation();st.colorFor=st.colorFor===g.id?null:g.id;render()}}),name);
   if(st.rename!==g.id)r.append(
     h('button',{class:'ib tint',title:'Add instance','aria-label':'Add instance',disabled:st.playing?true:null,onclick:e=>{e.stopPropagation();st.pickFor=g.id;st.pick.sel=null;st.open.pick=true;render()}},ic('addobj')),
@@ -317,7 +317,7 @@ function ctlPanel(g,it){
 function itemRow(g,it){
   const inst=IB[it.inst];const sel=st.selI===g.id+'|'+it.inst,open=st.panel===g.id+'|'+it.inst;
   const n=Object.values(it.ctl).filter(x=>x.on).length;
-  const r=h('div',{class:'irow'+(sel?' sel':'')+(it.issue?(it.issue==='type'?' err':' warn'):''),onclick:()=>{st.selI=sel?null:g.id+'|'+it.inst;st.selG=null;st.panel=open?null:g.id+'|'+it.inst;render()}},
+  const r=h('div',{class:'irow'+(open?' sel':'')+(it.issue?(it.issue==='type'?' err':' warn'):''),onclick:()=>{st.selI=sel?null:g.id+'|'+it.inst;st.selG=null;st.panel=open?null:g.id+'|'+it.inst;render()}},
     ic('cube',18),h('div',{class:'nm'},inst.n),
     st.playing&&n?h('span',{class:'tag ok'},'Live'):null,
     it.issue?h('span',{class:'tag '+(it.issue==='type'?'e':'w')},it.issue==='type'?'Type mismatch':'Missing'):null,
