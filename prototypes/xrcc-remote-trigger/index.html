@@ -160,6 +160,19 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 @media(max-width:1200px){.xmain{flex-direction:column;align-items:center}.ln .body{flex-direction:column;align-items:center}}
 @media(max-width:600px){.wrap{padding:0}.phone{margin:0;border-radius:0;border:0;box-shadow:none;width:100%!important;height:calc(100dvh - 130px)!important}.dev{padding:0 12px 12px}.rt{width:100%}.intro{flex-wrap:wrap}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.bhv{position:absolute;inset:0;background:var(--canvas);display:flex;flex-direction:column}
+.bhead{display:flex;background:#2a2531;height:48px}
+.btab{display:flex;gap:8px;align-items:center;padding:0 24px;background:none;border:0;color:var(--text);font:inherit;cursor:pointer}
+.btab.on{background:#392e52;color:#d9b0fd}
+.bcrumb{padding:8px 16px;font-size:12px;color:var(--text2);background:var(--panel,#161616)}
+.bcanvas{position:relative;flex:1;margin-left:0}
+.bnode{position:absolute;width:240px;background:#161616;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.bnode .bh{background:#392e52;padding:8px 12px;font-weight:700;font-size:13px}
+.bnode .bp{padding:12px;display:flex;flex-direction:column;gap:12px;font-size:13px}
+.bnode .br{display:flex;gap:8px;align-items:center}
+.bnode .br i{width:12px;height:12px;border-radius:50%;background:#d9b0fd}
+.bline{position:absolute;left:360px;top:134px;width:60px;height:2px;background:#7a5bd0}
 </style>
 </head>
 <body>
@@ -271,12 +284,12 @@ function ctlPanel(g,it){
 function itemRow(g,it){
   const inst=IB[it.inst];const sel=st.selI===g.id+'|'+it.inst,open=st.panel===g.id+'|'+it.inst;
   const n=Object.values(it.ctl).filter(x=>x.on).length;
-  const r=h('div',{class:'irow'+(sel?' sel':'')+(it.issue?(it.issue==='type'?' err':' warn'):''),onclick:()=>{st.selI=sel?null:g.id+'|'+it.inst;st.selG=null;render()}},
+  const r=h('div',{class:'irow'+(sel?' sel':'')+(it.issue?(it.issue==='type'?' err':' warn'):''),onclick:()=>{st.selI=sel?null:g.id+'|'+it.inst;st.selG=null;st.panel=open?null:g.id+'|'+it.inst;render()}},
     ic(inst.i,18),h('div',{class:'nm'},inst.n),
     st.playing&&n?h('span',{class:'tag ok'},'Live'):null,
     it.issue?h('span',{class:'tag '+(it.issue==='type'?'e':'w')},it.issue==='type'?'Type mismatch':'Missing'):null,
     !n&&!it.issue?h('span',{class:'tag w'},'Nothing remoted'):h('span',{class:'tag'},n+' remoted'),
-    h('div',{class:'acts'},h('button',{class:'ib tint'+(open?' on':''),title:'Choose what to remote','aria-label':'Choose what to remote',onclick:e=>{e.stopPropagation();st.panel=open?null:g.id+'|'+it.inst;render()}},ic('conn')),
+    h('div',{class:'acts'},h('button',{class:'ib tint',title:'Open Behaviour','aria-label':'Open Behaviour',onclick:e=>{e.stopPropagation();st.bhv=it.inst;render()}},ic('conn')),
       h('button',{class:'ib del',title:'Remove','aria-label':'Remove',onclick:e=>{e.stopPropagation();g.items=g.items.filter(x=>x!==it);st.selI=null;if(open)st.panel=null;touch();render()}},ic('trash'))));
   return r}
 function rtDialog(){
@@ -424,6 +437,14 @@ function renderPhone(){
   if(ph.sheet){const c=cellsOf(snap.groups).find(x=>x.key===ph.sheet);if(c)P_.append(h('div',{class:'sh-s',onclick:()=>{ph.sheet=null;renderPhone()}}),h('div',{class:'sheet'},h('b',{},c.label),h('div',{class:'sw'},PAL.concat(['#c0392b','#e8467c','#2e8b57']).map(x=>h('i',{class:valOf(c.key)===x?'on':'',style:'background:'+x,onclick:()=>{press(c,x);ph.sheet=null;renderPhone()}}))),h('button',{class:'btn ter',onclick:()=>{ph.sheet=null;renderPhone()}},'Cancel')))}
   P_.append(h('div',{class:'fb'}))}
 /* ---------- render ---------- */
+function bhvBoard(){
+  const n=IB[st.bhv].n,ctl=(()=>{for(const g of st.groups)for(const it of g.items)if(it.inst===st.bhv)return Object.keys(it.ctl).filter(k=>it.ctl[k].on).map(k=>k);return[]})();
+  const rows=(ctl.length?ctl:['Nothing remoted']).slice(0,6);
+  const node=(t,x,y)=>h('div',{class:'bnode',style:`left:${x}px;top:${y}px`},h('div',{class:'bh'},t),h('div',{class:'bp'},rows.map(r=>h('div',{class:'br'},h('i'),r))));
+  return h('div',{class:'bhv'},
+    h('div',{class:'bhead'},h('button',{class:'btab',onclick:()=>{st.bhv=null;render()}},ic('rt',18),'Edit'),h('button',{class:'btab on'},ic('conn',18),'Behaviour')),
+    h('div',{class:'bcrumb'},n+' -> Remote Trigger'),
+    h('div',{class:'bcanvas'},node('Remote Trigger · '+n,120,90),node('Set '+n,420,140),h('div',{class:'bline'})))}
 function render(){
   $$('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.t===st.tab)));
   $('#playPill').innerHTML=st.playing?'<span class="dot"></span> Playing'+(st.phones.length?' · '+st.phones.length+' phone'+(st.phones.length>1?'s':''):''):'<span class="dot off"></span> Editing';
@@ -435,6 +456,7 @@ function render(){
       h('button',{class:'btn ter sm',onclick:()=>{if(ph.screen!=='deck')return toast('Open the list on the phone first');ph.conn=ph.conn==='local'?'drop':'local';renderPhone();if(ph.conn==='drop'){clearTimeout(ph.rt);ph.rt=setTimeout(()=>{ph.conn='local';renderPhone()},5000)}}},'Simulate network drop'),
       h('button',{class:'btn ter sm',onclick:()=>{st.phones=st.phones.filter(p=>!p.me);ph.conn='local';ph.screen='join';ph.sensor=false;renderPhone();render()}},'Restart phone'));
     return}
+  if(st.tab==='editor'&&st.bhv){v.append(h('div',{class:'xstage'},bhvBoard()));dev.append(h('span',{},'Behaviour board for '+IB[st.bhv].n));return}
   const stage=h('div',{class:'xstage'},bar());
   const showRt=st.tab==='editor'&&st.open.rt,showLn=st.tab==='launcher'&&st.open.ln;
   if(showRt||showLn){stage.append(h('div',{class:'xscrim'}));
