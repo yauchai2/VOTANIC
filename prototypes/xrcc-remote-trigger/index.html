@@ -207,6 +207,13 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .bmain{flex:1;display:flex;flex-direction:column;background:#1e1e21}
 .bmain .bcrumb{align-self:flex-start;background:none;border:0;color:var(--text);font:inherit;font-weight:700;font-size:14px;padding:8px 24px;cursor:pointer}
 .bnode.ev .bh{background:#a62b2b;text-align:center}.bnode .bh{text-align:center}
+.vblk{display:flex;flex-direction:column;margin-top:8px}
+.vhead{display:flex;align-items:center;gap:8px;padding:8px 0}.vhead h3{margin:0;font-size:16px}.vhead small{color:var(--text2);font-size:12px}
+.vr .src,.vpi .src{color:var(--text2)}.vr{cursor:pointer;height:44px}.vr .tag{white-space:nowrap}
+.vset{background:var(--elev,#1e1e21);padding:12px 16px 16px 40px;display:flex;flex-direction:column;gap:12px}
+.vrow{display:flex;gap:12px}.vf{display:flex;flex-direction:column;gap:4px;flex:1;font-size:12px;color:var(--text2)}.vf .fld{height:28px}
+.vtabs{display:flex}.vtabs button{flex:1;height:36px;border:0;background:#161616;color:var(--text);font:inherit;cursor:pointer}.vtabs button.on{background:#392e52;color:#d9b0fd}
+.vpi .ty{color:var(--text2);font-size:12px;margin-left:auto}
 </style>
 </head>
 <body>
@@ -262,27 +269,31 @@ const IB=Object.fromEntries(INST.concat(PV).map(x=>[x.id,x]));
 const PAL=['#ff0000','#ff5a00','#ff9f00','#ffff00','#c8ff00','#00ff00','#00ffff','#4f8cf0','#0000ff','#a000ff','#ff00ff','#a62b2b','#ffffff'];
 const COLS=['#65a7ff','#a62b2b','#4ec27d','#f0b429','#a000ff','#ffffff'];
 const mkCtl=(c,i)=>({on:true,label:c.n,control:/Intensity|Volume/.test(c.n)?'slider':'input',size:c.kind==='Text'||/Intensity|Volume/.test(c.n)?2:1,min:0,max:100,dec:0,maxc:40,ro:false,color:COLS[i%COLS.length]});
+const vsample=()=>[
+ {id:'v1',name:'Spot intensity',src:'Project',kind:'Number',i:'sun',s:{control:'slider',min:0,max:100,dec:0,maxc:40}},
+ {id:'v2',name:'Show title',src:'Spotlight A',kind:'Text',i:'text',s:{control:'input',min:0,max:100,dec:0,maxc:40}},
+ {id:'v3',name:'House lights',src:'Project',kind:'Toggle',i:'bulb',s:{control:'input',min:0,max:100,dec:0,maxc:40}}];
 const sample=()=>[
  {id:'g1',name:'Show controls',color:'#65a7ff',items:[{inst:'scene',issue:'',ctl:{}}]},
  {id:'g2',name:'Stage',color:'#a62b2b',items:[{inst:'spot',issue:'',ctl:{}},{inst:'speaker',issue:'',ctl:{}}]}];
-const st={tab:'editor',orient:'portrait',groups:sample(),selG:null,selI:null,panel:null,rename:null,colorFor:null,
+const st={tab:'editor',orient:'portrait',groups:sample(),vars:vsample(),selV:null,vpick:{tab:'pv',sel:null},selG:null,selI:null,panel:null,rename:null,colorFor:null,
   open:{rt:true,pick:false,ln:true,confirm:false,sens:false},pickFor:null,pick:{sel:null,q:''},
   playing:false,code:'',pub:'off',pubTab:'local',failNext:false,phones:[],snap:null,sens:{gyro:false,accel:false,mic:false},sensUser:null,
   vals:{}};
-const VD={'Beam width':3,'Lights':false,'Mood colour':'#e8467c','Guests':12,'Show title':'Welcome to the gallery','Intensity':64,'Colour':'#ffffff','Enabled':true,'Music':false,'Volume':40};
+const VD={'v1':64,'v2':'Opening night','v3':true,'Beam width':3,'Lights':false,'Mood colour':'#e8467c','Guests':12,'Show title':'Welcome to the gallery','Intensity':64,'Colour':'#ffffff','Enabled':true,'Music':false,'Volume':40};
 const key=(inst,n)=>inst+'|'+n;
 const valOf=k=>{if(!(k in st.vals)){const n=k.split('|')[1];st.vals[k]=n in VD?VD[n]:0}return st.vals[k]};
-try{const s=JSON.parse(localStorage.getItem('xrcc-rt4')||'null');if(s&&Array.isArray(s.groups)){st.groups=s.groups;st.orient=s.orient||'portrait'}}catch(e){}
-const save=()=>{try{localStorage.setItem('xrcc-rt4',JSON.stringify({groups:st.groups,orient:st.orient}))}catch(e){}};
+try{const s=JSON.parse(localStorage.getItem('xrcc-rt5')||'null');if(s&&Array.isArray(s.groups)){st.groups=s.groups;st.orient=s.orient||'portrait';if(Array.isArray(s.vars))st.vars=s.vars}}catch(e){}
+const save=()=>{try{localStorage.setItem('xrcc-rt5',JSON.stringify({groups:st.groups,orient:st.orient,vars:st.vars}))}catch(e){}};
 const gid=()=>'g'+Math.random().toString(36).slice(2,7);
 /* flatten groups into phone cells */
-function cellsOf(groups){return groups.filter(g=>g.items.length).map(g=>({key:'grp|'+g.id,label:g.name,kind:'Trigger',i:'play',s:{size:1,on:true,color:'#b58cf0'},color:g.color,issue:g.items.some(x=>x.issue)?'miss':'',iname:g.name}))}
+function cellsOf(groups,vars){return groups.filter(g=>g.items.length).map(g=>({key:'grp|'+g.id,label:g.name,kind:'Trigger',i:'play',s:{size:1,on:true,color:g.color},color:g.color,issue:g.items.some(x=>x.issue)?'miss':'',iname:g.name})).concat((vars||[]).map(v=>({key:'var|'+v.id,label:v.name,kind:v.kind,i:v.i,s:Object.assign({size:v.kind==='Text'?2:1,on:true,ro:false},v.s),issue:''})))}
 const w2=c=>c.s.size===2||(c.kind==='Number'&&c.s.control==='slider');
 const issues=()=>st.groups.reduce((a,g)=>a+g.items.filter(i=>i.issue).length,0);
-const nCells=()=>cellsOf(st.groups).filter(c=>!c.sec).length;
+const nCells=()=>cellsOf(st.groups,st.vars).filter(c=>!c.sec).length;
 const toast=m=>{let t=$('#toast');if(!t){t=h('div',{id:'toast',style:'position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--elev);border:1px solid var(--border);border-radius:8px;padding:8px 14px;z-index:50;font-size:13px'});document.body.append(t)}t.textContent=m;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',2000)};
 const gen=()=>String(Math.floor(100000+Math.random()*900000));
-function play(){if(st.playing)return;if(!nCells())toast('Nothing remoted yet. Phones will show an empty list.');st.playing=true;st.code=gen();st.snap=JSON.parse(JSON.stringify({groups:st.groups,orient:st.orient}));ph.changed=false;render()}
+function play(){if(st.playing)return;if(!nCells())toast('Nothing remoted yet. Phones will show an empty list.');st.playing=true;st.code=gen();st.snap=JSON.parse(JSON.stringify({groups:st.groups,orient:st.orient,vars:st.vars}));ph.changed=false;render()}
 function stop(){st.playing=false;st.phones=[];st.pub='off';st.sensUser=null;ph.sensor=false;if(['deck','projects','connecting'].includes(ph.screen))ph.screen='ended';render()}
 const touch=()=>{save();if(st.playing)ph.changed=true};
 /* ---------- XRCC stage ---------- */
@@ -344,7 +355,7 @@ function rtDialog(){
     g.items.forEach(it=>its.append(itemRow(g,it)));
     if(!g.items.length)its.append(h('div',{class:'hint'},'Add Item to remote them by your mobile'));list.append(blk)});
   if(!st.groups.length)list.append(h('div',{class:'empty'},h('div',{class:'ph'},ic('rt',24)),h('b',{},'No phone buttons yet'),h('p',{},'Add New Remote Trigger to make your first group. Add instances to it, and the phone gets one button for the whole group.')));
-  list.append(footEl);
+  list.append(varBlock(),footEl);
   const n=issues();const anyS=st.sens.gyro||st.sens.accel||st.sens.mic;
   const sensRow=(k,t)=>h('div',{class:'tgl'},t,h('button',{class:'sw2'+(st.sens[k]?' on':''),role:'switch','aria-checked':String(st.sens[k]),onclick:()=>{st.sens[k]=!st.sens[k];touch();render()}}));
   return h('div',{class:'dlg rt'},
@@ -360,7 +371,7 @@ function rtDialog(){
           anyS?h('div',{class:'banner info'},ic('phone'),h('span',{style:'flex:1'},st.sensUser?`In use by ${st.sensUser}`:'No phone is using sensors'),st.sensUser?h('button',{class:'btn ter sm',onclick:()=>{st.sensUser=null;ph.sensor=false;render()}},'Release'):null):null):null),
       null))}
 function previewCard(){
-  const c=st.orient==='landscape'?6:3;const cs=cellsOf(st.groups);
+  const c=st.orient==='landscape'?6:3;const cs=cellsOf(st.groups,st.vars);
   return h('div',{class:'pv'},h('div',{class:'h'},'Phone preview',h('span',{class:'pill'},(st.orient==='landscape'?'Landscape':'Portrait')+' · '+c+' columns')),
     cs.length?h('div',{class:'pvg',style:'--c:'+c},cs.filter(x=>!x.sec).map(x=>h('div',{class:'pvc'+(w2(x)?' w2':'')},h('span',{style:'color:#d9b0fd'},ic('cube',16)),x.label))):h('small',{},'Nothing remoted yet. Use the connect button on an instance.'),
     h('small',{},'Items flow left to right, then down, in list order.'))}
@@ -392,6 +403,38 @@ function picker(){
   return h('div',{class:'dlg pk'},h('div',{class:'head'},ic('cube',18),st.pick.tab==='pv'?'Select Project Variable':'Select Instance',h('span',{class:'sp'}),h('button',{class:'ib',onclick:close},ic('close'))),h('div',{class:'acc'}),
     h('div',{class:'body'},h('div',{class:'sr'},f,h('button',{class:'ib tint',style:'width:36px;height:36px','aria-label':'Search'},ic('search')),h('button',{class:'ib',style:'width:36px;height:36px;color:var(--accent)','aria-label':'Sort',onclick:()=>toast('Sorted by name')},ic('sort')),h('button',{class:'ib',style:'width:36px;height:36px;color:var(--accent)','aria-label':'Filter',onclick:()=>toast('Filter: all instances')},ic('filter'))),tree,
       h('button',{class:'btn ter wide',disabled:st.pick.sel?null:true,onclick:()=>{const inst=IB[st.pick.sel];const it={inst:inst.id,issue:'',ctl:{}};g.items.push(it);st.selI=g.id+'|'+inst.id;st.open.pick=false;st.pick.q='';touch();render();toast(inst.n+' added to '+g.name)}},'Select Item')))}
+
+/* ---------- variables (Instance / Project) ---------- */
+const VK=['Number','Text','Toggle'];
+const vSrc=tab=>tab==='pv'?PV.filter(x=>VK.includes(x.ctl[0].kind)).map(x=>({id:x.id,name:x.n,src:'Project',kind:x.ctl[0].kind,i:x.ctl[0].i})):
+  INST.flatMap(x=>(x.ctl||[]).filter(c=>VK.includes(c.kind)&&c.sub!==undefined?true:VK.includes(c.kind)).map(c=>({id:x.id+'.'+c.n,name:c.n,src:x.n,kind:c.kind,i:c.i})));
+const vSum=v=>v.kind==='Number'?(v.s.control==='slider'?'Slider':'Input')+' · '+v.s.min+'–'+v.s.max:v.kind==='Text'?'Text · '+v.s.maxc:'Toggle';
+function varSettings(v){
+  const num=(lab,k,min)=>{const x=h('input',{class:'fld',type:'number',value:v.s[k],min:min,'aria-label':lab});x.addEventListener('change',()=>{let n=+x.value;if(k==='dec')n=Math.max(0,Math.min(3,Math.round(n)));if(k==='maxc')n=Math.max(1,Math.min(200,Math.round(n)));v.s[k]=n;if(v.s.min>=v.s.max){toast('Max must be larger than Min');v.s.max=v.s.min+1}touch();render()});return h('label',{class:'vf'},h('span',{},lab),x)};
+  if(v.kind==='Toggle')return h('div',{class:'vset'},h('span',{class:'muted'},'Toggle has no settings. The phone shows an On / Off switch.'));
+  if(v.kind==='Text')return h('div',{class:'vset'},h('div',{class:'vrow'},num('Max characters','maxc',1)));
+  const sel=h('select',{class:'fld','aria-label':'Control'},['input','slider'].map(o=>h('option',{value:o,selected:v.s.control===o?true:null},o==='input'?'Input':'Slider')));
+  sel.addEventListener('change',()=>{v.s.control=sel.value;touch();render()});
+  return h('div',{class:'vset'},h('label',{class:'vf'},h('span',{},'Control'),sel),h('div',{class:'vrow'},num('Min','min'),num('Max','max'),num('Decimal','dec',0)))}
+function varBlock(){
+  const b=h('div',{class:'vblk'});
+  b.append(h('div',{class:'vhead'},h('h3',{},'Variables'),h('small',{},'Each variable is its own control on the phone.'),h('span',{class:'sp'}),
+    h('button',{class:'ib tint',title:'Add variable','aria-label':'Add variable',disabled:st.playing?true:null,onclick:()=>{st.vpick={tab:'pv',sel:null};st.open.vpick=true;render()}},ic('addobj'))));
+  if(!st.vars.length)b.append(h('div',{class:'hint'},'No variables yet. Add one to control its value from the phone.'));
+  st.vars.forEach(v=>{const on=st.selV===v.id;
+    b.append(h('div',{class:'irow vr'+(on?' sel':''),onclick:()=>{st.selV=on?null:v.id;render()}},ic(v.src==='Project'?'cube':'cube',18),h('div',{class:'nm'},v.name,h('span',{class:'src'},' · '+v.src)),
+      st.playing?h('span',{class:'tag ok'},'Live'):null,h('span',{class:'tag',title:vSum(v)},vSum(v)),
+      h('div',{class:'acts'},h('button',{class:'ib del',title:'Remove variable','aria-label':'Remove variable',disabled:st.playing?true:null,onclick:e=>{e.stopPropagation();st.vars=st.vars.filter(x=>x!==v);if(st.selV===v.id)st.selV=null;touch();render()}},ic('trash')))));
+    if(on&&!st.playing)b.append(varSettings(v))});
+  return b}
+function varPicker(){
+  const t=st.vpick.tab,arr=vSrc(t);
+  const close=()=>{st.open.vpick=false;render()};
+  const list=h('div',{class:'tree'},arr.map(x=>{const added=st.vars.some(v=>v.id===x.id);const on=st.vpick.sel===x.id;
+    return h('button',{class:'tn leaf vpi'+(on?' sel':'')+(added?' dis':''),title:added?'Already added':null,onclick:()=>{if(added)return;st.vpick.sel=x.id;render()}},ic(x.i||'cube',18),h('span',{class:'g'},x.name,t==='iv'?h('span',{class:'src'},' · '+x.src):null),h('span',{class:'ty'},x.kind==='Toggle'?'Bool':x.kind))}));
+  return h('div',{class:'dlg pk'},h('div',{class:'head'},ic('cube',18),'Select Variable',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:close},ic('close'))),h('div',{class:'acc'}),
+    h('div',{class:'body'},h('div',{class:'vtabs',role:'tablist'},[['pv','Project variables'],['iv','Instance variables']].map(([k,l])=>h('button',{role:'tab','aria-selected':String(t===k),class:t===k?'on':'',onclick:()=>{st.vpick={tab:k,sel:null};render()}},l))),list,
+      h('button',{class:'btn ter wide',disabled:st.vpick.sel?null:true,onclick:()=>{const x=arr.find(a=>a.id===st.vpick.sel);const v={id:x.id,name:x.name,src:x.src,kind:x.kind,i:x.i,s:{control:'input',min:0,max:100,dec:0,maxc:40}};st.vars.push(v);st.selV=v.id;st.open.vpick=false;touch();render();toast(x.name+' added')}},'Add Variable')))}
 /* ---------- launcher ---------- */
 function drawQr(cv,seed){const n=29,g=cv.getContext('2d');cv.width=cv.height=n;g.fillStyle='#fff';g.fillRect(0,0,n,n);g.fillStyle='#000';let s=+seed||123456;const r=()=>(s=(s*1103515245+12345)&0x7fffffff)/0x7fffffff;
   for(let y=0;y<n;y++)for(let x=0;x<n;x++){const f=(x<8&&y<8)||(x>n-9&&y<8)||(x<8&&y>n-9);if(!f&&r()>.52)g.fillRect(x,y,1,1)}
@@ -465,14 +508,14 @@ function keyEl(c){
   return e}
 const ptop=(t,s,back)=>h('div',{class:'ptop'},back?h('button',{class:'ib','aria-label':'Back',onclick:back,style:'transform:scaleX(-1)'},ic('arrow',18)):null,h('div',{class:'t'},h('b',{},t),h('small',{},s)),h('span',{class:'pill'},h('span',{class:'dot'+(ph.conn==='local'?'':' warn')}),ph.conn==='local'?'Local · 6 ms':'Reconnecting…'));
 const DIM={phone:{p:[390,844],l:[844,390]},ipad:{p:[820,1180],l:[1180,820]}};
-function fillDeck(g,groups){cellsOf(groups).filter(c=>!c.sec).forEach(c=>g.append(keyEl(c)))}
+function fillDeck(g,groups,vars){cellsOf(groups,vars).filter(c=>!c.sec).forEach(c=>g.append(keyEl(c)))}
 function renderPhone(){
   const P_=$('#phone');if(!P_)return;P_.innerHTML='';
   const d=DIM[ph.dev][ph.land?'l':'p'];
   if(innerWidth>600){P_.style.width=`min(100%,${d[0]}px)`;P_.style.height=`min(${d[1]}px,calc(100dvh - 150px))`;P_.style.minHeight='340px'}else{P_.style.width='';P_.style.height=''}
   P_.append(h('div',{class:'sb'},h('span',{},'9:41'),h('span',{},'5G ▮▮▮')));
   const s=h('div',{class:'scr'});const sc=ph.screen;const go=x=>{ph.screen=x;ph.sheet=null;renderPhone()};
-  const snap=st.snap||{groups:st.groups,orient:st.orient};
+  const snap=st.snap||{groups:st.groups,orient:st.orient,vars:st.vars};
   if(sc==='join'){s.classList.add('c');
     const o=h('div',{class:'otp'});const ins=[0,1,2,3,4,5].map(n=>{const x=h('input',{inputmode:'numeric',maxlength:'1','aria-label':'Digit '+(n+1)});
       x.addEventListener('input',()=>{x.value=x.value.replace(/\D/g,'');if(x.value&&ins[n+1])ins[n+1].focus();if(ins.every(q=>q.value))join()});
@@ -483,19 +526,19 @@ function renderPhone(){
       if(v!==st.code){o.classList.remove('err');void o.offsetWidth;o.classList.add('err');err.textContent='That code is not right. Check the Launcher.';return}go('connecting')}
     s.append(h('div',{class:'hero'},ic('phone')),h('h2',{style:'margin:0'},'Join with a code'),h('div',{class:'muted'},'Enter the 6-digit code shown in XRCC Launcher. No app needed.'),o,err,h('button',{class:'btn pri wide',onclick:join},'Join'),
       !st.playing?h('div',{class:'bn'},'Demo: open tab 2 and press Play in PC. The code appears in the Launcher.'):h('button',{class:'btn ter sm',onclick:()=>{[...st.code].forEach((c,n)=>ins[n].value=c);join()}},'Fill demo code'))}
-  if(sc==='connecting'){P_.append(ptop('Pop-up Gallery','Connecting to ALAN-PC…'));const g=h('div',{class:'pdeck'});fit(g);cellsOf(snap.groups).filter(c=>!c.sec).forEach(c=>g.append(h('div',{class:'sk',style:`grid-column:span ${w2(c)?2:1}`})));s.append(g);
+  if(sc==='connecting'){P_.append(ptop('Pop-up Gallery','Connecting to ALAN-PC…'));const g=h('div',{class:'pdeck'});fit(g);cellsOf(snap.groups,snap.vars).filter(c=>!c.sec).forEach(c=>g.append(h('div',{class:'sk',style:`grid-column:span ${w2(c)?2:1}`})));s.append(g);
     clearTimeout(ph.t);ph.t=setTimeout(()=>{if(ph.screen!=='connecting')return;st.phones.push({name:ph.dev==='ipad'?"Alan's iPad":"Alan's iPhone",joined:'Joined just now',via:'Local',me:true});go('projects');render()},1400)}
   if(sc==='projects'){P_.append(ptop('Projects','Playing on ALAN-PC',()=>go('join')));s.append(h('button',{class:'proj',onclick:()=>go('deck')},h('div',{class:'th'},ic('folder')),h('div',{style:'flex:1'},h('b',{},'Pop-up Gallery'),h('div',{class:'muted',style:'font-size:12px'},'Scene: Intro'),h('div',{style:'font-size:12px;color:var(--ok)'},'● Playing now')),ic('arrow',18)))}
   if(sc==='deck'){P_.append(ptop('Pop-up Gallery','Scene: Intro',()=>go('projects')));
     if((ph.land?'landscape':'portrait')!==snap.orient)s.append(h('div',{class:'bn',style:'text-align:center'},'Best in '+snap.orient));
     if(ph.changed)s.append(h('div',{class:'bn w'},'The list changed in XRCC. It updates next time Play starts.'));
-    if(cellsOf(snap.groups).length){const g=h('div',{class:'pdeck'+(ph.conn!=='local'?' paused':'')});fillDeck(g,snap.groups);s.append(g);fit(g)}
+    if(cellsOf(snap.groups,snap.vars).length){const g=h('div',{class:'pdeck'+(ph.conn!=='local'?' paused':'')});fillDeck(g,snap.groups,snap.vars);s.append(g);fit(g)}
     else s.append(h('div',{class:'bn',style:'text-align:center;padding:28px'},'Nothing to control yet. Choose what to remote in XRCC.'));
     if(st.sens.gyro||st.sens.accel||st.sens.mic)s.append(h('div',{class:'bn',style:'display:flex;gap:8px;align-items:center'},ic('phone',16),h('span',{style:'flex:1'},st.sensUser&&!ph.sensor?`Sensors in use by ${st.sensUser}`:ph.sensor?'This phone is sending sensor data':'Use this phone for sensors'),
       !ph.sensor?h('button',{class:'btn ter sm',disabled:st.sensUser&&!ph.sensor?true:null,onclick:()=>{ph.sensor=true;st.sensUser=ph.dev==='ipad'?"Alan's iPad":"Alan's iPhone";renderPhone();render()}},'Start'):h('button',{class:'btn ter sm',onclick:()=>{ph.sensor=false;st.sensUser=null;renderPhone();render()}},'Stop')))}
   if(sc==='ended'){s.classList.add('c');s.append(h('div',{class:'hero',style:'background:var(--elev)'},ic('info')),h('h2',{style:'margin:0'},'Play ended'),h('div',{class:'muted'},'Ask the host to start Play again, then join with the new code.'),h('button',{class:'btn pri',onclick:()=>go('join')},'Join again'))}
   P_.append(s);
-  if(ph.sheet){const c=cellsOf(snap.groups).find(x=>x.key===ph.sheet);if(c)P_.append(h('div',{class:'sh-s',onclick:()=>{ph.sheet=null;renderPhone()}}),h('div',{class:'sheet'},h('b',{},c.label),h('div',{class:'sw'},PAL.concat(['#c0392b','#e8467c','#2e8b57']).map(x=>h('i',{class:valOf(c.key)===x?'on':'',style:'background:'+x,onclick:()=>{press(c,x);ph.sheet=null;renderPhone()}}))),h('button',{class:'btn ter',onclick:()=>{ph.sheet=null;renderPhone()}},'Cancel')))}
+  if(ph.sheet){const c=cellsOf(snap.groups,snap.vars).find(x=>x.key===ph.sheet);if(c)P_.append(h('div',{class:'sh-s',onclick:()=>{ph.sheet=null;renderPhone()}}),h('div',{class:'sheet'},h('b',{},c.label),h('div',{class:'sw'},PAL.concat(['#c0392b','#e8467c','#2e8b57']).map(x=>h('i',{class:valOf(c.key)===x?'on':'',style:'background:'+x,onclick:()=>{press(c,x);ph.sheet=null;renderPhone()}}))),h('button',{class:'btn ter',onclick:()=>{ph.sheet=null;renderPhone()}},'Cancel')))}
   P_.append(h('div',{class:'fb'}))}
 /* ---------- render ---------- */
 function bhvBoard(){
@@ -525,6 +568,7 @@ function render(){
   if(showRt||showLn){stage.append(h('div',{class:'xscrim'}));
     if(showRt)stage.append(h('div',{class:'xmain'},colorPop(),rtDialog()));else stage.append(h('div',{class:'xmain'},launcher()))}
   if(showRt&&st.open.pick)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},picker()));
+  if(showRt&&st.open.vpick)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},varPicker()));
   if(showRt&&st.delG)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},delDlg()));
   if(showLn&&st.open.confirm)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},confirmDlg()));
   v.append(stage);
