@@ -190,7 +190,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 const $=(s,e=document)=>e.querySelector(s),$$=(s,e=document)=>[...e.querySelectorAll(s)];
 const h=(t,a={},...k)=>{const e=document.createElement(t);for(const[n,v]of Object.entries(a)){if(v==null||v===false)continue;if(n==='class')e.className=v;else if(n.startsWith('on'))e.addEventListener(n.slice(2),v);else if(n==='disabled')e.disabled=true;else e.setAttribute(n,v)}k.flat().forEach(c=>c!=null&&c!==false&&e.append(c));return e};
 const P={
- cube:'<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M4 7.5l8 4.5 8-4.5M12 12v9"/>',scene:'<path d="M3 17h18M5 17l3-6 3 4 3-7 5 9"/><circle cx="17" cy="6" r="2"/>',screen:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h6"/>',
+ cube:'<path fill="currentColor" stroke="none" fill-rule="evenodd" transform="translate(2 2)" d="M5 0L0 5v15h15l5-5V0H5zM14.17 19.17H.83V5.83h13.34v13.34zM15 18.82V5.59l4.17-4.17v13.23l-.35.35L15 18.82zM13.92.83h4.66L14.41 5H1.18L5 1.18l.35-.35h8.57z"/>',scene:'<path d="M3 17h18M5 17l3-6 3 4 3-7 5 9"/><circle cx="17" cy="6" r="2"/>',screen:'<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 9h6"/>',
  up:'<path d="M6 15l6-6 6 6"/>',down:'<path d="M6 9l6 6 6-6"/>',edit:'<path d="M4 20l1-4L16 5l3 3L8 19z"/>',trash:'<path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/><path d="M10.5 11l3 4M13.5 11l-3 4"/>',close:'<path d="M6 6l12 12M18 6 6 18"/>',
  phone:'<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/>',wifi:'<rect x="6" y="2" width="12" height="20" rx="2"/><path d="M8.5 9a5 5 0 0 1 7 0M10 11.5a3 3 0 0 1 4 0M12 14h.01"/>',rt:'<rect x="7" y="2" width="10" height="20" rx="2"/><path d="M10 9h4M10 13h4"/>',
  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',plus:'<path d="M12 5v14M5 12h14"/>',addobj:'<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M12 9v6M9 12h6"/>',link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
@@ -205,18 +205,18 @@ const ic=(n,s)=>{const e=document.createElementNS('http://www.w3.org/2000/svg','
 /* ---------- Scene instances (what XRCC knows about) ---------- */
 const T=(n,i)=>({n,kind:'Trigger',scope:'Scene trigger',i:i||'play'}),V=(n,kind,i,scope)=>({n,kind,scope:scope||'Project variable',i:i||'cube'});
 const INST=[
- {id:'scene',n:'Empty Scene',i:'scene',lv:0,ctl:[T('Start show','play'),T('Curtains','screen'),T('Applause','music'),T('Next room','arrow'),T('Reset scene','undo'),V('Lights','Toggle','bulb'),V('Guests','Number','user'),V('Show title','Text','text')]},
- {id:'ui',n:'UI Screen',i:'screen',lv:0,grp:1},
+ {id:'scene',n:'Empty Scene',i:'cube',lv:0,ctl:[T('Start show','play'),T('Curtains','screen'),T('Applause','music'),T('Next room','arrow'),T('Reset scene','undo'),V('Lights','Toggle','bulb'),V('Guests','Number','user'),V('Show title','Text','text')]},
+ {id:'ui',n:'UI Screen',i:'cube',lv:0,grp:1},
  {id:'start',n:'Start',i:'cube',lv:1,ctl:[V('Start','Trigger','play','Instance trigger'),V('Visible','Toggle','bulb','Instance variable')]},
  {id:'rule',n:'Rule1',i:'cube',lv:1,ctl:[V('Score limit','Number','user','Instance variable')]},
  {id:'restart',n:'Restart',i:'cube',lv:1,ctl:[V('Restart','Trigger','undo','Instance trigger')]},
  {id:'result',n:'Result1',i:'cube',lv:1,ctl:[V('Result text','Text','text','Instance variable')]},
- {id:'score',n:'Score',i:'screen',lv:2,ctl:[V('Score','Number','user','Instance variable')]},
+ {id:'score',n:'Score',i:'cube',lv:2,ctl:[V('Score','Number','user','Instance variable')]},
  {id:'spot',n:'Spotlight A',i:'cube',lv:0,ctl:[V('Intensity','Number','sun','Instance variable'),V('Beam width','Number','sun','Instance variable'),V('Enabled','Toggle','bulb','Instance variable')]},
  {id:'speaker',n:'Stage speaker',i:'cube',lv:0,ctl:[V('Music','Toggle','music','Instance variable'),V('Volume','Number','vol','Instance variable')]},
  {id:'ground',n:'Ground',i:'cube',lv:0,ctl:[]},
  {id:'mallet',n:'Wooden Mallet',i:'cube',lv:0,ctl:[V('Hit','Trigger','hand','Instance trigger')]},
- {id:'textobj',n:'Text Object',i:'text',lv:0,ctl:[V('Content','Text','text','Instance variable')]}
+ {id:'textobj',n:'Text Object',i:'cube',lv:0,ctl:[V('Content','Text','text','Instance variable')]}
 ];
 const IB=Object.fromEntries(INST.map(x=>[x.id,x]));
 const PAL=['#ff0000','#ff5a00','#ff9f00','#ffff00','#c8ff00','#00ff00','#00ffff','#4f8cf0','#0000ff','#a000ff','#ff00ff','#a62b2b','#ffffff'];
@@ -315,7 +315,7 @@ function rtDialog(){
 function previewCard(){
   const c=st.orient==='landscape'?6:3;const cs=cellsOf(st.groups);
   return h('div',{class:'pv'},h('div',{class:'h'},'Phone preview',h('span',{class:'pill'},(st.orient==='landscape'?'Landscape':'Portrait')+' · '+c+' columns')),
-    cs.length?h('div',{class:'pvg',style:'--c:'+c},cs.filter(x=>!x.sec).map(x=>h('div',{class:'pvc'+(w2(x)?' w2':'')},h('span',{style:'color:#d9b0fd'},ic(x.i,16)),x.label))):h('small',{},'Nothing remoted yet. Use the connect button on an instance.'),
+    cs.length?h('div',{class:'pvg',style:'--c:'+c},cs.filter(x=>!x.sec).map(x=>h('div',{class:'pvc'+(w2(x)?' w2':'')},h('span',{style:'color:#d9b0fd'},ic('cube',16)),x.label))):h('small',{},'Nothing remoted yet. Use the connect button on an instance.'),
     h('small',{},'Items flow left to right, then down, in list order.'))}
 function colorPop(){const g=st.groups.find(x=>x.id===st.colorFor);if(!g)return null;
   const set=c=>{g.color=c;touch();render()};
