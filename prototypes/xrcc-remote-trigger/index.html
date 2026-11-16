@@ -585,7 +585,7 @@ function launcher(){
       h('div',{class:'pcard'},
         h('div',{class:'srow'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Local · 6 ms':busy?'Working…':'Offline'),h('div',{style:'flex:1'},h('b',{},status),h('div',{class:'muted',style:'font-size:12px'},sub)),
           h('button',{class:'sw2'+(on||busy?' on':''),role:'switch','aria-checked':String(on),'aria-label':'Server',disabled:busy?'':null,onclick:()=>{if(on){if(st.phones.length){st.open.offConfirm=true;render()}else srvOff()}else srvReload(true)}}),h('span',{style:'font-size:13px;width:22px'},on||busy?'On':'Off'),
-          h('button',{class:'btn '+(dirty&&on?'pri':'sec'),disabled:on?null:true,onclick:()=>srvReload(false)},dirty&&on?'Reload to apply':'Reload server')),
+          h('button',{class:'ib'+(dirty&&on?' on':''),title:dirty&&on?'Reload server to apply the new port':'Reload server','aria-label':'Reload server',disabled:on?null:true,onclick:()=>srvReload(false)},ic('refresh',18))),
         h('div',{class:'srow prt'},h('div',{style:'flex:1;min-width:0;display:flex;flex-direction:column;gap:2px'},h('b',{},'Port'),portHint),pin),
         h('div',{class:'qrrow'},h('div',{class:'halo'},qr),
           h('div',{style:'flex:1;min-width:0;display:flex;flex-direction:column;gap:12px'},
@@ -597,7 +597,7 @@ function launcher(){
         ...[['Office Key','Gemini · last used 3 Nov','Password set'],['Voice Lab key','MiniMax · last used today','No password'],['Team Poe key','Poe · added 12 Oct','Password set'],['Studio LLM token','Custom · 192.168.1.20','No password']].map(r=>h('div',{class:'mrow'},h('span',{class:'mtile'},ic('key',16)),h('span',{class:'mt'},h('b',{},r[0]),h('small',{},r[1])),h('span',{class:'muted',style:'font-size:12px'},r[2])))),
       h('div',{style:'display:flex;flex-direction:column;gap:12px'},h('h3',{style:'margin:0;font-size:16px'},'Speech commands (Wit.ai)'),h('div',{class:'mrow'},h('span',{class:'mtile'},ic('wave',16)),h('span',{class:'mt'},h('b',{},'Lobby kiosk token'),h('small',{},'Wit.ai · last used 28 Oct')))))}
 
-Object.assign(P,{back:'<path d="M15 5l-7 7 7 7"/>',key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l3 3"/>',wave:'<path d="M5 10v4M9 7v10M13 4v16M17 8v8M21 11v2"/>',setting:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>'});
+Object.assign(P,{refresh:'<path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/>',back:'<path d="M15 5l-7 7 7 7"/>',key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l3 3"/>',wave:'<path d="M5 10v4M9 7v10M13 4v16M17 8v8M21 11v2"/>',setting:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>'});
 const LN_NAV=[['Projects','folder'],['Content Library','globe'],['Packages','cube'],['Profiles','edit'],['Versions','up'],['License','user']];
 function lnShell(){
   const nav=(t,ico,fn)=>h('div',{class:'lni'+(fn.on?' on':''),onclick:fn.go},ic(ico,18),t);
