@@ -199,6 +199,22 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
  .dlg .head{font-size:15px}.lhead{flex-wrap:wrap}
  .pvtitle{font-size:22px}.pvhud{right:12px;left:12px;flex-wrap:wrap}
 }
+
+.dlg.ms{width:960px;max-width:100%;height:720px;max-height:calc(100dvh - 160px)}
+.mbody{display:flex;flex:1;min-height:0}
+.msb{width:236px;flex:none;background:#2a2531;display:flex;flex-direction:column;justify-content:space-between;padding-top:12px;overflow:auto}
+.mi{padding:12px 16px 12px 40px;margin:0 0 0 24px;border-radius:24px 0 0 24px;color:var(--text2,#cfcfcf);cursor:pointer;font-size:15px}
+.mi:hover{background:rgba(255,255,255,.05)}.mi.on{background:#171717;color:var(--accent);font-weight:500}
+.mver{padding:16px;color:var(--text3);font-size:13px;text-align:right}
+.mpane{flex:1;min-width:0;overflow:auto;padding:40px 70px;display:flex;flex-direction:column;gap:24px}
+.mtitle{margin:0;font-size:24px;font-weight:600}
+.mback{align-self:flex-start;background:none;border:0;color:var(--text2,#cfcfcf);display:flex;align-items:center;gap:6px;cursor:pointer;font:inherit;font-size:13px;padding:0;margin-bottom:-12px}.mback:hover{color:var(--accent)}
+.mlist{display:flex;flex-direction:column;gap:8px}
+.mrow{display:flex;align-items:center;gap:16px;padding:16px;background:var(--elev);border:0;border-radius:8px;color:inherit;font:inherit;text-align:left;cursor:pointer}.mrow:hover{background:#26262a}
+.mtile{width:32px;height:32px;border-radius:8px;background:#511b6a;display:grid;place-items:center;flex:none}
+.mt{flex:1;display:flex;flex-direction:column;gap:2px}.mt small{color:var(--text3);font-size:12px}
+.mgo{color:var(--text2,#cfcfcf)}
+@media(max-width:700px){.dlg.ms{height:auto;max-height:calc(100dvh - 150px)}.mbody{flex-direction:column}.msb{width:100%;flex-direction:row;overflow:auto;padding:0}.mitems{display:flex}.mi{margin:0;border-radius:0;padding:12px 14px;white-space:nowrap}.mver{display:none}.mpane{padding:20px 16px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 .bhv{position:absolute;inset:0;background:var(--canvas);display:flex;flex-direction:column}
@@ -325,7 +341,7 @@ const vsample=()=>[
 const sample=()=>[
  {id:'g1',name:'Show controls',color:'#65a7ff',items:[{inst:'scene',issue:'',ctl:{}}]},
  {id:'g2',name:'Stage',color:'#a62b2b',items:[{inst:'spot',issue:'',ctl:{}},{inst:'speaker',issue:'',ctl:{}}]}];
-const st={tab:'editor',orient:'portrait',groups:sample(),vars:vsample(),selV:null,vpick:{tab:'pv',sel:null},selG:null,selI:null,panel:null,rename:null,colorFor:null,
+const st={tab:'editor',lnView:'list',orient:'portrait',groups:sample(),vars:vsample(),selV:null,vpick:{tab:'pv',sel:null},selG:null,selI:null,panel:null,rename:null,colorFor:null,
   open:{rt:true,pick:false,ln:true,confirm:false,offConfirm:false},pickFor:null,pick:{sel:[],q:''},
   playing:false,srv:'on',busyLbl:'',port:3001,portDraft:'3001',portErr:'',srvErr:'',pub:'off',pubTab:'local',failNext:false,phones:[],snap:null,
   vals:{}};
@@ -356,7 +372,7 @@ function bar(){
     h('div',{class:'xbar'},h('span',{class:'pj'},sv(I.bm,20),h('span',{},'my-project-name-20260101_0...')),h('span',{class:'ed'},sv(I.ed,24),'Edit'),h('span',{class:'bh'},sv(I.bh,24),'Behaviour'),
       h('span',{class:'ti'},h('span',{class:'ib'},sv(I.bug,22)),
         h('button',{class:'ib'+(st.tab==='editor'&&st.open.rt?' on':''),title:'Remote Trigger',onclick:()=>{st.tab='editor';st.open.rt=!st.open.rt;render()}},ic('rt')),
-        h('button',{class:'ib'+(st.tab==='launcher'&&st.open.ln?' on':''),title:'Launcher · Connections',onclick:()=>{st.tab='launcher';st.open.ln=!st.open.ln;render()}},ic('phone')),
+        h('button',{class:'ib'+(st.tab==='launcher'&&st.open.ln?' on':''),title:'Launcher · My Setting · Connections',onclick:()=>{st.tab='launcher';st.open.ln=!st.open.ln;st.lnView='list';render()}},ic('phone')),
         h('span',{class:'ib'},sv(I.ai,22)),h('span',{class:'ib'},sv(I.wr,22))),
       h('button',{class:'pl',onclick:()=>st.playing?stop():play()},sv(I.pl,16),st.playing?'Stop':'Play in PC',sv(I.dn,16)),
       h('button',{class:'sv',onclick:()=>toast('Saved')},sv(I.sv,18),'Save*')))}
@@ -546,9 +562,10 @@ function launcher(){
       st.pub==='failed'?'Could not create a public link. Check the connection and try again.':st.pub==='opening'?'Creating a secure address…':pubOn?URL_P:'Optional. Lets phones on any network join while Play runs.')),
     pubOn?h('button',{class:'btn ter sm',onclick:()=>{st.pub='off';st.phones=st.phones.filter(p=>p.via!=='Public');render()}},'Turn off'):
     h('button',{class:'btn sec sm',disabled:on&&st.playing&&st.pub!=='opening'?null:true,title:st.playing?'':'Press Play to use a public link',onclick:()=>{st.open.confirm=true;render()}},st.pub==='failed'?'Try again':'Turn on'));
-  return h('div',{class:'dlg ln'},h('div',{class:'head'},ic('rt',18),'XRCC Connections',h('span',{class:'pill',style:'font-weight:400'},'Launcher'),h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.ln=false;render()}},ic('close'))),h('div',{class:'acc'}),
-    h('div',{class:'body'},
-      h('div',{style:'display:flex;flex-direction:column;gap:4px'},h('h3',{style:'margin:0;color:var(--accent);font-size:16px'},'Phone remote'),h('div',{class:'muted'},'Let phones on the same Wi-Fi control a playing project. The server runs inside Launcher.')),
+  return h('div',{class:'mpane'},
+    h('button',{class:'mback',onclick:()=>{st.lnView='list';st.open.offConfirm=false;render()}},ic('back',16),'Connections'),
+    h('div',{style:'display:flex;flex-direction:column;gap:8px'},h('h2',{class:'mtitle'},'Phone remote'),h('div',{class:'muted'},'Let phones on the same Wi-Fi control a playing project. The server runs inside Launcher.')),
+    h('div',{style:'display:none'}),
       h('div',{class:'pcard'},
         h('div',{class:'srow'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Local · 6 ms':busy?'Working…':'Offline'),h('div',{style:'flex:1'},h('b',{},status),h('div',{class:'muted',style:'font-size:12px'},sub)),
           h('button',{class:'sw2'+(on||busy?' on':''),role:'switch','aria-checked':String(on),'aria-label':'Server',disabled:busy?'':null,onclick:()=>{if(on){if(st.phones.length){st.open.offConfirm=true;render()}else srvOff()}else srvReload(true)}}),h('span',{style:'font-size:13px;width:22px'},on||busy?'On':'Off'),
@@ -559,8 +576,35 @@ function launcher(){
             h('div',{class:'lrow'},h('div',{class:'url',style:on?'':'color:var(--text3)'},on?url:'Link not available'),h('button',{class:'btn sec',disabled:on?null:true,onclick:()=>{try{navigator.clipboard.writeText(url)}catch(e){}toast('Link copied')}},'Copy')),
             h('b',{style:'font-size:13px'},'Phones ',h('span',{class:'muted',style:'font-weight:400'},String(st.phones.length))),phones))),
       pub,
-      h('div',{class:'lf'},h('button',{class:'btn ter',disabled:on?null:true,onclick:()=>{st.tab='phone';render()}},'Open phone preview'))))}
-function offDlg(){return h('div',{class:'dlg cf'},h('div',{class:'head'},'Turn off Phone remote?',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.offConfirm=false;render()}},ic('close'))),h('div',{class:'acc'}),h('div',{class:'body'},h('p',{},`${st.phones.length} phone${st.phones.length>1?' is':'s are'} connected and will lose control. You can turn the server back on at any time.`),
+      h('div',{class:'lf'},h('button',{class:'btn ter',disabled:on?null:true,onclick:()=>{st.tab='phone';render()}},'Open phone preview')))}
+
+Object.assign(P,{back:'<path d="M15 5l-7 7 7 7"/>',key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l3 3"/>',wave:'<path d="M5 10v4M9 7v10M13 4v16M17 8v8M21 11v2"/>',setting:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>'});
+const MS_ITEMS=['Display','Control','Edit','Networking','Sketchfab','Security and Privacy','Licensing','Devices','Connections'];
+function rrow(ico,name,meta,fn){return h('button',{class:'mrow',onclick:fn},h('span',{class:'mtile'},ic(ico,16)),h('span',{class:'mt'},h('b',{},name),h('small',{},meta)),h('span',{class:'mgo'},ic('arrow',16)))}
+function settings(){
+  const n=st.phones.length,on=st.srv==='on',busy=st.srv==='reloading';
+  const side=h('div',{class:'msb'},h('div',{class:'mitems'},...MS_ITEMS.map(t=>h('div',{class:'mi'+(t==='Connections'?' on':''),onclick:t==='Connections'?()=>{st.lnView='list';render()}:()=>toast(t+' is not part of this prototype')},t))),h('div',{class:'mver'},'Version 3.1.0'));
+  let main;
+  if(st.lnView==='phone')main=launcher();
+  else main=h('div',{class:'mpane'},h('div',{style:'display:flex;flex-direction:column;gap:8px'},h('h2',{class:'mtitle'},'Connections'),h('div',{class:'muted'},'Keys are encrypted and kept on this computer. Projects never contain them, and VOTANIC never sees them.')),
+    h('div',{class:'mlist'},rrow('key','AI keys','4 keys · 2 protected with a password',()=>toast('AI keys are in the AI Provider prototype')),
+      rrow('wave','Speech commands (Wit.ai)','1 token · last used 28 Oct',()=>toast('Speech commands are in the AI Provider prototype')),
+      rrow('phone','Phone remote',busy?'Reloading server…':on?'Server running · '+n+' phone'+(n===1?'':'s'):'Server off',()=>{st.lnView='phone';render()})));
+  return h('div',{class:'dlg ms'},h('div',{class:'head'},ic('setting',18),'My Setting',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.ln=false;st.open.offConfirm=false;render()}},ic('close'))),h('div',{class:'acc'}),h('div',{class:'mbody'},side,main))}
+function jump(k){
+  st.open.ln=true;st.tab='launcher';st.lnView='phone';st.open.offConfirm=false;st.open.confirm=false;st.srv='on';st.port=3001;st.portDraft='3001';st.portErr='';st.srvErr='';st.phones=[];
+  const ph1={name:"Alex's iPhone",joined:'Joined just now',via:'Local'};
+  if(k==='B11')st.lnView='list';
+  if(k==='B13'||k==='B14')st.phones=[ph1];
+  if(k==='B14')st.open.offConfirm=true;
+  if(k==='B15'){st.srv='off'}
+  if(k==='B17')st.portDraft='3002';
+  render();
+  if(k==='B16')srvReload(false);
+  if(k==='B18'){st.portDraft='3000';srvReload(false)}
+  if(k==='B19')toast('Link copied');
+}
+function offDlg(){return h('div',{class:'dlg cf'},h('div',{class:'head'},'Turn off Phone remote?',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.offConfirm=false;render()}},ic('close'))),h('div',{class:'acc'}),h('div',{class:'body'},h('p',{},`${st.phones.length===1?'1 phone is':st.phones.length+' phones are'} connected and will lose control. You can turn the server back on at any time.`),
   h('div',{class:'pf'},h('button',{class:'btn ter',onclick:()=>{st.open.offConfirm=false;render()}},'Cancel'),h('button',{class:'btn pri',onclick:srvOff},'Turn off'))))}
 function delVDlg(v){return h('div',{class:'dlg cf'},h('div',{class:'head'},'Remove "'+v.name+'"?',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.delV=null;render()}},ic('close'))),h('div',{class:'acc'}),h('div',{class:'body'},h('p',{},`This removes the ${v.name} control from the list. Phones stop showing it. The variable and its value stay in your project.`),h('div',{class:'pf'},h('button',{class:'btn ter',onclick:()=>{st.delV=null;render()}},'Cancel'),h('button',{class:'btn pri',onclick:()=>{st.vars=st.vars.filter(x=>x!==v);if(st.selV===v.id)st.selV=null;st.delV=null;touch();render();toast(v.name+' removed')}},'Remove control'))))}
 function delDlg(){const dv=st.delV&&st.vars.find(x=>x.id===st.delV);if(dv)return delVDlg(dv);const g=st.groups.find(x=>x.id===st.delG);if(!g)return null;const n=g.items.length;
@@ -652,7 +696,7 @@ function render(){
   const showRt=st.tab==='editor'&&st.open.rt&&!st.playing,showLn=st.tab==='launcher'&&st.open.ln;
   if(st.playing)stage.append(playView());
   if(showRt||showLn){stage.append(h('div',{class:'xscrim'}));
-    if(showRt)stage.append(h('div',{class:'xmain'},colorPop(),rtDialog()));else stage.append(h('div',{class:'xmain'},launcher()))}
+    if(showRt)stage.append(h('div',{class:'xmain'},colorPop(),rtDialog()));else stage.append(h('div',{class:'xmain'},settings()))}
   if(showRt&&st.open.pick)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},picker()));
   if(showRt&&st.open.vpick)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},varPicker()));
   if(showRt&&(st.delG||st.delV))stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},delDlg()));
@@ -663,10 +707,10 @@ function render(){
     h('button',{class:'btn ter sm',onclick:()=>{const its=st.groups.flatMap(g=>g.items);if(!its.length)return toast('Add an instance first');const cur=its.find(i=>i.issue);const o=['','missing','type'];if(!cur)its[0].issue='missing';else cur.issue=o[(o.indexOf(cur.issue)+1)%3];render()}},'Simulate problem'),
     h('button',{class:'btn ter sm',onclick:()=>{st.groups=[];st.vars=[];st.selG=st.selI=st.panel=null;touch();render()}},'Clear list'),
     h('button',{class:'btn ter sm',onclick:()=>{st.groups=sample();st.vars=vsample();st.panel=null;touch();render()}},'Load sample list'));
-  else dev.append(h('span',{},'Test controls'),h('label',{style:'display:flex;gap:6px;align-items:center;font-size:12px'},h('input',{type:'checkbox',checked:st.failNext?'':null,onchange:e=>{st.failNext=e.target.checked}}),'Next public link fails'),
+  else dev.append(h('span',{},'Flow screens'),...[['B11','Connections'],['B12','Running'],['B13','Phone joined'],['B14','Turn off?'],['B15','Server off'],['B16','Reloading'],['B17','Port changed'],['B18','Port in use'],['B19','Link copied']].map(([k,l])=>h('button',{class:'btn ter sm',title:k+' · '+l,onclick:()=>jump(k)},k+' '+l)),h('span',{},'Test controls'),h('label',{style:'display:flex;gap:6px;align-items:center;font-size:12px'},h('input',{type:'checkbox',checked:st.failNext?'':null,onchange:e=>{st.failNext=e.target.checked}}),'Next public link fails'),
     h('button',{class:'btn ter sm',disabled:st.playing&&st.pub==='on'?null:true,onclick:()=>{st.phones.push({name:"Sam's Pixel",joined:'Joined just now',via:'Public'});render()}},'Add a public phone'));
 }
-$$('.tab').forEach(t=>t.addEventListener('click',()=>{st.tab=t.dataset.t;if(st.tab==='editor')st.open.rt=true;if(st.tab==='launcher')st.open.ln=true;render()}));
+$$('.tab').forEach(t=>t.addEventListener('click',()=>{st.tab=t.dataset.t;if(st.tab==='editor')st.open.rt=true;if(st.tab==='launcher'){st.open.ln=true;st.lnView='list'}render()}));
 render();
 })();
 </script>
