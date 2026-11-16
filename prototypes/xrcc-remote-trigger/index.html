@@ -610,15 +610,15 @@ function lnShell(){
 function jump(k){
   st.open.ln=true;st.tab='launcher';st.open.offConfirm=false;st.open.confirm=false;st.srv='on';st.port=3001;st.portDraft='3001';st.portErr='';st.srvErr='';st.phones=[];
   const ph1={name:"Alex's iPhone",joined:'Joined just now',via:'Local'};
-  if(k==='B11')st.lnPage='projects'; else st.lnPage='connections';
-  if(k==='B13'||k==='B14')st.phones=[ph1];
-  if(k==='B14')st.open.offConfirm=true;
-  if(k==='B15'){st.srv='off'}
-  if(k==='B17')st.portDraft='3002';
+  if(k==='B9')st.lnPage='projects'; else st.lnPage='connections';
+  if(k==='B11'||k==='B12')st.phones=[ph1];
+  if(k==='B12')st.open.offConfirm=true;
+  if(k==='B13'){st.srv='off'}
+  if(k==='B15')st.portDraft='3002';
   render();
-  if(k==='B16')srvReload(false);
-  if(k==='B18'){st.portDraft='3000';srvReload(false)}
-  if(k==='B19')toast('Link copied');
+  if(k==='B14')srvReload(false);
+  if(k==='B16'){st.portDraft='3000';srvReload(false)}
+  if(k==='B17')toast('Link copied');
 }
 function offDlg(){return h('div',{class:'dlg cf'},h('div',{class:'head'},'Turn off Phone remote?',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.offConfirm=false;render()}},ic('close'))),h('div',{class:'acc'}),h('div',{class:'body'},h('p',{},`${st.phones.length===1?'1 phone is':st.phones.length+' phones are'} connected and will lose control. You can turn the server back on at any time.`),
   h('div',{class:'pf'},h('button',{class:'btn ter',onclick:()=>{st.open.offConfirm=false;render()}},'Cancel'),h('button',{class:'btn pri',onclick:srvOff},'Turn off'))))}
@@ -722,7 +722,7 @@ function render(){
     h('button',{class:'btn ter sm',onclick:()=>{const its=st.groups.flatMap(g=>g.items);if(!its.length)return toast('Add an instance first');const cur=its.find(i=>i.issue);const o=['','missing','type'];if(!cur)its[0].issue='missing';else cur.issue=o[(o.indexOf(cur.issue)+1)%3];render()}},'Simulate problem'),
     h('button',{class:'btn ter sm',onclick:()=>{st.groups=[];st.vars=[];st.selG=st.selI=st.panel=null;touch();render()}},'Clear list'),
     h('button',{class:'btn ter sm',onclick:()=>{st.groups=sample();st.vars=vsample();st.panel=null;touch();render()}},'Load sample list'));
-  else dev.append(h('span',{},'Flow screens'),...[['B11','Connections'],['B12','Running'],['B13','Phone joined'],['B14','Turn off?'],['B15','Server off'],['B16','Reloading'],['B17','Port changed'],['B18','Port in use'],['B19','Link copied']].map(([k,l])=>h('button',{class:'btn ter sm',title:k+' · '+l,onclick:()=>jump(k)},k+' '+l)),h('span',{},'Test controls'),h('label',{style:'display:flex;gap:6px;align-items:center;font-size:12px'},h('input',{type:'checkbox',checked:st.failNext?'':null,onchange:e=>{st.failNext=e.target.checked}}),'Next public link fails'),
+  else dev.append(h('span',{},'Flow screens'),...[['B9','Connections'],['B10','Running'],['B11','Phone joined'],['B12','Turn off?'],['B13','Server off'],['B14','Reloading'],['B15','Port changed'],['B16','Port in use'],['B17','Link copied']].map(([k,l])=>h('button',{class:'btn ter sm',title:k+' · '+l,onclick:()=>jump(k)},k+' '+l)),h('span',{},'Test controls'),h('label',{style:'display:flex;gap:6px;align-items:center;font-size:12px'},h('input',{type:'checkbox',checked:st.failNext?'':null,onchange:e=>{st.failNext=e.target.checked}}),'Next public link fails'),
     h('button',{class:'btn ter sm',disabled:st.playing&&st.pub==='on'?null:true,onclick:()=>{st.phones.push({name:"Sam's Pixel",joined:'Joined just now',via:'Public'});render()}},'Add a public phone'));
 }
 $$('.tab').forEach(t=>t.addEventListener('click',()=>{st.tab=t.dataset.t;if(st.tab==='editor')st.open.rt=true;if(st.tab==='launcher'){st.lnPage='projects';st.open.offConfirm=false}render()}));
