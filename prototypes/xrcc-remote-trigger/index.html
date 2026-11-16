@@ -197,7 +197,6 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;height:280px;text-align:center}
 .empty .ph{width:48px;height:48px;border-radius:8px;background:#252528;display:grid;place-items:center}
 .empty b{font-size:14px}.empty p{margin:0;max-width:360px;font-size:12px;color:var(--text2)}
-.irow .acts .ib.cn{opacity:1;pointer-events:auto}
 .bbody{flex:1;display:flex;min-height:0}
 .blib{width:330px;background:#1e1e21;padding:12px;display:flex;flex-direction:column;gap:12px;flex:none}
 .blib .bt{display:flex;gap:16px;font-size:14px;font-weight:700}.blib .bt .on{color:var(--text)}
@@ -205,6 +204,17 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .blib .bc{display:flex;flex-direction:column;gap:4px}.blib .bc div{height:32px;display:flex;align-items:center;padding:0 8px;border-radius:6px;font-size:13px;font-weight:700}.blib .bc .on{background:#33294d}
 .blib .bl{display:flex;flex-direction:column;gap:12px}.blib .bnode{position:static;width:auto}
 .bmain{flex:1;display:flex;flex-direction:column;background:#1e1e21}
+.es{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;padding:24px 16px;flex:1}
+.es b{font-size:16px;color:var(--text)}.es p{margin:0;max-width:340px;font-size:14px;line-height:1.4;color:var(--text2)}
+.eart{position:relative;width:240px;height:116px;margin-bottom:6px}
+.eart i{position:absolute;display:grid;place-items:center;border-radius:17px;border:1.5px solid var(--text2);color:var(--text2);width:64px;height:64px;top:30px}
+.eart i.a{left:14px;transform:rotate(10deg)}.eart i.c{left:80px;top:6px;width:80px;height:80px;border-radius:21px;border-color:var(--accent);color:var(--accent);background:var(--panel,#1c1c1e);z-index:1}.eart i.b{right:14px;transform:rotate(-10deg)}
+.eart i.c svg{width:36px;height:36px}.eart i svg{width:28px;height:28px}
+.slot{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 16px;border:1px dashed var(--border);border-radius:8px;margin:6px 0;color:var(--text2)}
+.slot .t{flex:1;display:flex;flex-direction:column;gap:2px}.slot .t b{color:var(--text);font-size:14px}.slot .t span{font-size:12px}
+.bback{display:flex;align-items:center;gap:10px;padding:8px 24px;font-size:14px;color:var(--text2)}
+.bback .ib{width:36px;height:36px}.bback .cur{color:var(--text);font-weight:700}.bback button.crumb{background:none;border:0;color:inherit;font:inherit;cursor:pointer;padding:0}.bback button.crumb:hover{color:var(--text);text-decoration:underline}.bback .esc{margin-left:6px;font-size:12px;color:var(--text2);opacity:.7}
+.chv{display:flex;color:var(--text2);opacity:.7}.irow.vr:hover .chv{opacity:1}
 .bmain .bcrumb{align-self:flex-start;background:none;border:0;color:var(--text);font:inherit;font-weight:700;font-size:14px;padding:8px 24px;cursor:pointer}
 .bnode.ev .bh{background:#a62b2b;text-align:center}.bnode .bh{text-align:center}
 .vblk{display:flex;flex-direction:column;margin-top:8px}
@@ -248,7 +258,7 @@ const P={
  info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>',plus:'<path d="M12 5v14M5 12h14"/>',addobj:'<path fill="currentColor" stroke="none" fill-rule="nonzero" transform="translate(2 2)" d="M8.32 19.17H.83V5.83h13.34v3.04c.1 0 .42 0 .83.14V5.59l4.17-4.17v8.17H20V0H5L0 5v15h9.07c-.28-.18-.58-.45-.75-.83zM5.35.83h13.23L14.41 5H1.18L5.35.83z"/><path fill="currentColor" stroke="none" fill-rule="nonzero" transform="translate(23 12)" d="M5.87 0h-.73v5.13H0v.73h5.14V11h.73V5.87H11v-.73H5.87z"/>',link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
  conn:'<path fill="currentColor" stroke="none" fill-rule="evenodd" transform="translate(1.9 3.9)" d="M16.48 5.16c0-1.93-1.84-3.48-4.07-3.48H6.74V0H0v4.22h6.74V2.54h5.67c1.8 0 3.22 1.2 3.22 2.62 0 1.43-1.43 2.62-3.22 2.62H7.54c-2.24 0-4.08 1.64-4.08 3.69 0 2.04 1.84 3.69 4.08 3.69h5.92v1.68h6.74v-4.22h-6.74v1.68H7.54c-1.79 0-3.22-1.28-3.22-2.83 0-1.55 1.43-2.83 3.22-2.83h4.87c2.23 0 4.07-1.55 4.07-3.48zM5.89 3.36h-.83V.85h.83v2.51zM4.2 3.36H.85V.85H4.2v2.51zm13.46 12.62h-3.35v-2.51h3.35v2.51zm1.68 0h-.83v-2.51h.83v2.51z"/>',
  search:'<circle cx="11" cy="11" r="6"/><path d="M16 16l4 4"/>',sort:'<path d="M7 4v16M7 20l-3-3M7 20l3-3M17 20V4M17 4l-3 3M17 4l3 3"/>',filter:'<path d="M4 5h16l-6 8v6l-4-2v-4z"/>',
- arrow:'<path d="M9 5l7 7-7 7"/>',folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
+ arrow:'<path d="M9 5l7 7-7 7"/>',chev:'<path d="M6 9l6 6 6-6"/>',chevu:'<path d="M6 15l6-6 6 6"/>',folder:'<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/>',
  play:'<circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l5.5-3.5z"/>',check:'<path d="M5 12l5 5 9-10"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>',bulb:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>',
  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/>',text:'<path d="M5 6h14M12 6v13M9 19h6"/>',palette:'<path d="M12 3a9 9 0 1 0 0 18c1.5 0 2-1 1.5-2s0-2 1.5-2h2a3 3 0 0 0 3-3c0-5-4-11-8-11z"/>',
  music:'<path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>',vol:'<path d="M4 10v4h4l5 4V6L8 10z"/><path d="M16 9a4 4 0 0 1 0 6"/>',undo:'<path d="M9 7 4 12l5 5"/><path d="M4 12h10a6 6 0 0 1 0 6"/>',port:'<rect x="7" y="3" width="10" height="18" rx="2"/>',land:'<rect x="3" y="7" width="18" height="10" rx="2"/>',hand:'<path d="M6 12V6a1.5 1.5 0 0 1 3 0v5V4.5a1.5 1.5 0 0 1 3 0V11V5.5a1.5 1.5 0 0 1 3 0V12v-3a1.5 1.5 0 0 1 3 0v6c0 4-3 6-6 6s-6-3-6-6z"/>'
@@ -350,6 +360,7 @@ function ctlPanel(g,it){
       b.append(row);box.append(b)}
     wrap.append(box)});
   return wrap}
+function emptyState(t,b,st2){return h('div',{class:'es',style:st2||null},h('div',{class:'eart','aria-hidden':'true'},h('i',{class:'a'},ic('play',28)),h('i',{class:'b'},ic('folder',28)),h('i',{class:'c'},ic('bulb',36))),h('b',{},t),h('p',{},b))}
 function itemRow(g,it){
   const inst=IB[it.inst];
   const r=h('div',{class:'irow'+(it.issue?(it.issue==='type'?' err':' warn'):'')},
@@ -360,14 +371,14 @@ function itemRow(g,it){
       h('button',{class:'ib del',title:'Remove','aria-label':'Remove',disabled:st.playing?true:null,onclick:e=>{e.stopPropagation();g.items=g.items.filter(x=>x!==it);touch();render()}},ic('trash'))));
   return r}
 function addTrigger(){const g={id:gid(),name:'New Remote Trigger'+(st.groups.length?` (${st.groups.length})`:''),color:'#65a7ff',items:[]};st.groups.push(g);st.selG=g.id;st.open.menu=false;st.pickFor=g.id;st.pickNew=g.id;st.pick.sel=[];st.open.pick=true;touch();render()}
-function addVar(){st.open.menu=false;st.vpick={tab:'pv',inst:null,sel:null,q:''};st.open.vpick=true;render()}
+function addVar(){st.open.menu=false;st.vpick={tab:'iv',inst:null,sel:null,q:''};st.open.vpick=true;render()}
 function rtDialog(){
   const list=h('div',{class:'list'});
   const footEl=h('div',{class:'foot'},ic('info',16),st.playing?'Play is running. Edits show up next time Play starts.':'Saved with the project. Play uses a snapshot, so edits made during Play show up next time.');
   st.groups.forEach((g,gi)=>{const blk=h('div',{class:'gblk',style:'--gc:'+g.color}),its=h('div',{class:'items'});blk.append(groupHead(g,gi),its);
     g.items.forEach(it=>its.append(itemRow(g,it)));
-    if(!g.items.length)its.append(h('div',{class:'hint'},'Add Item to remote them by your mobile'));list.append(blk)});
-  if(!st.groups.length&&!st.vars.length)list.append(h('div',{class:'empty'},h('div',{class:'ph'},ic('rt',24)),h('b',{},'No phone controls yet'),h('p',{},'Add a trigger button to run flows on your instances, or a variable control to change one value from the phone.')));
+    if(!g.items.length)its.append(h('div',{class:'slot'},ic('cube',18),h('div',{class:'t'},h('b',{},'No instances yet'),h('span',{},'Add the objects this button should run when you press it.')),h('button',{class:'btn pri sm',disabled:st.playing?true:null,onclick:()=>{st.pickFor=g.id;st.pickNew=null;st.pick.sel=[];st.open.pick=true;render()}},'Add instances')));list.append(blk)});
+  if(!st.groups.length&&!st.vars.length)list.append(emptyState('Your phone deck is empty','Add a trigger button to run flows on your instances, or a variable control to change one value, all from your phone.'));
   list.append(...varBlock(),footEl);
   const n=issues();const anyS=st.sens.gyro||st.sens.accel||st.sens.mic;
   const sensRow=(k,t)=>h('div',{class:'tgl'},t,h('button',{class:'sw2'+(st.sens[k]?' on':''),role:'switch','aria-checked':String(st.sens[k]),onclick:()=>{st.sens[k]=!st.sens[k];touch();render()}}));
@@ -411,7 +422,7 @@ function picker(){
       added?h('span',{title:'Already in this group',style:'display:flex;color:var(--accent)'},ic('link',16)):null,st.pick.tab==='pv'?h('span',{class:'tag'},x.ctl[0].kind==='Toggle'?'Bool':x.ctl[0].kind):(x.ctl&&x.ctl.length?h('span',{title:'Has things to remote',style:'display:flex;color:var(--text2)'},ic('conn',16)):null));
     if(!dis)b.append(h('span',{class:'cbx static'+(on?' on':'')},on?ic('check'):null));
     treeLines(b,arr,idx);tree.append(b)});
-  if(!tree.children.length)tree.append(h('div',{class:'muted',style:'padding:20px;text-align:center'},'Nothing matches "'+st.pick.q+'".'));
+  if(!tree.children.length)tree.append(st.pick.q?emptyState('No instance matches “'+st.pick.q+'”','Try another name, or clear the search to see everything in this scene.'):emptyState('This scene has no instances yet','Add an object or a UI element in Edit mode, then come back to link it to a phone button.'));
   const f=h('input',{class:'fld',placeholder:'Find...',value:st.pick.q,'aria-label':'Find'});f.addEventListener('input',()=>{st.pick.q=f.value;const p=f.selectionStart;render();const n=$('.pk .fld');n.focus();n.setSelectionRange(p,p)});
   const close=()=>{st.open.pick=false;st.pick.q='';if(st.pickNew){const gg=st.groups.find(x=>x.id===st.pickNew);if(gg&&!gg.items.length)st.groups=st.groups.filter(x=>x!==gg);st.pickNew=null;touch()}render()};
   return h('div',{class:'dlg pk'},h('div',{class:'head'},ic('cube',18),'Select Instances',h('span',{class:'sp'}),h('button',{class:'ib',onclick:close},ic('close'))),h('div',{class:'acc'}),
@@ -447,7 +458,7 @@ function varBlock(){
     if(st.renameV!==v.id)head.append(
       h('button',{class:'ib tint',title:'Rename','aria-label':'Rename',onclick:e=>{e.stopPropagation();st.renameV=v.id;render()}},ic('edit')),
       h('button',{class:'ib del',title:'Remove control','aria-label':'Remove control',disabled:st.playing?true:null,onclick:e=>{e.stopPropagation();st.delV=v.id;render()}},ic('trash')));
-    const row=h('div',{class:'irow vr'+(on?' sel':''),onclick:()=>{st.selV=on?null:v.id;render()}},h('span',{style:'display:flex;color:'+(proj?'var(--pvar)':'var(--text)')},ic(proj?'folder':'cube',18)),h('div',{class:'nm'},v.bind||v.name),st.playing?h('span',{class:'tag ok'},'Live'):null,h('span',{class:'tag',title:vSum(v)},vSum(v)));
+    const row=h('div',{class:'irow vr'+(on?' sel':''),onclick:()=>{st.selV=on?null:v.id;render()}},h('span',{style:'display:flex;color:'+(proj?'var(--pvar)':'var(--text)')},ic(proj?'folder':'cube',18)),h('div',{class:'nm'},v.bind||v.name),st.playing?h('span',{class:'tag ok'},'Live'):null,h('span',{class:'tag',title:vSum(v)},vSum(v)),h('span',{class:'chv','aria-hidden':'true'},ic(on?'chevu':'chev',16)));
     const items=h('div',{class:'items'},row);if(on&&!st.playing)items.append(varSettings(v));
     return h('div',{class:'gblk',style:'--gc:'+v.color},head,items)})}
 function varPicker(){
@@ -467,14 +478,17 @@ function varPicker(){
   rows.forEach(x=>{const sup=VK.includes(x.kind),added=st.vars.some(v=>v.id===x.id),dis=!sup||added,on=vp.sel===x.id;
     list.append(h('button',{class:'tn leaf vpi'+(on?' sel':'')+(dis?' dis':''),title:added?'Already added':!sup?'Not in P1':null,onclick:()=>{if(dis)return;vp.sel=x.id;render()}},h('span',{style:'display:flex;color:'+(proj?'var(--pvar)':'var(--text2)')},ic(proj?'folder':x.i||'cube',18)),h('span',{class:'g'},x.name),h('span',{class:'ty'},added?(x.kind==='Toggle'?'Bool':x.kind)+' · Already added':tyOf(x.kind))))});
   const instName=!proj&&vp.inst?IB[vp.inst].n:'';
-  if(!proj&&vp.inst&&!rows.length)list.append(h('div',{class:'empty',style:'height:auto;flex:1'},h('div',{class:'ph'},ic('folder',24)),h('b',{},'No variables in '+instName),h('p',{},'Add a variable to this instance in Behaviour, or pick another instance on the left.')));
+  if(!proj&&vp.inst&&!rows.length)list.append(emptyState('No variables in '+instName,'Add a variable to this instance in Behaviour, or pick another instance on the left.'));
+  if(!proj&&!vp.inst)list.append(emptyState('Pick an instance first','Choose an instance on the left, and its variables will show up here.'));
+  if(proj&&!PVARS.length)list.append(emptyState('No project variables yet','Create one from Project Variables in the top toolbar, then pick it here.'));
+  if(proj&&PVARS.length&&PVARS.filter(p=>VK.includes(p.kind)).every(p=>st.vars.some(v=>v.id===p.id)))list.append(emptyState('Every variable is on the phone','All project variables already have a control. Remove one from the list to add it again.'));
   const hint=proj?'Project variables belong to the whole project, so no instance is needed.':vp.inst?`Variables in ${instName}.${rows.length?' Pick one; each control changes one value.':''}`:'Pick an instance on the left to see its variables.';
   const add=h('button',{class:'btn ter wide',disabled:vp.sel?null:true,onclick:()=>{const x=rows.find(a=>a.id===vp.sel);if(!x)return;const v={id:x.id,name:x.name,bind:x.bind,src:x.src,kind:x.kind,i:x.i,color:COLS[(st.groups.length+st.vars.length)%COLS.length],s:{control:'input',min:0,max:100,dec:0,maxc:40}};st.vars.push(v);st.selV=v.id;st.open.vpick=false;touch();render();toast(x.name+' added')}},'Add control');
   return h('div',{class:'dlg pk2'},h('div',{class:'head'},ic('folder',18),'Select Variable',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:close},ic('close'))),h('div',{class:'acc'}),
     h('div',{class:'body2'},
       h('div',{class:'vcol l'+(proj?' dim':'')},h('div',{class:'sr'},f,h('button',{class:'ib tint',style:'width:36px;height:36px','aria-label':'Search'},ic('search'))),tree),
       h('div',{class:'vdiv'}),
-      h('div',{class:'vcol r'},h('div',{class:'vtabs',role:'tablist'},[['pv','Project variables'],['iv','Instance variables']].map(([k,l])=>h('button',{role:'tab','aria-selected':String(vp.tab===k),class:(vp.tab===k?'on':'')+(k==='pv'?' pv':''),onclick:()=>{st.vpick={tab:k,inst:vp.inst,sel:null,q:vp.q||''};render()}},l))),h('p',{class:'vhint'},hint),list,add)))}
+      h('div',{class:'vcol r'},h('div',{class:'vtabs',role:'tablist'},[['iv','Instance variables'],['pv','Project variables']].map(([k,l])=>h('button',{role:'tab','aria-selected':String(vp.tab===k),class:(vp.tab===k?'on':'')+(k==='pv'?' pv':''),onclick:()=>{st.vpick={tab:k,inst:vp.inst,sel:null,q:vp.q||''};render()}},l))),h('p',{class:'vhint'},hint),list,add)))}
 /* ---------- launcher ---------- */
 function drawQr(cv,seed){const n=29,g=cv.getContext('2d');cv.width=cv.height=n;g.fillStyle='#fff';g.fillRect(0,0,n,n);g.fillStyle='#000';let s=+seed||123456;const r=()=>(s=(s*1103515245+12345)&0x7fffffff)/0x7fffffff;
   for(let y=0;y<n;y++)for(let x=0;x<n;x++){const f=(x<8&&y<8)||(x>n-9&&y<8)||(x<8&&y>n-9);if(!f&&r()>.52)g.fillRect(x,y,1,1)}
@@ -574,7 +588,7 @@ function renderPhone(){
     if((ph.land?'landscape':'portrait')!==snap.orient)s.append(h('div',{class:'bn',style:'text-align:center'},'Best in '+snap.orient));
     if(ph.changed)s.append(h('div',{class:'bn w'},'The list changed in XRCC. It updates next time Play starts.'));
     if(cellsOf(snap.groups,snap.vars).length){const g=h('div',{class:'pdeck'+(ph.conn!=='local'?' paused':'')});fillDeck(g,snap.groups,snap.vars);s.append(g);fit(g)}
-    else s.append(h('div',{class:'bn',style:'text-align:center;padding:28px'},'Nothing to control yet. Choose what to remote in XRCC.'));
+    else s.append(emptyState('Nothing to control yet','Pick what to remote in XRCC, and your buttons and sliders will show up here.'));
     if(st.sens.gyro||st.sens.accel||st.sens.mic)s.append(h('div',{class:'bn',style:'display:flex;gap:8px;align-items:center'},ic('phone',16),h('span',{style:'flex:1'},st.sensUser&&!ph.sensor?`Sensors in use by ${st.sensUser}`:ph.sensor?'This phone is sending sensor data':'Use this phone for sensors'),
       !ph.sensor?h('button',{class:'btn ter sm',disabled:st.sensUser&&!ph.sensor?true:null,onclick:()=>{ph.sensor=true;st.sensUser=ph.dev==='ipad'?"Alan's iPad":"Alan's iPhone";renderPhone();render()}},'Start'):h('button',{class:'btn ter sm',onclick:()=>{ph.sensor=false;st.sensUser=null;renderPhone();render()}},'Stop')))}
   if(sc==='ended'){s.classList.add('c');s.append(h('div',{class:'hero',style:'background:var(--elev)'},ic('info')),h('h2',{style:'margin:0'},'Play ended'),h('div',{class:'muted'},'Ask the host to start Play again, then join with the new code.'),h('button',{class:'btn pri',onclick:()=>go('join')},'Join again'))}
@@ -590,8 +604,10 @@ function bhvBoard(){
     h('div',{class:'bc'},cats.map((c,k)=>h('div',{class:k?'':'on'},c))),
     h('div',{class:'bl'},[['Start',['']],['Remote Start',['']],['Controller Press',['Controller Index']]].map(([t,r])=>node(t,0,0,r,true))));
   return h('div',{class:'bbody'},lib,h('div',{class:'bmain'},
-    h('button',{class:'bcrumb',title:'Back to Remote Triggers',onclick:()=>{st.bhv=null;st.bhvG=null;render()}},n+' -> '+gn),
+    h('div',{class:'bback'},h('button',{class:'ib tint','aria-label':'Back to Remote Triggers',title:'Back to Remote Triggers (Esc)',onclick:bhvBack,style:'transform:scaleX(-1)'},ic('arrow',16)),h('button',{class:'crumb',onclick:bhvBack},'Remote Triggers'),h('span',{},'/'),h('span',{class:'cur'},n),h('span',{class:'esc'},'Esc  to go back')),
     h('div',{class:'bcanvas'},node('Remote Start',360,140,[''],true),node('Set Visible',760,176,[n,'Visible']),h('div',{class:'bline'}))))}
+function bhvBack(){st.bhv=null;st.bhvG=null;render()}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&st.bhv&&!/INPUT|SELECT|TEXTAREA/.test((e.target||{}).tagName||'')){bhvBack()}});
 function render(){
   $$('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.t===st.tab)));
   $('#playPill').innerHTML=st.playing?'<span class="dot"></span> Playing'+(st.phones.length?' · '+st.phones.length+' phone'+(st.phones.length>1?'s':''):''):'<span class="dot off"></span> Editing';
