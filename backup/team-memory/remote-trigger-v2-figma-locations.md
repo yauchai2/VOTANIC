@@ -31,3 +31,7 @@ Alan asked on 2026-11-06 for complete XRCC Remote Trigger UI/UX flows in the Str
 - This was patched on 2026-11-06 to fall back to the nearest token.
 
 Related: [[feedback-self-check-after-edits]], [[library-new-components-allowed]].
+
+**History (condensed):** 2026-11-12 P1 became a top-to-bottom list (old XRCC dialog), web auto-flows; P2 page 2014:14903 keeps the Stream Deck grid. Feature components: RT / Instance row 2053:2135, RT / Group row 2053:2139, RT / Variable row 2185:3622, Remote Key / Text input 2020:12991; helper `_rt_lib3` 2018:3319.
+
+**UPDATE 2026-11-16:** P1 lane 1 renumbered A1–A15 (A2 choose type menu, A3 Select Instances, A5 colour picker, A11/A12 Select Variable tabs, A13 control added, A14 Remote Start, A15 remove). Sections widened to 20440. Lane 2 has B9/B10 Settings · Remote Trigger server status. Alan's own notes live in section "Notes" 2220:6100 (do not edit). See [[remote-trigger-trigger-vs-variable-model]].

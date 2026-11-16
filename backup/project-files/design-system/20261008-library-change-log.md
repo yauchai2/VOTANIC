@@ -1509,3 +1509,49 @@ Page Button, Library file. Three sets: `Button / Dark / 40px` (17463:54657, Stat
 - 預設為收合 pill，流程改為由左至右：01 Pill 收合、02 卡片展開、03 Hover 鎖定 Play、04 Play from current scene、05 Hover 鎖定 New scene、06 完成但有缺失檔案、07 缺失檔案展開、08 Review、09 全部完成、10 場景內缺失檔案、11 Hover 缺失場景、12 Asset Panel（篩選 Missing）。
 - 舊號對照：01→01、03→02、02→03、09→04、07→05、04→06、04b→07、04c→08、06→09、08→10、08b→11、10→12。
 - 連接線重畫（含原先起點錯誤的 Open Play menu）；Asset Panel 缺失 tile 排版微調。未新增 component 或 token。
+
+## 2026-11-12 · XRCC AI Provider annotations 整理（Workbench 1354:2549）
+
+原有 Figma annotations 48 則，整理後 25 則（共刪除 27 則，改寫 3 則）。畫板、prototype 連線（739 項 reactions，無失效目標）及畫面內容均未改動。
+
+刪除（重複，只保留首次出現處）：
+- 「Can do」：「滑鼠停留在「+N」會顯示其餘功能…」共 12 則，保留 A3 一則，其餘於 A3 第二處、A3b、A3c、B2、B2b、B2c 刪除（hover 文字另見 5 · Hover and tooltips 的 Tooltip spec）。
+- 「link」（開啟 Settings › Connections（D1））、「Key select」（Key 只能從 Key Management 選取）：A3b、A3c 各刪 1 則，保留 A3。
+- Gemini VPN「Title」：A3b 刪除，保留 A3。
+- 「Fallback text」（語音複製失效時改用預設語音…）：E6、M1、M2 刪除，保留 C1。
+- 「Add key」（開啟 D2…）：E4、E5、M5 刪除，保留 D1、D3。
+- 「Menu」（由 key 列的三點開啟…）：M1、M3、M5 刪除，保留 D5（M1 為語音選單、M3 為 session 選單，內容並不適用）。
+
+刪除（內容錯誤）：
+- C2「Show all voices」、C2b「Show recommended only」兩則誤載「開啟 Settings › Connections（D1）管理 key」，已刪；C2b 板本身的說明已涵蓋此行為。
+
+改寫：
+- E6：「Preview line 為空時顯示提示文字，各聲音的試聽停用。」（移除已取消的 Play all）。
+- B3：「橫幅可按右上角 ✕ 關閉，關閉後不再顯示。」（刪去「也可保留在頁面上」）。
+- B2b：「選擇任務時，若沒有已連接的 provider 支援該功能：顯示可支援的 provider，並引導新增。」
+
+未改動：畫布上的註解框 Note · A2、Note · A5、Legend 及畫面內 UI 文案 Note。
+
+2026-11-12 續：統一「Tasks」分頁命名為「Models」（分頁標籤早已是 Models）。改名：Section「2 · Tasks and providers」→「2 · Models and providers」；板「B1 · AI · Tasks」→「B1 · AI · Models」；Overview 內第 2 區標題「Tasks and providers」→「Models and providers」。「任務／task」作為功能概念（task card、4 of 6 tasks）保持不變。網頁 prototype（PR #6）分頁標籤已是 Models，且不含 annotation 文字，無需改動。
+
+## 2026-11-12 Remote Trigger P1 改版（Workbench）
+- 新增 Workbench 本地元件（Components 頁，Remote Trigger · Components）：RT / List row、Remote Key / Text input。
+- 未修改 XRCC (PC) Library，未新增 token。
+
+## 2026-11-13 Remote Trigger P1: variables go inside groups
+- Workbench page 1481:10758. Removed the separate "Block · Variables" in A3, A4, A5, A6, A7, A10, A11, A12; the variable rows (RT / Variable row) now sit inside the Show controls group (A12 keeps the inline settings under Spot intensity).
+- Added "Variable · Guest count" (Number · 0–20) to the Stage group in A4, A6, A7, matching the phone decks.
+- Phone decks C5–C14 and C7: order is now group button, then that group's controls (Stage moved after Show controls' controls).
+- Picker titles: "Select Item" in A2 and A11; A11 renamed "A11 · Add a variable"; A2 Project variables tab ↔ A11 Instance variables tab linked in the prototype.
+- Removed the "Variables · Add variable" row from the hover spec table; Overview scope text and A11/C5 annotations updated. Deleted a stray dialog copy at page level (2197:29938).
+
+## 2026-11-16 Remote Trigger P1: Trigger vs Variable control model (Workbench page 1481:10758)
+- Model verified in Notion: RemoteTrigger has an instances list (one button, many instances); each web widget has one binding (one variable).
+- Lane 1 renumbered A1–A15 and widened all sections to 20440: new A2 "Choose what to add" (Library dropdown-menu + menu-item), A3 Select Instances (multi-select, Library checkbox, no variable tabs), A4 trigger added, new A5 colour picker (old PC UI "Color" swatches + Library Text Inputs), A6–A10 shifted, A11/A12 Select Variable (Project tab / Instance tab with instances as non-selectable folders), A13 new Guest count control with settings, A14 Remote Start, A15 Remove trigger.
+- Remote list: variables moved out of groups into their own Variable control sections (header swatch + one variable row); swatches bound to avatar/* and status/error tokens.
+- Phone decks: icon circles bound to the section colour.
+- Lane 2: new B9/B10 Settings · Connections with a "Remote Trigger server" status row (copied from AI Provider D0 board); old Server IP field dropped for P1.
+- Connectors redrawn to the 1333:8666 standard, labels renumbered, annotations rewritten, Overview and hover spec text updated, prototype links wired (no broken destinations).
+- Raw values left on purpose: colour picker gradients and popover shadow (picker content). No Library change, nothing to publish.
+
+- 2026-11-16 (Remote Trigger P1): A11／A12 Select a variable 改回兩欄 960x640（左：Search + 場景樹；右：Project／Instance variables 分頁、提示、變數列表、Add control）。Instance 分頁先選左邊 Instance 再選變數；Project 分頁場景樹變淡。Annotations 已更新，連結（分頁互換、Add → A13）已核對。

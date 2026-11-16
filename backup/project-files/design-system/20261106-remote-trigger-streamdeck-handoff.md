@@ -65,3 +65,12 @@ Source: Notion "Remote Trigger Implementation Spec". Remote control only reaches
 - Phone layout can be Grid or Stack (prototype toggle, stack order follows deck position; spec decision still open).
 - Vector3 slider minimum is 2 × 2 here, equal to 4 × 5 on the 12-column grid.
 - Figma synced: Phone access field (A3, A4), grouped palette dialog (A5), Preset layout button (A1–A7), renamed labels, resize grip on keys.
+
+## 2026-11-12 改版：P1 改為本階段（清單式）設計
+依據新版 Implementation Spec 及 Alan 的指示：本階段以現有 XRCC Remote Trigger 視窗（清單）為基礎，網格拖放留待下一階段；網頁端依清單由左至右、由上至下自動排成簡單網格。
+- 頁面：Workbench「XRCC Remote Trigger (P1)」（1481:10758）為本階段；P2（2014:14903）保留舊 Stream Deck 網格版，作為下一階段參考。
+- Lane 1 重做為 A1 至 A8：空清單、選擇項目（Triggers／Project／Instances）、加入、編輯設定（尺寸 1×1／1×2、Min／Max／Decimal、顏色、最大字數、唯讀）、橫向版面、警告與錯誤、Play 期間鎖定、感應器。
+- Lane 3 的 C5、C6、C7、C8、C9、C10 改為直向 3 欄自動排列，C12 為橫向 6 欄；已移除分頁點與縮放把手。
+- 新元件（Components 頁）：RT / List row（State：Default、Selected、Warning、Error）、Remote Key / Text input。沒有修改 Library，沒有新增 token。
+- 假設：1×2 解讀為一行兩格寬；直向 3 欄、橫向 6 欄為本設計建議，規格只要求格子為正方形且不小於可觸控尺寸。
+- 未處理：A 系列原有 prototype 連結已隨舊內容移除，尚未重新連線；Lane 4 的 Hover 與 Tooltip 規格畫面未重畫。

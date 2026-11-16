@@ -18,3 +18,5 @@ Notion "Remote Trigger Implementation Spec" (a58a818d322440a2a06616ac4d0b15a1, e
 
 **Why:** the design must follow what XRCC really controls and the phase split.
 **How to apply:** check this before changing Remote Trigger screens; re-read the spec for updates first. Related: [[remote-trigger-v2-figma-locations]].
+
+**UPDATE 2026-11-12:** the Notion spec was rewritten (edited 2026-11-12 08:40) and is now much shorter. The 12-column, row 48, breakpoint 640, mobileOrder, widget-kind list and 128 limit above are NO LONGER on the page. New spec: Base = list-view editor, 3 input types, 1 layout per scene, 2 orientations but only 1 per layout, fixed square grid with touch minimum, sizes 1x1 or 1x2, Number input/slider (Min, Max, Decimal), Text input (max chars), Toggle, Button (colour), sensors (gyro, accel, mic, one phone at a time), Cloudflare Tunnel optional. Next phase = grid drag-and-drop editor, cross-scene layouts, rotation. Diff report: /mnt/project-files/reports/20261112-remote-trigger-spec-update-diff.md.
