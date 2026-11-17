@@ -232,6 +232,12 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .lproj{display:flex;flex-direction:column;padding:32px 24px;gap:24px}
 .lban{font-size:24px}.lemp{margin:auto;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;color:var(--text3)}
 @media(max-width:700px){.lbody{flex-direction:column}.lsb{width:100%;flex-direction:row;overflow:auto;padding:8px}.llogo,.lver{display:none}.lnav,.lnav.low{flex-direction:row;margin:0}.lni{white-space:nowrap;padding:0 12px}.lpage{margin-top:0;border-radius:0}.lpage .mpane{padding:20px 16px}}
+
+.prpop{position:absolute;top:96px;right:16px;z-index:6;width:340px;max-width:calc(100% - 32px);background:var(--elev);border:1px solid var(--border);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 12px 40px rgba(0,0,0,.5)}
+.dlg.prw{width:800px;max-width:100%;max-height:calc(100dvh - 160px)}
+.prb{display:flex;gap:24px;padding:24px;overflow:auto;min-height:0}.prr{flex:1;min-width:0;display:flex;flex-direction:column;gap:14px}
+.seg{display:flex;background:#141416;border-radius:8px;padding:4px;gap:4px}.seg button{flex:1;height:36px;border:0;border-radius:6px;background:none;color:inherit;font:inherit;cursor:pointer}.seg button.on{background:#43325f;color:var(--accent)}
+@media(max-width:700px){.prb{flex-direction:column;align-items:stretch;padding:16px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
 .bhv{position:absolute;inset:0;background:var(--canvas);display:flex;flex-direction:column}
@@ -358,7 +364,7 @@ const vsample=()=>[
 const sample=()=>[
  {id:'g1',name:'Show controls',color:'#65a7ff',items:[{inst:'scene',issue:'',ctl:{}}]},
  {id:'g2',name:'Stage',color:'#a62b2b',items:[{inst:'spot',issue:'',ctl:{}},{inst:'speaker',issue:'',ctl:{}}]}];
-const st={tab:'editor',lnPage:'connections',orient:'portrait',groups:sample(),vars:vsample(),selV:null,vpick:{tab:'pv',sel:null},selG:null,selI:null,panel:null,rename:null,colorFor:null,
+const st={tab:'editor',prTab:'local',lnPage:'connections',orient:'portrait',groups:sample(),vars:vsample(),selV:null,vpick:{tab:'pv',sel:null},selG:null,selI:null,panel:null,rename:null,colorFor:null,
   open:{rt:true,pick:false,ln:true,confirm:false,offConfirm:false},pickFor:null,pick:{sel:[],q:''},
   playing:false,srv:'on',busyLbl:'',port:3001,portDraft:'3001',portErr:'',srvErr:'',pub:'off',pubTab:'local',failNext:false,phones:[],snap:null,
   vals:{}};
@@ -388,8 +394,8 @@ function bar(){
     h('div',{class:'xm'},h('span',{class:'lg'},sv(I.logo,20),h('i',{})),...['File','Project','Edit','View','Help'].map(t=>h('span',{},t)),h('span',{class:'wc'},sv(I.min),sv(I.res),sv(I.x))),
     h('div',{class:'xbar'},h('span',{class:'pj'},sv(I.bm,20),h('span',{},'my-project-name-20260101_0...')),h('span',{class:'ed'},sv(I.ed,24),'Edit'),h('span',{class:'bh'},sv(I.bh,24),'Behaviour'),
       h('span',{class:'ti'},h('span',{class:'ib'},sv(I.bug,22)),
-        h('button',{class:'ib'+(st.tab==='editor'&&st.open.rt?' on':''),title:'Remote Trigger',onclick:()=>{st.tab='editor';st.open.rt=!st.open.rt;render()}},ic('rt')),
-        h('button',{class:'ib'+(st.tab==='launcher'&&st.open.ln?' on':''),title:'Launcher · Phone remote',onclick:()=>{st.tab='launcher';st.lnPage='connections';render()}},ic('phone')),
+        h('button',{class:'ib'+(st.tab==='editor'&&st.open.rt?' on':''),title:'Remote Trigger',onclick:()=>{st.tab='editor';st.open.pop=false;st.open.pr=false;st.open.rt=!st.open.rt;render()}},ic('rt')),
+        h('button',{class:'ib'+(st.tab==='editor'&&(st.open.pop||st.open.pr)?' on':''),title:'Phone remote',onclick:()=>{st.tab='editor';st.open.rt=false;st.open.pr=false;st.open.pop=!st.open.pop;render()}},ic('phone')),
         h('span',{class:'ib'},sv(I.ai,22)),h('span',{class:'ib'},sv(I.wr,22))),
       h('button',{class:'pl',onclick:()=>st.playing?stop():play()},sv(I.pl,16),st.playing?'Stop':'Play in PC',sv(I.dn,16)),
       h('button',{class:'sv',onclick:()=>toast('Saved')},sv(I.sv,18),'Save*')))}
@@ -560,12 +566,44 @@ function srvReload(starting){
   st.portErr='';st.srvErr='';st.srv='reloading';st.busyLbl=starting?'Starting server…':'Reloading server…';render();
   setTimeout(()=>{if(+d===3000){st.srv='off';st.phones=[];st.portErr='Port 3000 is in use by another app. Try 3002.';st.srvErr='The server could not start.'}else{st.port=+d;st.portDraft=String(d);st.srv='on'}render()},1500)}
 function srvOff(){st.srv='off';st.phones=[];st.pub='off';st.open.offConfirm=false;st.srvErr='';if(['deck','projects','connecting'].includes(ph.screen))ph.screen='ended';render()}
+
+function prPop(){const n=st.phones.length,on=st.srv==='on';
+  return h('div',{class:'prpop'},h('div',{style:'display:flex;align-items:center;gap:8px'},h('b',{style:'flex:1;font-size:15px'},'Phone remote'),h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Local · 6 ms':'Offline')),
+    h('div',{class:'muted',style:'font-size:12px'},!on?'The server is off. Turn it on in Launcher › Connections.':n?n+' phone'+(n>1?'s':'')+' connected.':'No phones yet. Open the panel for the QR code and links.'),
+    h('div',{style:'display:flex;justify-content:flex-end'},h('button',{class:'btn ter sm',onclick:()=>{st.open.pop=false;st.open.pr=true;render()}},'Open Phone remote')))}
+function prWin(){
+  const on=st.srv==='on',pubTab=st.prTab==='public',playing=st.playing;
+  const pubOn=st.pub==='on',pubBusy=st.pub==='opening';
+  const url=pubTab?(pubOn?URL_P:''):'http://192.168.1.24:'+st.port;
+  const cv=h('canvas',{width:29,height:29});drawQr(cv,pubTab?7:st.port);
+  const qrOff=!on||!playing||(pubTab&&!pubOn&&!pubBusy);
+  const qr=h('div',{class:'qr'+(pubBusy?' load':qrOff?' off':'')},cv,pubBusy?h('span',{class:'spin big'}):null);
+  const cap=!on?'Server is off':!playing?'Press Play in XRCC':pubBusy?'The code updates by itself':pubTab&&!pubOn?'Public link is off':'Scan with your phone camera';
+  const seg=h('div',{class:'seg'},...[['local','Local network'],['public','Public link']].map(([k,l])=>h('button',{class:st.prTab===k?'on':'',onclick:()=>{st.prTab=k;render()}},l)));
+  let linkRow,hint;
+  if(pubTab&&!pubOn){
+    linkRow=h('div',{class:'lrow'},h('div',{class:'url',style:'color:var(--text3)'},pubBusy?'Creating a secure address…':'No public address'),
+      h('button',{class:'btn sec',disabled:on&&playing&&!pubBusy?null:true,onclick:()=>{st.open.confirm=true;render()}},st.pub==='failed'?'Try again':'Turn on'));
+    hint=h('div',{class:'muted',style:'font-size:12px'},st.pub==='failed'?'Could not create a public link. Phones on the same Wi-Fi can keep using the local link.':pubBusy?'This usually takes a few seconds.':playing?'Optional. Lets phones on any network join while Play runs.':'Press Play in XRCC to use a public link.');
+  }else{
+    linkRow=h('div',{class:'lrow'},h('div',{class:'url',style:on&&playing?'':'color:var(--text3)'},on?url:'Not available yet'),h('button',{class:'btn sec',disabled:on?null:true,onclick:()=>{try{navigator.clipboard.writeText(url)}catch(e){}toast('Link copied')}},'Copy'));
+    hint=pubTab?h('div',{style:'display:flex;gap:8px;align-items:center'},h('span',{class:'pill'},h('span',{class:'dot warn'}),'Public · 35 ms'),h('span',{class:'muted',style:'font-size:12px;flex:1'},'The link stops working when Play ends.'),h('button',{class:'btn ter sm',onclick:()=>{st.pub='off';st.phones=st.phones.filter(p=>p.via!=='Public');render()}},'Turn off link')):
+      h('div',{style:'display:flex;gap:8px;align-items:center'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Local · 6 ms':'Offline'),h('span',{class:'muted',style:'font-size:12px'},on?'About 6 ms on this Wi-Fi':'Turn the server on in Launcher'));
+  }
+  const phones=h('div',{style:'display:flex;flex-direction:column;gap:8px'});
+  if(!st.phones.length)phones.append(h('div',{class:'empty'},ic('wifi',18),on?'No phones yet. Scan the code to join.':'Phones appear here once the server is on.'));
+  st.phones.forEach(p=>phones.append(h('div',{class:'phr'},h('div',{class:'av'},ic('user',18)),h('div',{class:'t'},h('b',{},p.name),h('small',{},p.joined)),h('button',{class:'btn ter sm',onclick:()=>{st.phones=st.phones.filter(x=>x!==p);if(p.me)ph.screen='ended';render()}},'Disconnect'))));
+  return h('div',{class:'dlg prw'},h('div',{class:'head'},ic('phone',18),'Phone remote',h('span',{class:'pill',style:'font-weight:400'},'Server runs in Launcher'),h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.pr=false;st.open.confirm=false;render()}},ic('close'))),h('div',{class:'acc'}),
+    h('div',{class:'prb'},h('div',{style:'display:flex;flex-direction:column;align-items:center;gap:12px;flex:none'},h('div',{class:'halo'},qr),h('div',{class:'muted',style:'font-size:12px'},cap)),
+      h('div',{class:'prr'},h('h3',{style:'margin:0;font-size:20px'},'Control Pop-up Gallery from your phone'),h('div',{class:'muted'},'Phones on the same Wi-Fi can join right away. No app to install.'),seg,linkRow,hint,
+        h('b',{style:'font-size:13px'},'Phones ',h('span',{class:'muted',style:'font-weight:400'},String(st.phones.length))),phones,
+        h('div',{style:'display:flex;align-items:center;gap:8px;margin-top:auto'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Linked to XRCC':'Not linked'),h('span',{class:'muted',style:'font-size:12px;flex:1'},'localhost:8731'),h('button',{class:'btn ter sm',disabled:on&&playing?null:true,onclick:()=>{st.tab='phone';render()}},'Open in browser')))))}
 function launcher(){
   const on=st.srv==='on',busy=st.srv==='reloading',pubOn=st.pub==='on',dirty=String(st.port)!==String(st.portDraft).trim();
   const url='http://192.168.1.24:'+st.port;
   const cv=h('canvas',{width:29,height:29});drawQr(cv,on||busy?st.port:1);
   const status=busy?st.busyLbl.replace('…',''):on?'Server running':'Server off';
-  const sub=busy?'Phones reconnect on their own.':on?'Phones on the same Wi-Fi can join right away.':(st.srvErr||'Turn it on to let phones join.');
+  const sub=busy?'Phones reconnect on their own.':on?(st.phones.length?st.phones.length+' phone'+(st.phones.length>1?'s':'')+' connected':'Phones on the same Wi-Fi can join right away.'):(st.srvErr||'Turn it on to let phones join.');
   const phones=h('div',{style:'display:flex;flex-direction:column;gap:8px'});
   if(!st.phones.length)phones.append(h('div',{class:'empty'},ic('wifi',18),on?'No phones yet. Scan the code to join.':'Phones appear here once the server is on.'));
   st.phones.forEach(p=>phones.append(h('div',{class:'phr'},h('div',{class:'av'},ic('user',18)),h('div',{class:'t'},h('b',{},p.name),h('small',{},p.joined)),
@@ -587,12 +625,7 @@ function launcher(){
           h('button',{class:'sw2'+(on||busy?' on':''),role:'switch','aria-checked':String(on),'aria-label':'Server',disabled:busy?'':null,onclick:()=>{if(on){if(st.phones.length){st.open.offConfirm=true;render()}else srvOff()}else srvReload(true)}}),h('span',{style:'font-size:13px;width:22px'},on||busy?'On':'Off'),
           h('button',{class:'ib'+(dirty&&on?' on':''),title:dirty&&on?'Reload server to apply the new port':'Reload server','aria-label':'Reload server',disabled:on?null:true,onclick:()=>srvReload(false)},ic('refresh',18))),
         h('div',{class:'srow prt'},h('div',{style:'flex:1;min-width:0;display:flex;flex-direction:column;gap:2px'},h('b',{},'Port'),portHint),pin),
-        h('div',{class:'qrrow'},h('div',{class:'halo'},qr),
-          h('div',{style:'flex:1;min-width:0;display:flex;flex-direction:column;gap:12px'},
-            h('div',{class:'lrow'},h('div',{class:'url',style:on?'':'color:var(--text3)'},on?url:'Link not available'),h('button',{class:'btn sec',disabled:on?null:true,onclick:()=>{try{navigator.clipboard.writeText(url)}catch(e){}toast('Link copied')}},'Copy')),
-            h('b',{style:'font-size:13px'},'Phones ',h('span',{class:'muted',style:'font-weight:400'},String(st.phones.length))),phones))),
-      pub,
-      h('div',{class:'lf'},h('button',{class:'btn ter',disabled:on?null:true,onclick:()=>{st.tab='phone';render()}},'Open phone preview')),
+        h('div',{class:'lrow'},h('div',{class:'url',style:on?'':'color:var(--text3)'},on?url:'Not available yet'),h('button',{class:'btn sec',disabled:on?null:true,onclick:()=>{try{navigator.clipboard.writeText(url)}catch(e){}toast('Link copied')}},'Copy'))),
       h('div',{style:'display:flex;flex-direction:column;gap:12px;margin-top:8px'},h('h3',{style:'margin:0;font-size:16px'},'AI keys'),h('div',{class:'muted'},'Used by AI providers in every project on this computer.'),
         ...[['Office Key','Gemini · last used 3 Nov','Password set'],['Voice Lab key','MiniMax · last used today','No password'],['Team Poe key','Poe · added 12 Oct','Password set'],['Studio LLM token','Custom · 192.168.1.20','No password']].map(r=>h('div',{class:'mrow'},h('span',{class:'mtile'},ic('key',16)),h('span',{class:'mt'},h('b',{},r[0]),h('small',{},r[1])),h('span',{class:'muted',style:'font-size:12px'},r[2])))),
       h('div',{style:'display:flex;flex-direction:column;gap:12px'},h('h3',{style:'margin:0;font-size:16px'},'Speech commands (Wit.ai)'),h('div',{class:'mrow'},h('span',{class:'mtile'},ic('wave',16)),h('span',{class:'mt'},h('b',{},'Lobby kiosk token'),h('small',{},'Wit.ai · last used 28 Oct')))))}
@@ -712,16 +745,21 @@ function render(){
   const showRt=st.tab==='editor'&&st.open.rt&&!st.playing,showLn=st.tab==='launcher';
   if(st.playing&&st.tab!=='launcher')stage.append(playView());
   if(showRt){stage.append(h('div',{class:'xscrim'}),h('div',{class:'xmain'},colorPop(),rtDialog()))}
+  if(st.tab==='editor'&&st.open.pr&&!showRt)stage.append(h('div',{class:'xscrim'}),h('div',{class:'xmain'},prWin()));
+  if(st.tab==='editor'&&st.open.pop)stage.append(prPop());
   if(showRt&&st.open.pick)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},picker()));
   if(showRt&&st.open.vpick)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},varPicker()));
   if(showRt&&(st.delG||st.delV))stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},delDlg()));
   if(showLn&&st.open.offConfirm)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},offDlg()));
-  if(showLn&&st.open.confirm)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},confirmDlg()));
+  if((showLn||(st.tab==='editor'&&st.open.pr))&&st.open.confirm)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},confirmDlg()));
   v.append(stage);
   if(st.tab==='editor')dev.append(h('span',{},'Test controls'),
     h('button',{class:'btn ter sm',onclick:()=>{const its=st.groups.flatMap(g=>g.items);if(!its.length)return toast('Add an instance first');const cur=its.find(i=>i.issue);const o=['','missing','type'];if(!cur)its[0].issue='missing';else cur.issue=o[(o.indexOf(cur.issue)+1)%3];render()}},'Simulate problem'),
     h('button',{class:'btn ter sm',onclick:()=>{st.groups=[];st.vars=[];st.selG=st.selI=st.panel=null;touch();render()}},'Clear list'),
-    h('button',{class:'btn ter sm',onclick:()=>{st.groups=sample();st.vars=vsample();st.panel=null;touch();render()}},'Load sample list'));
+    h('button',{class:'btn ter sm',onclick:()=>{st.groups=sample();st.vars=vsample();st.panel=null;touch();render()}},'Load sample list'),
+    h('span',{},'Phone remote'),
+    h('button',{class:'btn ter sm',onclick:()=>{if(!st.playing)play();st.open.rt=false;st.open.pr=false;st.open.pop=true;render()}},'B1 Play popover'),
+    h('button',{class:'btn ter sm',onclick:()=>{if(!st.playing)play();st.open.rt=false;st.open.pop=false;st.open.pr=true;render()}},'B2 Phone remote window'));
   else dev.append(h('span',{},'Flow screens'),...[['B9','Running'],['B10','Phone joined'],['B11','Turn off?'],['B12','Server off'],['B13','Reloading'],['B14','Port changed'],['B15','Port in use'],['B16','Link copied']].map(([k,l])=>h('button',{class:'btn ter sm',title:k+' · '+l,onclick:()=>jump(k)},k+' '+l)),h('span',{},'Test controls'),h('label',{style:'display:flex;gap:6px;align-items:center;font-size:12px'},h('input',{type:'checkbox',checked:st.failNext?'':null,onchange:e=>{st.failNext=e.target.checked}}),'Next public link fails'),
     h('button',{class:'btn ter sm',disabled:st.playing&&st.pub==='on'?null:true,onclick:()=>{st.phones.push({name:"Sam's Pixel",joined:'Joined just now',via:'Public'});render()}},'Add a public phone'));
 }
