@@ -35,3 +35,5 @@ C：加入與等待、操作、網絡中斷、stale、Play 結束、server/publi
 原有 69 狀態與控制測試通過，另補：Notification Close、欄位內錯誤、Enter／blur 不會重送被拒絕的 Number，以及切換示例後舊的 Reload／公開連結非同步回呼不會污染新畫面。修正連線 pill 的瀏覽器預設白色背景；未確認的 Trigger 不會顯示成功狀態。
 
 這仍是 frontend prototype。實際 Unity ACK、權限與 sensor 資料、URL／QR、server／tunnel 屬模擬；模擬提示放在 prototype 外框。
+
+Web 已更新至 `eab5dd8`，Vercel READY。固定網址 https://xrcc-remote-trigger.vercel.app/ 回傳 HTTP 200，HTML 與已測試來源逐字一致。登入保護保留，臨時分享連結不提交 repo。

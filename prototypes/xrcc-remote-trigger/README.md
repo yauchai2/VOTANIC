@@ -71,6 +71,6 @@ Select Instance uses a highlighted row, with no Radio. P1 has no Change/Replace 
 
 The prototype has a **Figma screen** selector covering all 69 A/B/C boards. Each state can be opened directly with `?screen=A3`, `?screen=B3`, etc. The A/B/C review controls are outside the product canvas. Native Figma flow now uses 35 task flows, 145 full-screen appearances and 115 direct connections; text indexes are hidden. See [alignment-20261117.md](alignment-20261117.md).
 
-Web prototype: https://xrcc-remote-trigger.vercel.app/ (Vercel account access applies; temporary review share links are provided separately). The deployed HTML is from commit `0024d9f`.
+Web prototype: https://xrcc-remote-trigger.vercel.app/ (Vercel account access applies; temporary review share links are provided separately). The deployed HTML is from commit `eab5dd8`.
 
 Latest Library/flow/annotation correction: [library-flow-20261117.md](library-flow-20261117.md). Notifications reuse Library Type=Default; field validation stays inline. Original nodes retain 119 native annotations.
