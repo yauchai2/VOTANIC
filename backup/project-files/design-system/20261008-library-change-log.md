@@ -1555,3 +1555,68 @@ Page Button, Library file. Three sets: `Button / Dark / 40px` (17463:54657, Stat
 - Raw values left on purpose: colour picker gradients and popover shadow (picker content). No Library change, nothing to publish.
 
 - 2026-11-16 (Remote Trigger P1): A11／A12 Select a variable 改回兩欄 960x640（左：Search + 場景樹；右：Project／Instance variables 分頁、提示、變數列表、Add control）。Instance 分頁先選左邊 Instance 再選變數；Project 分頁場景樹變淡。Annotations 已更新，連結（分頁互換、Add → A13）已核對。
+
+- 2026-11-16 (Remote Trigger P1，全面 Review)：修正 A1 空狀態標題換行、A4／A5 刪除未建立的 Show controls（與 A1→A3 資料連貫）、A14 名稱改為 Spotlight A／New Remote Trigger、A15 背景標題錯用選取色、A11／A12 提示改 text/secondary、刪除 A2 重複 flow 起點、Overview 感應器編號改 A10。新增遺漏 flows：A16 Slider 設定 Min 大於 Max 錯誤、A17 Text control 設定、A18 改名、A19 移除 Variable control、A20 Instance 沒有變數、C8 手機輸入文字（C9–C14 右移 510）。Section 1 加高 1320，Lane 2–4 下移。新增 5 條虛線連線及 Prototype 連結（共 888 條，無失效）。Library 沒有改動，毋須 Publish。
+
+- 2026-11-16 (Remote Trigger P1，Project／Instance variables)：A11 Project variables 分頁（按下）及所有 Project variable 圖示（Select Variable 列表、Remote list 變數列）綁定現有 token behaviour/project-variable（與 Behaviour／Project Variables 面板的啡黃識別色一致）；分頁文字改 text/primary 以保對比；工具列及標題圖示維持原色。A11 新增「Spawn point · Vector3 · Not in P1」不支援類型示例，已使用的變數註明 Already added。沒有新增 token，Library 沒有改動。
+
+- 2026-11-16 (Remote Trigger P1)：Instance 變數列改為「Instance · 變數」格式（Show title 控制綁定 Result1 · Title text，用 object-variable 圖示，顏色跟文字 token），已套用至所有出現該列的畫板；A17 改為 Project 變數 Welcome text（與 A11 點擊一致）；A7 加 Annotation 說明命名規則。
+
+## 2026-11-16 · Remote Trigger P1 — back navigation, empty states
+- Workbench Components: new feature components "RT / Empty art" (neutral outline tiles, one text/accent; avatar tokens removed per Alan) and "RT / Empty state" (art + Title + Body). No Library change, no Publish needed.
+- A14: Back bar (Button Square arrow-left + breadcrumb + Esc hint), reaction to A4, Annotation.
+- New boards A21–A26 (row 3) and C15, labels + Annotations; A1 uses the new empty state.
+
+## 2026-11-16 (2) · Remote Trigger P1 fixes
+- RT / Instance row: Connect hidden in Default, shown only in Hover.
+- Select Variable (A11, A12, A24–A26): tab order Instance | Project; the Add menu now opens the Instance tab (A12).
+- Project-variable icon: white bar now behaviour/project-variable wherever the icon is ochre.
+- RT / Variable row: muted arrow-down chevron (arrow-up when Settings is open) hints that the row opens Settings.
+- No Library change; Publish not needed.
+
+## 2026-11-16 (3) · Remote Trigger P1 after colleague review
+- Removed C1 (6-digit join) and A10 (sensors); phone flow starts at C2, lane 3 shifted left.
+- RT / Variable row default icon is now object-variable (instance variable); project rows keep the ochre project-variable icon.
+- New Launcher boards B11–B13 (Connections · Phone remote: running, off, reloading) built from the XRCC Launcher library component; connectors, labels, Annotations, reactions added.
+- No Library change; Publish not needed.
+
+## 2026-11-16 (Launcher Phone remote flow, port, renumber, components)
+- Workbench / XRCC Remote Trigger (P1): A series renumbered A1-A25 after Sensors (old A10) was removed. Port row added to Phone remote panel (default 3001, 1024-65535) plus Port in use state.
+- New feature components (Workbench Components page, section 1491:3952): "Launcher / Phone remote" set (variants Running, Off, Reloading, Port in use, Phone joined, Port edited), "RT / Back bar", "RT / Items empty slot". Hand-built copies on boards replaced by instances. Uses library Switch, Button, Tooltip, Dialog, Notification toast, icon/outline/copy. No new tokens. Library Publish NOT needed.
+- Launcher flow lane 2 boards B11-B19: B11 Open Phone remote (Connections tooltip), B12 Running, B13 A phone joined, B14 Turn off? (Dialog + scrim), B15 Server off, B16 Reloading, B17 Port changed, B18 Port in use, B19 Link copied (toast). Connectors rebuilt per reference 1333:8666 (main solid B11-B15, branches dashed). Prototype reactions added (Connections button, Copy, Enter on port, switch/confirm, Reload, timed return). Flow starting point 4 now B11. Annotations (native) cleaned.
+
+## 2026-11-16 (correction) Launcher and Settings are separate; latest Launcher = AI Provider D3
+- B11–B19 rebuilt on the latest Launcher (D3 1534:6437): Connections is a left nav item under Settings; B12–B19 select it and show the Phone remote section on top of the Connections page (board 1100x952); B11 = Projects page with Connections hovered (click → B12). Projects item → B11. My Setting dialog version removed. D3 and D0 restored to original.
+- Prototype v42 (PR #7): tab 2 opens the Launcher first; footer buttons B11–B19 jump to each state.
+
+## 2026-11-16 (decision) XRCC panel slimmed, Settings dropped
+- Alan chose "keep and slim": Launcher Connections (B9–B17) = server control (on/off, reload, port, local QR/link); XRCC Play panel (B2–B8) = Play-time join + Local/Public link + phones only. B2–B8 header badge now "Server runs in Launcher"; B2 annotation explains the split.
+- Deleted B9/B10 (Settings · Remote Trigger server status). Settings gets no Remote Trigger item. Lane 2 gap closed; B11–B19 renumbered to B9–B17 (names, labels, annotations, prototype buttons). Prototype v43.
+
+## 2026-11-16 (entry simplified) Launcher flow starts on Connections
+- Deleted the Projects entry board (old B9); flow start 4 now = Running board. Boards renumbered again: Launcher flow = B9–B16 (B9 Running 2324:9924, B10 Phone joined, B11 Turn off?, B12 Server off, B13 Reloading, B14 Port changed, B15 Port in use, B16 Link copied). Prototype v44: tab 2 opens straight on Connections.
+
+## 2026-11-16 (simplify) Reload icon button, B2–B8 standard window
+- Phone remote component (set 2328:10922, all 6 variants): "Reload server" text button replaced by library Button / Dark / Button Square (36px) with icon/outline/refresh; Disabled state kept for Off / Reloading / Port in use. Reactions restored on the boards.
+- B2–B8 resized to the standard window 640x680 (reference 2234:5573): 1px border, rounded corners, Head + 3px accent line, Body padding 16. Phone rows hide the latency pill, footer shows only the Linked badge, "Turn off public link" shortened to "Turn off link". Prototype v45: Reload is a refresh icon button.
+
+## 2026-11-16 (revert) B2–B8 only get the window frame
+- Alan: only the window frame was meant. B2–B8 restored to 960x640 and original layout (body padding, phone row pill, footer text, button label, accent line removed). Kept: 1px border + 16 corner radius from reference 2234:5573, the "Server runs in Launcher" badge, and the Reload icon button (Launcher).
+
+## 2026-11-17 Remote Trigger: Phone remote 去重（XRCC 視窗 vs Launcher）
+- Launcher › Connections › Phone remote 只保留伺服器控制（狀態、開關、Reload 圖示、Port、地址 + Copy、"N phone(s) connected"）；QR、Local/Public link、手機列表只在 XRCC 的 Phone remote 視窗（B2–B8）。
+- Phone remote 元件 6 個 variant：隱藏 QR 與 Phones。B1 Play 小面板改為只顯示狀態 + "Open Phone remote" 按鈕（連到 B2）。
+- Prototype v46：XRCC 工具列手機圖示 → 小面板 → 視窗；頁尾新增 "B1 Play popover" / "B2 Phone remote window"。
+
+## 2026-11-17 文案通用化與精簡（Alan）
+- 遙控端不一定是手機：Phone remote → "Remote control"（面板、元件、Toolbar 按鈕、Tooltip、標題）；Phones → "Devices"；"No devices yet"；"N device(s) connected"；Play 小面板按鈕 "Open"；範例裝置 iPhone → iPad；Lane 3 / Overview / Spec / Annotation 的「手機」改「裝置／遙控端」。
+- 精簡：Launcher 說明句改 "Control a playing project from other devices."、Running/Off/Reloading 的副句隱藏、Port 說明 "Reload after changing."；B2–B8 副句、公開連結說明、錯誤與空狀態文案縮短；編輯端 A1–A25 與遙控端 C2–C15 空狀態、對話框、提示全部縮短；舊 "XRCC Mobile" 提示卡改 "Control Play from any device"。
+- 沒改：Alan 自己的 Notes、舊 UI、AI keys 內容。Prototype v47 同步。
+
+## 2026-11-17 Remote control 第二個入口
+- 編輯時 Remote Triggers 視窗標題列（Close 左邊）加 Button Square 36px「Connect devices」（icon/outline/scan 圖示），24 個編輯端畫面同步；點擊 → B8（未 Play）；A1 按鈕有 Annotation。Lane 2 說明文字更新。Prototype v48 同步（Play 前視窗顯示 Ready / Starts with Play）。
+
+## 2026-11-17 排序、方向按鈕、Sensor 狀態（Alan）
+- 刪除 Remote List 標題旁的直向/橫向按鈕（24 個編輯端畫面）；原 A7「Landscape layout」改為 A7「Reorder a section」：拖曳區塊浮起（shadow/dark/3 + border/interactive）、虛線 Drop slot；以整個區塊為單位，Trigger / Variable control 各自同類範圍內排序；鍵盤 Space/↑↓/Esc。Spec 的 Tooltip 方向列改為「Drag to reorder」；Overview 同步。
+- Sensor：新增遙控端 C16「This device」（點連線狀態開啟，列出 Gyroscope / Accelerometer / Microphone 是否可用，只供查看）；XRCC 裝置列顯示「Using sensors」或「No motion sensors」。沿用「Sensor 預設啟用、無控制 section」，Notion 規格「同一時間只有一部裝置提供 Sensor、需顯示目前使用者」以文字標示。
+- Prototype v49 同步（拖曳／鍵盤排序、Desktop 裝置示範 Sensor 不可用）。

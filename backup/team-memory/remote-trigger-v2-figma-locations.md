@@ -35,3 +35,5 @@ Related: [[feedback-self-check-after-edits]], [[library-new-components-allowed]]
 **History (condensed):** 2026-11-12 P1 became a top-to-bottom list (old XRCC dialog), web auto-flows; P2 page 2014:14903 keeps the Stream Deck grid. Feature components: RT / Instance row 2053:2135, RT / Group row 2053:2139, RT / Variable row 2185:3622, Remote Key / Text input 2020:12991; helper `_rt_lib3` 2018:3319.
 
 **UPDATE 2026-11-16:** P1 lane 1 renumbered A1–A15 (A2 choose type menu, A3 Select Instances, A5 colour picker, A11/A12 Select Variable tabs, A13 control added, A14 Remote Start, A15 remove). Sections widened to 20440. Lane 2 has B9/B10 Settings · Remote Trigger server status. Alan's own notes live in section "Notes" 2220:6100 (do not edit). See [[remote-trigger-trigger-vs-variable-model]].
+
+**UPDATE 2026-11-16 (review):** added A16 Slider settings error (8240,1480), A17 Text settings (8240,2800), A18 Rename (14360,1480), A19 Remove variable control (6200,2800), A20 Instance has no variables (4160,2800); lane 1 now has a 3rd row (section 1 height 4000, lanes 2–4 moved down 1320). Lane 3 gained C8 Type a value (C9–C14 shifted +510).
