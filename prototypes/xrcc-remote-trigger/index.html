@@ -226,7 +226,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .mgo{color:var(--text2,#cfcfcf)}
 @media(max-width:700px){.dlg.ms{height:auto;max-height:calc(100dvh - 150px)}.mbody{flex-direction:column}.msb{width:100%;flex-direction:row;overflow:auto;padding:0}.mitems{display:flex}.mi{margin:0;border-radius:0;padding:12px 14px;white-space:nowrap}.mver{display:none}.mpane{padding:20px 16px}}
 
-.lstage{min-height:0;height:min(952px,calc(100dvh - 130px));background:var(--canvas)}
+.lstage{max-width:1100px;margin:0 auto;min-height:0;height:min(952px,calc(100dvh - 130px));background:var(--canvas)}
 .lstage .xscrim2,.lstage .xpick{inset:0}
 .lsh{display:flex;flex-direction:column;height:100%}
 .ltb{height:32px;flex:none;background:#2a2531;display:flex;align-items:center;padding:0 36px;font-size:13px}
@@ -238,7 +238,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .lni{display:flex;align-items:center;gap:12px;height:48px;padding:0 20px;border-radius:8px;color:var(--text3);cursor:pointer;font-size:15px}
 .lni:hover{background:rgba(255,255,255,.05)}.lni.on{background:linear-gradient(90deg,#4a2f86,#2a2331);color:var(--accent);box-shadow:inset 4px 0 0 var(--accent)}
 .lpage{flex:1;min-width:0;background:#171717;border-radius:32px 0 0 0;margin-top:44px;overflow:auto}
-.lpage .mpane{padding:36px 105px 48px;max-width:860px;margin:0 auto}
+.lpage .mpane{padding:36px 24px 48px;gap:16px}.sharing{display:flex;gap:24px;align-items:flex-start}.qr-column{width:176px;flex:none;display:flex;flex-direction:column;align-items:center;gap:12px}.qr-column .qr{width:160px;height:160px;outline:1px solid var(--accent);outline-offset:7px;margin:8px}.devices{display:flex;flex-direction:column;gap:8px}.context{flex-direction:row;display:flex;justify-content:space-between;align-items:center;gap:16px}.availability{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:170px;text-align:center}.availability p{margin:0}.server-card{gap:16px}.remote-detail .mtitle{font-size:24px}.review-tools{position:relative;font-size:12px}.review-tools[open] .reviewnav{position:absolute;right:0;top:24px;z-index:50;padding:16px;background:var(--elev);border:1px solid var(--border);border-radius:8px;min-width:300px}@media(max-width:700px){.sharing{flex-direction:column}.qr-column{align-self:center}.remote-detail .prr{width:100%}}
 .lproj{display:flex;flex-direction:column;padding:32px 24px;gap:24px}
 .lban{font-size:24px}.lemp{margin:auto;display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center;color:var(--text3)}
 @media(max-width:700px){.lbody{flex-direction:column}.lsb{width:100%;flex-direction:row;overflow:auto;padding:8px}.llogo,.lver{display:none}.lnav,.lnav.low{flex-direction:row;margin:0}.lni{white-space:nowrap;padding:0 12px}.lpage{margin-top:0;border-radius:0}.lpage .mpane{padding:20px 16px}}
@@ -324,7 +324,7 @@ button.pill{background:transparent;cursor:pointer;font:inherit;color:inherit}but
   <b>XRCC Remote Trigger</b><span class="pill">Prototype · simulated data</span><span class="pill" id="playPill"></span>
   <nav class="tabs" role="tablist">
     <button class="tab" data-t="editor" role="tab">1 · XRCC editor</button>
-    <button class="tab" data-t="launcher" role="tab">2 · Play &amp; Launcher</button>
+    <button class="tab" data-t="launcher" role="tab">2 · Launcher</button>
     <button class="tab" data-t="phone" role="tab">3 · Remote</button>
   </nav>
 </header>
@@ -381,7 +381,7 @@ const vsample=()=>[
 const sample=()=>[
  {id:'g1',name:'Show controls',color:'#65a7ff',items:[{inst:'scene',issue:'',ctl:{}}]},
  {id:'g2',name:'Stage',color:'#a62b2b',items:[{inst:'spot',issue:'',ctl:{}}]}];
-const st={tab:'editor',prTab:'local',lnPage:'connections',orient:'portrait',groups:sample(),vars:vsample(),selV:null,vpick:{tab:'pv',sel:null},selG:null,selI:null,panel:null,rename:null,colorFor:null,
+const st={tab:'editor',prTab:'local',lnPage:'connections',lnDetail:false,origin:false,originAlive:true,portOpen:false,orient:'portrait',groups:sample(),vars:vsample(),selV:null,vpick:{tab:'pv',sel:null},selG:null,selI:null,panel:null,rename:null,colorFor:null,
   open:{rt:true,pick:false,ln:true,confirm:false,offConfirm:false},pickFor:null,pick:{sel:[],q:''},
   noIntro:true,playing:false,srv:'on',busyLbl:'',port:3001,portDraft:'3001',portErr:'',srvErr:'',pub:'off',pubTab:'local',failNext:false,phones:[],snap:null,
   vals:{}};
@@ -406,8 +406,8 @@ const toast=(message,persistent=false)=>{let t=$('#toast');if(!t){t=h('div',{id:
 function playView(){const n=st.phones.length,on=st.srv==='on';
   return h('div',{class:'pvw'},h('div',{class:'pvmid'},h('div',{class:'pvtitle'},'Play mode'),h('div',{class:'muted'},'Pop-up Gallery · Scene: Intro'),h('div',{class:'muted',style:'font-size:12px'},'The scene is running in XRCC. Press Stop to return to the editor.')),
     h('div',{class:'pvhud'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Remote control on':'Remote control off'),h('span',{class:'muted',style:'font-size:12px'},on?(n?n+' device'+(n>1?'s':'')+' connected':'No devices yet')+' · http://192.168.1.24:'+st.port:'Turn it on in Launcher · Connections'))) }
-function play(){if(st.playing)return;st.open.pick=false;st.open.vpick=false;st.open.menu=false;if(!nCells())toast('No controls yet.');st.playing=true;st.snap=JSON.parse(JSON.stringify({groups:st.groups,orient:st.orient,vars:st.vars}));ph.changed=false;render()}
-function stop(){st.playing=false;sensor.owner=null;st.pub='off';st.phones=st.phones.filter(p=>p.via!=='Public');if(['deck','projects'].includes(ph.screen))ph.screen='ended';render()}
+function play(){if(st.playing)return;st.open.pick=false;st.open.vpick=false;st.open.menu=false;if(!nCells())toast('No controls yet.');st.playing=true;st.snap=JSON.parse(JSON.stringify({groups:st.groups,orient:st.orient,vars:st.vars}));ph.changed=false;if(ph.screen==='waiting')ph.screen='deck';render()}
+function stop(){const publicDevice=st.phones.some(p=>p.me&&p.via==='Public');st.playing=false;sensor.owner=null;st.pub='off';st.phones=st.phones.filter(p=>p.via!=='Public');if(publicDevice){ph.screen='public-off';ph.conn='drop'}else if(ph.screen==='deck')ph.screen='ended';render()}
 const touch=()=>{save();if(st.playing)ph.changed=true};
 /* ---------- XRCC stage ---------- */
 function bar(){
@@ -418,7 +418,7 @@ function bar(){
     h('div',{class:'xbar'},h('span',{class:'pj'},sv(I.bm,20),h('span',{},'my-project-name-20260101_0...')),h('span',{class:'ed'},sv(I.ed,24),'Edit'),h('span',{class:'bh'},sv(I.bh,24),'Behaviour'),
       h('span',{class:'ti'},h('span',{class:'ib'},sv(I.bug,22)),
         h('button',{class:'ib'+(st.tab==='editor'&&st.open.rt?' on':''),title:'Remote Trigger',onclick:()=>{st.tab='editor';st.open.pop=false;st.open.pr=false;st.open.rt=!st.open.rt;render()}},ic('rt')),
-        h('button',{class:'ib'+(st.tab==='editor'&&(st.open.pop||st.open.pr)?' on':''),title:'Remote control',onclick:()=>{st.tab='editor';st.open.rt=false;st.open.pr=false;st.open.pop=!st.open.pop;render()}},ic('phone')),
+        st.playing?h('button',{class:'btn ter sm',onclick:openLauncher},'Connect devices'):null,
         h('span',{class:'ib'},sv(I.ai,22)),h('span',{class:'ib'},sv(I.wr,22))),
       h('button',{class:'pl',onclick:()=>st.playing?stop():play()},sv(I.pl,16),st.playing?'Stop':'Play in PC',sv(I.dn,16)),
       h('button',{class:'sv',onclick:()=>toast('Saved')},sv(I.sv,18),'Save*')))}
@@ -492,7 +492,7 @@ function rtDialog(){
   list.append(...varBlock(),footEl);
   const n=issues();
   return h('div',{class:'dlg rt'},
-    h('div',{class:'head'},ic('rt',18),'Remote Triggers',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Connect devices',title:'Connect devices',onclick:()=>{st.open.rt=false;st.open.pop=false;st.open.pr=true;render()}},ic('wave')),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.rt=false;render()}},ic('close'))),h('div',{class:'acc'}),
+    h('div',{class:'head'},ic('rt',18),'Remote Triggers',h('span',{class:'sp'}),h('button',{class:'btn ter sm','aria-label':'Connect devices',onclick:openLauncher},'Connect devices'),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.rt=false;render()}},ic('close'))),h('div',{class:'acc'}),
     h('div',{class:'body'},
       (st.noIntro?null:h('div',{class:'intro'},h('div',{class:'ph'},ic('wifi')),h('div',{class:'grow'},h('h3',{},'Control Play from any device'),h('p',{},'A trigger starts one instance. A control changes one variable.'))
 ,h('button',{class:'ib','aria-label':'Dismiss',onclick:()=>{st.noIntro=true;render()}},ic('close')))),
@@ -608,90 +608,79 @@ function srvReload(starting){
   setTimeout(()=>{if(revision!==(st.reviewRevision||0))return;if(+d===3000){st.srv='off';st.phones=[];st.portErr='Port 3000 is in use. Try 3002.';st.srvErr='The server could not start.'}else{st.port=+d;st.portDraft=String(d);st.srv='on';if(oldPort!==st.port){ph.conn='drop';st.phones=[];sensor.owner=null;ph.sheet=null;toast('Address changed. Open the new link or scan the new QR.')}else if(ph.screen==='deck'){ph.conn='local';st.snap=JSON.parse(JSON.stringify({groups:st.groups,orient:st.orient,vars:st.vars}));ph.changed=false}}render()},1500)}
 function srvOff(){st.srv='off';st.phones=[];st.pub='off';st.open.offConfirm=false;st.srvErr='';sensor.owner=null;ph.conn='drop';if(['deck','projects','connecting'].includes(ph.screen))ph.screen='server-off';render()}
 
-function prPop(){const n=st.phones.length,on=st.srv==='on';
-  return h('div',{class:'prpop'},h('div',{style:'display:flex;align-items:center;gap:8px'},h('b',{style:'flex:1;font-size:15px'},'Remote control'),h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Local · 6 ms':'Offline')),
-    h('div',{class:'muted',style:'font-size:12px'},!on?'The server is off. Turn it on in Launcher › Connections.':n?n+' device'+(n>1?'s':'')+' connected.':'No devices yet.'),
-    h('div',{style:'display:flex;justify-content:flex-end'},h('button',{class:'btn ter sm',onclick:()=>{st.open.pop=false;st.open.pr=true;render()}},'Open')))}
-function prWin(){
-  const on=st.srv==='on',pubTab=st.prTab==='public',playing=st.playing;
-  const pubOn=st.pub==='on',pubBusy=st.pub==='opening';
-  const url=pubTab?(pubOn?URL_P:''):'http://192.168.1.24:'+st.port;
-  const cv=h('canvas',{width:29,height:29});drawQr(cv,pubTab?7:st.port);
-  const qrOff=!on||!playing||(pubTab&&!pubOn&&!pubBusy);
-  const qr=h('div',{class:'qr'+(pubBusy?' load':qrOff?' off':'')},cv,pubBusy?h('span',{class:'spin big'}):null);
-  const cap=!on?'Server is off':!playing?'Press Play in XRCC':pubBusy?'Updates automatically':pubTab&&!pubOn?'Public link is off':'Scan to join';
-  const seg=h('div',{class:'seg'},...[['local','Local network'],['public','Public link']].map(([k,l])=>h('button',{class:st.prTab===k?'on':'',onclick:()=>{st.prTab=k;render()}},l)));
-  let linkRow,hint;
-  if(pubTab&&!pubOn){
-    linkRow=h('div',{class:'lrow'},h('div',{class:'url',style:'color:var(--text3)'},pubBusy?'Creating a secure address…':'No public address'),
-      h('button',{class:'btn sec',disabled:on&&playing&&!pubBusy?null:true,onclick:()=>{st.open.confirm=true;render()}},st.pub==='failed'?'Try again':'Turn on'));
-    hint=h('div',{class:'muted',style:'font-size:12px'},st.pub==='failed'?'Could not create a public link. Check the connection and try again.':pubBusy?'A few seconds.':playing?'Optional. Works on any network.':'Press Play in XRCC to use a public link.');
-  }else{
-    linkRow=h('div',{class:'lrow'},h('div',{class:'url',style:on&&playing?'':'color:var(--text3)'},on&&playing?url:'Not available yet'),h('button',{class:'btn sec',disabled:on&&playing?null:true,onclick:()=>{try{navigator.clipboard.writeText(url)}catch(e){}toast('Link copied')}},'Copy'));
-    hint=pubTab?h('div',{style:'display:flex;gap:8px;align-items:center'},h('span',{class:'pill'},h('span',{class:'dot warn'}),'Public · 35 ms'),h('span',{class:'muted',style:'font-size:12px;flex:1'},'Stops when Play ends.'),h('button',{class:'btn ter sm',onclick:()=>{disablePublic()}},'Turn off link')):
-      h('div',{style:'display:flex;gap:8px;align-items:center'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?(playing?'Local · 6 ms':'Ready'):'Offline'),h('span',{class:'muted',style:'font-size:12px'},on?(playing?'':'Starts with Play'):'Turn the server on in Launcher'));
-  }
-  const phones=h('div',{style:'display:flex;flex-direction:column;gap:8px'});
-  if(!st.phones.length)phones.append(h('div',{class:'empty'},ic('wifi',18),on?'No devices yet':'Devices appear once the server is on.'));
-  st.phones.forEach(p=>phones.append(h('div',{class:'phr'},h('div',{class:'av'},ic('user',18)),h('div',{class:'t'},h('b',{},p.name),h('small',{},sensor.owner===p.name?'Sensor source':p.joined)),h('span',{class:'pill'},h('span',{class:'dot'}),p.via+' · '+(p.via==='Public'?35:6)+' ms'),h('button',{class:'btn ter sm',onclick:()=>{st.phones=st.phones.filter(x=>x!==p);if(sensor.owner===p.name)sensor.owner=null;if(p.me){ph.screen='host-disconnected';ph.conn='drop'}render()}},'Disconnect'))));
-  return h('div',{class:'dlg prw'},h('div',{class:'head'},ic('phone',18),'Remote control',h('span',{class:'pill',style:'font-weight:400'},'Server runs in Launcher'),h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.pr=false;st.open.confirm=false;render()}},ic('close'))),h('div',{class:'acc'}),
-    h('div',{class:'prb'},h('div',{style:'display:flex;flex-direction:column;align-items:center;gap:12px;flex:none'},h('div',{class:'halo'},qr),h('div',{class:'muted',style:'font-size:12px'},cap)),
-      h('div',{class:'prr'},h('h3',{style:'margin:0;font-size:20px'},'Control from any device'),h('div',{class:'muted'},'Same Wi-Fi, no app needed.'),seg,linkRow,hint,
-        h('b',{style:'font-size:13px'},'Devices ',h('span',{class:'muted',style:'font-weight:400'},String(st.phones.length))),phones,
-        h('div',{style:'display:flex;align-items:center;gap:8px;margin-top:auto'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Linked to XRCC':'Not linked'),h('span',{class:'muted',style:'font-size:12px;flex:1'},'localhost:8731'),h('button',{class:'btn ter sm',disabled:on&&playing?null:true,onclick:()=>{st.tab='phone';render()}},'Open in browser')))))}
+// Launcher owns connection management. Switching views preserves the running XRCC session.
+function openLauncher(){
+  st.open.pop=st.open.pr=false;
+  if(st.launcherUnavailable){toast('Open Launcher › Connections › Remote control, then try again.',true);return}
+  st.origin=true;st.originAlive=true;st.lnPage='connections';st.lnDetail=true;st.tab='launcher';render();
+}
+function backToXRCC(){if(!st.originAlive){st.origin=false;render();toast('XRCC is no longer open. Open a project from Projects.',true);return}st.tab='editor';st.open.rt=!st.playing;render()}
+function sharedURL(){return (st.prTab==='public'?URL_P:'http://192.168.1.24:'+st.port)+(st.origin&&st.originAlive?'/?project=pop-up-gallery':'')}
+function copyLink(){const result=navigator.clipboard?.writeText(sharedURL());if(result)result.catch(()=>{});toast('Link copied')}
+function joinDevice(){ph.scoped=st.origin&&st.originAlive;ph.via=st.prTab==='public'?'Public':'Local';ph.screen='connecting';ph.conn='local';ph.sheet=null;st.tab='phone';render()}
+function deviceRows(){const rows=h('div',{class:'devices'});
+  if(!st.phones.length)rows.append(h('div',{class:'empty'},ic('wifi',18),'No devices yet'));
+  st.phones.forEach(p=>rows.append(h('div',{class:'phr'},h('div',{class:'av'},ic('user',18)),h('div',{class:'t'},h('b',{},p.name),h('small',{},sensor.owner===p.name?'Sensor source':p.joined)),h('span',{class:'pill'},h('span',{class:'dot'}),p.via+' · '+(p.via==='Public'?35:6)+' ms'),h('button',{class:'btn ter sm',onclick:()=>{st.phones=st.phones.filter(x=>x!==p);if(sensor.owner===p.name)sensor.owner=null;if(p.me){ph.screen='host-disconnected';ph.conn='drop'}render()}},'Disconnect'))));return rows;
+}
+function sharingCard(){
+  const pub=st.prTab==='public',busy=st.pub==='opening',ready=!pub||st.pub==='on';
+  const cv=h('canvas',{width:29,height:29});drawQr(cv,pub?7:st.port);
+  const tabs=h('div',{class:'seg'},...['local','public'].map(k=>h('button',{class:st.prTab===k?'on':'',disabled:k==='public'&&!st.playing?true:null,onclick:()=>{st.prTab=k;render()}},k==='local'?'Local network':'Public link')));
+  const link=ready?h('div',{class:'lrow'},h('div',{class:'url'},sharedURL()),h('button',{class:'btn sec',onclick:copyLink},'Copy')):
+    h('div',{class:'lrow'},h('div',{class:'url'},busy?'Creating a secure address…':st.pub==='failed'?'Public link unavailable':'Public link is off'),h('button',{class:'btn sec',disabled:busy||!st.playing?true:null,onclick:()=>{if(st.pub==='failed')startPublic();else{st.open.confirm=true;render()}}},st.pub==='failed'?'Try again':'Turn on'));
+  return h('div',{class:'sharing'},h('div',{class:'qr-column'},h('div',{class:'qr'+(ready?'':busy?' load':' off')},cv,busy?h('span',{class:'spin big'}):null),h('small',{class:'muted'},ready?'Scan to join':busy?'Creating public link…':'Public link is off')),
+    h('div',{class:'prr'},h('div',{class:'muted',style:'font-size:13px'},st.playing?'Same Wi-Fi, no app needed.':'Devices can connect now. Controls appear when Play starts.'),tabs,link,
+    ready?h('div',{class:'srow'},h('span',{class:'pill'},h('span',{class:'dot'+(pub?' warn':'')}),pub?'Public · 35 ms':'Local · 6 ms'),pub?h('button',{class:'btn ter sm',onclick:disablePublic},'Turn off link'):null):null,
+    st.pub==='failed'&&pub?h('div',{class:'muted'},'Check your connection and try again.'):null,
+    h('b',{style:'font-size:13px'},'Devices ',h('span',{class:'muted'},String(st.phones.length))),deviceRows()));
+}
+function serverCard(){
+  const on=st.srv==='on',busy=st.srv==='reloading',dirty=String(st.port)!==String(st.portDraft).trim();
+  const pin=h('input',{class:'pin'+(st.portErr?' err':''),value:st.portDraft,inputmode:'numeric','aria-label':'Port',disabled:busy?true:null});
+  pin.addEventListener('input',()=>{st.portDraft=pin.value.replace(/\D/g,'').slice(0,5);st.portErr='';render();const el=$('.pin');el?.focus();el?.setSelectionRange(el.value.length,el.value.length)});
+  pin.addEventListener('keydown',e=>{if(e.key==='Enter')srvReload(!on)});
+  return h('div',{class:'pcard server-card'},h('div',{class:'srow'},h('div',{style:'flex:1'},h('b',{},busy?st.busyLbl.replace('…',''):on?'Server running':'Server is off'),h('div',{class:'muted',style:'font-size:12px'},'Port '+st.port+(dirty?(on?' · Reload to apply':' · Start to apply'):''))),
+    h('button',{class:'sw2'+(on||busy?' on':''),role:'switch','aria-checked':String(on),'aria-label':'Server',disabled:busy?true:null,onclick:()=>{if(on){if(st.phones.length){st.open.offConfirm=true;render()}else srvOff()}else srvReload(true)}}),h('span',{style:'font-size:13px'},on?'On':'Off'),h('button',{class:'ib','aria-label':'Reload server',title:'Reload server',disabled:!on?true:null,onclick:()=>srvReload(false)},ic('refresh',18))),
+    st.portOpen||st.portErr?h('div',{class:'srow prt'},h('div',{style:'flex:1'},h('b',{},'Port'),h('div',{class:'muted',style:'font-size:12px;color:'+(st.portErr?'var(--err)':'var(--text3)')},st.portErr||(dirty&&on?'Reload to use port '+st.portDraft+'.':on?'Reload after changing.':'Used when you start the server.'))),pin):null,
+    h('div',{class:'srow'},h('button',{class:'btn ter sm',disabled:busy?true:null,onclick:()=>{st.portOpen=!st.portOpen;render()}},st.portOpen?'Hide port settings':'Port settings'),dirty&&on?h('button',{class:'btn ter sm',onclick:()=>{st.portDraft=String(st.port);st.portErr='';render()}},'Reset port'):null));
+}
+function remoteDetail(){
+  const on=st.srv==='on',busy=st.srv==='reloading';
+  return h('div',{class:'mpane remote-detail'},h('div',{class:'srow'},h('button',{class:'btn ter sm',onclick:()=>{st.lnDetail=false;render()}},ic('back',14),'Connections'),h('span',{class:'sp'}),st.origin&&st.originAlive?h('button',{class:'btn ter sm',onclick:backToXRCC},'Back to XRCC'):null),
+    h('h2',{class:'mtitle'},'Remote control'),h('div',{class:'pcard context'},h('div',{},h('b',{},st.origin&&!st.originAlive?'Project closed':st.origin?'Pop-up Gallery':'All projects'),h('div',{class:'muted',style:'font-size:13px'},st.origin&&st.originAlive?'Scene: Intro':st.origin?'Open a project from Projects to continue.':'Choose a playing project on your device.')),h('span',{class:'muted',style:'font-size:12px'},st.origin&&st.originAlive?(st.playing?'Playing':'Waiting for Play'):'No project playing')),
+    on?sharingCard():h('div',{class:'pcard availability'},busy?h('span',{class:'spin'}):null,h('b',{},busy?st.busyLbl:st.srvErr?'Could not start server':'Start remote control'),h('p',{class:'muted'},busy?'Devices reconnect when the server is ready.':st.srvErr||'Start the server so devices can connect.'),busy?null:h('button',{class:'btn pri',onclick:()=>{if(st.srvErr){st.portOpen=true;st.portErr='';st.srvErr='';render();$('.pin')?.focus()}else srvReload(true)}},st.srvErr?'Edit port':'Start server')),serverCard());
+}
 function launcher(){
-  const on=st.srv==='on',busy=st.srv==='reloading',pubOn=st.pub==='on',dirty=String(st.port)!==String(st.portDraft).trim();
-  const url='http://192.168.1.24:'+st.port;
-  const cv=h('canvas',{width:29,height:29});drawQr(cv,on||busy?st.port:1);
-  const status=busy?st.busyLbl.replace('…',''):on?'Server running':'Server off';
-  const sub=busy?'':on?(st.phones.length?st.phones.length+' device'+(st.phones.length>1?'s':'')+' connected':''):(st.srvErr||'');
-  const phones=h('div',{style:'display:flex;flex-direction:column;gap:8px'});
-  if(!st.phones.length)phones.append(h('div',{class:'empty'},ic('wifi',18),on?'No devices yet':'Devices appear once the server is on.'));
-  st.phones.forEach(p=>phones.append(h('div',{class:'phr'},h('div',{class:'av'},ic('user',18)),h('div',{class:'t'},h('b',{},p.name),h('small',{},sensor.owner===p.name?'Sensor source':p.joined)),
-    h('span',{class:'pill'},h('span',{class:'dot'+(p.via==='Public'?' warn':'')}),p.via+' · '+(p.via==='Public'?35:6)+' ms'),h('button',{class:'btn ter sm',onclick:()=>{st.phones=st.phones.filter(x=>x!==p);if(sensor.owner===p.name)sensor.owner=null;if(p.me){ph.screen='host-disconnected';ph.conn='drop'}render()}},'Disconnect'))));
-  const pin=h('input',{class:'pin'+(st.portErr?' err':''),value:st.portDraft,inputmode:'numeric','aria-label':'Port',disabled:busy?'':null});
-  pin.addEventListener('input',()=>{st.portDraft=pin.value.replace(/\D/g,'').slice(0,5);st.portErr='';render();const e=$('.pin');if(e){e.focus();e.setSelectionRange(e.value.length,e.value.length)}});
-  pin.addEventListener('keydown',e=>{if(e.key==='Enter'&&(on||dirty))srvReload(!on)});
-  const portHint=st.portErr?h('div',{style:'color:var(--err);font-size:12px'},st.portErr):h('div',{class:'muted',style:'font-size:12px'},dirty&&on?'Reload to use port '+String(st.portDraft).trim()+'.':'Reload after changing.');
-  const qr=h('div',{class:'qr'+(on?'':busy?' load':' off')},cv,busy?h('span',{class:'spin big'}):null);
-  const pub=h('div',{class:'pubr'},h('div',{style:'flex:1'},h('b',{style:'font-size:13px'},'Public link'),h('div',{class:'muted',style:'font-size:12px'},
-      st.pub==='failed'?'Could not create a public link. Check the connection and try again.':st.pub==='opening'?'Creating a secure address…':pubOn?URL_P:'Optional. Works on any network.')),
-    pubOn?h('button',{class:'btn ter sm',onclick:()=>{disablePublic()}},'Turn off'):
-    h('button',{class:'btn sec sm',disabled:on&&st.playing&&st.pub!=='opening'?null:true,title:st.playing?'':'Press Play to use a public link',onclick:()=>{st.open.confirm=true;render()}},st.pub==='failed'?'Try again':'Turn on'));
-  return h('div',{class:'mpane'},
-    h('div',{style:'display:flex;flex-direction:column;gap:8px'},h('h2',{class:'mtitle'},'Connections'),h('div',{class:'muted'},'Keys are encrypted and kept on this computer. Projects never contain them, and VOTANIC never sees them.')),
-    h('div',{style:'display:flex;flex-direction:column;gap:4px'},h('h3',{style:'margin:0;color:var(--accent);font-size:16px'},'Remote control'),h('div',{class:'muted'},'Control a playing project from other devices.')),
-      h('div',{class:'pcard'},
-        h('div',{class:'srow'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Local · 6 ms':busy?'Working…':'Offline'),h('div',{style:'flex:1'},h('b',{},status),h('div',{class:'muted',style:'font-size:12px'},sub)),
-          h('button',{class:'sw2'+(on||busy?' on':''),role:'switch','aria-checked':String(on),'aria-label':'Server',disabled:busy?'':null,onclick:()=>{if(on){if(st.phones.length){st.open.offConfirm=true;render()}else srvOff()}else srvReload(true)}}),h('span',{style:'font-size:13px;width:22px'},on||busy?'On':'Off'),
-          h('button',{class:'ib'+(dirty&&on?' on':''),title:dirty&&on?'Reload server to apply the new port':'Reload server','aria-label':'Reload server',disabled:on?null:true,onclick:()=>srvReload(false)},ic('refresh',18))),
-        h('div',{class:'srow prt'},h('div',{style:'flex:1;min-width:0;display:flex;flex-direction:column;gap:2px'},h('b',{},'Port'),portHint),pin),
-        h('div',{class:'lrow'},h('div',{class:'url',style:on?'':'color:var(--text3)'},on?url:'Not available yet'),h('button',{class:'btn sec',disabled:on?null:true,onclick:()=>{try{navigator.clipboard.writeText(url)}catch(e){}toast('Link copied')}},'Copy'))),
-      h('div',{style:'display:flex;flex-direction:column;gap:12px;margin-top:8px'},h('h3',{style:'margin:0;font-size:16px'},'AI keys'),h('div',{class:'muted'},'Used by AI providers in every project on this computer.'),
-        ...[['Office Key','Gemini · last used 3 Nov','Password set'],['Voice Lab key','MiniMax · last used today','No password'],['Team Poe key','Poe · added 12 Oct','Password set'],['Studio LLM token','Custom · 192.168.1.20','No password']].map(r=>h('div',{class:'mrow'},h('span',{class:'mtile'},ic('key',16)),h('span',{class:'mt'},h('b',{},r[0]),h('small',{},r[1])),h('span',{class:'muted',style:'font-size:12px'},r[2])))),
-      h('div',{style:'display:flex;flex-direction:column;gap:12px'},h('h3',{style:'margin:0;font-size:16px'},'Speech commands (Wit.ai)'),h('div',{class:'mrow'},h('span',{class:'mtile'},ic('wave',16)),h('span',{class:'mt'},h('b',{},'Lobby kiosk token'),h('small',{},'Wit.ai · last used 28 Oct')))))}
+  return h('div',{class:'mpane'},h('h2',{class:'mtitle'},'Connections'),h('div',{class:'muted'},'Keys are encrypted and kept on this computer. Projects never contain them, and VOTANIC never sees them.'),
+    h('h3',{style:'margin:12px 0 0;color:var(--accent);font-size:16px'},'Remote control'),h('div',{class:'pcard srow'},h('div',{style:'flex:1'},h('b',{},'Remote control'),h('div',{class:'muted',style:'font-size:13px'},(st.srv==='on'?'Server running':'Server off')+' · '+(st.phones.length?st.phones.length+' devices connected':'No devices connected'))),h('button',{class:'btn ter',onclick:()=>{st.lnDetail=true;render()}},'Manage devices')),
+    h('h3',{style:'margin:12px 0 0;font-size:16px'},'AI keys'),h('div',{class:'muted'},'Used by AI providers in every project on this computer.'),
+    ...[['Office Key','Gemini · last used 3 Nov','Password set'],['Voice Lab key','MiniMax · last used today','No password'],['Team Poe key','Poe · added 12 Oct','Password set'],['Studio LLM token','Custom · 192.168.1.20','No password']].map(r=>h('div',{class:'mrow'},h('span',{class:'mtile'},ic('key',16)),h('span',{class:'mt'},h('b',{},r[0]),h('small',{},r[1])),h('span',{class:'muted',style:'font-size:12px'},r[2]))));
+}
 
 Object.assign(P,{refresh:'<path d="M20 12a8 8 0 1 1-2.3-5.7M20 4v5h-5"/>',back:'<path d="M15 5l-7 7 7 7"/>',key:'<circle cx="8" cy="15" r="4"/><path d="M11 12l8-8M16 7l3 3"/>',wave:'<path d="M5 10v4M9 7v10M13 4v16M17 8v8M21 11v2"/>',setting:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>'});
 const LN_NAV=[['Projects','folder'],['Content Library','globe'],['Packages','cube'],['Profiles','edit'],['Versions','up'],['License','user']];
 function lnShell(){
   const nav=(t,ico,fn)=>h('div',{class:'lni'+(fn.on?' on':''),onclick:fn.go},ic(ico,18),t);
-  const goP=()=>{st.lnPage='projects';st.open.offConfirm=false;render()},goC=()=>{st.lnPage='connections';render()},soon=t=>()=>toast(t+' is not part of this prototype');
+  const goP=()=>{st.lnPage='projects';st.open.offConfirm=false;render()},goC=()=>{st.lnPage='connections';st.lnDetail=false;render()},soon=t=>()=>toast(t+' is not part of this prototype');
   const side=h('div',{class:'lsb'},h('div',{class:'llogo'},ic('rt',22),h('b',{},'XRCC')),h('div',{class:'lver'},ic('up',16),'4.0',ic('chev',16)),
     h('div',{class:'lnav'},...LN_NAV.map(([t,i])=>nav(t,i,t==='Projects'?{on:st.lnPage==='projects',go:goP}:{go:soon(t)}))),
     h('div',{class:'lnav low'},nav('Settings','edit',{go:()=>toast('Settings is a separate window, not part of this prototype')}),nav('Connections','conn',{on:st.lnPage==='connections',go:goC}),nav('More','plus',{go:soon('More')})));
-  const page=st.lnPage==='connections'?h('div',{class:'lpage'},launcher()):h('div',{class:'lpage lproj'},h('div',{class:'lban'},h('b',{},'Launch with Project')),h('div',{class:'lemp'},ic('info',28),h('b',{},"You don't have any project yet."),h('span',{class:'muted'},'Click the "Add" or "Import project" button to start your project directly.')));
+  const page=st.lnPage==='connections'?h('div',{class:'lpage'},st.lnDetail?remoteDetail():launcher()):h('div',{class:'lpage lproj'},h('div',{class:'lban'},h('b',{},'Launch with Project')),h('div',{class:'lemp'},ic('info',28),h('b',{},"You don't have any project yet."),h('span',{class:'muted'},'Click the "Add" or "Import project" button to start your project directly.')));
   return h('div',{class:'lsh'},h('div',{class:'ltb'},'XRCC Launcher'),h('div',{class:'lbody'},side,page))}
 function jump(k){
   st.open.ln=true;st.tab='launcher';st.open.offConfirm=false;st.open.confirm=false;st.srv='on';st.port=3001;st.portDraft='3001';st.portErr='';st.srvErr='';st.phones=[];
   const ph1={name:"Alex's iPad",joined:'Joined just now',via:'Local'};
-  st.lnPage='connections';
+  st.lnPage='connections';st.lnDetail=!['B9','B22'].includes(k);st.origin=!['B18','B22','B23','B24'].includes(k);st.originAlive=k!=='B19';st.playing=!['B18','B19','B22','B23','B24'].includes(k);st.prTab='local';st.portOpen=['B14','B15','B20','B21'].includes(k);
   if(k==='B10'||k==='B11')st.phones=[ph1];
   if(k==='B11')st.open.offConfirm=true;
-  if(k==='B12'){st.srv='off'}
+  if(['B12','B21','B22','B23'].includes(k))st.srv='off';
+  if(k==='B21')st.portDraft='3002';
   if(k==='B14')st.portDraft='3002';
   render();
   if(k==='B13')srvReload(false);
-  if(k==='B15'){st.portDraft='3000';srvReload(false)}
+  if(['B17','B24'].includes(k))srvReload(true);
+  if(k==='B19')toast('XRCC is no longer open. Open a project from Projects.',true);
+  if(k==='B15'){st.srv='off';st.portDraft='3000';st.portErr='Port 3000 is in use. Try 3002.';st.srvErr='The server could not start.';render()}
   if(k==='B16')toast('Link copied');
 }
 function offDlg(){return h('div',{class:'dlg cf'},h('div',{class:'head'},'Turn off Remote control?',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.offConfirm=false;render()}},ic('close'))),h('div',{class:'acc'}),h('div',{class:'body'},h('p',{},`${st.phones.length===1?'1 device':st.phones.length+' devices'} will disconnect.`),
@@ -701,12 +690,13 @@ function delDlg(){const dv=st.delV&&st.vars.find(x=>x.id===st.delV);if(dv)return
   return h('div',{class:'dlg cf'},h('div',{class:'head'},'Remove "'+g.name+'"?',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.delG=null;render()}},ic('close'))),h('div',{class:'acc'}),
     h('div',{class:'body'},h('p',{},'This removes the trigger button. The Instance and its Behaviour stay in your project.'),
     h('div',{class:'pf'},h('button',{class:'btn ter',onclick:()=>{st.delG=null;render()}},'Cancel'),h('button',{class:'btn pri',onclick:()=>{st.groups=st.groups.filter(x=>x!==g);st.delG=null;touch();render();toast(g.name+' removed')}},'Remove trigger'))))}
-function confirmDlg(){return h('div',{class:'dlg cf'},h('div',{class:'head'},'Turn on a public link?'),h('div',{class:'acc'}),h('div',{class:'body'},h('p',{},'Anyone with the link can control this project while Play runs. Optional, and good for demos, not for anything private.'),
-  h('div',{class:'pf'},h('button',{class:'btn ter',onclick:()=>{st.open.confirm=false;render()}},'Cancel'),h('button',{class:'btn pri',onclick:()=>{st.open.confirm=false;st.pub='opening';const revision=st.reviewRevision||0;render();setTimeout(()=>{if(revision!==(st.reviewRevision||0)||!st.playing)return;if(st.failNext){st.pub='failed';st.failNext=false}else st.pub='on';render()},1400)}},'Turn on'))))}
+function startPublic(){st.open.confirm=false;st.pub='opening';const revision=st.reviewRevision||0;render();setTimeout(()=>{if(revision!==(st.reviewRevision||0)||!st.playing)return;if(st.failNext){st.pub='failed';st.failNext=false}else st.pub='on';render()},1400)}
+function confirmDlg(){return h('div',{class:'dlg cf'},h('div',{class:'head'},'Turn on a public link?'),h('div',{class:'acc'}),h('div',{class:'body'},h('p',{},'Anyone with the link can control this project while Play runs.'),
+  h('div',{class:'pf'},h('button',{class:'btn ter',onclick:()=>{st.open.confirm=false;render()}},'Cancel'),h('button',{class:'btn pri',onclick:startPublic},'Turn on'))))}
 function disablePublic(){const me=st.phones.find(p=>p.me&&p.via==='Public');if(me){ph.screen='public-off';ph.conn='drop';sensor.owner=null}st.pub='off';st.phones=st.phones.filter(p=>p.via!=='Public');render()}
 /* ---------- phone ---------- */
 const sensor={permission:'prompt',owner:null};
-const ph={screen:'connecting',dev:'phone',land:st.orient==='landscape',conn:'local',sheet:null,changed:false};
+const ph={scoped:true,via:'Local',screen:'connecting',dev:'phone',land:st.orient==='landscape',conn:'local',sheet:null,changed:false};
 const colsFor=(width)=>{const w=width||DIM[ph.dev][ph.land?'l':'p'][0];return w<600?3:w<900?6:8};
 function fit(g){g.style.setProperty('--cols',colsFor());const f=()=>{const x=g.clientWidth,c=colsFor(x);g.style.setProperty('--cols',c);if(x)g.style.setProperty('--cell',Math.floor((x-8*(c-1))/c)+'px')};f();requestAnimationFrame(f);try{new ResizeObserver(f).observe(g)}catch(e){}}
 function fb(msg,err){const f=$('.fb');if(!f)return;clearTimeout(fb.t);const close=()=>{clearTimeout(fb.t);f.classList.remove('show')};f.className='fb xrcc-notice show';noticeContent(f,msg,!!err,close);if(!err)fb.t=setTimeout(close,2000)}
@@ -762,17 +752,18 @@ function renderPhone(){
   P_.append(h('div',{class:'sb'},h('span',{},'9:41'),h('span',{},'5G ▮▮▮')));
   const s=h('div',{class:'scr'});const sc=ph.screen;const go=x=>{ph.screen=x;ph.sheet=null;renderPhone()};
   const snap=st.snap||{groups:st.groups,orient:st.orient,vars:st.vars};
-  if(sc==='connecting'&&st.srv!=='on'){s.classList.add('c');s.append(h('div',{class:'hero',style:'background:var(--elev)'},ic('info')),h('h2',{style:'margin:0'},'Remote control is off'),h('div',{class:'muted'},'Ask the host to turn it on in Launcher.'),h('button',{class:'btn pri',onclick:()=>go('connecting')},'Try again'));P_.append(s);return}
-  if(sc==='connecting'){P_.append(ptop('Pop-up Gallery','Connecting to ALAN-PC…'));const g=h('div',{class:'pdeck'});fit(g);cellsOf(snap.groups,snap.vars).filter(c=>!c.sec).forEach(c=>g.append(h('div',{class:'sk',style:`grid-column:span ${w2(c)?2:1}`})));s.append(g);
-    clearTimeout(ph.t);ph.t=setTimeout(()=>{if(ph.screen!=='connecting')return;st.phones.push({name:ph.dev==='desktop'?"Alan's laptop":ph.dev==='ipad'?"Alan's iPad":"Alan's iPhone",joined:'Joined just now',via:'Local',me:true,has:ph.dev!=='desktop'});go('projects');render()},1400)}
-  if(sc==='projects'){P_.append(ptop('Projects','Connected to ALAN-PC'));if(!st.playing)s.append(emptyState('Waiting for Play','Press Play in XRCC to start.'));else s.append(h('button',{class:'proj',onclick:()=>go('deck')},h('div',{class:'th'},ic('folder')),h('div',{style:'flex:1'},h('b',{},'Pop-up Gallery'),h('div',{class:'muted',style:'font-size:12px'},'Scene: Intro'),h('div',{style:'font-size:12px;color:var(--ok)'},'● Playing now')),ic('arrow',18)))}
+  if(sc==='connecting'&&st.srv!=='on'){s.classList.add('c');s.append(h('div',{class:'hero',style:'background:var(--elev)'},ic('info')),h('h2',{style:'margin:0'},'Unable to connect'),h('div',{class:'muted'},'Check the link and network, then try again.'),h('button',{class:'btn pri',onclick:()=>go('connecting')},'Try again'));P_.append(s);return}
+  if(sc==='connecting'){P_.append(ptop(ph.scoped?'Pop-up Gallery':'Remote control','Connecting to ALAN-PC…'));const g=h('div',{class:'pdeck'});fit(g);cellsOf(snap.groups,snap.vars).filter(c=>!c.sec).forEach(c=>g.append(h('div',{class:'sk',style:`grid-column:span ${w2(c)?2:1}`})));s.append(g);
+    clearTimeout(ph.t);ph.t=setTimeout(()=>{if(ph.screen!=='connecting')return;st.phones=st.phones.filter(p=>!p.me);st.phones.push({name:ph.dev==='desktop'?"Alan's laptop":ph.dev==='ipad'?"Alan's iPad":"Alan's iPhone",joined:'Joined just now',via:ph.via||'Local',me:true,has:ph.dev!=='desktop'});ph.conn='local';go(ph.scoped?(st.playing?'deck':'waiting'):'projects');render()},1400)}
+  if(sc==='waiting'){P_.append(ptop('Pop-up Gallery','Connected to ALAN-PC'));s.append(emptyState('Waiting for Play','Controls appear when this project starts playing.'),h('button',{class:'btn ter',onclick:()=>{ph.scoped=false;go('projects')}},'Back to projects'));}
+  if(sc==='projects'){P_.append(ptop('Projects','Connected to ALAN-PC'));s.append(h('button',{class:'proj',onclick:()=>{ph.scoped=true;go(st.playing?'deck':'waiting')}},h('div',{class:'th'},ic('folder')),h('div',{style:'flex:1'},h('b',{},'Pop-up Gallery'),h('div',{class:'muted',style:'font-size:12px'},'Scene: Intro'),h('div',{style:'font-size:12px;color:var(--ok)'},st.playing?'● Playing now':'Waiting for Play')),ic('arrow',18)))}
   if(sc==='deck'){P_.append(ptop('Pop-up Gallery','Scene: Intro',()=>go('projects')));
     // Orientation follows the viewport; no orientation warning.
     if(ph.conn!=='local')s.append(h('div',{class:'bn w'},'Controls paused. Reconnect using the current link.',h('button',{class:'btn pri',onclick:()=>{ph.conn='local';ph.screen='connecting';renderPhone()}},'Reconnect')));
     if(ph.changed)s.append(h('div',{class:'bn w'},'Controls updated. Refresh before continuing.',h('button',{class:'btn pri',onclick:()=>{st.snap=JSON.parse(JSON.stringify({groups:st.groups,orient:st.orient,vars:st.vars}));ph.changed=false;renderPhone()}},'Refresh list')));
     if(cellsOf(snap.groups,snap.vars).length){const g=h('div',{class:'pdeck'+(ph.conn!=='local'?' paused':'')});fillDeck(g,snap.groups,snap.vars);s.append(g);fit(g)}
     else s.append(emptyState('No controls yet','Add controls in XRCC.'))}
-  if(['server-off','public-off','host-disconnected'].includes(sc)){const info={'server-off':['Remote control is off','Ask the host to turn it on in Launcher.','Try again','connecting'],'public-off':['Public link is off','Ask the host for a current link.','Back to projects','projects'],'host-disconnected':['Disconnected by host','Reconnect with the current link.','Reconnect','connecting']}[sc];s.classList.add('c');s.append(h('h2',{},info[0]),h('p',{class:'muted'},info[1]),h('button',{class:'btn pri',onclick:()=>go(info[3])},info[2]))}
+  if(['server-off','public-off','host-disconnected'].includes(sc)){const info={'server-off':['Unable to connect','Check the link and network, then try again.','Try again','connecting'],'public-off':['Public link is off','Ask the host for a current link.',null,null],'host-disconnected':['Disconnected by host','Reconnect with the current link.','Reconnect','connecting']}[sc];s.classList.add('c');s.append(h('h2',{},info[0]),h('p',{class:'muted'},info[1]),info[2]?h('button',{class:'btn pri',onclick:()=>go(info[3])},info[2]):null)}
   if(sc==='ended'){s.classList.add('c');s.append(h('div',{class:'hero',style:'background:var(--elev)'},ic('info')),h('h2',{style:'margin:0'},'Play ended'),h('div',{class:'muted'},'Controls return with the next Play.'),h('button',{class:'btn pri',onclick:()=>go('projects')},'Back to projects'))}
   P_.append(s);
   if(ph.sheet==='device'){const has=ph.capability?ph.capability==='motion':ph.dev!=='desktop';const row=(ic_,n,ok)=>h('div',{class:'sensr'},ic(ic_,20),h('b',{},n),h('span',{class:'tag'+(ok?' ok':'')},ok?'Available':'Not available'));
@@ -785,10 +776,10 @@ function renderPhone(){
   else if(ph.sheet){const c=cellsOf(snap.groups,snap.vars).find(x=>x.key===ph.sheet);if(c)P_.append(h('div',{class:'sh-s',onclick:()=>{ph.sheet=null;renderPhone()}}),h('div',{class:'sheet'},h('b',{},c.label),h('div',{class:'sw'},PAL.concat(['#c0392b','#e8467c','#2e8b57']).map(x=>h('i',{class:valOf(c.key)===x?'on':'',style:'background:'+x,onclick:()=>{press(c,x);ph.sheet=null;renderPhone()}}))),h('button',{class:'btn ter',onclick:()=>{ph.sheet=null;renderPhone()}},'Cancel')))}
   P_.append(h('div',{class:'fb'}))}
 
-const FLOW_NAMES={A1:'Empty list',A2:'Choose what to add',A3:'Select Instance',A4:'Trigger added',A5:'Button colour',A6:'Row actions',A7:'Reorder',A8:'Needs attention',A9:'Playing',A10:'Project variable',A11:'Instance variable',A12:'Variable added',A13:'Remote Start',A14:'Remove trigger',A15:'Number settings error',A16:'Text settings',A17:'Rename',A18:'Remove variable',A19:'No instance variables',A20:'No instance selected',A21:'No search results',A22:'Empty scene',A23:'No project variables',A24:'All variables added',A25:'Pick instance first',B1:'Play popover',B2:'Local ready',B3:'Device joined',B4:'Public confirmation',B5:'Opening public link',B6:'Public ready',B7:'Public failure',B8:'Waiting for Play',B9:'Server running',B10:'Device joined',B11:'Turn off server',B12:'Server off',B13:'Reloading',B14:'Port changed',B15:'Port in use',B16:'Copied',C2:'Connecting',C3:'Projects',C4:'Waiting for Play',C5:'Deck',C6:'Confirmed',C7:'Slider',C8:'Text input',C9:'Reconnecting',C10:'Stale controls',C11:'Play ended',C12:'Landscape',C13:'Tablet portrait',C14:'Tablet landscape',C15:'Empty deck',C16:'This device',C17:'Permission needed',C18:'Permission denied',C19:'Other sensor source',C20:'Sensors active',C21:'Sensor source lost',C22:'Confirm takeover',C23:'Server unavailable',C24:'Public link disabled',C25:'Host disconnected',C26:'Command rejected',C27:'Confirmation unavailable',C28:'Invalid number',C29:'Desktop'};
+const FLOW_NAMES={A1:'Empty list',A2:'Choose what to add',A3:'Select Instance',A4:'Trigger added',A5:'Button colour',A6:'Row actions',A7:'Reorder',A8:'Needs attention',A9:'Playing',A10:'Project variable',A11:'Instance variable',A12:'Variable added',A13:'Remote Start',A14:'Remove trigger',A15:'Number settings error',A16:'Text settings',A17:'Rename',A18:'Remove variable',A19:'No instance variables',A20:'No instance selected',A21:'No search results',A22:'Empty scene',A23:'No project variables',A24:'All variables added',A25:'Pick instance first',B1:'Play · Connect devices',B2:'Local ready',B3:'Device joined',B4:'Public confirmation',B5:'Opening public link',B6:'Public ready',B7:'Public failure',B8:'Waiting for Play',B9:'Server running',B10:'Device joined',B11:'Turn off server',B12:'Server off',B13:'Reloading',B14:'Port changed',B15:'Port in use',B16:'Copied',B17:'Starting server',B18:'Independent entry',B19:'Source closed',B20:'Port settings',B21:'Corrected port',B22:'Connections · server off',B23:'Independent · server off',B24:'Independent · starting',A26:'Opening Launcher',A27:'Launcher unavailable',A28:'Launcher unavailable · Playing',C2:'Connecting',C3:'Projects',C4:'Waiting for Play',C5:'Deck',C6:'Confirmed',C7:'Slider',C8:'Text input',C9:'Reconnecting',C10:'Stale controls',C11:'Play ended',C12:'Landscape',C13:'Tablet portrait',C14:'Tablet landscape',C15:'Empty deck',C16:'This device',C17:'Permission needed',C18:'Permission denied',C19:'Other sensor source',C20:'Sensors active',C21:'Sensor source lost',C22:'Confirm takeover',C23:'Server unavailable',C24:'Public link disabled',C25:'Host disconnected',C26:'Command rejected',C27:'Confirmation unavailable',C28:'Invalid number',C29:'Desktop'};
 function reviewScreen(k){
- if(!FLOW_NAMES[k])return;st.reviewRevision=(st.reviewRevision||0)+1;history.replaceState(null,'','?screen='+encodeURIComponent(k));
- clearTimeout(ph.t);clearTimeout(ph.rt);st.preview=k;st.groups=sample();st.vars=vsample();st.vals={};st.playing=false;st.srv='on';st.pub='off';st.bhv=null;st.delG=st.delV=st.rename=st.renameV=null;st.selV=null;st.draft=null;st.colorFor=null;st.noIntro=true;st.phones=[];st.open={rt:true,pick:false,vpick:false,menu:false,ln:true,pr:false,pop:false,confirm:false,offConfirm:false};st.pick={sel:[],q:''};st.pickNew=null;
+ if(!FLOW_NAMES[k])return;clearTimeout(toast.t);$('#toast')?.remove();st.reviewRevision=(st.reviewRevision||0)+1;history.replaceState(null,'','?screen='+encodeURIComponent(k));
+ clearTimeout(ph.t);clearTimeout(ph.rt);st.preview=k;st.groups=sample();st.vars=vsample();st.vals={};st.playing=false;st.srv='on';st.pub='off';st.bhv=null;st.delG=st.delV=st.rename=st.renameV=null;st.selV=null;st.draft=null;st.colorFor=null;st.noIntro=true;st.phones=[];st.launcherUnavailable=false;st.origin=true;st.originAlive=true;st.portOpen=false;st.port=3001;st.portDraft='3001';st.portErr='';st.srvErr='';st.lnDetail=true;st.open={rt:true,pick:false,vpick:false,menu:false,ln:true,pr:false,pop:false,confirm:false,offConfirm:false};st.pick={sel:[],q:''};st.pickNew=null;
  Object.assign(ph,{nextResult:null,screen:'deck',conn:'local',changed:false,sheet:null,dev:'phone',land:false,confirmTakeover:false,sensorLost:false,capability:null});sensor.owner=null;sensor.permission='prompt';
  if(k[0]==='A'){
   st.tab='editor';
@@ -807,13 +798,14 @@ function reviewScreen(k){
   if(k==='A16')st.selV='result.Title text';
   if(k==='A17')st.renameV='p.Guest count';
   if(k==='A18')st.delV='p.Guest count';
+  if(['A26','A27','A28'].includes(k)){st.launcherUnavailable=k!=='A26';st.playing=k==='A28';if(k==='A26'){openLauncher();return}st.launcherUnavailable=true}
   if(k==='A20'){st.groups=[{id:'g0',name:'New Remote Trigger',color:'#65a7ff',items:[]}];st.vars=[]}
  } else if(k[0]==='B'){
   if(+k.slice(1)>=9){jump(k);return}
-  st.tab='editor';st.playing=k!=='B8';st.open.rt=false;st.open.pr=k!=='B1';st.open.pop=k==='B1';st.prTab=['B4','B5','B6','B7'].includes(k)?'public':'local';st.pub=k==='B5'?'opening':k==='B6'?'on':k==='B7'?'failed':'off';st.open.confirm=k==='B4';if(k==='B3'){st.phones=[{name:"Alan's iPad",joined:'Joined just now',via:'Local',has:true}];sensor.owner="Alan's iPad"}
+  st.tab=k==='B1'?'editor':'launcher';st.playing=k!=='B8';st.open.rt=false;st.open.pr=false;st.open.pop=false;st.prTab=['B4','B5','B6','B7'].includes(k)?'public':'local';st.pub=k==='B5'?'opening':k==='B6'?'on':k==='B7'?'failed':'off';st.open.confirm=k==='B4';if(k==='B3'){st.phones=[{name:"Alan's iPad",joined:'Joined just now',via:'Local',has:true}];sensor.owner="Alan's iPad"}
  } else {
   st.tab='phone';play();st.snap=JSON.parse(JSON.stringify({groups:st.groups,vars:st.vars}));
-  if(k==='C2')ph.screen='connecting';if(k==='C3')ph.screen='projects';if(k==='C4'){ph.screen='projects';st.playing=false}
+  if(k==='C2')ph.screen='connecting';if(k==='C3')ph.screen='projects';if(k==='C4'){ph.screen='waiting';st.playing=false}
   if(k==='C9')ph.conn='drop';if(k==='C10')ph.changed=true;if(k==='C11'){st.playing=false;ph.screen='ended'}
   if(k==='C12')ph.land=true;if(k==='C13')ph.dev='ipad';if(k==='C14'){ph.dev='ipad';ph.land=true}if(k==='C29')ph.dev='desktop';
   if(k==='C15')st.snap={groups:[],vars:[]};
@@ -821,13 +813,14 @@ function reviewScreen(k){
   if(k==='C23'){st.srv='off';ph.screen='server-off';ph.conn='drop'}if(k==='C24'){ph.screen='public-off';ph.conn='drop'}if(k==='C25'){ph.screen='host-disconnected';ph.conn='drop'}
  }
  render();
+ if(['A27','A28'].includes(k))toast('Open Launcher › Connections › Remote control, then try again.',true);
  if(k==='C6'&&press(cellsOf(st.snap.groups,st.snap.vars)[0]))document.querySelector('.key')?.classList.add('sent');
  if(k==='C26'||k==='C27'){ph.nextResult=k==='C26'?'rejected':'unknown';press(cellsOf(st.snap.groups,st.snap.vars)[0]);}
  if(k==='C28'){const input=document.querySelector('input[type=number]');if(input){input.value='99';input.dispatchEvent(new Event('change'))}}
  document.getElementById('screenReview').value=k;
 }
 const reviewLabel=h('label',{class:'reviewnav'},'Figma screen ',h('select',{id:'screenReview','aria-label':'Figma screen',onchange:e=>reviewScreen(e.target.value)},h('option',{value:''},'Interactive prototype'),...Object.entries(FLOW_NAMES).map(([k,v])=>h('option',{value:k},k+' · '+v))));
-document.querySelector('.top').append(reviewLabel,h('a',{href:'https://www.figma.com/design/ZBOB48n4eLsZABCTnhh5kk/XRCC-Claude-Workbench?node-id=1481-10758',target:'_blank',rel:'noopener',style:'color:var(--accent);font-size:12px'},'Figma'));
+const reviewTools=h('details',{class:'review-tools'},h('summary',{},'Review states'),reviewLabel);document.querySelector('.top').append(reviewTools,h('a',{href:'https://www.figma.com/design/ZBOB48n4eLsZABCTnhh5kk/XRCC-Claude-Workbench?node-id=1481-10758',target:'_blank',rel:'noopener',style:'color:var(--accent);font-size:12px'},'Figma'));
 
 /* ---------- render ---------- */
 function bhvBoard(){
@@ -858,26 +851,26 @@ function render(){
   const showRt=st.tab==='editor'&&st.open.rt&&(!st.playing||st.preview==='A9'),showLn=st.tab==='launcher';
   if(st.playing&&st.tab!=='launcher')stage.append(playView());
   if(showRt){stage.append(h('div',{class:'xscrim'}),h('div',{class:'xmain'},colorPop(),rtDialog()))}
-  if(st.tab==='editor'&&st.open.pr&&!showRt)stage.append(h('div',{class:'xscrim'}),h('div',{class:'xmain'},prWin()));
-  if(st.tab==='editor'&&st.open.pop)stage.append(prPop());
+
+
   if(showRt&&st.open.pick)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},picker()));
   if(showRt&&st.open.vpick)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},varPicker()));
   if(showRt&&(st.delG||st.delV))stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},delDlg()));
   if(showLn&&st.open.offConfirm)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},offDlg()));
-  if((showLn||(st.tab==='editor'&&st.open.pr))&&st.open.confirm)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},confirmDlg()));
+  if(showLn&&st.open.confirm)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},confirmDlg()));
   if(st.preview==='A9')stage.querySelectorAll('.rt input,.rt select,.rt button:not(.head button)').forEach(n=>n.disabled=true);
   v.append(stage);
   if(st.tab==='editor')dev.append(h('span',{},'Test controls'),
     h('button',{class:'btn ter sm',onclick:()=>{const its=st.groups.flatMap(g=>g.items);if(!its.length)return toast('Add an instance first');const cur=its.find(i=>i.issue);const o=['','missing','type'];if(!cur)its[0].issue='missing';else cur.issue=o[(o.indexOf(cur.issue)+1)%3];render()}},'Simulate problem'),
     h('button',{class:'btn ter sm',onclick:()=>{st.groups=[];st.vars=[];st.noIntro=false;st.selG=st.selI=st.panel=null;touch();render()}},'Clear list'),
     h('button',{class:'btn ter sm',onclick:()=>{st.groups=sample();st.vars=vsample();st.panel=null;touch();render()}},'Load sample list'),
-    h('span',{},'Remote control'),
-    h('button',{class:'btn ter sm',onclick:()=>{if(!st.playing)play();st.open.rt=false;st.open.pr=false;st.open.pop=true;render()}},'B1 Play popover'),
-    h('button',{class:'btn ter sm',onclick:()=>{if(!st.playing)play();st.open.rt=false;st.open.pop=false;st.open.pr=true;render()}},'B2 Remote control window'));
-  else dev.append(h('span',{},'Flow screens'),...[['B9','Running'],['B10','Device joined'],['B11','Turn off?'],['B12','Server off'],['B13','Reloading'],['B14','Port changed'],['B15','Port in use'],['B16','Link copied']].map(([k,l])=>h('button',{class:'btn ter sm',title:k+' · '+l,onclick:()=>jump(k)},k+' '+l)),h('span',{},'Test controls'),h('label',{style:'display:flex;gap:6px;align-items:center;font-size:12px'},h('input',{type:'checkbox',checked:st.failNext?'':null,onchange:e=>{st.failNext=e.target.checked}}),'Next public link fails'),
-    h('button',{class:'btn ter sm',disabled:st.playing&&st.pub==='on'?null:true,onclick:()=>{st.phones.push({name:"Sam's laptop",joined:'Joined just now',via:'Public',has:false});render()}},'Add a public device'));
+    h('button',{class:'btn ter sm',onclick:()=>{st.launcherUnavailable=!st.launcherUnavailable;toast(st.launcherUnavailable?'Launcher unavailable for next attempt':'Launcher available')}},'Test Launcher unavailable'));
+  else dev.append(h('span',{},'Connection test · simulated data'),h('button',{class:'btn ter sm',disabled:st.srv==='on'&&(st.prTab!=='public'||st.pub==='on')?null:true,onclick:joinDevice},'Open shared link'),
+    h('button',{class:'btn ter sm',onclick:()=>{st.originAlive=false;render();toast('XRCC is no longer open. Open a project from Projects.',true)}},'Test source closed'),
+    h('label',{},h('input',{type:'checkbox',checked:st.failNext?'':null,onchange:e=>st.failNext=e.target.checked}),' Next public link fails'));
+
 }
-$$('.tab').forEach(t=>t.addEventListener('click',()=>{st.tab=t.dataset.t;if(st.tab==='editor')st.open.rt=true;if(st.tab==='launcher'){st.lnPage='connections';st.open.offConfirm=false}render()}));
+$$('.tab').forEach(t=>t.addEventListener('click',()=>{st.tab=t.dataset.t;if(st.tab==='editor')st.open.rt=true;if(st.tab==='launcher'){st.lnPage='connections';st.lnDetail=false;st.origin=false;st.originAlive=true;st.open.offConfirm=false}render()}));
 document.addEventListener('keydown',e=>{const modal=Array.from(document.querySelectorAll('.xpick .dlg')).at(-1);if(!modal)return;if(e.key==='Escape'){e.preventDefault();const close=modal.querySelector('.head [aria-label=Close]');close?.click();return}if(e.key==='Tab'){const items=Array.from(modal.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),[tabindex="0"]')).filter(n=>n.getClientRects().length);if(!items.length)return;const first=items[0],last=items.at(-1);if(e.shiftKey&&(document.activeElement===first||!modal.contains(document.activeElement))){e.preventDefault();last.focus()}else if(!e.shiftKey&&(document.activeElement===last||!modal.contains(document.activeElement))){e.preventDefault();first.focus()}}});
 window.addEventListener('resize',()=>{if(st.tab==='phone')renderPhone()});
 const requestedScreen=new URLSearchParams(location.search).get('screen');if(FLOW_NAMES[requestedScreen])reviewScreen(requestedScreen);else render();
