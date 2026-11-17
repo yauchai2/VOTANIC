@@ -1,11 +1,56 @@
-# XRCC Remote Trigger web prototype
+# XRCC Remote Trigger P1 · web prototype and handover
 
-Single-file, dependency-free prototype that mirrors the Figma flow (Workbench page "XRCC Remote Trigger").
-Open `index.html` in a browser. It is responsive: phone view fills the screen on narrow widths, and editor and phone sit side by side on wide screens.
+Single-file, dependency-free prototype (`index.html`) that follows the Figma flow. Figma is the source of truth: change Figma first, self-check it, then make the prototype follow.
 
-- **1 · Editor**: drag or click variables onto the deck, tune labels, see issues. Dial, stepper and vector keys work live against the scene preview.
-- **2 · Play & Launcher**: Start Play to get a 6-digit code, QR, local and public link (confirm dialog), joined phones and a Play console log.
-- **3 · Phone**: join with the code, pick a project, press keys, drag dials (others dim), colour sheet, network drop, stale deck refresh, Play ended, landscape.
+## Read before you start
 
-State is shared across tabs of the same browser (BroadcastChannel), so a second tab acts as a real phone.
-The QR is decorative. Behaviour, timings and the access-code login are assumptions, see the Figma Overview.
+1. `design-system/20261113-READ-FIRST-execution-guide.md` in the project's shared files (`/mnt/project-files/`, not in this repo). Read its section 1 checklist and the section for your task type, and run its section 13 self-check before reporting.
+2. `design-system/20261008-library-change-log.md` in the same place: every Figma and prototype change is logged there (latest entries: 2026-11-17).
+3. Project memory: `remote-trigger-launcher-flow-boards` and `remote-trigger-trigger-vs-variable-model`.
+
+Working rules in short: reply to Alan in Cantonese, write reports in formal written Chinese. UI copy is English-first, short, no filler. Use XRCC (PC) Library components and existing tokens only, never add tokens. Dark mode only, single desktop frame. Annotations are Figma's native Annotations, written in Traditional Chinese. After any Figma edit, self-check prototype links, annotations and consistency. Connected devices are not always phones (desktop and iPad too), so the UI says "Remote control" and "Devices", never "Phone".
+
+## Branch and files
+
+- Repo `yauchai2/votanic`, branch `claude/project-thread-pddqur`, draft PR #7. Push only to this branch.
+- `prototypes/xrcc-remote-trigger/index.html`: the whole prototype (CSS, markup, JS, no build step).
+- `prototypes/xrcc-remote-trigger/README.md`: this file.
+- The published Artifact is the same file. Republish with the Artifact tool using the same file path and URL so the link stays the same. Repo source and the latest Artifact version must stay identical.
+
+## Run locally
+
+Open `index.html` in a browser, or run `python3 -m http.server` in this folder. State is shared between browser tabs through BroadcastChannel and saved in localStorage.
+
+Smoke test with Playwright: open the page, click "B2 Remote control window", switch to tab 3, and check there are no console errors.
+
+## Prototype map
+
+- **1 · XRCC editor**: Remote Triggers window (Remote List). Add New, trigger and variable pickers, settings, issues, rename, remove, connect to Behaviour. Drag the grip handle to reorder a section (keyboard: Space to pick up, arrow keys to move, Esc to cancel). Triggers and variable controls are reordered within their own kind. The title bar has a "Connect devices" button that opens the Remote control window.
+- **Play**: the XRCC top-right device icon opens a slim popover (status plus "Open"), which opens the Remote control window: QR, Local network / Public link tabs, device list with Disconnect. Footer buttons "B1 Play popover" and "B2 Remote control window" jump there.
+- **2 · Play & Launcher**: opens the Launcher straight on Connections. Remote control section is server only (switch, Reload icon, Port, address, Copy). Footer buttons B9–B16 jump to each state.
+- **3 · Remote**: the controller web page (picker, deck, sheets). Tap the connection pill for "This device" (sensor availability). Test controls switch Phone / iPad / Desktop (Desktop has no gyroscope or accelerometer), rotate, simulate a network drop.
+
+## Figma map
+
+File "XRCC Claude Workbench" (key `ZBOB48n4eLsZABCTnhh5kk`), page "XRCC Remote Trigger (P1)" (node `1481:10758`). Do not touch the "Notes" sections or the old UI frame; they belong to Alan.
+
+- **A series, XRCC editor (section `1497:3722`)**: A1 empty list, A2 choose what to add, A3 select instances, A4 trigger added, A5 button colour, A6 hover a row, A7 reorder a section (dragging), A8 needs attention, A9 live while playing, A10–A12 and A23–A25 variable pickers and states, A13 connect an instance (Remote Start), A14 and A18 remove, A15 and A16 settings, A17 rename, A19–A22 empty states.
+- **B series, Play and Launcher (section `1501:5114`)**: B1 Play popover, B2–B8 Remote control window states (ready, device joined, public link on/opening/on/failed, waiting for Play), B9–B16 Launcher Connections (running, device joined, turn off, server off, reloading, port changed, port in use, link copied).
+- **C series, controller (section `1506:5871`)**: C2–C15 connecting, project list, deck, key sent, slider, text, reconnecting, deck changed, play ended, orientations, empty deck; C16 This device (sensors).
+- Section `1510:7606` holds the micro-interaction and tooltip specs, section `1510:7721` the Overview.
+
+## Decisions to keep
+
+- Launcher (server control) and XRCC window (join and monitor) are separate: no QR or device list in the Launcher. Settings has no Remote Trigger item.
+- Two entries to the Remote control window: Play popover "Open", and editor "Connect devices".
+- No orientation toggle in the Remote List; layout follows the device.
+- Sensors turn on by default, no control section. C16 and the device row ("Using sensors" / "No motion sensors") only show availability; the Notion spec says one device uses sensors at a time.
+- Public link is off by default and ends when Play ends.
+
+## Not synced or open
+
+- Figma lets triggers and variable sections mix in one list; the prototype keeps triggers first, then variables, and reorders each kind separately.
+- Figma A1 to B8 has no visible flow arrow, only a prototype link and an annotation.
+- The help card icon in the Remote Triggers window is still phone-shaped.
+- Behaviours, timings and sensor handling are assumptions; check the Notion spec "Remote Trigger Implementation Spec" (read-only) before changing them.
+- Only Alan can Publish the Figma Library.
