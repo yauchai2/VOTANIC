@@ -308,7 +308,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
   <nav class="tabs" role="tablist">
     <button class="tab" data-t="editor" role="tab">1 · XRCC editor</button>
     <button class="tab" data-t="launcher" role="tab">2 · Play &amp; Launcher</button>
-    <button class="tab" data-t="phone" role="tab">3 · Phone</button>
+    <button class="tab" data-t="phone" role="tab">3 · Remote</button>
   </nav>
 </header>
 <div class="wrap"><div id="view"></div><div class="dev" id="dev"></div></div>
@@ -382,8 +382,8 @@ const nCells=()=>cellsOf(st.groups,st.vars).filter(c=>!c.sec).length;
 const toast=m=>{let t=$('#toast');if(!t){t=h('div',{id:'toast',style:'position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--elev);border:1px solid var(--border);border-radius:8px;padding:8px 14px;z-index:50;font-size:13px'});document.body.append(t)}t.textContent=m;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',2000)};
 function playView(){const n=st.phones.length,on=st.srv==='on';
   return h('div',{class:'pvw'},h('div',{class:'pvmid'},h('div',{class:'pvtitle'},'Play mode'),h('div',{class:'muted'},'Pop-up Gallery · Scene: Intro'),h('div',{class:'muted',style:'font-size:12px'},'The scene is running in XRCC. Press Stop to return to the editor.')),
-    h('div',{class:'pvhud'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Phone remote on':'Phone remote off'),h('span',{class:'muted',style:'font-size:12px'},on?(n?n+' phone'+(n>1?'s':'')+' connected':'No phones yet')+' · http://192.168.1.24:'+st.port:'Turn it on in Launcher · Connections'))) }
-function play(){if(st.playing)return;st.open.pick=false;st.open.vpick=false;st.open.menu=false;if(!nCells())toast('Nothing remoted yet. Phones will show an empty list.');st.playing=true;st.snap=JSON.parse(JSON.stringify({groups:st.groups,orient:st.orient,vars:st.vars}));ph.changed=false;render()}
+    h('div',{class:'pvhud'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Remote control on':'Remote control off'),h('span',{class:'muted',style:'font-size:12px'},on?(n?n+' device'+(n>1?'s':'')+' connected':'No devices yet')+' · http://192.168.1.24:'+st.port:'Turn it on in Launcher · Connections'))) }
+function play(){if(st.playing)return;st.open.pick=false;st.open.vpick=false;st.open.menu=false;if(!nCells())toast('No controls yet.');st.playing=true;st.snap=JSON.parse(JSON.stringify({groups:st.groups,orient:st.orient,vars:st.vars}));ph.changed=false;render()}
 function stop(){st.playing=false;st.phones=[];st.pub='off';if(['deck','projects'].includes(ph.screen))ph.screen='ended';render()}
 const touch=()=>{save();if(st.playing)ph.changed=true};
 /* ---------- XRCC stage ---------- */
@@ -395,7 +395,7 @@ function bar(){
     h('div',{class:'xbar'},h('span',{class:'pj'},sv(I.bm,20),h('span',{},'my-project-name-20260101_0...')),h('span',{class:'ed'},sv(I.ed,24),'Edit'),h('span',{class:'bh'},sv(I.bh,24),'Behaviour'),
       h('span',{class:'ti'},h('span',{class:'ib'},sv(I.bug,22)),
         h('button',{class:'ib'+(st.tab==='editor'&&st.open.rt?' on':''),title:'Remote Trigger',onclick:()=>{st.tab='editor';st.open.pop=false;st.open.pr=false;st.open.rt=!st.open.rt;render()}},ic('rt')),
-        h('button',{class:'ib'+(st.tab==='editor'&&(st.open.pop||st.open.pr)?' on':''),title:'Phone remote',onclick:()=>{st.tab='editor';st.open.rt=false;st.open.pr=false;st.open.pop=!st.open.pop;render()}},ic('phone')),
+        h('button',{class:'ib'+(st.tab==='editor'&&(st.open.pop||st.open.pr)?' on':''),title:'Remote control',onclick:()=>{st.tab='editor';st.open.rt=false;st.open.pr=false;st.open.pop=!st.open.pop;render()}},ic('phone')),
         h('span',{class:'ib'},sv(I.ai,22)),h('span',{class:'ib'},sv(I.wr,22))),
       h('button',{class:'pl',onclick:()=>st.playing?stop():play()},sv(I.pl,16),st.playing?'Stop':'Play in PC',sv(I.dn,16)),
       h('button',{class:'sv',onclick:()=>toast('Saved')},sv(I.sv,18),'Save*')))}
@@ -412,7 +412,7 @@ function groupHead(g,idx){
     h('button',{class:'ib del',title:'Delete group','aria-label':'Delete group',onclick:e=>{e.stopPropagation();st.delG=g.id;render()}},ic('trash')));
   return r}
 function ctlPanel(g,it){
-  const inst=IB[it.inst];const wrap=h('div',{class:'sett'},h('h5',{},`Choose what phones can control on ${inst.n}`));
+  const inst=IB[it.inst];const wrap=h('div',{class:'sett'},h('h5',{},`Choose what to control on ${inst.n}`));
   if(!inst.ctl.length)wrap.append(h('div',{class:'muted'},'This instance has no triggers or variables to remote.'));
   const upd=(s,f,v)=>{s[f]=v;touch();render()};
   inst.ctl.forEach((c,ci)=>{const s=it.ctl[c.n];const on=!!(s&&s.on);
@@ -443,25 +443,25 @@ function addTrigger(){const g={id:gid(),name:'New Remote Trigger'+(st.groups.len
 function addVar(){st.open.menu=false;st.vpick={tab:'iv',inst:null,sel:null,q:''};st.open.vpick=true;render()}
 function rtDialog(){
   const list=h('div',{class:'list'});
-  const footEl=h('div',{class:'foot'},ic('info',16),'Saved with the project. Play uses a snapshot, so edits made during Play show up next time.');
+  const footEl=h('div',{class:'foot'},ic('info',16),'Saved with the project. Edits during Play apply next time.');
   st.groups.forEach((g,gi)=>{const blk=h('div',{class:'gblk',style:'--gc:'+g.color}),its=h('div',{class:'items'});blk.append(groupHead(g,gi),its);
     g.items.forEach(it=>its.append(itemRow(g,it)));
     if(!g.items.length)its.append(h('div',{class:'slot'},ic('cube',18),h('div',{class:'t'},h('b',{},'No instances yet'),h('span',{},'Add the objects this button should run when you press it.')),h('button',{class:'btn pri sm',disabled:null,onclick:()=>{st.pickFor=g.id;st.pickNew=null;st.pick.sel=[];st.open.pick=true;render()}},'Add instances')));list.append(blk)});
-  if(!st.groups.length&&!st.vars.length)list.append(emptyState('Your phone deck is empty','Add a trigger button to run flows on your instances, or a variable control to change one value, all from your phone.'));
+  if(!st.groups.length&&!st.vars.length)list.append(emptyState('No controls yet','Add a trigger or a variable control.'));
   list.append(...varBlock(),footEl);
   const n=issues();
   return h('div',{class:'dlg rt'},
     h('div',{class:'head'},ic('rt',18),'Remote Triggers',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.rt=false;render()}},ic('close'))),h('div',{class:'acc'}),
     h('div',{class:'body'},
-      (st.noIntro?null:h('div',{class:'intro'},h('div',{class:'ph'},ic('wifi')),h('div',{class:'grow'},h('h3',{},'Please confirm the remote connection with XRCC Mobile'),h('p',{},'You can check with your server Admin for permissions and your connection website. A trigger button runs the flows connected to its instances. A variable control changes one value.'))
+      (st.noIntro?null:h('div',{class:'intro'},h('div',{class:'ph'},ic('wifi')),h('div',{class:'grow'},h('h3',{},'Control Play from any device'),h('p',{},'A trigger runs its connected flows. A variable control changes one value.'))
 ,h('button',{class:'ib','aria-label':'Dismiss',onclick:()=>{st.noIntro=true;render()}},ic('close')))),
-      n?h('div',{class:'banner'},ic('info'),`${n} item${n>1?'s':''} need attention. Phones can't use ${n>1?'them':'it'} until fixed.`):null,
-      h('div',{class:'lhead'},h('h2',{},'Remote List'),h('div',{class:'min','aria-label':'Phone orientation'},['portrait','landscape'].map(o=>h('button',{class:'ib'+(st.orient===o?' on':''),title:o==='portrait'?'Portrait layout':'Landscape layout','aria-label':o==='portrait'?'Portrait layout':'Landscape layout','aria-pressed':String(st.orient===o),onclick:()=>{st.orient=o;ph.land=o==='landscape';save();render()}},ic(o==='portrait'?'port':'land',18)))),h('span',{class:'sp'}),h('div',{class:'addw'},h('button',{class:'btn pri big','aria-haspopup':'menu','aria-expanded':String(!!st.open.menu),disabled:null,onclick:()=>{st.open.menu=!st.open.menu;render()}},ic('plus'),'Add New'),st.open.menu?h('div',{class:'amenu',role:'menu'},h('button',{role:'menuitem',onclick:addTrigger},ic('rt',16),'Trigger button'),h('button',{role:'menuitem',onclick:addVar},ic('folder',16),'Variable control')):null)),
+      n?h('div',{class:'banner'},ic('info'),`${n} item${n>1?'s':''} need attention. Their controls are paused.`):null,
+      h('div',{class:'lhead'},h('h2',{},'Remote List'),h('div',{class:'min','aria-label':'Layout orientation'},['portrait','landscape'].map(o=>h('button',{class:'ib'+(st.orient===o?' on':''),title:o==='portrait'?'Portrait layout':'Landscape layout','aria-label':o==='portrait'?'Portrait layout':'Landscape layout','aria-pressed':String(st.orient===o),onclick:()=>{st.orient=o;ph.land=o==='landscape';save();render()}},ic(o==='portrait'?'port':'land',18)))),h('span',{class:'sp'}),h('div',{class:'addw'},h('button',{class:'btn pri big','aria-haspopup':'menu','aria-expanded':String(!!st.open.menu),disabled:null,onclick:()=>{st.open.menu=!st.open.menu;render()}},ic('plus'),'Add New'),st.open.menu?h('div',{class:'amenu',role:'menu'},h('button',{role:'menuitem',onclick:addTrigger},ic('rt',16),'Trigger button'),h('button',{role:'menuitem',onclick:addVar},ic('folder',16),'Variable control')):null)),
       list,
       null))}
 function previewCard(){
   const c=st.orient==='landscape'?6:3;const cs=cellsOf(st.groups,st.vars);
-  return h('div',{class:'pv'},h('div',{class:'h'},'Phone preview',h('span',{class:'pill'},(st.orient==='landscape'?'Landscape':'Portrait')+' · '+c+' columns')),
+  return h('div',{class:'pv'},h('div',{class:'h'},'Preview',h('span',{class:'pill'},(st.orient==='landscape'?'Landscape':'Portrait')+' · '+c+' columns')),
     cs.length?h('div',{class:'pvg',style:'--c:'+c},cs.filter(x=>!x.sec).map(x=>h('div',{class:'pvc'+(w2(x)?' w2':'')},h('span',{style:'color:#d9b0fd'},ic('cube',16)),x.label))):h('small',{},'Nothing remoted yet. Use the connect button on an instance.'),
     h('small',{},'Items flow left to right, then down, in list order.'))}
 function colorPop(){const g=st.groups.find(x=>x.id===st.colorFor)||st.vars.find(x=>x.id===st.colorFor);if(!g)return null;
@@ -487,7 +487,7 @@ function picker(){
       added?h('span',{title:'Already in this group',style:'display:flex;color:var(--accent)'},ic('link',16)):null,st.pick.tab==='pv'?h('span',{class:'tag'},x.ctl[0].kind==='Toggle'?'Bool':x.ctl[0].kind):(x.ctl&&x.ctl.length?h('span',{title:'Has things to remote',style:'display:flex;color:var(--text2)'},ic('conn',16)):null));
     if(!dis)b.append(h('span',{class:'cbx static'+(on?' on':'')},on?ic('check'):null));
     treeLines(b,arr,idx);tree.append(b)});
-  if(!tree.children.length)tree.append(st.pick.q?emptyState('No instance matches “'+st.pick.q+'”','Try another name, or clear the search to see everything in this scene.'):emptyState('This scene has no instances yet','Add an object or a UI element in Edit mode, then come back to link it to a phone button.'));
+  if(!tree.children.length)tree.append(st.pick.q?emptyState('No instance matches “'+st.pick.q+'”','Try another name.'):emptyState('No instances yet','Add an object in Edit mode first.'));
   const f=h('input',{class:'fld',placeholder:'Find...',value:st.pick.q,'aria-label':'Find'});f.addEventListener('input',()=>{st.pick.q=f.value;const p=f.selectionStart;render();const n=$('.pk .fld');n.focus();n.setSelectionRange(p,p)});
   const close=()=>{st.open.pick=false;st.pick.q='';if(st.pickNew){const gg=st.groups.find(x=>x.id===st.pickNew);if(gg&&!gg.items.length)st.groups=st.groups.filter(x=>x!==gg);st.pickNew=null;touch()}render()};
   return h('div',{class:'dlg pk'},h('div',{class:'head'},ic('cube',18),'Select Instances',h('span',{class:'sp'}),h('button',{class:'ib',onclick:close},ic('close'))),h('div',{class:'acc'}),
@@ -509,7 +509,7 @@ function varSettings(v){
       if(k==='min'||k==='max'){const nm=k==='min'?n:mn,nx=k==='max'?n:mx;if(nm>=nx){st.draft={id:v.id,min:nm,max:nx};render();return}v.s.min=nm;v.s.max=nx;st.draft=null;touch();render();return}
       v.s[k]=n;touch();render()});
     return h('label',{class:'vf'},h('span',{},lab),x,err&&k==='min'?h('span',{class:'verr'},'Min must be lower than Max'):null)};
-  if(v.kind==='Toggle')return h('div',{class:'vset'},h('span',{class:'muted'},'Toggle has no settings. The phone shows an On / Off switch.'));
+  if(v.kind==='Toggle')return h('div',{class:'vset'},h('span',{class:'muted'},'Toggle has no settings.'));
   if(v.kind==='Text')return h('div',{class:'vset'},h('label',{class:'vf'},h('span',{},'Control'),h('select',{class:'fld',disabled:true,'aria-label':'Control'},h('option',{},'Text input'))),h('div',{class:'vrow'},num('Max characters','maxc',1)));
   const sel=h('select',{class:'fld','aria-label':'Control'},['input','slider'].map(o=>h('option',{value:o,selected:v.s.control===o?true:null},o==='input'?'Number input':'Slider')));
   sel.addEventListener('change',()=>{v.s.control=sel.value;touch();render()});
@@ -546,7 +546,7 @@ function varPicker(){
   if(!proj&&vp.inst&&!rows.length)list.append(emptyState('No variables in '+instName,'Add a variable to this instance in Behaviour, or pick another instance on the left.'));
   if(!proj&&!vp.inst)list.append(emptyState('Pick an instance first','Choose an instance on the left, and its variables will show up here.'));
   if(proj&&!PVARS.length)list.append(emptyState('No project variables yet','Create one from Project Variables in the top toolbar, then pick it here.'));
-  if(proj&&PVARS.length&&PVARS.filter(p=>VK.includes(p.kind)).every(p=>st.vars.some(v=>v.id===p.id)))list.append(emptyState('Every variable is on the phone','All project variables already have a control. Remove one from the list to add it again.'));
+  if(proj&&PVARS.length&&PVARS.filter(p=>VK.includes(p.kind)).every(p=>st.vars.some(v=>v.id===p.id)))list.append(emptyState('All variables added','Remove a control to add its variable again.'));
   const hint=proj?'Project variables belong to the whole project, so no instance is needed.':vp.inst?`Variables in ${instName}.${rows.length?' Pick one; each control changes one value.':''}`:'Pick an instance on the left to see its variables.';
   const add=h('button',{class:'btn ter wide',disabled:vp.sel?null:true,onclick:()=>{const x=rows.find(a=>a.id===vp.sel);if(!x)return;const v={id:x.id,name:x.name,bind:x.bind,src:x.src,kind:x.kind,i:x.i,color:COLS[(st.groups.length+st.vars.length)%COLS.length],s:{control:'input',min:0,max:100,dec:0,maxc:40}};st.vars.push(v);st.selV=v.id;st.open.vpick=false;touch();render();toast(x.name+' added')}},'Add control');
   return h('div',{class:'dlg pk2'},h('div',{class:'head'},ic('folder',18),'Select Variable',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:close},ic('close'))),h('div',{class:'acc'}),
@@ -564,13 +564,13 @@ function srvReload(starting){
   const d=String(st.portDraft).trim();
   if(!/^\d+$/.test(d)||+d<1024||+d>65535){st.portErr='Use a number from 1024 to 65535.';render();return}
   st.portErr='';st.srvErr='';st.srv='reloading';st.busyLbl=starting?'Starting server…':'Reloading server…';render();
-  setTimeout(()=>{if(+d===3000){st.srv='off';st.phones=[];st.portErr='Port 3000 is in use by another app. Try 3002.';st.srvErr='The server could not start.'}else{st.port=+d;st.portDraft=String(d);st.srv='on'}render()},1500)}
+  setTimeout(()=>{if(+d===3000){st.srv='off';st.phones=[];st.portErr='Port 3000 is in use. Try 3002.';st.srvErr='The server could not start.'}else{st.port=+d;st.portDraft=String(d);st.srv='on'}render()},1500)}
 function srvOff(){st.srv='off';st.phones=[];st.pub='off';st.open.offConfirm=false;st.srvErr='';if(['deck','projects','connecting'].includes(ph.screen))ph.screen='ended';render()}
 
 function prPop(){const n=st.phones.length,on=st.srv==='on';
-  return h('div',{class:'prpop'},h('div',{style:'display:flex;align-items:center;gap:8px'},h('b',{style:'flex:1;font-size:15px'},'Phone remote'),h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Local · 6 ms':'Offline')),
-    h('div',{class:'muted',style:'font-size:12px'},!on?'The server is off. Turn it on in Launcher › Connections.':n?n+' phone'+(n>1?'s':'')+' connected.':'No phones yet. Open the panel for the QR code and links.'),
-    h('div',{style:'display:flex;justify-content:flex-end'},h('button',{class:'btn ter sm',onclick:()=>{st.open.pop=false;st.open.pr=true;render()}},'Open Phone remote')))}
+  return h('div',{class:'prpop'},h('div',{style:'display:flex;align-items:center;gap:8px'},h('b',{style:'flex:1;font-size:15px'},'Remote control'),h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Local · 6 ms':'Offline')),
+    h('div',{class:'muted',style:'font-size:12px'},!on?'The server is off. Turn it on in Launcher › Connections.':n?n+' device'+(n>1?'s':'')+' connected.':'No devices yet.'),
+    h('div',{style:'display:flex;justify-content:flex-end'},h('button',{class:'btn ter sm',onclick:()=>{st.open.pop=false;st.open.pr=true;render()}},'Open')))}
 function prWin(){
   const on=st.srv==='on',pubTab=st.prTab==='public',playing=st.playing;
   const pubOn=st.pub==='on',pubBusy=st.pub==='opening';
@@ -578,48 +578,48 @@ function prWin(){
   const cv=h('canvas',{width:29,height:29});drawQr(cv,pubTab?7:st.port);
   const qrOff=!on||!playing||(pubTab&&!pubOn&&!pubBusy);
   const qr=h('div',{class:'qr'+(pubBusy?' load':qrOff?' off':'')},cv,pubBusy?h('span',{class:'spin big'}):null);
-  const cap=!on?'Server is off':!playing?'Press Play in XRCC':pubBusy?'The code updates by itself':pubTab&&!pubOn?'Public link is off':'Scan with your phone camera';
+  const cap=!on?'Server is off':!playing?'Press Play in XRCC':pubBusy?'Updates automatically':pubTab&&!pubOn?'Public link is off':'Scan to join';
   const seg=h('div',{class:'seg'},...[['local','Local network'],['public','Public link']].map(([k,l])=>h('button',{class:st.prTab===k?'on':'',onclick:()=>{st.prTab=k;render()}},l)));
   let linkRow,hint;
   if(pubTab&&!pubOn){
     linkRow=h('div',{class:'lrow'},h('div',{class:'url',style:'color:var(--text3)'},pubBusy?'Creating a secure address…':'No public address'),
       h('button',{class:'btn sec',disabled:on&&playing&&!pubBusy?null:true,onclick:()=>{st.open.confirm=true;render()}},st.pub==='failed'?'Try again':'Turn on'));
-    hint=h('div',{class:'muted',style:'font-size:12px'},st.pub==='failed'?'Could not create a public link. Phones on the same Wi-Fi can keep using the local link.':pubBusy?'This usually takes a few seconds.':playing?'Optional. Lets phones on any network join while Play runs.':'Press Play in XRCC to use a public link.');
+    hint=h('div',{class:'muted',style:'font-size:12px'},st.pub==='failed'?'Could not create a public link. Check the connection and try again.':pubBusy?'A few seconds.':playing?'Optional. Works on any network.':'Press Play in XRCC to use a public link.');
   }else{
     linkRow=h('div',{class:'lrow'},h('div',{class:'url',style:on&&playing?'':'color:var(--text3)'},on?url:'Not available yet'),h('button',{class:'btn sec',disabled:on?null:true,onclick:()=>{try{navigator.clipboard.writeText(url)}catch(e){}toast('Link copied')}},'Copy'));
-    hint=pubTab?h('div',{style:'display:flex;gap:8px;align-items:center'},h('span',{class:'pill'},h('span',{class:'dot warn'}),'Public · 35 ms'),h('span',{class:'muted',style:'font-size:12px;flex:1'},'The link stops working when Play ends.'),h('button',{class:'btn ter sm',onclick:()=>{st.pub='off';st.phones=st.phones.filter(p=>p.via!=='Public');render()}},'Turn off link')):
+    hint=pubTab?h('div',{style:'display:flex;gap:8px;align-items:center'},h('span',{class:'pill'},h('span',{class:'dot warn'}),'Public · 35 ms'),h('span',{class:'muted',style:'font-size:12px;flex:1'},'Stops when Play ends.'),h('button',{class:'btn ter sm',onclick:()=>{st.pub='off';st.phones=st.phones.filter(p=>p.via!=='Public');render()}},'Turn off link')):
       h('div',{style:'display:flex;gap:8px;align-items:center'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Local · 6 ms':'Offline'),h('span',{class:'muted',style:'font-size:12px'},on?'About 6 ms on this Wi-Fi':'Turn the server on in Launcher'));
   }
   const phones=h('div',{style:'display:flex;flex-direction:column;gap:8px'});
-  if(!st.phones.length)phones.append(h('div',{class:'empty'},ic('wifi',18),on?'No phones yet. Scan the code to join.':'Phones appear here once the server is on.'));
+  if(!st.phones.length)phones.append(h('div',{class:'empty'},ic('wifi',18),on?'No devices yet':'Devices appear once the server is on.'));
   st.phones.forEach(p=>phones.append(h('div',{class:'phr'},h('div',{class:'av'},ic('user',18)),h('div',{class:'t'},h('b',{},p.name),h('small',{},p.joined)),h('button',{class:'btn ter sm',onclick:()=>{st.phones=st.phones.filter(x=>x!==p);if(p.me)ph.screen='ended';render()}},'Disconnect'))));
-  return h('div',{class:'dlg prw'},h('div',{class:'head'},ic('phone',18),'Phone remote',h('span',{class:'pill',style:'font-weight:400'},'Server runs in Launcher'),h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.pr=false;st.open.confirm=false;render()}},ic('close'))),h('div',{class:'acc'}),
+  return h('div',{class:'dlg prw'},h('div',{class:'head'},ic('phone',18),'Remote control',h('span',{class:'pill',style:'font-weight:400'},'Server runs in Launcher'),h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.pr=false;st.open.confirm=false;render()}},ic('close'))),h('div',{class:'acc'}),
     h('div',{class:'prb'},h('div',{style:'display:flex;flex-direction:column;align-items:center;gap:12px;flex:none'},h('div',{class:'halo'},qr),h('div',{class:'muted',style:'font-size:12px'},cap)),
-      h('div',{class:'prr'},h('h3',{style:'margin:0;font-size:20px'},'Control Pop-up Gallery from your phone'),h('div',{class:'muted'},'Phones on the same Wi-Fi can join right away. No app to install.'),seg,linkRow,hint,
-        h('b',{style:'font-size:13px'},'Phones ',h('span',{class:'muted',style:'font-weight:400'},String(st.phones.length))),phones,
+      h('div',{class:'prr'},h('h3',{style:'margin:0;font-size:20px'},'Control from any device'),h('div',{class:'muted'},'Same Wi-Fi, no app needed.'),seg,linkRow,hint,
+        h('b',{style:'font-size:13px'},'Devices ',h('span',{class:'muted',style:'font-weight:400'},String(st.phones.length))),phones,
         h('div',{style:'display:flex;align-items:center;gap:8px;margin-top:auto'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Linked to XRCC':'Not linked'),h('span',{class:'muted',style:'font-size:12px;flex:1'},'localhost:8731'),h('button',{class:'btn ter sm',disabled:on&&playing?null:true,onclick:()=>{st.tab='phone';render()}},'Open in browser')))))}
 function launcher(){
   const on=st.srv==='on',busy=st.srv==='reloading',pubOn=st.pub==='on',dirty=String(st.port)!==String(st.portDraft).trim();
   const url='http://192.168.1.24:'+st.port;
   const cv=h('canvas',{width:29,height:29});drawQr(cv,on||busy?st.port:1);
   const status=busy?st.busyLbl.replace('…',''):on?'Server running':'Server off';
-  const sub=busy?'Phones reconnect on their own.':on?(st.phones.length?st.phones.length+' phone'+(st.phones.length>1?'s':'')+' connected':'Phones on the same Wi-Fi can join right away.'):(st.srvErr||'Turn it on to let phones join.');
+  const sub=busy?'':on?(st.phones.length?st.phones.length+' device'+(st.phones.length>1?'s':'')+' connected':''):(st.srvErr||'');
   const phones=h('div',{style:'display:flex;flex-direction:column;gap:8px'});
-  if(!st.phones.length)phones.append(h('div',{class:'empty'},ic('wifi',18),on?'No phones yet. Scan the code to join.':'Phones appear here once the server is on.'));
+  if(!st.phones.length)phones.append(h('div',{class:'empty'},ic('wifi',18),on?'No devices yet':'Devices appear once the server is on.'));
   st.phones.forEach(p=>phones.append(h('div',{class:'phr'},h('div',{class:'av'},ic('user',18)),h('div',{class:'t'},h('b',{},p.name),h('small',{},p.joined)),
     h('span',{class:'pill'},h('span',{class:'dot'+(p.via==='Public'?' warn':'')}),p.via+' · '+(p.via==='Public'?35:6)+' ms'),h('button',{class:'btn ter sm',onclick:()=>{st.phones=st.phones.filter(x=>x!==p);if(p.me)ph.screen='ended';render()}},'Disconnect'))));
   const pin=h('input',{class:'pin'+(st.portErr?' err':''),value:st.portDraft,inputmode:'numeric','aria-label':'Port',disabled:busy?'':null});
   pin.addEventListener('input',()=>{st.portDraft=pin.value.replace(/\D/g,'').slice(0,5);st.portErr='';render();const e=$('.pin');if(e){e.focus();e.setSelectionRange(e.value.length,e.value.length)}});
   pin.addEventListener('keydown',e=>{if(e.key==='Enter'&&(on||dirty))srvReload(!on)});
-  const portHint=st.portErr?h('div',{style:'color:var(--err);font-size:12px'},st.portErr):h('div',{class:'muted',style:'font-size:12px'},dirty&&on?'Reload the server to use port '+String(st.portDraft).trim()+'.':'Phones join through this port. Reload the server after changing it.');
+  const portHint=st.portErr?h('div',{style:'color:var(--err);font-size:12px'},st.portErr):h('div',{class:'muted',style:'font-size:12px'},dirty&&on?'Reload to use port '+String(st.portDraft).trim()+'.':'Reload after changing.');
   const qr=h('div',{class:'qr'+(on?'':busy?' load':' off')},cv,busy?h('span',{class:'spin big'}):null);
   const pub=h('div',{class:'pubr'},h('div',{style:'flex:1'},h('b',{style:'font-size:13px'},'Public link'),h('div',{class:'muted',style:'font-size:12px'},
-      st.pub==='failed'?'Could not create a public link. Check the connection and try again.':st.pub==='opening'?'Creating a secure address…':pubOn?URL_P:'Optional. Lets phones on any network join while Play runs.')),
+      st.pub==='failed'?'Could not create a public link. Check the connection and try again.':st.pub==='opening'?'Creating a secure address…':pubOn?URL_P:'Optional. Works on any network.')),
     pubOn?h('button',{class:'btn ter sm',onclick:()=>{st.pub='off';st.phones=st.phones.filter(p=>p.via!=='Public');render()}},'Turn off'):
     h('button',{class:'btn sec sm',disabled:on&&st.playing&&st.pub!=='opening'?null:true,title:st.playing?'':'Press Play to use a public link',onclick:()=>{st.open.confirm=true;render()}},st.pub==='failed'?'Try again':'Turn on'));
   return h('div',{class:'mpane'},
     h('div',{style:'display:flex;flex-direction:column;gap:8px'},h('h2',{class:'mtitle'},'Connections'),h('div',{class:'muted'},'Keys are encrypted and kept on this computer. Projects never contain them, and VOTANIC never sees them.')),
-    h('div',{style:'display:flex;flex-direction:column;gap:4px'},h('h3',{style:'margin:0;color:var(--accent);font-size:16px'},'Phone remote'),h('div',{class:'muted'},'Let phones on the same Wi-Fi control a playing project. The server runs inside Launcher.')),
+    h('div',{style:'display:flex;flex-direction:column;gap:4px'},h('h3',{style:'margin:0;color:var(--accent);font-size:16px'},'Remote control'),h('div',{class:'muted'},'Control a playing project from other devices.')),
       h('div',{class:'pcard'},
         h('div',{class:'srow'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Local · 6 ms':busy?'Working…':'Offline'),h('div',{style:'flex:1'},h('b',{},status),h('div',{class:'muted',style:'font-size:12px'},sub)),
           h('button',{class:'sw2'+(on||busy?' on':''),role:'switch','aria-checked':String(on),'aria-label':'Server',disabled:busy?'':null,onclick:()=>{if(on){if(st.phones.length){st.open.offConfirm=true;render()}else srvOff()}else srvReload(true)}}),h('span',{style:'font-size:13px;width:22px'},on||busy?'On':'Off'),
@@ -642,7 +642,7 @@ function lnShell(){
   return h('div',{class:'lsh'},h('div',{class:'ltb'},'XRCC Launcher'),h('div',{class:'lbody'},side,page))}
 function jump(k){
   st.open.ln=true;st.tab='launcher';st.open.offConfirm=false;st.open.confirm=false;st.srv='on';st.port=3001;st.portDraft='3001';st.portErr='';st.srvErr='';st.phones=[];
-  const ph1={name:"Alex's iPhone",joined:'Joined just now',via:'Local'};
+  const ph1={name:"Alex's iPad",joined:'Joined just now',via:'Local'};
   st.lnPage='connections';
   if(k==='B10'||k==='B11')st.phones=[ph1];
   if(k==='B11')st.open.offConfirm=true;
@@ -653,12 +653,12 @@ function jump(k){
   if(k==='B15'){st.portDraft='3000';srvReload(false)}
   if(k==='B16')toast('Link copied');
 }
-function offDlg(){return h('div',{class:'dlg cf'},h('div',{class:'head'},'Turn off Phone remote?',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.offConfirm=false;render()}},ic('close'))),h('div',{class:'acc'}),h('div',{class:'body'},h('p',{},`${st.phones.length===1?'1 phone is':st.phones.length+' phones are'} connected and will lose control. You can turn the server back on at any time.`),
+function offDlg(){return h('div',{class:'dlg cf'},h('div',{class:'head'},'Turn off Remote control?',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.offConfirm=false;render()}},ic('close'))),h('div',{class:'acc'}),h('div',{class:'body'},h('p',{},`${st.phones.length===1?'1 device':st.phones.length+' devices'} will disconnect.`),
   h('div',{class:'pf'},h('button',{class:'btn ter',onclick:()=>{st.open.offConfirm=false;render()}},'Cancel'),h('button',{class:'btn pri',onclick:srvOff},'Turn off'))))}
-function delVDlg(v){return h('div',{class:'dlg cf'},h('div',{class:'head'},'Remove "'+v.name+'"?',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.delV=null;render()}},ic('close'))),h('div',{class:'acc'}),h('div',{class:'body'},h('p',{},`This removes the ${v.name} control from the list. Phones stop showing it. The variable and its value stay in your project.`),h('div',{class:'pf'},h('button',{class:'btn ter',onclick:()=>{st.delV=null;render()}},'Cancel'),h('button',{class:'btn pri',onclick:()=>{st.vars=st.vars.filter(x=>x!==v);if(st.selV===v.id)st.selV=null;st.delV=null;touch();render();toast(v.name+' removed')}},'Remove control'))))}
+function delVDlg(v){return h('div',{class:'dlg cf'},h('div',{class:'head'},'Remove "'+v.name+'"?',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.delV=null;render()}},ic('close'))),h('div',{class:'acc'}),h('div',{class:'body'},h('p',{},`This removes the ${v.name} control. The variable and its value stay in your project.`),h('div',{class:'pf'},h('button',{class:'btn ter',onclick:()=>{st.delV=null;render()}},'Cancel'),h('button',{class:'btn pri',onclick:()=>{st.vars=st.vars.filter(x=>x!==v);if(st.selV===v.id)st.selV=null;st.delV=null;touch();render();toast(v.name+' removed')}},'Remove control'))))}
 function delDlg(){const dv=st.delV&&st.vars.find(x=>x.id===st.delV);if(dv)return delVDlg(dv);const g=st.groups.find(x=>x.id===st.delG);if(!g)return null;const n=g.items.length;
   return h('div',{class:'dlg cf'},h('div',{class:'head'},'Remove "'+g.name+'"?',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.delG=null;render()}},ic('close'))),h('div',{class:'acc'}),
-    h('div',{class:'body'},h('p',{},`This removes the group and its ${n} item${n===1?'':'s'} from the list. Phones stop showing them. The instance${n===1?'':'s'} in your scene ${n===1?'is':'are'} not deleted.`),
+    h('div',{class:'body'},h('p',{},`This removes the group and its ${n} item${n===1?'':'s'} from the list. The instance${n===1?'':'s'} in your scene stay.`),
     h('div',{class:'pf'},h('button',{class:'btn ter',onclick:()=>{st.delG=null;render()}},'Cancel'),h('button',{class:'btn pri',onclick:()=>{st.groups=st.groups.filter(x=>x!==g);st.delG=null;touch();render();toast(g.name+' removed')}},'Remove group'))))}
 function confirmDlg(){return h('div',{class:'dlg cf'},h('div',{class:'head'},'Turn on a public link?'),h('div',{class:'acc'}),h('div',{class:'body'},h('p',{},'Anyone with the link can control this project while Play runs. Optional, and good for demos, not for anything private.'),
   h('div',{class:'pf'},h('button',{class:'btn ter',onclick:()=>{st.open.confirm=false;render()}},'Cancel'),h('button',{class:'btn pri',onclick:()=>{st.open.confirm=false;st.pub='opening';render();setTimeout(()=>{if(!st.playing)return;if(st.failNext){st.pub='failed';st.failNext=false}else st.pub='on';render()},1400)}},'Turn on'))))}
@@ -703,16 +703,16 @@ function renderPhone(){
   P_.append(h('div',{class:'sb'},h('span',{},'9:41'),h('span',{},'5G ▮▮▮')));
   const s=h('div',{class:'scr'});const sc=ph.screen;const go=x=>{ph.screen=x;ph.sheet=null;renderPhone()};
   const snap=st.snap||{groups:st.groups,orient:st.orient,vars:st.vars};
-  if(sc==='connecting'&&st.srv!=='on'){s.classList.add('c');s.append(h('div',{class:'hero',style:'background:var(--elev)'},ic('info')),h('h2',{style:'margin:0'},'Phone remote is off'),h('div',{class:'muted'},'Ask the host to turn on Phone remote in XRCC Launcher.'),h('button',{class:'btn pri',onclick:()=>go('connecting')},'Try again'));P_.append(s);return}
+  if(sc==='connecting'&&st.srv!=='on'){s.classList.add('c');s.append(h('div',{class:'hero',style:'background:var(--elev)'},ic('info')),h('h2',{style:'margin:0'},'Remote control is off'),h('div',{class:'muted'},'Ask the host to turn it on in Launcher.'),h('button',{class:'btn pri',onclick:()=>go('connecting')},'Try again'));P_.append(s);return}
   if(sc==='connecting'){P_.append(ptop('Pop-up Gallery','Connecting to ALAN-PC…'));const g=h('div',{class:'pdeck'});fit(g);cellsOf(snap.groups,snap.vars).filter(c=>!c.sec).forEach(c=>g.append(h('div',{class:'sk',style:`grid-column:span ${w2(c)?2:1}`})));s.append(g);
-    clearTimeout(ph.t);ph.t=setTimeout(()=>{if(ph.screen!=='connecting')return;st.phones.push({name:ph.dev==='ipad'?"Alan's iPad":"Alan's iPhone",joined:'Joined just now',via:'Local',me:true});go('projects');render()},1400)}
-  if(sc==='projects'){P_.append(ptop('Projects','Connected to ALAN-PC'));if(!st.playing)s.append(emptyState('Waiting for Play','Ask the host to press Play in XRCC. Your project shows up here.'));else s.append(h('button',{class:'proj',onclick:()=>go('deck')},h('div',{class:'th'},ic('folder')),h('div',{style:'flex:1'},h('b',{},'Pop-up Gallery'),h('div',{class:'muted',style:'font-size:12px'},'Scene: Intro'),h('div',{style:'font-size:12px;color:var(--ok)'},'● Playing now')),ic('arrow',18)))}
+    clearTimeout(ph.t);ph.t=setTimeout(()=>{if(ph.screen!=='connecting')return;st.phones.push({name:ph.dev==='ipad'?"Alan's iPad":"Alan's iPad",joined:'Joined just now',via:'Local',me:true});go('projects');render()},1400)}
+  if(sc==='projects'){P_.append(ptop('Projects','Connected to ALAN-PC'));if(!st.playing)s.append(emptyState('Waiting for Play','Press Play in XRCC to start.'));else s.append(h('button',{class:'proj',onclick:()=>go('deck')},h('div',{class:'th'},ic('folder')),h('div',{style:'flex:1'},h('b',{},'Pop-up Gallery'),h('div',{class:'muted',style:'font-size:12px'},'Scene: Intro'),h('div',{style:'font-size:12px;color:var(--ok)'},'● Playing now')),ic('arrow',18)))}
   if(sc==='deck'){P_.append(ptop('Pop-up Gallery','Scene: Intro',()=>go('projects')));
     if((ph.land?'landscape':'portrait')!==snap.orient)s.append(h('div',{class:'bn',style:'text-align:center'},'Best in '+snap.orient));
-    if(ph.changed)s.append(h('div',{class:'bn w'},'The list changed in XRCC. It updates next time Play starts.'));
+    if(ph.changed)s.append(h('div',{class:'bn w'},'List updated. Applies next Play.'));
     if(cellsOf(snap.groups,snap.vars).length){const g=h('div',{class:'pdeck'+(ph.conn!=='local'?' paused':'')});fillDeck(g,snap.groups,snap.vars);s.append(g);fit(g)}
-    else s.append(emptyState('Nothing to control yet','Pick what to remote in XRCC, and your buttons and sliders will show up here.'))}
-  if(sc==='ended'){s.classList.add('c');s.append(h('div',{class:'hero',style:'background:var(--elev)'},ic('info')),h('h2',{style:'margin:0'},'Play ended'),h('div',{class:'muted'},'Ask the host to start Play again, then reconnect.'),h('button',{class:'btn pri',onclick:()=>go('connecting')},'Reconnect'))}
+    else s.append(emptyState('No controls yet','Add controls in XRCC.'))}
+  if(sc==='ended'){s.classList.add('c');s.append(h('div',{class:'hero',style:'background:var(--elev)'},ic('info')),h('h2',{style:'margin:0'},'Play ended'),h('div',{class:'muted'},'Controls return with the next Play.'),h('button',{class:'btn pri',onclick:()=>go('connecting')},'Reconnect'))}
   P_.append(s);
   if(ph.sheet){const c=cellsOf(snap.groups,snap.vars).find(x=>x.key===ph.sheet);if(c)P_.append(h('div',{class:'sh-s',onclick:()=>{ph.sheet=null;renderPhone()}}),h('div',{class:'sheet'},h('b',{},c.label),h('div',{class:'sw'},PAL.concat(['#c0392b','#e8467c','#2e8b57']).map(x=>h('i',{class:valOf(c.key)===x?'on':'',style:'background:'+x,onclick:()=>{press(c,x);ph.sheet=null;renderPhone()}}))),h('button',{class:'btn ter',onclick:()=>{ph.sheet=null;renderPhone()}},'Cancel')))}
   P_.append(h('div',{class:'fb'}))}
@@ -731,14 +731,14 @@ function bhvBack(){st.bhv=null;st.bhvG=null;render()}
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&st.bhv&&!/INPUT|SELECT|TEXTAREA/.test((e.target||{}).tagName||'')){bhvBack()}});
 function render(){
   $$('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.t===st.tab)));
-  $('#playPill').innerHTML=st.playing?'<span class="dot"></span> Playing'+(st.phones.length?' · '+st.phones.length+' phone'+(st.phones.length>1?'s':''):''):'<span class="dot off"></span> Editing';
+  $('#playPill').innerHTML=st.playing?'<span class="dot"></span> Playing'+(st.phones.length?' · '+st.phones.length+' device'+(st.phones.length>1?'s':''):''):'<span class="dot off"></span> Editing';
   const v=$('#view'),dev=$('#dev');v.innerHTML='';dev.innerHTML='';
   if(st.tab==='phone'){v.append(h('div',{class:'pt'},h('div',{class:'phone',id:'phone'})));renderPhone();
-    dev.append(h('span',{},'Phone test controls'),
+    dev.append(h('span',{},'Remote device test controls'),
       h('button',{class:'btn ter sm',onclick:()=>{ph.dev=ph.dev==='phone'?'ipad':'phone';render()}},'Device: '+(ph.dev==='phone'?'Phone':'iPad')),
       h('button',{class:'btn ter sm',onclick:()=>{ph.land=!ph.land;renderPhone()}},'Rotate'),
-      h('button',{class:'btn ter sm',onclick:()=>{if(ph.screen!=='deck')return toast('Open the list on the phone first');ph.conn=ph.conn==='local'?'drop':'local';renderPhone();if(ph.conn==='drop'){clearTimeout(ph.rt);ph.rt=setTimeout(()=>{ph.conn='local';renderPhone()},5000)}}},'Simulate network drop'),
-      h('button',{class:'btn ter sm',onclick:()=>{st.phones=st.phones.filter(p=>!p.me);ph.conn='local';ph.screen='connecting';renderPhone();render()}},'Restart phone'));
+      h('button',{class:'btn ter sm',onclick:()=>{if(ph.screen!=='deck')return toast('Open the list on the device first');ph.conn=ph.conn==='local'?'drop':'local';renderPhone();if(ph.conn==='drop'){clearTimeout(ph.rt);ph.rt=setTimeout(()=>{ph.conn='local';renderPhone()},5000)}}},'Simulate network drop'),
+      h('button',{class:'btn ter sm',onclick:()=>{st.phones=st.phones.filter(p=>!p.me);ph.conn='local';ph.screen='connecting';renderPhone();render()}},'Restart device'));
     return}
   if(st.tab==='editor'&&st.bhv){v.append(h('div',{class:'xstage',style:'display:flex;flex-direction:column'},bar(),bhvBoard()));dev.append(h('span',{},'Behaviour board for '+IB[st.bhv].n));return}
   const stage=h('div',{class:'xstage'+(st.tab==='launcher'?' lstage':'')},st.tab==='launcher'?lnShell():bar());
@@ -757,11 +757,11 @@ function render(){
     h('button',{class:'btn ter sm',onclick:()=>{const its=st.groups.flatMap(g=>g.items);if(!its.length)return toast('Add an instance first');const cur=its.find(i=>i.issue);const o=['','missing','type'];if(!cur)its[0].issue='missing';else cur.issue=o[(o.indexOf(cur.issue)+1)%3];render()}},'Simulate problem'),
     h('button',{class:'btn ter sm',onclick:()=>{st.groups=[];st.vars=[];st.selG=st.selI=st.panel=null;touch();render()}},'Clear list'),
     h('button',{class:'btn ter sm',onclick:()=>{st.groups=sample();st.vars=vsample();st.panel=null;touch();render()}},'Load sample list'),
-    h('span',{},'Phone remote'),
+    h('span',{},'Remote control'),
     h('button',{class:'btn ter sm',onclick:()=>{if(!st.playing)play();st.open.rt=false;st.open.pr=false;st.open.pop=true;render()}},'B1 Play popover'),
-    h('button',{class:'btn ter sm',onclick:()=>{if(!st.playing)play();st.open.rt=false;st.open.pop=false;st.open.pr=true;render()}},'B2 Phone remote window'));
-  else dev.append(h('span',{},'Flow screens'),...[['B9','Running'],['B10','Phone joined'],['B11','Turn off?'],['B12','Server off'],['B13','Reloading'],['B14','Port changed'],['B15','Port in use'],['B16','Link copied']].map(([k,l])=>h('button',{class:'btn ter sm',title:k+' · '+l,onclick:()=>jump(k)},k+' '+l)),h('span',{},'Test controls'),h('label',{style:'display:flex;gap:6px;align-items:center;font-size:12px'},h('input',{type:'checkbox',checked:st.failNext?'':null,onchange:e=>{st.failNext=e.target.checked}}),'Next public link fails'),
-    h('button',{class:'btn ter sm',disabled:st.playing&&st.pub==='on'?null:true,onclick:()=>{st.phones.push({name:"Sam's Pixel",joined:'Joined just now',via:'Public'});render()}},'Add a public phone'));
+    h('button',{class:'btn ter sm',onclick:()=>{if(!st.playing)play();st.open.rt=false;st.open.pop=false;st.open.pr=true;render()}},'B2 Remote control window'));
+  else dev.append(h('span',{},'Flow screens'),...[['B9','Running'],['B10','Device joined'],['B11','Turn off?'],['B12','Server off'],['B13','Reloading'],['B14','Port changed'],['B15','Port in use'],['B16','Link copied']].map(([k,l])=>h('button',{class:'btn ter sm',title:k+' · '+l,onclick:()=>jump(k)},k+' '+l)),h('span',{},'Test controls'),h('label',{style:'display:flex;gap:6px;align-items:center;font-size:12px'},h('input',{type:'checkbox',checked:st.failNext?'':null,onchange:e=>{st.failNext=e.target.checked}}),'Next public link fails'),
+    h('button',{class:'btn ter sm',disabled:st.playing&&st.pub==='on'?null:true,onclick:()=>{st.phones.push({name:"Sam's Pixel",joined:'Joined just now',via:'Public'});render()}},'Add a public device'));
 }
 $$('.tab').forEach(t=>t.addEventListener('click',()=>{st.tab=t.dataset.t;if(st.tab==='editor')st.open.rt=true;if(st.tab==='launcher'){st.lnPage='connections';st.open.offConfirm=false}render()}));
 render();
