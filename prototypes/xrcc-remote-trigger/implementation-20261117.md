@@ -1,5 +1,7 @@
 # XRCC Remote Trigger P1：2026-11-17 改善紀錄
 
+> 本報告記錄前一批實作；Radio、Change/Replace instance 與分享視窗尺寸已被最新使用者決定取代。請以 [alignment-20261117.md](alignment-20261117.md) 為準。
+
 本次以使用者最新決定為準：每個 Trigger button 只綁定一個 Instance；每個 Variable control 只綁定一個 Instance variable 或 Project variable。Trigger buttons 與 Variable controls 是兩類，分開排序。以下其餘互動政策是按使用者要求提出、並已落到畫稿與 prototype 的建議，仍需以工程整合確認實際契約。
 
 ## 來源與交付

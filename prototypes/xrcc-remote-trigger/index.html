@@ -124,7 +124,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .pal{display:grid;grid-template-columns:repeat(13,1fr);gap:2px}.pal i{aspect-ratio:1;cursor:pointer;border:1px solid transparent}.pal i.on{border-color:#fff}
 .xscrim2{position:absolute;inset:89px 0 0 0;background:rgba(0,0,0,.45);z-index:4}
 .xpick{position:absolute;inset:89px 0 0 0;z-index:5;display:grid;place-items:center;overflow:auto;padding:16px}
-.pk{width:640px;height:680px;max-width:100%}.pk .body{gap:12px}
+.pk{width:640px;height:680px;max-width:100%}.pk .body{gap:12px;flex:1}.pk .tree{flex:1;max-height:none;min-height:0}.pk .tn{flex:none}
 .sr{display:flex;gap:8px}.sr .fld{flex:1;height:36px}
 .tree{max-height:380px;overflow:auto;display:flex;flex-direction:column;gap:2px;min-height:240px}
 .tn{position:relative;height:36px;padding-top:0!important;padding-bottom:0!important;display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:6px;font-size:13px;border:0;background:none;text-align:left;width:100%}
@@ -234,8 +234,8 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 @media(max-width:700px){.lbody{flex-direction:column}.lsb{width:100%;flex-direction:row;overflow:auto;padding:8px}.llogo,.lver{display:none}.lnav,.lnav.low{flex-direction:row;margin:0}.lni{white-space:nowrap;padding:0 12px}.lpage{margin-top:0;border-radius:0}.lpage .mpane{padding:20px 16px}}
 
 .prpop{position:absolute;top:96px;right:16px;z-index:6;width:340px;max-width:calc(100% - 32px);background:var(--elev);border:1px solid var(--border);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 12px 40px rgba(0,0,0,.5)}
-.dlg.prw{width:640px;height:680px;max-width:100%;max-height:calc(100dvh - 160px)}
-.prb{display:flex;gap:24px;padding:24px;overflow:auto;min-height:0}.prr{flex:1;min-width:0;display:flex;flex-direction:column;gap:14px}
+.dlg.prw{width:960px;height:680px;max-width:100%;max-height:calc(100dvh - 160px)}
+.prw .prb>div:first-child{width:248px}.prw .qr{width:216px;height:216px}.prb{display:flex;flex:1;gap:32px;padding:32px;overflow:auto;min-height:0}.prr{flex:1;min-width:0;display:flex;flex-direction:column;gap:14px}
 .seg{display:flex;background:#141416;border-radius:8px;padding:4px;gap:4px}.seg button{flex:1;height:36px;border:0;border-radius:6px;background:none;color:inherit;font:inherit;cursor:pointer}.seg button.on{background:#43325f;color:var(--accent)}
 @media(max-width:700px){.prb{flex-direction:column;align-items:stretch;padding:16px}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
@@ -256,7 +256,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .ptabs button{white-space:nowrap}
 .pk .tn .tag{margin-left:auto}
 
-.key.paused{opacity:.45;cursor:not-allowed}.cbx.radio{border-radius:50%}.key:focus-visible,.pill:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.ptop .pill{min-height:44px}.sheet .btn{min-height:44px}
+.reviewnav{display:flex;gap:8px;align-items:center;font-size:12px}.reviewnav select{max-width:250px;background:var(--panel);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px}.key.paused{opacity:.45;cursor:not-allowed}.key:focus-visible,.pill:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.ptop .pill{min-height:44px}.sheet .btn{min-height:44px}
 .dlg.rt{height:680px}
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;height:280px;text-align:center}
 .empty .ph{width:48px;height:48px;border-radius:8px;background:#252528;display:grid;place-items:center}
@@ -352,7 +352,6 @@ const INST=[
  {id:'speaker',n:'Stage speaker',i:'cube',lv:0,ctl:[V('Music','Toggle','music','Instance variable'),V('Volume','Number','vol','Instance variable')]},
  {id:'ground',n:'Ground',i:'gnd',lv:0,ctl:[]},
  {id:'mallet',n:'Wooden Mallet',i:'cube',lv:0,ctl:[V('Hit','Trigger','hand','Instance trigger')]},
- {id:'textobj',n:'Text Object',i:'txt',lv:0,ctl:[V('Content','Text','text','Instance variable')]}
 ];
 const PV=[
  {id:'pv1',n:'Gallery open',i:'cube',lv:0,ctl:[V('Gallery open','Toggle','bulb','Project variable')]},
@@ -365,16 +364,16 @@ const PAL=['#ff0000','#ff5a00','#ff9f00','#ffff00','#c8ff00','#00ff00','#00ffff'
 const COLS=['#65a7ff','#a62b2b','#4ec27d','#f0b429','#a000ff','#ffffff'];
 const mkCtl=(c,i)=>({on:true,label:c.n,control:/Intensity|Volume/.test(c.n)?'slider':'input',size:c.kind==='Text'||/Intensity|Volume/.test(c.n)?2:1,min:0,max:100,dec:0,maxc:40,ro:false,color:COLS[i%COLS.length]});
 const vsample=()=>[
- {id:'p.Guest count',name:'Guest count',bind:'Guest count',src:'Project',kind:'Number',i:'user',color:'#65a7ff',s:{control:'input',min:0,max:20,dec:0,maxc:40}},
  {id:'p.Spot intensity',name:'Spot intensity',bind:'Spot intensity',src:'Project',kind:'Number',i:'sun',color:'#4ec27d',s:{control:'slider',min:0,max:100,dec:0,maxc:40}},
  {id:'p.House lights',name:'House lights',bind:'House lights',src:'Project',kind:'Toggle',i:'bulb',color:'#f0b429',s:{control:'input',min:0,max:100,dec:0,maxc:40}},
- {id:'result.Title text',name:'Show title',bind:'Result1 · Title text',src:'Result1',kind:'Text',i:'text',color:'#65a7ff',s:{control:'input',min:0,max:100,dec:0,maxc:40}}];
+ {id:'result.Title text',name:'Show title',bind:'Result1 · Title text',src:'Result1',kind:'Text',i:'text',color:'#65a7ff',s:{control:'input',min:0,max:100,dec:0,maxc:40}},
+ {id:'p.Guest count',name:'Guest count',bind:'Guest count',src:'Project',kind:'Number',i:'user',color:'#65a7ff',s:{control:'input',min:0,max:20,dec:0,maxc:40}}];
 const sample=()=>[
  {id:'g1',name:'Show controls',color:'#65a7ff',items:[{inst:'scene',issue:'',ctl:{}}]},
  {id:'g2',name:'Stage',color:'#a62b2b',items:[{inst:'spot',issue:'',ctl:{}}]}];
 const st={tab:'editor',prTab:'local',lnPage:'connections',orient:'portrait',groups:sample(),vars:vsample(),selV:null,vpick:{tab:'pv',sel:null},selG:null,selI:null,panel:null,rename:null,colorFor:null,
   open:{rt:true,pick:false,ln:true,confirm:false,offConfirm:false},pickFor:null,pick:{sel:[],q:''},
-  playing:false,srv:'on',busyLbl:'',port:3001,portDraft:'3001',portErr:'',srvErr:'',pub:'off',pubTab:'local',failNext:false,phones:[],snap:null,
+  noIntro:true,playing:false,srv:'on',busyLbl:'',port:3001,portDraft:'3001',portErr:'',srvErr:'',pub:'off',pubTab:'local',failNext:false,phones:[],snap:null,
   vals:{}};
 const VD={'p.Spot intensity':64,'p.House lights':true,'result.Title text':'Opening night','p.Guest count':3,'p.Welcome text':'Welcome to the gallery','v1':64,'v2':'Opening night','v3':true,'Beam width':3,'Lights':false,'Mood colour':'#e8467c','Guests':12,'Show title':'Welcome to the gallery','Intensity':64,'Colour':'#ffffff','Enabled':true,'Music':false,'Volume':40};
 const key=(inst,n)=>inst+'|'+n;
@@ -434,7 +433,6 @@ function groupHead(g,idx){
   const r=h('div',{class:'grow2'},
     h('button',{class:'cs',style:'background:'+g.color,title:'Group colour','aria-label':'Group colour',onclick:e=>{e.stopPropagation();st.colorFor=st.colorFor===g.id?null:g.id;render()}}),name);
   if(st.rename!==g.id)r.append(
-    h('button',{class:'ib tint',title:'Change instance','aria-label':'Change instance',disabled:null,onclick:e=>{e.stopPropagation();st.pickFor=g.id;st.pickNew=null;st.pick.sel=g.items.map(i=>i.inst);st.open.pick=true;render()}},ic('edit')),
     h('button',{class:'ib tint',title:'Rename','aria-label':'Rename',onclick:e=>{e.stopPropagation();st.rename=g.id;render()}},ic('edit')),
     h('button',{class:'ib del',title:'Delete group','aria-label':'Delete group',onclick:e=>{e.stopPropagation();st.delG=g.id;render()}},ic('trash')));
   r.prepend(dhandle(g.name));return r}
@@ -509,19 +507,18 @@ function treeLines(b,arr,i){
   const nx=arr[i+1];if(nx&&nx.lv>x.lv)ln(PADS[Math.min(x.lv,2)]+9,27,1,11)}
 function picker(){
   const g=st.groups.find(x=>x.id===st.pickFor);const q=st.pick.q.toLowerCase();
-  const tree=h('div',{class:'tree',role:'radiogroup','aria-label':'Select Instance'});
-  const arr=INST.filter(x=>!q||x.n.toLowerCase().includes(q));arr.forEach((x,idx)=>{
+  const tree=h('div',{class:'tree',role:'listbox','aria-label':'Instances'});
+  const arr=(st.preview==='A22'?[]:INST).filter(x=>!q||x.n.toLowerCase().includes(q));arr.forEach((x,idx)=>{
     const added=g&&g.items.some(i=>i.inst===x.id);const on=st.pick.sel.includes(x.id);const dis=x.grp;
-    const b=h('button',{class:'tn leaf'+(on?' sel':'')+(dis?' dis':'')+(x.grp?' grpn':''),role:dis?null:'radio','aria-checked':String(on),disabled:dis?true:null,style:`padding-left:${PADS[Math.min(x.lv,2)]}px`,onclick:()=>{if(dis)return;st.pick.sel=on?[]:[x.id];render()}},ic(x.i,18),h('span',{class:'g'},x.n),
+    const b=h('button',{class:'tn leaf'+(on?' sel':'')+(dis?' dis':'')+(x.grp?' grpn':''),role:dis?null:'option','aria-selected':String(on),disabled:dis?true:null,style:`padding-left:${PADS[Math.min(x.lv,2)]}px`,onclick:()=>{if(dis)return;st.pick.sel=[x.id];render()}},ic(x.i,18),h('span',{class:'g'},x.n),
       added?h('span',{title:'Already in this group',style:'display:flex;color:var(--accent)'},ic('link',16)):null,st.pick.tab==='pv'?h('span',{class:'tag'},x.ctl[0].kind==='Toggle'?'Bool':x.ctl[0].kind):(x.ctl&&x.ctl.length?h('span',{title:'Has things to remote',style:'display:flex;color:var(--text2)'},ic('conn',16)):null));
-    if(!dis)b.append(h('span',{class:'cbx static radio'+(on?' on':''),'aria-hidden':'true'},on?ic('check'):null));
     treeLines(b,arr,idx);tree.append(b)});
   if(!tree.children.length)tree.append(st.pick.q?emptyState('No instance matches “'+st.pick.q+'”','Try another name.'):emptyState('No instance selected','Add an object in Edit mode first.'));
   const f=h('input',{class:'fld',placeholder:'Find...',value:st.pick.q,'aria-label':'Find'});f.addEventListener('input',()=>{st.pick.q=f.value;const p=f.selectionStart;render();const n=$('.pk .fld');n.focus();n.setSelectionRange(p,p)});
   const close=()=>{st.open.pick=false;st.pick.q='';if(st.pickNew){const gg=st.groups.find(x=>x.id===st.pickNew);if(gg&&!gg.items.length)st.groups=st.groups.filter(x=>x!==gg);st.pickNew=null;touch()}render()};
   return h('div',{class:'dlg pk'},h('div',{class:'head'},ic('cube',18),'Select Instance',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:close},ic('close'))),h('div',{class:'acc'}),
     h('div',{class:'body'},h('div',{class:'sr'},f,h('button',{class:'ib tint',style:'width:36px;height:36px','aria-label':'Search'},ic('search')),h('button',{class:'ib',style:'width:36px;height:36px;color:var(--accent)','aria-label':'Sort',onclick:()=>toast('Sorted by name')},ic('sort')),h('button',{class:'ib',style:'width:36px;height:36px;color:var(--accent)','aria-label':'Filter',onclick:()=>toast('Filter: all instances')},ic('filter'))),tree,
-      h('button',{class:'btn ter wide',disabled:st.pick.sel.length?null:true,onclick:()=>{const ids=st.pick.sel.slice(0,1);g.items=ids.map(id=>({inst:id,issue:'',ctl:{}}));st.pickNew=null;st.open.pick=false;st.pick.q='';touch();render();toast(ids.length+' instance'+(ids.length>1?'s':'')+' added to '+g.name)}},st.pick.sel.length?'Use instance':'Select instance')))}
+      h('button',{class:'btn pri wide',disabled:st.pick.sel.length?null:true,onclick:()=>{const ids=st.pick.sel.slice(0,1);g.items=ids.map(id=>({inst:id,issue:'',ctl:{}}));st.pickNew=null;st.open.pick=false;st.pick.q='';touch();render();toast(ids.length+' instance'+(ids.length>1?'s':'')+' added to '+g.name)}},st.pick.sel.length?'Add trigger':'Select instance')))}
 
 /* ---------- variable controls (one variable per section) ---------- */
 const VK=['Number','Text','Toggle'];
@@ -559,14 +556,14 @@ function varPicker(){
   const vp=st.vpick,proj=vp.tab==='pv';
   const close=()=>{st.open.vpick=false;render()};
   const q=(vp.q||'').toLowerCase();
-  const tree=h('div',{class:'tree',role:'radiogroup','aria-label':'Select Instance'});
+  const tree=h('div',{class:'tree',role:'listbox','aria-label':'Instances'});
   const arr=INST.filter(x=>!q||x.n.toLowerCase().includes(q));
   arr.forEach((x,idx)=>{const cat=x.grp||x.id==='ground';const on=!proj&&vp.inst===x.id;
     const b=h('button',{class:'tn leaf'+(on?' sel':'')+(cat?' grpn':''),style:`padding-left:${PADS[Math.min(x.lv,2)]}px`,disabled:proj||cat?true:null,onclick:()=>{vp.inst=x.id;vp.sel=null;render()}},ic(x.i,18),h('span',{class:'g'},x.n));
     treeLines(b,arr,idx);tree.append(b)});
   const f=h('input',{class:'fld',placeholder:'Find...',value:vp.q||'','aria-label':'Find',disabled:proj?true:null});f.addEventListener('input',()=>{vp.q=f.value;const p=f.selectionStart;render();const n=$('.pk2 .fld');n.focus();n.setSelectionRange(p,p)});
   let rows=[];
-  if(proj)rows=PVARS.map(p=>({id:p.id,name:p.name,kind:p.kind,i:p.i,src:'Project',bind:p.name}));
+  if(proj)rows=(st.preview==='A23'?[]:PVARS).map(p=>({id:p.id,name:p.name,kind:p.kind,i:p.i,src:'Project',bind:p.name}));
   else if(vp.inst){const n=IB[vp.inst].n;rows=ivarsOf(vp.inst).map(c=>({id:vp.inst+'.'+c.n,name:c.n,kind:c.kind,i:c.i,src:n,bind:n+' · '+c.n}))}
   const list=h('div',{class:'tree'});
   rows.forEach(x=>{const sup=VK.includes(x.kind),added=st.vars.some(v=>v.id===x.id),dis=!sup||added,on=vp.sel===x.id;
@@ -574,10 +571,10 @@ function varPicker(){
   const instName=!proj&&vp.inst?IB[vp.inst].n:'';
   if(!proj&&vp.inst&&!rows.length)list.append(emptyState('No variables in '+instName,'Add a variable to this instance in Behaviour, or pick another instance on the left.'));
   if(!proj&&!vp.inst)list.append(emptyState('Pick an instance first','Choose an instance on the left, and its variables will show up here.'));
-  if(proj&&!PVARS.length)list.append(emptyState('No project variables yet','Create one from Project Variables in the top toolbar, then pick it here.'));
+  if(proj&&!rows.length)list.append(emptyState('No project variables yet','Create one from Project Variables in the top toolbar, then pick it here.'));
   if(proj&&PVARS.length&&PVARS.filter(p=>VK.includes(p.kind)).every(p=>st.vars.some(v=>v.id===p.id)))list.append(emptyState('All variables added','Remove a control to add its variable again.'));
   const hint=proj?'Project variables belong to the whole project, so no instance is needed.':vp.inst?`Variables in ${instName}.${rows.length?' Pick one; each control changes one value.':''}`:'Pick an instance on the left to see its variables.';
-  const add=h('button',{class:'btn ter wide',disabled:vp.sel?null:true,onclick:()=>{const x=rows.find(a=>a.id===vp.sel);if(!x)return;const v={id:x.id,name:x.name,bind:x.bind,src:x.src,kind:x.kind,i:x.i,color:COLS[(st.groups.length+st.vars.length)%COLS.length],s:{control:'input',min:0,max:100,dec:0,maxc:40}};st.vars.push(v);st.selV=v.id;st.open.vpick=false;touch();render();toast(x.name+' added')}},'Add control');
+  const add=h('button',{class:'btn pri wide',disabled:vp.sel?null:true,onclick:()=>{const x=rows.find(a=>a.id===vp.sel);if(!x)return;const v={id:x.id,name:x.name,bind:x.bind,src:x.src,kind:x.kind,i:x.i,color:COLS[(st.groups.length+st.vars.length)%COLS.length],s:{control:'input',min:0,max:100,dec:0,maxc:40}};st.vars.push(v);st.selV=v.id;st.open.vpick=false;touch();render();toast(x.name+' added')}},'Add control');
   return h('div',{class:'dlg pk2'},h('div',{class:'head'},ic('folder',18),'Select Variable',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:close},ic('close'))),h('div',{class:'acc'}),
     h('div',{class:'body2'},
       h('div',{class:'vcol l'+(proj?' dim':'')},h('div',{class:'sr'},f,h('button',{class:'ib tint',style:'width:36px;height:36px','aria-label':'Search'},ic('search'))),tree),
@@ -617,11 +614,11 @@ function prWin(){
   }else{
     linkRow=h('div',{class:'lrow'},h('div',{class:'url',style:on&&playing?'':'color:var(--text3)'},on&&playing?url:'Not available yet'),h('button',{class:'btn sec',disabled:on&&playing?null:true,onclick:()=>{try{navigator.clipboard.writeText(url)}catch(e){}toast('Link copied')}},'Copy'));
     hint=pubTab?h('div',{style:'display:flex;gap:8px;align-items:center'},h('span',{class:'pill'},h('span',{class:'dot warn'}),'Public · 35 ms'),h('span',{class:'muted',style:'font-size:12px;flex:1'},'Stops when Play ends.'),h('button',{class:'btn ter sm',onclick:()=>{disablePublic()}},'Turn off link')):
-      h('div',{style:'display:flex;gap:8px;align-items:center'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?(playing?'Local · 6 ms':'Ready'):'Offline'),h('span',{class:'muted',style:'font-size:12px'},on?(playing?'About 6 ms':'Starts with Play'):'Turn the server on in Launcher'));
+      h('div',{style:'display:flex;gap:8px;align-items:center'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?(playing?'Local · 6 ms':'Ready'):'Offline'),h('span',{class:'muted',style:'font-size:12px'},on?(playing?'':'Starts with Play'):'Turn the server on in Launcher'));
   }
   const phones=h('div',{style:'display:flex;flex-direction:column;gap:8px'});
   if(!st.phones.length)phones.append(h('div',{class:'empty'},ic('wifi',18),on?'No devices yet':'Devices appear once the server is on.'));
-  st.phones.forEach(p=>phones.append(h('div',{class:'phr'},h('div',{class:'av'},ic('user',18)),h('div',{class:'t'},h('b',{},p.name),h('small',{},p.joined+sensTxt(p))),h('button',{class:'btn ter sm',onclick:()=>{st.phones=st.phones.filter(x=>x!==p);if(sensor.owner===p.name)sensor.owner=null;if(p.me){ph.screen='host-disconnected';ph.conn='drop'}render()}},'Disconnect'))));
+  st.phones.forEach(p=>phones.append(h('div',{class:'phr'},h('div',{class:'av'},ic('user',18)),h('div',{class:'t'},h('b',{},p.name),h('small',{},sensor.owner===p.name?'Sensor source':p.joined)),h('span',{class:'pill'},h('span',{class:'dot'}),p.via+' · '+(p.via==='Public'?35:6)+' ms'),h('button',{class:'btn ter sm',onclick:()=>{st.phones=st.phones.filter(x=>x!==p);if(sensor.owner===p.name)sensor.owner=null;if(p.me){ph.screen='host-disconnected';ph.conn='drop'}render()}},'Disconnect'))));
   return h('div',{class:'dlg prw'},h('div',{class:'head'},ic('phone',18),'Remote control',h('span',{class:'pill',style:'font-weight:400'},'Server runs in Launcher'),h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.pr=false;st.open.confirm=false;render()}},ic('close'))),h('div',{class:'acc'}),
     h('div',{class:'prb'},h('div',{style:'display:flex;flex-direction:column;align-items:center;gap:12px;flex:none'},h('div',{class:'halo'},qr),h('div',{class:'muted',style:'font-size:12px'},cap)),
       h('div',{class:'prr'},h('h3',{style:'margin:0;font-size:20px'},'Control from any device'),h('div',{class:'muted'},'Same Wi-Fi, no app needed.'),seg,linkRow,hint,
@@ -635,7 +632,7 @@ function launcher(){
   const sub=busy?'':on?(st.phones.length?st.phones.length+' device'+(st.phones.length>1?'s':'')+' connected':''):(st.srvErr||'');
   const phones=h('div',{style:'display:flex;flex-direction:column;gap:8px'});
   if(!st.phones.length)phones.append(h('div',{class:'empty'},ic('wifi',18),on?'No devices yet':'Devices appear once the server is on.'));
-  st.phones.forEach(p=>phones.append(h('div',{class:'phr'},h('div',{class:'av'},ic('user',18)),h('div',{class:'t'},h('b',{},p.name),h('small',{},p.joined+sensTxt(p))),
+  st.phones.forEach(p=>phones.append(h('div',{class:'phr'},h('div',{class:'av'},ic('user',18)),h('div',{class:'t'},h('b',{},p.name),h('small',{},sensor.owner===p.name?'Sensor source':p.joined)),
     h('span',{class:'pill'},h('span',{class:'dot'+(p.via==='Public'?' warn':'')}),p.via+' · '+(p.via==='Public'?35:6)+' ms'),h('button',{class:'btn ter sm',onclick:()=>{st.phones=st.phones.filter(x=>x!==p);if(sensor.owner===p.name)sensor.owner=null;if(p.me){ph.screen='host-disconnected';ph.conn='drop'}render()}},'Disconnect'))));
   const pin=h('input',{class:'pin'+(st.portErr?' err':''),value:st.portDraft,inputmode:'numeric','aria-label':'Port',disabled:busy?'':null});
   pin.addEventListener('input',()=>{st.portDraft=pin.value.replace(/\D/g,'').slice(0,5);st.portErr='';render();const e=$('.pin');if(e){e.focus();e.setSelectionRange(e.value.length,e.value.length)}});
@@ -748,15 +745,63 @@ function renderPhone(){
     if(ph.changed)s.append(h('div',{class:'bn w'},'Controls updated. Refresh before continuing.',h('button',{class:'btn pri',onclick:()=>{st.snap=JSON.parse(JSON.stringify({groups:st.groups,orient:st.orient,vars:st.vars}));ph.changed=false;renderPhone()}},'Refresh list')));
     if(cellsOf(snap.groups,snap.vars).length){const g=h('div',{class:'pdeck'+(ph.conn!=='local'?' paused':'')});fillDeck(g,snap.groups,snap.vars);s.append(g);fit(g)}
     else s.append(emptyState('No controls yet','Add controls in XRCC.'))}
-  if(['server-off','public-off','host-disconnected'].includes(sc)){const info={'server-off':['Remote control is off','Ask the host to turn it on in Launcher.'],'public-off':['Public link is off','Ask the host for a current link.'],'host-disconnected':['Disconnected by host','Reconnect with the current link.']}[sc];s.classList.add('c');s.append(h('h2',{},info[0]),h('p',{class:'muted'},info[1]),h('button',{class:'btn pri',onclick:()=>go('connecting')},'Reconnect'))}
+  if(['server-off','public-off','host-disconnected'].includes(sc)){const info={'server-off':['Remote control is off','Ask the host to turn it on in Launcher.','Try again','connecting'],'public-off':['Public link is off','Ask the host for a current link.','Back to projects','projects'],'host-disconnected':['Disconnected by host','Reconnect with the current link.','Reconnect','connecting']}[sc];s.classList.add('c');s.append(h('h2',{},info[0]),h('p',{class:'muted'},info[1]),h('button',{class:'btn pri',onclick:()=>go(info[3])},info[2]))}
   if(sc==='ended'){s.classList.add('c');s.append(h('div',{class:'hero',style:'background:var(--elev)'},ic('info')),h('h2',{style:'margin:0'},'Play ended'),h('div',{class:'muted'},'Controls return with the next Play.'),h('button',{class:'btn pri',onclick:()=>go('projects')},'Back to projects'))}
   P_.append(s);
-  if(ph.sheet==='device'){const has=ph.dev!=='desktop';const row=(ic_,n,ok)=>h('div',{class:'sensr'},ic(ic_,20),h('b',{},n),h('span',{class:'tag'+(ok?' ok':'')},ok?'Available':'Not available'));
+  if(ph.sheet==='device'){const has=ph.capability?ph.capability==='motion':ph.dev!=='desktop';const row=(ic_,n,ok)=>h('div',{class:'sensr'},ic(ic_,20),h('b',{},n),h('span',{class:'tag'+(ok?' ok':'')},ok?'Available':'Not available'));
     const close=()=>{ph.sheet=null;renderPhone()};
-    P_.append(h('div',{class:'sh-s',onclick:close}),h('div',{class:'sheet'},h('div',{style:'display:flex;align-items:center'},h('b',{style:'flex:1;font-size:20px'},'This device'),h('button',{class:'ib','aria-label':'Close',onclick:close},ic('close'))),h('div',{class:'muted',style:'font-size:12px'},DEVN[ph.dev]),h('div',{},row('gyro','Gyroscope',has),row('accel','Accelerometer',has),row('mic','Microphone',true)),h('div',{class:'muted',style:'font-size:12px'},'Prototype: sensor permission and ownership are simulated.')))}
-  if(ph.sheet==='device'){const sh=P_.querySelector('.sheet');const owner=st.phones.find(x=>x.me)?.name||DEVN[ph.dev];sh.append(h('p',{},sensor.permission==='denied'?'Permission denied. Retry or check browser settings.':sensor.owner?'Source: '+sensor.owner:'Sensor data is paused.'),h('button',{class:'btn pri',onclick:()=>{if(sensor.owner&&sensor.owner!==owner&&!confirm('Replace '+sensor.owner+' as the sensor source?'))return;sensor.permission='granted';sensor.owner=owner;renderPhone()}},sensor.owner===owner?'Sharing (simulated)':sensor.owner?'Request takeover':'Allow sensors (simulate)'),h('button',{class:'btn ter',onclick:()=>{sensor.owner=null;renderPhone()}},'Stop sharing'),h('button',{class:'btn ter',onclick:()=>{sensor.permission='denied';sensor.owner=null;renderPhone()}},'Simulate permission denied'));}
+    P_.append(h('div',{class:'sh-s',onclick:close}),h('div',{class:'sheet'},h('div',{style:'display:flex;align-items:center'},h('b',{style:'flex:1;font-size:20px'},'This device'),h('button',{class:'ib','aria-label':'Close',onclick:close},ic('close'))),h('div',{class:'muted',style:'font-size:12px'},DEVN[ph.dev]),h('div',{},row('gyro','Gyroscope',has),row('accel','Accelerometer',has),row('mic','Microphone',true)),h('div',{class:'muted',style:'font-size:12px'},sensor.owner?'Only one device provides sensor data at a time.':'Permission is required before sharing sensors.')))}
+  if(ph.sheet==='device'){const sh=P_.querySelector('.sheet');const owner=st.phones.find(x=>x.me)?.name||DEVN[ph.dev];const own=sensor.owner===owner;
+    sh.append(h('p',{},sensor.permission==='denied'?'Permission denied. Retry or check browser settings.':ph.confirmTakeover?'Replace '+sensor.owner+' as the source?':sensor.owner?own?'This device is providing sensors.':'Source: '+sensor.owner:ph.sensorLost?'Sensor source disconnected. Data is paused.':st.preview==='C17'?'Permission required. Allow sensors to continue.':'Sensor data is paused.'),
+      h('button',{class:'btn pri',onclick:()=>{if(own){sensor.owner=null;ph.confirmTakeover=false;renderPhone();return}if(sensor.owner&&sensor.owner!==owner&&!ph.confirmTakeover){ph.confirmTakeover=true;renderPhone();return}sensor.permission='granted';sensor.owner=owner;ph.confirmTakeover=false;ph.sensorLost=false;renderPhone()}},own?'Stop sharing':ph.confirmTakeover?'Confirm takeover':sensor.owner?'Request takeover':sensor.permission==='denied'?'Try permission again':ph.sensorLost?'Choose this device':'Allow sensors'),
+      ph.confirmTakeover?h('button',{class:'btn ter',onclick:()=>{ph.confirmTakeover=false;renderPhone()}},'Cancel'):null);}
   else if(ph.sheet){const c=cellsOf(snap.groups,snap.vars).find(x=>x.key===ph.sheet);if(c)P_.append(h('div',{class:'sh-s',onclick:()=>{ph.sheet=null;renderPhone()}}),h('div',{class:'sheet'},h('b',{},c.label),h('div',{class:'sw'},PAL.concat(['#c0392b','#e8467c','#2e8b57']).map(x=>h('i',{class:valOf(c.key)===x?'on':'',style:'background:'+x,onclick:()=>{press(c,x);ph.sheet=null;renderPhone()}}))),h('button',{class:'btn ter',onclick:()=>{ph.sheet=null;renderPhone()}},'Cancel')))}
   P_.append(h('div',{class:'fb'}))}
+
+const FLOW_NAMES={A1:'Empty list',A2:'Choose what to add',A3:'Select Instance',A4:'Trigger added',A5:'Button colour',A6:'Row actions',A7:'Reorder',A8:'Needs attention',A9:'Playing',A10:'Project variable',A11:'Instance variable',A12:'Variable added',A13:'Remote Start',A14:'Remove trigger',A15:'Number settings error',A16:'Text settings',A17:'Rename',A18:'Remove variable',A19:'No instance variables',A20:'No instance selected',A21:'No search results',A22:'Empty scene',A23:'No project variables',A24:'All variables added',A25:'Pick instance first',B1:'Play popover',B2:'Local ready',B3:'Device joined',B4:'Public confirmation',B5:'Opening public link',B6:'Public ready',B7:'Public failure',B8:'Waiting for Play',B9:'Server running',B10:'Device joined',B11:'Turn off server',B12:'Server off',B13:'Reloading',B14:'Port changed',B15:'Port in use',B16:'Copied',C2:'Connecting',C3:'Projects',C4:'Waiting for Play',C5:'Deck',C6:'Confirmed',C7:'Slider',C8:'Text input',C9:'Reconnecting',C10:'Stale controls',C11:'Play ended',C12:'Landscape',C13:'Tablet portrait',C14:'Tablet landscape',C15:'Empty deck',C16:'This device',C17:'Permission needed',C18:'Permission denied',C19:'Other sensor source',C20:'Sensors active',C21:'Sensor source lost',C22:'Confirm takeover',C23:'Server unavailable',C24:'Public link disabled',C25:'Host disconnected',C26:'Command rejected',C27:'Confirmation unavailable',C28:'Invalid number',C29:'Desktop'};
+function reviewScreen(k){
+ if(!FLOW_NAMES[k])return;history.replaceState(null,'','?screen='+encodeURIComponent(k));
+ clearTimeout(ph.t);clearTimeout(ph.rt);st.preview=k;st.groups=sample();st.vars=vsample();st.vals={};st.playing=false;st.srv='on';st.pub='off';st.bhv=null;st.delG=st.delV=st.rename=st.renameV=null;st.selV=null;st.draft=null;st.colorFor=null;st.noIntro=true;st.phones=[];st.open={rt:true,pick:false,vpick:false,menu:false,ln:true,pr:false,pop:false,confirm:false,offConfirm:false};st.pick={sel:[],q:''};st.pickNew=null;
+ Object.assign(ph,{screen:'deck',conn:'local',changed:false,sheet:null,dev:'phone',land:false,confirmTakeover:false,sensorLost:false,capability:null});sensor.owner=null;sensor.permission='prompt';
+ if(k[0]==='A'){
+  st.tab='editor';
+  if(k==='A1'||k==='A2'){st.groups=[];st.vars=[];st.noIntro=false;st.open.menu=k==='A2'}
+  if(['A3','A21','A22'].includes(k)){st.groups=[];st.vars=[];addTrigger();st.preview=k;st.pick.sel=k==='A3'?['spot']:[];st.pick.q=k==='A21'?'No matching object':''}
+  if(k==='A4'){st.groups=[{id:'g1',name:'New Remote Trigger',color:'#65a7ff',items:[{inst:'spot',issue:'',ctl:{}}]}];st.vars=[]}
+  if(k==='A5')st.colorFor='g2';
+  if(k==='A7')st.held={kind:'g',id:'g2',from:1};else st.held=null;
+  if(k==='A8')st.groups[1].items[0].issue='missing';
+  if(k==='A9'){play();st.open.rt=true}
+  if(['A10','A11','A19','A23','A24','A25'].includes(k)){st.open.vpick=true;st.vpick={tab:['A10','A23','A24'].includes(k)?'pv':'iv',inst:k==='A19'?'mallet':k==='A25'?null:'spot',sel:null,q:''};if(k==='A24')st.vars=PVARS.filter(v=>VK.includes(v.kind)).map(v=>({id:v.id,name:v.name,bind:v.name,src:'Project',kind:v.kind,i:v.i,color:'#4ec27d',s:{control:'input',min:0,max:100,dec:0,maxc:40}}));}
+  if(k==='A12')st.selV='p.Guest count';
+  if(k==='A13'){st.bhv='spot';st.bhvG='Stage'}
+  if(k==='A14')st.delG='g2';
+  if(k==='A15'){st.selV='p.Spot intensity';st.draft={id:'p.Spot intensity',min:120,max:100}}
+  if(k==='A16')st.selV='result.Title text';
+  if(k==='A17')st.renameV='p.Guest count';
+  if(k==='A18')st.delV='p.Guest count';
+  if(k==='A20'){st.groups=[{id:'g0',name:'New Remote Trigger',color:'#65a7ff',items:[]}];st.vars=[]}
+ } else if(k[0]==='B'){
+  if(+k.slice(1)>=9){jump(k);return}
+  st.tab='editor';st.playing=k!=='B8';st.open.rt=false;st.open.pr=k!=='B1';st.open.pop=k==='B1';st.prTab=['B4','B5','B6','B7'].includes(k)?'public':'local';st.pub=k==='B5'?'opening':k==='B6'?'on':k==='B7'?'failed':'off';st.open.confirm=k==='B4';if(k==='B3'){st.phones=[{name:"Alan's iPad",joined:'Joined just now',via:'Local',has:true}];sensor.owner="Alan's iPad"}
+ } else {
+  st.tab='phone';play();st.snap=JSON.parse(JSON.stringify({groups:st.groups,vars:st.vars}));
+  if(k==='C2')ph.screen='connecting';if(k==='C3')ph.screen='projects';if(k==='C4'){ph.screen='projects';st.playing=false}
+  if(k==='C9')ph.conn='drop';if(k==='C10')ph.changed=true;if(k==='C11'){st.playing=false;ph.screen='ended'}
+  if(k==='C12')ph.land=true;if(k==='C13')ph.dev='ipad';if(k==='C14'){ph.dev='ipad';ph.land=true}if(k==='C29')ph.dev='desktop';
+  if(k==='C15')st.snap={groups:[],vars:[]};
+  if(+k.slice(1)>=16&&+k.slice(1)<=22){ph.sheet='device';ph.capability='desktop';if(k==='C18')sensor.permission='denied';if(k==='C19'||k==='C22')sensor.owner="Alan's iPad";if(k==='C22')ph.confirmTakeover=true;if(k==='C20'){sensor.owner=DEVN[ph.dev];sensor.permission='granted'}if(k==='C21')ph.sensorLost=true;}
+  if(k==='C23'){st.srv='off';ph.screen='server-off';ph.conn='drop'}if(k==='C24'){ph.screen='public-off';ph.conn='drop'}if(k==='C25'){ph.screen='host-disconnected';ph.conn='drop'}
+ }
+ render();
+ if(k==='C6')press(cellsOf(st.snap.groups,st.snap.vars)[0]);
+ if(k==='C26'||k==='C27'){ph.nextResult=k==='C26'?'rejected':'unknown';press(cellsOf(st.snap.groups,st.snap.vars)[0]);}
+ if(k==='C28'){const input=document.querySelector('input[type=number]');if(input){input.value='99';input.dispatchEvent(new Event('change'))}}
+ document.getElementById('screenReview').value=k;
+}
+const reviewLabel=h('label',{class:'reviewnav'},'Figma screen ',h('select',{id:'screenReview','aria-label':'Figma screen',onchange:e=>reviewScreen(e.target.value)},h('option',{value:''},'Interactive prototype'),...Object.entries(FLOW_NAMES).map(([k,v])=>h('option',{value:k},k+' · '+v))));
+document.querySelector('.top').append(reviewLabel,h('a',{href:'https://www.figma.com/design/ZBOB48n4eLsZABCTnhh5kk/XRCC-Claude-Workbench?node-id=1481-10758',target:'_blank',rel:'noopener',style:'color:var(--accent);font-size:12px'},'Figma'));
+
 /* ---------- render ---------- */
 function bhvBoard(){
   const n=IB[st.bhv].n,gn=st.bhvG||'New Remote Trigger';
@@ -775,7 +820,7 @@ function render(){
   $('#playPill').innerHTML=st.playing?'<span class="dot"></span> Playing'+(st.phones.length?' · '+st.phones.length+' device'+(st.phones.length>1?'s':''):''):'<span class="dot off"></span> Editing';
   const active=document.activeElement;const focusName=active?.getAttribute('aria-label');const focusText=active?.tagName==='BUTTON'?active.textContent:null;requestAnimationFrame(()=>{if(document.activeElement===document.body){const scope=$('.xpick .dlg')||$('#view');const next=Array.from(scope?.querySelectorAll('button,input,select')||[]).find(n=>!n.disabled&&((focusName&&n.getAttribute('aria-label')===focusName)||(!focusName&&focusText&&n.textContent===focusText)));next?.focus()}});const v=$('#view'),dev=$('#dev');v.innerHTML='';dev.innerHTML='';
   if(st.tab==='phone'){v.append(h('div',{class:'pt'},h('div',{class:'phone',id:'phone'})));renderPhone();
-    dev.append(h('span',{},'Remote device test controls'),h('button',{class:'btn ter sm',onclick:()=>{ph.nextResult='rejected';toast('Next command will be rejected')}},'Reject next command'),h('button',{class:'btn ter sm',onclick:()=>{ph.nextResult='unknown';toast('Next command confirmation will be unavailable')}},'Lose next confirmation'),
+    dev.append(h('span',{},'Remote device test controls · simulated data'),h('button',{class:'btn ter sm',onclick:()=>{sensor.permission='denied';sensor.owner=null;ph.sheet='device';renderPhone()}},'Simulate permission denied'),h('button',{class:'btn ter sm',onclick:()=>{ph.nextResult='rejected';toast('Next command will be rejected')}},'Reject next command'),h('button',{class:'btn ter sm',onclick:()=>{ph.nextResult='unknown';toast('Next command confirmation will be unavailable')}},'Lose next confirmation'),
       h('button',{class:'btn ter sm',onclick:()=>{ph.dev=ph.dev==='phone'?'ipad':ph.dev==='ipad'?'desktop':'phone';render()}},'Device: '+(ph.dev==='phone'?'Phone':ph.dev==='ipad'?'iPad':'Desktop')),
       h('button',{class:'btn ter sm',onclick:()=>{ph.land=!ph.land;renderPhone()}},'Rotate'),
       h('button',{class:'btn ter sm',onclick:()=>{if(ph.screen!=='deck')return toast('Open the list on the device first');ph.conn=ph.conn==='local'?'drop':'local';if(ph.conn==='drop')sensor.owner=null;renderPhone();if(ph.conn==='drop'){clearTimeout(ph.rt);ph.rt=setTimeout(()=>{ph.conn='local';renderPhone()},5000)}}},'Simulate network drop'),
@@ -783,7 +828,7 @@ function render(){
     return}
   if(st.tab==='editor'&&st.bhv){v.append(h('div',{class:'xstage',style:'display:flex;flex-direction:column'},bar(),bhvBoard()));dev.append(h('span',{},'Behaviour board for '+IB[st.bhv].n));return}
   const stage=h('div',{class:'xstage'+(st.tab==='launcher'?' lstage':'')},st.tab==='launcher'?lnShell():bar());
-  const showRt=st.tab==='editor'&&st.open.rt&&!st.playing,showLn=st.tab==='launcher';
+  const showRt=st.tab==='editor'&&st.open.rt&&(!st.playing||st.preview==='A9'),showLn=st.tab==='launcher';
   if(st.playing&&st.tab!=='launcher')stage.append(playView());
   if(showRt){stage.append(h('div',{class:'xscrim'}),h('div',{class:'xmain'},colorPop(),rtDialog()))}
   if(st.tab==='editor'&&st.open.pr&&!showRt)stage.append(h('div',{class:'xscrim'}),h('div',{class:'xmain'},prWin()));
@@ -793,10 +838,11 @@ function render(){
   if(showRt&&(st.delG||st.delV))stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},delDlg()));
   if(showLn&&st.open.offConfirm)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},offDlg()));
   if((showLn||(st.tab==='editor'&&st.open.pr))&&st.open.confirm)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},confirmDlg()));
+  if(st.preview==='A9')stage.querySelectorAll('.rt input,.rt select,.rt button:not(.head button)').forEach(n=>n.disabled=true);
   v.append(stage);
   if(st.tab==='editor')dev.append(h('span',{},'Test controls'),
     h('button',{class:'btn ter sm',onclick:()=>{const its=st.groups.flatMap(g=>g.items);if(!its.length)return toast('Add an instance first');const cur=its.find(i=>i.issue);const o=['','missing','type'];if(!cur)its[0].issue='missing';else cur.issue=o[(o.indexOf(cur.issue)+1)%3];render()}},'Simulate problem'),
-    h('button',{class:'btn ter sm',onclick:()=>{st.groups=[];st.vars=[];st.selG=st.selI=st.panel=null;touch();render()}},'Clear list'),
+    h('button',{class:'btn ter sm',onclick:()=>{st.groups=[];st.vars=[];st.noIntro=false;st.selG=st.selI=st.panel=null;touch();render()}},'Clear list'),
     h('button',{class:'btn ter sm',onclick:()=>{st.groups=sample();st.vars=vsample();st.panel=null;touch();render()}},'Load sample list'),
     h('span',{},'Remote control'),
     h('button',{class:'btn ter sm',onclick:()=>{if(!st.playing)play();st.open.rt=false;st.open.pr=false;st.open.pop=true;render()}},'B1 Play popover'),
@@ -807,7 +853,7 @@ function render(){
 $$('.tab').forEach(t=>t.addEventListener('click',()=>{st.tab=t.dataset.t;if(st.tab==='editor')st.open.rt=true;if(st.tab==='launcher'){st.lnPage='connections';st.open.offConfirm=false}render()}));
 document.addEventListener('keydown',e=>{const modal=Array.from(document.querySelectorAll('.xpick .dlg')).at(-1);if(!modal)return;if(e.key==='Escape'){e.preventDefault();const close=modal.querySelector('.head [aria-label=Close]');close?.click();return}if(e.key==='Tab'){const items=Array.from(modal.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),[tabindex="0"]')).filter(n=>n.getClientRects().length);if(!items.length)return;const first=items[0],last=items.at(-1);if(e.shiftKey&&(document.activeElement===first||!modal.contains(document.activeElement))){e.preventDefault();last.focus()}else if(!e.shiftKey&&(document.activeElement===last||!modal.contains(document.activeElement))){e.preventDefault();first.focus()}}});
 window.addEventListener('resize',()=>{if(st.tab==='phone')renderPhone()});
-render();
+const requestedScreen=new URLSearchParams(location.search).get('screen');if(FLOW_NAMES[requestedScreen])reviewScreen(requestedScreen);else render();
 })();
 </script>
 </body>

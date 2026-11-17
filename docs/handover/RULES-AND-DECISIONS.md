@@ -17,7 +17,7 @@ The user's latest explicit decision supersedes the historical model below: each 
 
 The requested recommendations are implemented as reviewable proposals: slider throttling at 50 ms plus final release value; success only on XRCC acknowledgement; responsive 3/6/8 columns; structural editing after Stop; stale snapshot refresh; gesture-based sensor permission, one source and confirmed takeover. They are not evidence of released Unity behavior.
 
-Figma selectors and sharing windows are 640×680. A1→B8 and recovery branches now have visible flow lines. See [the implementation report](../../prototypes/xrcc-remote-trigger/implementation-20261117.md) for tests, original Artifact publication limits and engineering dependencies.
+Figma selectors are 640×680; sharing windows are 960×680. Select Instance uses highlighted rows without Radio. P1 removes Change/Replace instance: delete the trigger and add it again, preserving Instance/Behaviour. Flow uses short local arrows and explicit event/destination indexes for cross-row references. See [the implementation report](../../prototypes/xrcc-remote-trigger/implementation-20261117.md) for tests, original Artifact publication limits and engineering dependencies.
 
 ## Historical Remote Trigger P1 decisions (superseded where noted above)
 - Model (2026-11-16): Trigger sections (many instances, one button, colour) versus Variable control sections (exactly one variable); separate pickers.

@@ -4,11 +4,13 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const http = require('node:http');
 const path = require('node:path');
+const screenshotDir = process.env.SCREENSHOT_DIR;
+if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
 (async () => {
   const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
   // Export state only in this test response. Production HTML has no test API.
   const instrumented = html.replace(/\}\)\(\);\s*<\/script>/,
-    'Object.assign(window,{st,ph,sensor,play,stop,render,renderPhone,press,cellsOf,srvOff,srvReload,disablePublic,colsFor});})();</script>');
+    'Object.assign(window,{st,ph,sensor,play,stop,render,renderPhone,press,cellsOf,srvOff,srvReload,disablePublic,colsFor,reviewScreen,FLOW_NAMES});})();</script>');
   const server = http.createServer((req, res) => { res.setHeader('Content-Type', 'text/html'); res.end(instrumented); });
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   let browser;
@@ -24,15 +26,18 @@ const path = require('node:path');
     await page.locator('.pk .tn').filter({ hasText: 'Spotlight A' }).click();
     await page.locator('.pk .tn').filter({ hasText: 'Stage speaker' }).click();
     assert.equal(await page.evaluate(() => st.pick.sel.length), 1);
-    await page.getByRole('button', { name: 'Use instance', exact: true }).click();
+    await page.getByRole('button', { name: 'Add trigger', exact: true }).click();
     assert.equal(await page.evaluate(() => st.groups.at(-1).items[0].inst), 'speaker');
     assert.equal(await page.evaluate(() => st.groups.every(g => g.items.length === 1)), true);
-    // Cancel must leave the existing binding intact.
-    await page.getByRole('button', { name: 'Change instance', exact: true }).last().click({ force: true });
-    assert.deepEqual(await page.evaluate(() => st.pick.sel), ['speaker']);
+    // P1 has no replacement action. Cancel new selection must not change existing controls.
+    assert.equal(await page.getByRole('button', {name:'Change instance', exact:true}).count(), 0);
+    const count = await page.evaluate(() => st.groups.length);
+    await page.getByRole('button', {name:'Add New', exact:true}).click();
+    await page.getByRole('menuitem', {name:'Trigger button'}).click();
+    assert.equal(await page.getByRole('radio').count(), 0);
     await page.keyboard.press('Escape');
     assert.equal(await page.locator('.pk').count(), 0);
-    assert.equal(await page.evaluate(() => st.groups.at(-1).items[0].inst), 'speaker');
+    assert.equal(await page.evaluate(() => st.groups.length), count);
     await page.evaluate(() => { play(); st.tab = 'phone'; ph.screen = 'deck'; render(); });
     await page.locator('input[type=range]').fill('73');
     assert.equal(await page.evaluate(() => st.vals['var|p.Spot intensity']), 73);
@@ -51,7 +56,7 @@ const path = require('node:path');
     await page.evaluate(() => { ph.nextResult = 'unknown'; press(cellsOf(st.snap.groups, st.snap.vars)[0]); });
     assert.match(await page.locator('.fb').innerText(), /Check XRCC/);
     await page.getByRole('button', { name: 'This device', exact: true }).click();
-    await page.getByRole('button', { name: 'Allow sensors (simulate)', exact: true }).click();
+    await page.getByRole('button', { name: 'Allow sensors', exact: true }).click();
     assert.equal(await page.evaluate(() => sensor.permission), 'granted');
     await page.getByRole('button', { name: 'Simulate permission denied', exact: true }).click();
     assert.equal(await page.evaluate(() => sensor.owner), null);
@@ -79,8 +84,26 @@ const path = require('node:path');
       await page.waitForFunction(expected => Number(getComputedStyle(document.querySelector('.pdeck')).getPropertyValue('--cols')) === expected, expected);
       assert.equal(await page.locator('.pdeck').evaluate(n => n.scrollWidth <= n.clientWidth), true);
     }
+    await page.setViewportSize({width:1440,height:1100});
+    const allScreens=await page.evaluate(()=>Object.keys(FLOW_NAMES));
+    assert.equal(allScreens.length,69);
+    for(const screen of allScreens){
+      await page.selectOption('#screenReview',screen);
+      await page.waitForTimeout(20);
+      assert.equal(await page.locator('#view').evaluate(n=>n.children.length>0),true,screen);
+    }
+    await page.selectOption('#screenReview','A3');
+    assert.equal(await page.getByRole('radio').count(),0);
+    if(screenshotDir) await page.locator('.pk').screenshot({path:path.join(screenshotDir,'remote-selector-final.png')});
+    await page.selectOption('#screenReview','B3');
+    assert.equal(await page.locator('.prw').evaluate(n=>Math.round(n.getBoundingClientRect().width)),960);
+    if(screenshotDir) await page.locator('.prw').screenshot({path:path.join(screenshotDir,'remote-sharing-final.png')});
+    await page.selectOption('#screenReview','C22');
+    await page.getByRole('button',{name:'Confirm takeover',exact:true}).click();
+    assert.notEqual(await page.evaluate(()=>sensor.owner),"Alan's iPad");
+    assert.equal(await page.evaluate(()=>ph.confirmTakeover),false);
     assert.deepEqual(errors, []);
-    console.log('PASS: single binding, replacement cancel/Esc, slider, numeric validation, rejection/unknown, sensor permission, stale guard, network guard, Play/server/public lifecycle, changed port, responsive 3/6/8 columns; no page errors.');
+    console.log('PASS: single binding, cancel/Esc without replacement or Radio, slider, numeric validation, rejection/unknown, sensor permission, stale guard, network guard, Play/server/public lifecycle, changed port, responsive 3/6/8 columns, all 69 Figma states, 960px sharing window and takeover confirmation; no page errors.');
   } finally {
     if (browser) await browser.close();
     await new Promise(resolve => server.close(resolve));

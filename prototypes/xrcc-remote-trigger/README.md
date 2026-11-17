@@ -49,7 +49,7 @@ File "XRCC Claude Workbench" (key `ZBOB48n4eLsZABCTnhh5kk`), page "XRCC Remote T
 
 ## 2026-11-17 implementation update
 
-The latest user decision replaces the old multi-Instance model: each Trigger button binds one Instance; each Variable control binds one Instance or Project variable. Trigger buttons and Variable controls are separate categories, sorted within their category. All large editor selectors and Remote control windows are 640×680; confirmation dialogs remain compact.
+The latest user decision replaces the old multi-Instance model: each Trigger button binds one Instance; each Variable control binds one Instance or Project variable. Trigger buttons and Variable controls are separate categories, sorted within their category. Editor selectors are 640×680. Remote control sharing windows are 960×680, sized for QR, links and devices. Confirmation dialogs remain compact.
 
 The recommendations requested by Alan are implemented as reviewable design proposals: 50 ms slider throttling plus final release value, confirmation based on XRCC acknowledgement, width-based 3/6/8 columns, read-only configuration during Play, snapshot refresh before stale controls resume, and explicit sensor ownership. These are not claims about the current Unity implementation.
 
@@ -64,3 +64,9 @@ See [implementation-20261117.md](implementation-20261117.md) for changes, tests,
 - This is a frontend simulation. QR/address, latency, acknowledgement, sensor capability/permission and device/server operations are mocked. Real browser permission prompts, sensor streams, Unity ACK/revision handling and public tunnel behavior require integration.
 - Existing multi-target local demo data is backed up under `xrcc-rt6-before-single` and split into single-target examples. This is not an approved migration for production projects.
 - The shared execution guide and Library change log referenced above are absent from this workspace. This local implementation report records the update; the shared log has not been edited.
+
+## Latest alignment correction — 2026-11-17
+
+Select Instance uses a highlighted row, with no Radio. P1 has no Change/Replace instance action: remove the trigger and add it again; Instance and Behaviour remain. The attached historical export is identical to the repository copy; current user decisions supersede historical alternatives.
+
+The prototype has a **Figma screen** selector covering all 69 A/B/C boards. Each state can be opened directly with `?screen=A3`, `?screen=B3`, etc. The A/B/C review controls are outside the product canvas. Native Figma flow now uses 23 short arrows and 116 event/destination indexes instead of long crossing paths. See [alignment-20261117.md](alignment-20261117.md).
