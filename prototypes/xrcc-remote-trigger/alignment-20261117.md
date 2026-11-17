@@ -34,4 +34,6 @@ Figma 已檢視選擇／分享視窗與重新編排的 C 流程全貌，並以�
 
 ## 部署
 
-Vercel 預覽使用 Alan 帳戶的 `xrcc-remote-trigger` 專案。僅部署 prototype HTML 與靜態設定，不部署 Notion、附件或歷史對話。原 Claude Artifact URL 未改動。Unity ACK、QR/地址、sensor 權限與資料、公網 tunnel 仍為模擬。
+Vercel Web prototype 使用 Alan 帳戶的 `xrcc-remote-trigger` 專案。僅部署 prototype HTML 與靜態設定，不部署 Notion、附件或歷史對話。原 Claude Artifact URL 未改動。Unity ACK、QR/地址、sensor 權限與資料、公網 tunnel 仍為模擬。
+
+部署已達 READY，固定網址為 https://xrcc-remote-trigger.vercel.app/ 。原有 Vercel 保護設定保留；免登入審閱連結另行提供，不提交分享憑證。首個 deployment 由平台設為 production，但內容是 prototype 審閱示例，並非 Unity 產品發佈。原始碼 commit 為 `0024d9f`。已確認線上回傳 HTTP 200，HTML 與本地測試來源逐字相同。沙盒瀏覽器外連遇到 tunnel failure，因此線上互動沒有宣稱重跑通過。

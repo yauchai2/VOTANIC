@@ -70,3 +70,5 @@ See [implementation-20261117.md](implementation-20261117.md) for changes, tests,
 Select Instance uses a highlighted row, with no Radio. P1 has no Change/Replace instance action: remove the trigger and add it again; Instance and Behaviour remain. The attached historical export is identical to the repository copy; current user decisions supersede historical alternatives.
 
 The prototype has a **Figma screen** selector covering all 69 A/B/C boards. Each state can be opened directly with `?screen=A3`, `?screen=B3`, etc. The A/B/C review controls are outside the product canvas. Native Figma flow now uses 23 short arrows and 116 event/destination indexes instead of long crossing paths. See [alignment-20261117.md](alignment-20261117.md).
+
+Web prototype: https://xrcc-remote-trigger.vercel.app/ (Vercel account access applies; temporary review share links are provided separately). The deployed HTML is from commit `0024d9f`.

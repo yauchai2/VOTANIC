@@ -1,1 +1,11 @@
-{"projectId":"prj_Vw2QNocAFxzo06HLpQ4vbMZ4DAx0","teamId":"team_crXk7fnnV9gg8Jo09rrxnLNR","name":"xrcc-remote-trigger","target":"preview","entry":"index.html"}
+{
+  "projectId": "prj_Vw2QNocAFxzo06HLpQ4vbMZ4DAx0",
+  "teamId": "team_crXk7fnnV9gg8Jo09rrxnLNR",
+  "name": "xrcc-remote-trigger",
+  "target": "production",
+  "entry": "index.html",
+  "purpose": "prototype review build",
+  "liveUrl": "https://xrcc-remote-trigger.vercel.app/",
+  "deploymentId": "dpl_2RLpWFmVkCLJbQ8S25ULpzN5Fwpa",
+  "sourceCommit": "0024d9f7f647a350eb90ebbf48aa44e47a3eb6d3"
+}
