@@ -1,4 +1,6 @@
-# XRCC Remote Trigger P1：最新對齊與流程整理
+# XRCC Remote Trigger P1：對齊與流程整理
+
+> 文字索引方案已被完整畫面連線取代；toast 與 annotations 的最新狀態見 [library-flow-20261117.md](library-flow-20261117.md)。
 
 ## 本輪使用者決定
 

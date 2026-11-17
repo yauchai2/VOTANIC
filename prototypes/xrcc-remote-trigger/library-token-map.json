@@ -1,0 +1,13 @@
+{
+  "source": "https://www.figma.com/design/De8nKqO81yciw4wH5xfpxA/Library?node-id=17465-276",
+  "notification": {"name":"Notification / Dark", "variant":"Type=Default", "componentKey":"69b782e559257123f79e35a3a2a234862147b0f4", "undo":false, "close":true},
+  "bell": {"name":"icon/outline/bell-02", "componentKey":"24dbda9a12f9e719ea480dd32ca862a055a338a5"},
+  "cssAliasesForExistingTokens": {
+    "--xrcc-surface-canvas": {"figma":"surface/canvas", "value":"#1e1e21"},
+    "--xrcc-text-accent": {"figma":"text/accent", "value":"#b89afa"},
+    "--xrcc-text-error": {"figmaPaintVariable":"VariableID:d34ae247df0b6f6706a7155dcb28fe5d66122e39/17459:1119", "source":"A15 inline field error", "value":"#ff453a"},
+    "--xrcc-yellow-100": {"figma":"color/yellow/100", "value":"#f9ac2f"}
+  },
+  "layout": {"padding":"spacing/16, spacing/20", "radius":"radius/md (8)", "typography":"typography/body/lg (16/24), Roboto Regular"},
+  "note":"CSS aliases map existing Library values; no Figma token or component was created or published."
+}

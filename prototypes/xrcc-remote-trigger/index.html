@@ -10,6 +10,9 @@
   --primary:#7d5bc4;--accent:#d9b0fd;--interactive:#a678e8;--del:#a8302f;
   --text:#f2f2f3;--text2:#b4b4bb;--text3:#8a8a92;--border:#4a4a50;--subtle:#35353a;
   --ok:#3fb868;--warn:#e8a23a;--err:#e5566d;
+  /* Existing XRCC Library tokens; aliases mirror Notification / Dark, not new Figma tokens. */
+  --xrcc-surface-canvas:var(--canvas);--xrcc-text-accent:#b89afa;--xrcc-text-error:#ff453a;--xrcc-yellow-100:#f9ac2f;
+  --xrcc-spacing-16:16px;--xrcc-spacing-20:20px;--xrcc-radius-md:8px;
   --font:Roboto,"Noto Sans TC",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 *{box-sizing:border-box}
@@ -161,7 +164,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .gl{grid-column:1/-1;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text2);height:auto!important;align-self:end}.gl i{width:10px;height:10px;border-radius:2px}
 .key{background:var(--panel);border:1px solid var(--subtle);border-radius:10px;padding:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;text-align:center;position:relative;overflow:hidden;min-width:0;user-select:none;cursor:pointer}
 .key .l{font-size:12px;font-weight:600}.key .v{font-size:11px;color:var(--text2)}.key .big{font-size:22px;font-weight:700;line-height:1}
-.key.sent{background:var(--sel);border-color:var(--interactive)}.key.on{background:var(--sel2);border-color:var(--primary)}
+.key.sent{background:var(--xrcc-surface-canvas);border-color:var(--ok)}.key.sent::after{content:'✓';position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:50%;background:var(--ok);color:var(--canvas);font-size:12px;line-height:18px;text-align:center}.key.on{background:var(--sel2);border-color:var(--primary)}
 .key .led{position:absolute;top:8px;right:8px;width:6px;height:6px;border-radius:50%;background:var(--text3)}.key.on .led{background:var(--ok)}
 .key.ro{opacity:.7}.key.bad{opacity:.5;border-color:var(--warn)}
 .key .ic2{width:36px;height:36px;border-radius:50%;display:grid;place-items:center}
@@ -172,8 +175,15 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .key .tx{width:100%;height:30px;background:var(--canvas);border:1px solid var(--border);border-radius:6px;padding:0 8px;font-size:13px}
 .step{display:flex;gap:8px}.step button{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:var(--elev)}
 .paused .key{opacity:.35;pointer-events:none}
-.fb{position:absolute;left:16px;right:16px;bottom:16px;background:var(--elev);border-radius:8px;padding:10px 12px;font-size:13px;transform:translateY(140%);transition:.2s;border:1px solid var(--subtle);z-index:6}
-.fb.show{transform:none}.fb.err{border-color:var(--err)}
+.xrcc-notice{display:flex;align-items:flex-start;gap:var(--xrcc-spacing-16);width:388px;max-width:calc(100% - 32px);padding:var(--xrcc-spacing-16) var(--xrcc-spacing-16) var(--xrcc-spacing-20);background:var(--xrcc-surface-canvas);color:var(--xrcc-text-accent);border:0;border-radius:var(--xrcc-radius-md);font-size:16px;line-height:24px;box-shadow:0 4px 4px #0000004d,0 8px 12px 6px #00000026;overflow:hidden;z-index:50}
+.notice-icon{width:32px;height:32px;flex:none}.notice-icon svg{width:32px;height:32px}
+.notice-message{flex:1;min-width:0;overflow-wrap:anywhere;align-self:center}
+.notice-close{width:24px;height:24px;padding:0;flex:none;border:0;background:none;color:var(--text2);display:grid;place-items:center;cursor:pointer}.notice-close svg{width:20px;height:20px;stroke-width:1.1}
+.notice-countdown{position:absolute;bottom:0;left:0;right:0;height:8px;background:var(--xrcc-yellow-100);transform-origin:left}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%)}
+.fb{position:absolute;left:16px;right:16px;bottom:24px;width:auto;max-width:none;transform:translateY(150%);transition:transform .2s;z-index:6}.fb.show{transform:none}.fb:not(.show){pointer-events:none}
+.key{height:var(--cell,100px);align-self:start}.pdeck{grid-auto-rows:minmax(var(--cell,100px),auto)}
+.key-shell{display:flex;flex-direction:column;min-width:0}.key-shell>.key{width:100%;flex:none}.field-error{display:none;color:var(--xrcc-text-error);font-size:11px;line-height:16px;text-align:left;margin-top:8px;overflow-wrap:anywhere}.field-error.show{display:block}.key input[aria-invalid=true]{border-color:var(--xrcc-text-error)}
 .sheet{position:absolute;left:0;right:0;bottom:0;background:var(--elev);border-radius:16px 16px 0 0;padding:16px;display:flex;flex-direction:column;gap:12px;z-index:5}
 .sheet .sw{gap:10px}.sheet .sw i{width:36px;height:36px}.sh-s{position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:4}
 .bn{padding:8px 12px;border-radius:6px;background:var(--elev);font-size:12px;color:var(--text2)}.bn.w{background:#3a2a17;color:var(--text)}
@@ -305,13 +315,13 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .dh{width:20px!important;height:28px!important;padding:0!important;color:var(--text2);cursor:grab;background:transparent!important;border:0!important;flex:none}.dh:hover,.dh:focus-visible{color:var(--text)}.dh:active{cursor:grabbing}
 .gblk{position:relative}.gblk.dragging{opacity:.4;outline:1px dashed var(--accent);outline-offset:-1px}.gblk.dropb::before,.gblk.dropa::after{content:'';position:absolute;left:0;right:0;height:2px;background:var(--accent);z-index:2;border-radius:2px}.gblk.dropb::before{top:-9px}.gblk.dropa::after{bottom:-9px}
 .gblk.held{outline:1px solid var(--accent);box-shadow:0 10px 28px rgba(0,0,0,.55)}
-button.pill{cursor:pointer;font:inherit;color:inherit}button.pill:hover{border-color:var(--accent)}
+button.pill{background:transparent;cursor:pointer;font:inherit;color:inherit}button.pill:hover{border-color:var(--accent)}
 .sensr{display:flex;align-items:center;gap:12px;padding:10px 0}.sensr b{flex:1;font-size:14px}.sensr .tag{font-size:11px}.sensr .ok{color:var(--ok)}
 </style>
 </head>
 <body>
 <header class="top">
-  <b>XRCC Remote Trigger</b><span class="pill" id="playPill"></span>
+  <b>XRCC Remote Trigger</b><span class="pill">Prototype · simulated data</span><span class="pill" id="playPill"></span>
   <nav class="tabs" role="tablist">
     <button class="tab" data-t="editor" role="tab">1 · XRCC editor</button>
     <button class="tab" data-t="launcher" role="tab">2 · Play &amp; Launcher</button>
@@ -388,7 +398,11 @@ function cellsOf(groups,vars){return groups.filter(g=>g.items.length).map(g=>({k
 const w2=c=>c.s.size===2||(c.kind==='Number'&&c.s.control==='slider');
 const issues=()=>st.groups.reduce((a,g)=>a+g.items.filter(i=>i.issue).length,0);
 const nCells=()=>cellsOf(st.groups,st.vars).filter(c=>!c.sec).length;
-const toast=m=>{let t=$('#toast');if(!t){t=h('div',{id:'toast',style:'position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--elev);border:1px solid var(--border);border-radius:8px;padding:8px 14px;z-index:50;font-size:13px'});document.body.append(t)}t.textContent=m;t.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(()=>t.style.display='none',2000)};
+// Library Notification / Dark, Type=Default (69b782e559257123f79e35a3a2a234862147b0f4).
+// Bell asset: XRCC Library icon/outline/bell-02 (24dbda9a12f9e719ea480dd32ca862a055a338a5).
+const NOTICE_BELL='<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 6C9 6 8 12 8 17C8 22 5 25 5 25H27C27 25 24 22 24 17C24 12 23 6 16 6ZM16 6V3M20 25C20 25 20 29 16 29C12 29 12 25 12 25" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function noticeContent(el,message,persistent,onClose){el.replaceChildren();el.setAttribute('role',persistent?'alert':'status');const icon=h('span',{class:'notice-icon','aria-hidden':'true'});icon.innerHTML=NOTICE_BELL;const bar=h('span',{class:'notice-countdown','aria-hidden':'true'});el.append(icon,h('span',{class:'notice-message'},message),h('button',{class:'notice-close','aria-label':'Close notification',onclick:onClose},ic('close')),bar);if(!persistent)requestAnimationFrame(()=>{bar.style.transition='transform 2s linear';bar.style.transform='scaleX(0)'});}
+const toast=(message,persistent=false)=>{let t=$('#toast');if(!t){t=h('div',{id:'toast',class:'xrcc-notice'});document.body.append(t)}clearTimeout(toast.t);const close=()=>{clearTimeout(toast.t);t.style.display='none'};noticeContent(t,message,persistent,close);t.style.display='flex';if(!persistent)toast.t=setTimeout(close,2000)};
 function playView(){const n=st.phones.length,on=st.srv==='on';
   return h('div',{class:'pvw'},h('div',{class:'pvmid'},h('div',{class:'pvtitle'},'Play mode'),h('div',{class:'muted'},'Pop-up Gallery · Scene: Intro'),h('div',{class:'muted',style:'font-size:12px'},'The scene is running in XRCC. Press Stop to return to the editor.')),
     h('div',{class:'pvhud'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Remote control on':'Remote control off'),h('span',{class:'muted',style:'font-size:12px'},on?(n?n+' device'+(n>1?'s':'')+' connected':'No devices yet')+' · http://192.168.1.24:'+st.port:'Turn it on in Launcher · Connections'))) }
@@ -587,10 +601,11 @@ function drawQr(cv,seed){const n=29,g=cv.getContext('2d');cv.width=cv.height=n;g
   g.fillStyle='#fff';g.fillRect(11,11,7,7);g.fillStyle='#7d5bc4';g.fillRect(12,12,5,5)}
 const URL_L='http://192.168.1.24:3001',URL_P='https://gallery-tiger-42.trycloudflare.com';
 function srvReload(starting){
+  const revision=st.reviewRevision||0;
   const oldPort=st.port;const d=String(st.portDraft).trim();
   if(!/^\d+$/.test(d)||+d<1024||+d>65535){st.portErr='Use a number from 1024 to 65535.';render();return}
   st.portErr='';st.srvErr='';st.srv='reloading';sensor.owner=null;st.busyLbl=starting?'Starting server…':'Reloading server…';render();
-  setTimeout(()=>{if(+d===3000){st.srv='off';st.phones=[];st.portErr='Port 3000 is in use. Try 3002.';st.srvErr='The server could not start.'}else{st.port=+d;st.portDraft=String(d);st.srv='on';if(oldPort!==st.port){ph.conn='drop';st.phones=[];sensor.owner=null;ph.sheet=null;toast('Address changed. Open the new link or scan the new QR.')}else if(ph.screen==='deck'){ph.conn='local';st.snap=JSON.parse(JSON.stringify({groups:st.groups,orient:st.orient,vars:st.vars}));ph.changed=false}}render()},1500)}
+  setTimeout(()=>{if(revision!==(st.reviewRevision||0))return;if(+d===3000){st.srv='off';st.phones=[];st.portErr='Port 3000 is in use. Try 3002.';st.srvErr='The server could not start.'}else{st.port=+d;st.portDraft=String(d);st.srv='on';if(oldPort!==st.port){ph.conn='drop';st.phones=[];sensor.owner=null;ph.sheet=null;toast('Address changed. Open the new link or scan the new QR.')}else if(ph.screen==='deck'){ph.conn='local';st.snap=JSON.parse(JSON.stringify({groups:st.groups,orient:st.orient,vars:st.vars}));ph.changed=false}}render()},1500)}
 function srvOff(){st.srv='off';st.phones=[];st.pub='off';st.open.offConfirm=false;st.srvErr='';sensor.owner=null;ph.conn='drop';if(['deck','projects','connecting'].includes(ph.screen))ph.screen='server-off';render()}
 
 function prPop(){const n=st.phones.length,on=st.srv==='on';
@@ -687,42 +702,54 @@ function delDlg(){const dv=st.delV&&st.vars.find(x=>x.id===st.delV);if(dv)return
     h('div',{class:'body'},h('p',{},'This removes the trigger button. The Instance and its Behaviour stay in your project.'),
     h('div',{class:'pf'},h('button',{class:'btn ter',onclick:()=>{st.delG=null;render()}},'Cancel'),h('button',{class:'btn pri',onclick:()=>{st.groups=st.groups.filter(x=>x!==g);st.delG=null;touch();render();toast(g.name+' removed')}},'Remove trigger'))))}
 function confirmDlg(){return h('div',{class:'dlg cf'},h('div',{class:'head'},'Turn on a public link?'),h('div',{class:'acc'}),h('div',{class:'body'},h('p',{},'Anyone with the link can control this project while Play runs. Optional, and good for demos, not for anything private.'),
-  h('div',{class:'pf'},h('button',{class:'btn ter',onclick:()=>{st.open.confirm=false;render()}},'Cancel'),h('button',{class:'btn pri',onclick:()=>{st.open.confirm=false;st.pub='opening';render();setTimeout(()=>{if(!st.playing)return;if(st.failNext){st.pub='failed';st.failNext=false}else st.pub='on';render()},1400)}},'Turn on'))))}
+  h('div',{class:'pf'},h('button',{class:'btn ter',onclick:()=>{st.open.confirm=false;render()}},'Cancel'),h('button',{class:'btn pri',onclick:()=>{st.open.confirm=false;st.pub='opening';const revision=st.reviewRevision||0;render();setTimeout(()=>{if(revision!==(st.reviewRevision||0)||!st.playing)return;if(st.failNext){st.pub='failed';st.failNext=false}else st.pub='on';render()},1400)}},'Turn on'))))}
 function disablePublic(){const me=st.phones.find(p=>p.me&&p.via==='Public');if(me){ph.screen='public-off';ph.conn='drop';sensor.owner=null}st.pub='off';st.phones=st.phones.filter(p=>p.via!=='Public');render()}
 /* ---------- phone ---------- */
 const sensor={permission:'prompt',owner:null};
 const ph={screen:'connecting',dev:'phone',land:st.orient==='landscape',conn:'local',sheet:null,changed:false};
 const colsFor=(width)=>{const w=width||DIM[ph.dev][ph.land?'l':'p'][0];return w<600?3:w<900?6:8};
 function fit(g){g.style.setProperty('--cols',colsFor());const f=()=>{const x=g.clientWidth,c=colsFor(x);g.style.setProperty('--cols',c);if(x)g.style.setProperty('--cell',Math.floor((x-8*(c-1))/c)+'px')};f();requestAnimationFrame(f);try{new ResizeObserver(f).observe(g)}catch(e){}}
-function fb(msg,err){const f=$('.fb');if(!f)return;f.className='fb show'+(err?' err':'');f.innerHTML=(err?'⚠ ':'✓ ')+msg;clearTimeout(fb.t);fb.t=setTimeout(()=>f.classList.remove('show'),err?3000:1300)}
+function fb(msg,err){const f=$('.fb');if(!f)return;clearTimeout(fb.t);const close=()=>{clearTimeout(fb.t);f.classList.remove('show')};f.className='fb xrcc-notice show';noticeContent(f,msg,!!err,close);if(!err)fb.t=setTimeout(close,2000)}
 function press(c,val){
-  if(ph.nextResult){const result=ph.nextResult;ph.nextResult=null;return fb(result==='unknown'?'Confirmation unavailable (simulated). Check XRCC before trying again.':'Command rejected (simulated). The last confirmed value is unchanged.',1)}
+  if(ph.nextResult){const result=ph.nextResult;ph.nextResult=null;return fb(result==='unknown'?'Confirmation unavailable. Check XRCC before trying again.':'Command rejected. The last confirmed value is unchanged.',1)}
   if(ph.conn!=='local'||st.srv!=='on'||ph.changed||!st.playing)return fb('Controls paused. Reconnect and refresh first.',1);
   if(c.issue)return fb(c.label+' needs attention in XRCC',1);
   if(c.s.ro&&c.kind!=='Trigger')return fb(c.label+' is read-only',1);
   if(c.kind==='Toggle')st.vals[c.key]=!valOf(c.key);else if(c.kind!=='Trigger')st.vals[c.key]=val;
   const v=st.vals[c.key];
-  fb(c.kind==='Trigger'?c.label+' confirmed (simulated)':c.kind==='Toggle'?`${c.label} ${v?'On':'Off'} (simulated)`:`${c.label} set to ${String(v).slice(0,20)} (simulated)`);
+  fb(c.kind==='Trigger'?c.label+' confirmed':c.kind==='Toggle'?`${c.label} ${v?'On':'Off'}`:`${c.label} set to ${String(v).slice(0,20)}`);
+  return true;
 }
 function keyEl(c){
   const v=valOf(c.key),s=c.s,dis=c.issue||(s.ro&&c.kind!=='Trigger')||ph.conn!=='local'||st.srv!=='on'||ph.changed||!st.playing;
   const wide=c.kind==='Text'||(c.kind==='Number'&&s.control==='slider');
   const e=h('div',{class:'key'+(dis?' paused':'')+(c.kind==='Toggle'&&v?' on':'')+(s.ro&&c.kind!=='Trigger'?' ro':'')+(c.issue?' bad':'')+(wide?' wide':''),style:`grid-column:span ${w2(c)?2:1}`,tabindex:['Trigger','Toggle'].includes(c.kind)?'0':null,role:['Trigger','Toggle'].includes(c.kind)?'button':'group','aria-disabled':String(!!dis),'aria-label':c.label});
+  let output=e;
   e.addEventListener('keydown',ev=>{if(ev.target===e&&['Trigger','Toggle'].includes(c.kind)&&(ev.key==='Enter'||ev.key===' ')){ev.preventDefault();e.click()}});
   const rr=()=>{if(ph.screen==='deck')renderPhone()};
   const col=s.color||'#d9b0fd';
-  if(c.kind==='Trigger'){e.append(h('div',{class:'ic2',style:`background:${col}33;color:${col}`},ic(c.i,20)),h('div',{class:'l'},c.label));e.onclick=()=>{if(dis)return press(c);press(c);e.classList.add('sent');setTimeout(()=>e.classList.remove('sent'),900)}}
+  if(c.kind==='Trigger'){e.append(h('div',{class:'ic2',style:`background:${col}33;color:${col}`},ic(c.i,20)),h('div',{class:'l'},c.label));e.onclick=()=>{if(dis)return press(c);if(press(c)){e.classList.add('sent');setTimeout(()=>e.classList.remove('sent'),900)}}}
   if(c.kind==='Toggle'){e.append(h('i',{class:'led'}),h('span',{style:'color:'+col},ic(c.i,22)),h('div',{class:'l'},c.label),h('div',{class:'v'},v?'On':'Off'));e.onclick=()=>{press(c);rr()}}
   if(c.kind==='Colour'){e.append(h('div',{class:'swt',style:'background:'+v}),h('div',{class:'l'},c.label),h('div',{class:'v'},String(v).toUpperCase()));e.onclick=()=>{if(dis)return press(c);ph.sheet=c.key;renderPhone()}}
-  if(c.kind==='Number'&&s.control==='input'){const x=h('input',{class:'tx',type:'number',inputmode:'decimal',min:s.min,max:s.max,step:Math.pow(10,-s.dec),value:v,'aria-label':c.label,disabled:dis?true:null});const commit=()=>{const n=Number(x.value);if(!x.value.trim()||!Number.isFinite(n)||n<s.min||n>s.max){x.setCustomValidity('Use a number from '+s.min+' to '+s.max);x.reportValidity();return}if(+n.toFixed(s.dec)!==n){x.setCustomValidity('Use up to '+s.dec+' decimal places');x.reportValidity();return}x.setCustomValidity('');const value=+n.toFixed(s.dec);if(value!==valOf(c.key))press(c,value)};x.addEventListener('change',commit);x.addEventListener('keydown',ev=>{if(ev.key==='Enter'){commit();x.blur()}});e.append(h('div',{class:'v'},c.label),x,h('div',{class:'v'},s.min+'–'+s.max));e.style.cursor='default'}
+  if(c.kind==='Number'&&s.control==='input'){
+    const errorId='number-error-'+c.key.replace(/[^a-z0-9]/gi,'-');
+    const error=h('div',{class:'field-error',id:errorId,role:'alert'});
+    const x=h('input',{class:'tx',type:'number',inputmode:'decimal',min:s.min,max:s.max,step:Math.pow(10,-s.dec),value:v,'aria-label':c.label,'aria-describedby':errorId,disabled:dis?true:null});
+    let lastAttempt=null;
+    const invalid=message=>{x.setCustomValidity(message);x.setAttribute('aria-invalid',String(!!message));error.textContent=message;error.classList.toggle('show',!!message)};
+    const commit=()=>{if(x.value===lastAttempt)return;const n=Number(x.value);if(!x.value.trim()||!Number.isFinite(n)||n<s.min||n>s.max){invalid('Use a number from '+s.min+' to '+s.max+'.');return}if(+n.toFixed(s.dec)!==n){invalid('Use up to '+s.dec+' decimal places.');return}invalid('');lastAttempt=x.value;if(n!==valOf(c.key))press(c,n)};
+    x.addEventListener('input',()=>{lastAttempt=null});x.addEventListener('change',commit);x.addEventListener('keydown',ev=>{if(ev.key==='Enter'){commit();x.blur()}});
+    e.append(h('div',{class:'v'},c.label),x,h('div',{class:'v'},s.min+'–'+s.max));e.style.cursor='default';
+    output=h('div',{class:'key-shell',style:`grid-column:span ${w2(c)?2:1}`},e,error);
+  }
   if(c.kind==='Number'&&s.control==='slider'){const n=h('span',{class:'n'},(+v).toFixed(s.dec));const r=h('input',{type:'range',min:s.min,max:s.max,step:Math.pow(10,-s.dec),value:v,disabled:dis?true:null,'aria-label':c.label});
     let last=0;r.addEventListener('input',()=>{n.textContent=(+r.value).toFixed(s.dec);if(performance.now()-last>=50){last=performance.now();press(c,+r.value)}});r.addEventListener('change',()=>press(c,+r.value));
     e.append(h('div',{class:'hd'},h('span',{style:'color:'+col},ic(c.i,18)),h('span',{class:'l'},c.label),n),r,h('div',{class:'sc'},h('span',{},s.min),h('span',{},s.max)))}
   if(c.kind==='Text'){const x=h('input',{class:'tx',value:v,maxlength:String(s.maxc),disabled:dis?true:null,'aria-label':c.label});const n=h('div',{class:'v'},`${String(v).length} / ${s.maxc}`);
-    x.addEventListener('input',()=>{n.textContent=`${x.value.length} / ${s.maxc}`});x.addEventListener('change',()=>press(c,x.value));e.append(h('div',{class:'v'},c.label),x,n)}
+    x.addEventListener('input',()=>{n.textContent=`${x.value.length} / ${s.maxc}`});x.addEventListener('change',()=>press(c,x.value));x.addEventListener('keydown',ev=>{if(ev.key==='Enter')x.blur()});e.append(h('div',{class:'v'},c.label),x,n)}
   if(s.ro&&c.kind!=='Trigger')e.append(h('span',{class:'tag',style:'position:absolute;top:6px;left:6px;font-size:10px'},'Read only'));
   if(c.issue)e.append(h('span',{class:'tag w',style:'position:absolute;top:6px;left:6px;font-size:10px'},'Unavailable'));
-  return e}
+  return output}
 const ptop=(t,s,back)=>h('div',{class:'ptop'},back?h('button',{class:'ib','aria-label':'Back',onclick:back,style:'transform:scaleX(-1)'},ic('arrow',18)):null,h('div',{class:'t'},h('b',{},t),h('small',{},s)),h('button',{class:'pill',title:'This device','aria-label':'This device',onclick:()=>{ph.sheet='device';renderPhone()}},h('span',{class:'dot'+(ph.conn==='local'?'':' warn')}),ph.conn==='local'?'Local · 6 ms':'Reconnecting…'));
 const DIM={phone:{p:[390,844],l:[844,390]},ipad:{p:[820,1180],l:[1180,820]},desktop:{p:[1100,720],l:[1100,720]}};
 const DEVN={phone:'Phone · Safari',ipad:'iPad · Safari',desktop:'Desktop · Chrome'};
@@ -760,9 +787,9 @@ function renderPhone(){
 
 const FLOW_NAMES={A1:'Empty list',A2:'Choose what to add',A3:'Select Instance',A4:'Trigger added',A5:'Button colour',A6:'Row actions',A7:'Reorder',A8:'Needs attention',A9:'Playing',A10:'Project variable',A11:'Instance variable',A12:'Variable added',A13:'Remote Start',A14:'Remove trigger',A15:'Number settings error',A16:'Text settings',A17:'Rename',A18:'Remove variable',A19:'No instance variables',A20:'No instance selected',A21:'No search results',A22:'Empty scene',A23:'No project variables',A24:'All variables added',A25:'Pick instance first',B1:'Play popover',B2:'Local ready',B3:'Device joined',B4:'Public confirmation',B5:'Opening public link',B6:'Public ready',B7:'Public failure',B8:'Waiting for Play',B9:'Server running',B10:'Device joined',B11:'Turn off server',B12:'Server off',B13:'Reloading',B14:'Port changed',B15:'Port in use',B16:'Copied',C2:'Connecting',C3:'Projects',C4:'Waiting for Play',C5:'Deck',C6:'Confirmed',C7:'Slider',C8:'Text input',C9:'Reconnecting',C10:'Stale controls',C11:'Play ended',C12:'Landscape',C13:'Tablet portrait',C14:'Tablet landscape',C15:'Empty deck',C16:'This device',C17:'Permission needed',C18:'Permission denied',C19:'Other sensor source',C20:'Sensors active',C21:'Sensor source lost',C22:'Confirm takeover',C23:'Server unavailable',C24:'Public link disabled',C25:'Host disconnected',C26:'Command rejected',C27:'Confirmation unavailable',C28:'Invalid number',C29:'Desktop'};
 function reviewScreen(k){
- if(!FLOW_NAMES[k])return;history.replaceState(null,'','?screen='+encodeURIComponent(k));
+ if(!FLOW_NAMES[k])return;st.reviewRevision=(st.reviewRevision||0)+1;history.replaceState(null,'','?screen='+encodeURIComponent(k));
  clearTimeout(ph.t);clearTimeout(ph.rt);st.preview=k;st.groups=sample();st.vars=vsample();st.vals={};st.playing=false;st.srv='on';st.pub='off';st.bhv=null;st.delG=st.delV=st.rename=st.renameV=null;st.selV=null;st.draft=null;st.colorFor=null;st.noIntro=true;st.phones=[];st.open={rt:true,pick:false,vpick:false,menu:false,ln:true,pr:false,pop:false,confirm:false,offConfirm:false};st.pick={sel:[],q:''};st.pickNew=null;
- Object.assign(ph,{screen:'deck',conn:'local',changed:false,sheet:null,dev:'phone',land:false,confirmTakeover:false,sensorLost:false,capability:null});sensor.owner=null;sensor.permission='prompt';
+ Object.assign(ph,{nextResult:null,screen:'deck',conn:'local',changed:false,sheet:null,dev:'phone',land:false,confirmTakeover:false,sensorLost:false,capability:null});sensor.owner=null;sensor.permission='prompt';
  if(k[0]==='A'){
   st.tab='editor';
   if(k==='A1'||k==='A2'){st.groups=[];st.vars=[];st.noIntro=false;st.open.menu=k==='A2'}
@@ -794,7 +821,7 @@ function reviewScreen(k){
   if(k==='C23'){st.srv='off';ph.screen='server-off';ph.conn='drop'}if(k==='C24'){ph.screen='public-off';ph.conn='drop'}if(k==='C25'){ph.screen='host-disconnected';ph.conn='drop'}
  }
  render();
- if(k==='C6')press(cellsOf(st.snap.groups,st.snap.vars)[0]);
+ if(k==='C6'&&press(cellsOf(st.snap.groups,st.snap.vars)[0]))document.querySelector('.key')?.classList.add('sent');
  if(k==='C26'||k==='C27'){ph.nextResult=k==='C26'?'rejected':'unknown';press(cellsOf(st.snap.groups,st.snap.vars)[0]);}
  if(k==='C28'){const input=document.querySelector('input[type=number]');if(input){input.value='99';input.dispatchEvent(new Event('change'))}}
  document.getElementById('screenReview').value=k;
