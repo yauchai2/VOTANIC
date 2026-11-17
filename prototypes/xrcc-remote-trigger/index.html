@@ -124,7 +124,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .pal{display:grid;grid-template-columns:repeat(13,1fr);gap:2px}.pal i{aspect-ratio:1;cursor:pointer;border:1px solid transparent}.pal i.on{border-color:#fff}
 .xscrim2{position:absolute;inset:89px 0 0 0;background:rgba(0,0,0,.45);z-index:4}
 .xpick{position:absolute;inset:89px 0 0 0;z-index:5;display:grid;place-items:center;overflow:auto;padding:16px}
-.pk{width:480px;max-width:100%}.pk .body{gap:12px}
+.pk{width:640px;height:680px;max-width:100%}.pk .body{gap:12px}
 .sr{display:flex;gap:8px}.sr .fld{flex:1;height:36px}
 .tree{max-height:380px;overflow:auto;display:flex;flex-direction:column;gap:2px;min-height:240px}
 .tn{position:relative;height:36px;padding-top:0!important;padding-bottom:0!important;display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:6px;font-size:13px;border:0;background:none;text-align:left;width:100%}
@@ -179,7 +179,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .bn{padding:8px 12px;border-radius:6px;background:var(--elev);font-size:12px;color:var(--text2)}.bn.w{background:#3a2a17;color:var(--text)}
 .sk{border-radius:10px;background:var(--elev);animation:skp 1s infinite}@keyframes skp{50%{opacity:.4}}
 @media(max-width:1200px){.xmain{flex-direction:column;align-items:center;justify-content:flex-start}.ln .body{flex-direction:column;align-items:center}}
-@media(max-width:600px){.wrap{padding:0}.phone{margin:0;border-radius:0;border:0;box-shadow:none;width:100%!important;height:calc(100dvh - 130px)!important}.dev{padding:0 12px 12px}.rt{width:100%}.intro{flex-wrap:wrap}}
+@media(max-width:900px){.wrap{padding:0}.phone{margin:0;border-radius:0;border:0;box-shadow:none;width:100%!important;height:calc(100dvh - 130px)!important}.dev{padding:0 12px 12px}.rt{width:100%}.intro{flex-wrap:wrap}}
 
 .qrrow{display:flex;gap:20px;align-items:flex-start}.srow.prt{align-items:flex-start}
 @media(max-width:900px){
@@ -234,7 +234,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 @media(max-width:700px){.lbody{flex-direction:column}.lsb{width:100%;flex-direction:row;overflow:auto;padding:8px}.llogo,.lver{display:none}.lnav,.lnav.low{flex-direction:row;margin:0}.lni{white-space:nowrap;padding:0 12px}.lpage{margin-top:0;border-radius:0}.lpage .mpane{padding:20px 16px}}
 
 .prpop{position:absolute;top:96px;right:16px;z-index:6;width:340px;max-width:calc(100% - 32px);background:var(--elev);border:1px solid var(--border);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 12px 40px rgba(0,0,0,.5)}
-.dlg.prw{width:800px;max-width:100%;max-height:calc(100dvh - 160px)}
+.dlg.prw{width:640px;height:680px;max-width:100%;max-height:calc(100dvh - 160px)}
 .prb{display:flex;gap:24px;padding:24px;overflow:auto;min-height:0}.prr{flex:1;min-width:0;display:flex;flex-direction:column;gap:14px}
 .seg{display:flex;background:#141416;border-radius:8px;padding:4px;gap:4px}.seg button{flex:1;height:36px;border:0;border-radius:6px;background:none;color:inherit;font:inherit;cursor:pointer}.seg button.on{background:#43325f;color:var(--accent)}
 @media(max-width:700px){.prb{flex-direction:column;align-items:stretch;padding:16px}}
@@ -256,6 +256,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .ptabs button{white-space:nowrap}
 .pk .tn .tag{margin-left:auto}
 
+.key.paused{opacity:.45;cursor:not-allowed}.cbx.radio{border-radius:50%}.key:focus-visible,.pill:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.ptop .pill{min-height:44px}.sheet .btn{min-height:44px}
 .dlg.rt{height:680px}
 .empty{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;height:280px;text-align:center}
 .empty .ph{width:48px;height:48px;border-radius:8px;background:#252528;display:grid;place-items:center}
@@ -292,14 +293,14 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .addw{position:relative}.amenu{position:absolute;right:0;top:42px;z-index:6;min-width:210px;background:var(--elev);border:1px solid var(--border);border-radius:8px;padding:4px;display:flex;flex-direction:column;box-shadow:0 12px 30px rgba(0,0,0,.45)}
 .amenu button{display:flex;gap:10px;align-items:center;height:36px;padding:0 10px;border:0;background:none;border-radius:6px;text-align:left;font-size:13px}.amenu button:hover{background:var(--sel)}
 :root{--pvar:#907509}
-.pk2{width:960px;max-width:100%;height:640px;max-height:none}.body2{display:flex;flex:1;min-height:0}
-.vcol{display:flex;flex-direction:column;gap:12px;padding:16px;min-height:0}.vcol.l{width:400px;flex:none}.vcol.l.dim{opacity:.4}.vcol.r{flex:1;min-width:0}
+.pk2{width:640px;max-width:100%;height:680px;max-height:none}.body2{display:flex;flex:1;min-height:0}
+.vcol{display:flex;flex-direction:column;gap:12px;padding:16px;min-height:0}.vcol.l{width:280px;flex:none}.vcol.l.dim{opacity:.4}.vcol.r{flex:1;min-width:0}
 .vdiv{width:1px;background:var(--border);flex:none}.vcol .tree{flex:1;max-height:none;min-height:0}
 .vtabs{border-radius:6px;overflow:hidden;display:flex}.vtabs button{display:flex;align-items:center;justify-content:center;padding:0}.vtabs button.on.pv{background:var(--pvar);color:var(--text)}
 .vhint{font-size:13px;color:var(--text2);margin:0}
 .fld.bad{border-color:var(--err)}.verr{color:var(--err);font-size:11px}
 .cbx.static{pointer-events:none}
-@media(max-width:900px){.pk2{height:auto;max-height:90dvh}.body2{flex-direction:column;overflow:auto}.vcol.l{width:auto}.vdiv{width:auto;height:1px}}
+@media(max-width:600px){.pk2{height:auto;max-height:90dvh}.body2{flex-direction:column;overflow:auto}.vcol.l{width:auto}.vdiv{width:auto;height:1px}}
 .grow2>.ib.dh{opacity:1!important;pointer-events:auto!important}
 .dh{width:20px!important;height:28px!important;padding:0!important;color:var(--text2);cursor:grab;background:transparent!important;border:0!important;flex:none}.dh:hover,.dh:focus-visible{color:var(--text)}.dh:active{cursor:grabbing}
 .gblk{position:relative}.gblk.dragging{opacity:.4;outline:1px dashed var(--accent);outline-offset:-1px}.gblk.dropb::before,.gblk.dropa::after{content:'';position:absolute;left:0;right:0;height:2px;background:var(--accent);z-index:2;border-radius:2px}.gblk.dropb::before{top:-9px}.gblk.dropa::after{bottom:-9px}
@@ -364,12 +365,13 @@ const PAL=['#ff0000','#ff5a00','#ff9f00','#ffff00','#c8ff00','#00ff00','#00ffff'
 const COLS=['#65a7ff','#a62b2b','#4ec27d','#f0b429','#a000ff','#ffffff'];
 const mkCtl=(c,i)=>({on:true,label:c.n,control:/Intensity|Volume/.test(c.n)?'slider':'input',size:c.kind==='Text'||/Intensity|Volume/.test(c.n)?2:1,min:0,max:100,dec:0,maxc:40,ro:false,color:COLS[i%COLS.length]});
 const vsample=()=>[
+ {id:'p.Guest count',name:'Guest count',bind:'Guest count',src:'Project',kind:'Number',i:'user',color:'#65a7ff',s:{control:'input',min:0,max:20,dec:0,maxc:40}},
  {id:'p.Spot intensity',name:'Spot intensity',bind:'Spot intensity',src:'Project',kind:'Number',i:'sun',color:'#4ec27d',s:{control:'slider',min:0,max:100,dec:0,maxc:40}},
  {id:'p.House lights',name:'House lights',bind:'House lights',src:'Project',kind:'Toggle',i:'bulb',color:'#f0b429',s:{control:'input',min:0,max:100,dec:0,maxc:40}},
  {id:'result.Title text',name:'Show title',bind:'Result1 · Title text',src:'Result1',kind:'Text',i:'text',color:'#65a7ff',s:{control:'input',min:0,max:100,dec:0,maxc:40}}];
 const sample=()=>[
  {id:'g1',name:'Show controls',color:'#65a7ff',items:[{inst:'scene',issue:'',ctl:{}}]},
- {id:'g2',name:'Stage',color:'#a62b2b',items:[{inst:'spot',issue:'',ctl:{}},{inst:'speaker',issue:'',ctl:{}}]}];
+ {id:'g2',name:'Stage',color:'#a62b2b',items:[{inst:'spot',issue:'',ctl:{}}]}];
 const st={tab:'editor',prTab:'local',lnPage:'connections',orient:'portrait',groups:sample(),vars:vsample(),selV:null,vpick:{tab:'pv',sel:null},selG:null,selI:null,panel:null,rename:null,colorFor:null,
   open:{rt:true,pick:false,ln:true,confirm:false,offConfirm:false},pickFor:null,pick:{sel:[],q:''},
   playing:false,srv:'on',busyLbl:'',port:3001,portDraft:'3001',portErr:'',srvErr:'',pub:'off',pubTab:'local',failNext:false,phones:[],snap:null,
@@ -378,6 +380,8 @@ const VD={'p.Spot intensity':64,'p.House lights':true,'result.Title text':'Openi
 const key=(inst,n)=>inst+'|'+n;
 const valOf=k=>{if(!(k in st.vals)){const n=k.split('|')[1];st.vals[k]=n in VD?VD[n]:0}return st.vals[k]};
 try{const s=JSON.parse(localStorage.getItem('xrcc-rt6')||'null');if(s&&Array.isArray(s.groups)){st.groups=s.groups;st.orient=s.orient||'portrait';if(Array.isArray(s.vars))st.vars=s.vars}}catch(e){}
+// Preserve older multi-target mock data by splitting controls; retain a backup.
+if(st.groups.some(g=>g.items.length>1)){try{localStorage.setItem('xrcc-rt6-before-single',JSON.stringify(st.groups))}catch(e){}st.groups=st.groups.flatMap(g=>g.items.length>1?g.items.map((it,i)=>({...g,id:g.id+'-'+i,name:g.name+' · '+IB[it.inst].n,items:[it]})):[g]);}
 const save=()=>{try{localStorage.setItem('xrcc-rt6',JSON.stringify({groups:st.groups,orient:st.orient,vars:st.vars}))}catch(e){}};
 const gid=()=>'g'+Math.random().toString(36).slice(2,7);
 /* flatten groups into phone cells */
@@ -390,7 +394,7 @@ function playView(){const n=st.phones.length,on=st.srv==='on';
   return h('div',{class:'pvw'},h('div',{class:'pvmid'},h('div',{class:'pvtitle'},'Play mode'),h('div',{class:'muted'},'Pop-up Gallery · Scene: Intro'),h('div',{class:'muted',style:'font-size:12px'},'The scene is running in XRCC. Press Stop to return to the editor.')),
     h('div',{class:'pvhud'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Remote control on':'Remote control off'),h('span',{class:'muted',style:'font-size:12px'},on?(n?n+' device'+(n>1?'s':'')+' connected':'No devices yet')+' · http://192.168.1.24:'+st.port:'Turn it on in Launcher · Connections'))) }
 function play(){if(st.playing)return;st.open.pick=false;st.open.vpick=false;st.open.menu=false;if(!nCells())toast('No controls yet.');st.playing=true;st.snap=JSON.parse(JSON.stringify({groups:st.groups,orient:st.orient,vars:st.vars}));ph.changed=false;render()}
-function stop(){st.playing=false;st.phones=[];st.pub='off';if(['deck','projects'].includes(ph.screen))ph.screen='ended';render()}
+function stop(){st.playing=false;sensor.owner=null;st.pub='off';st.phones=st.phones.filter(p=>p.via!=='Public');if(['deck','projects'].includes(ph.screen))ph.screen='ended';render()}
 const touch=()=>{save();if(st.playing)ph.changed=true};
 /* ---------- XRCC stage ---------- */
 function bar(){
@@ -430,7 +434,7 @@ function groupHead(g,idx){
   const r=h('div',{class:'grow2'},
     h('button',{class:'cs',style:'background:'+g.color,title:'Group colour','aria-label':'Group colour',onclick:e=>{e.stopPropagation();st.colorFor=st.colorFor===g.id?null:g.id;render()}}),name);
   if(st.rename!==g.id)r.append(
-    h('button',{class:'ib tint',title:'Add instance','aria-label':'Add instance',disabled:null,onclick:e=>{e.stopPropagation();st.pickFor=g.id;st.pickNew=null;st.pick.sel=[];st.open.pick=true;render()}},ic('addobj')),
+    h('button',{class:'ib tint',title:'Change instance','aria-label':'Change instance',disabled:null,onclick:e=>{e.stopPropagation();st.pickFor=g.id;st.pickNew=null;st.pick.sel=g.items.map(i=>i.inst);st.open.pick=true;render()}},ic('edit')),
     h('button',{class:'ib tint',title:'Rename','aria-label':'Rename',onclick:e=>{e.stopPropagation();st.rename=g.id;render()}},ic('edit')),
     h('button',{class:'ib del',title:'Delete group','aria-label':'Delete group',onclick:e=>{e.stopPropagation();st.delG=g.id;render()}},ic('trash')));
   r.prepend(dhandle(g.name));return r}
@@ -460,23 +464,25 @@ function itemRow(g,it){
     ic('cube',18),h('div',{class:'nm'},inst.n),
     it.issue?h('span',{class:'tag '+(it.issue==='type'?'e':'w')},it.issue==='type'?'Type mismatch':'Missing'):null,
     h('div',{class:'acts'},h('button',{class:'ib tint cn',title:'Connect to Behaviour','aria-label':'Connect to Behaviour',onclick:e=>{e.stopPropagation();st.bhv=it.inst;st.bhvG=g.name;render()}},ic('conn')),
-      h('button',{class:'ib del',title:'Remove','aria-label':'Remove',disabled:null,onclick:e=>{e.stopPropagation();g.items=g.items.filter(x=>x!==it);touch();render()}},ic('trash'))));
+      h('button',{class:'ib del',title:'Remove','aria-label':'Remove',disabled:null,onclick:e=>{e.stopPropagation();st.delG=g.id;render()}},ic('trash'))));
   return r}
 function addTrigger(){const g={id:gid(),name:'New Remote Trigger'+(st.groups.length?` (${st.groups.length})`:''),color:'#65a7ff',items:[]};st.groups.push(g);st.selG=g.id;st.open.menu=false;st.pickFor=g.id;st.pickNew=g.id;st.pick.sel=[];st.open.pick=true;touch();render()}
 function addVar(){st.open.menu=false;st.vpick={tab:'iv',inst:null,sel:null,q:''};st.open.vpick=true;render()}
 function rtDialog(){
   const list=h('div',{class:'list'});
-  const footEl=h('div',{class:'foot'},ic('info',16),'Saved with the project. Edits during Play apply next time.');
+  const footEl=h('div',{class:'foot'},ic('info',16),'Saved with the project. Stop Play to edit.');
+  if(st.groups.length)list.append(h('div',{class:'vhead'},h('h3',{},'Trigger buttons')));
   st.groups.forEach((g,gi)=>{const blk=h('div',{class:'gblk',style:'--gc:'+g.color}),its=h('div',{class:'items'});blk.append(groupHead(g,gi),its);dndWire(blk,'g',g.id);
     g.items.forEach(it=>its.append(itemRow(g,it)));
-    if(!g.items.length)its.append(h('div',{class:'slot'},ic('cube',18),h('div',{class:'t'},h('b',{},'No instances yet'),h('span',{},'Add the objects this button should run when you press it.')),h('button',{class:'btn pri sm',disabled:null,onclick:()=>{st.pickFor=g.id;st.pickNew=null;st.pick.sel=[];st.open.pick=true;render()}},'Add instances')));list.append(blk)});
+    if(!g.items.length)its.append(h('div',{class:'slot'},ic('cube',18),h('div',{class:'t'},h('b',{},'No instance selected'),h('span',{},'Choose one instance for this trigger.')),h('button',{class:'btn pri sm',disabled:null,onclick:()=>{st.pickFor=g.id;st.pickNew=null;st.pick.sel=[];st.open.pick=true;render()}},'Select instance')));list.append(blk)});
   if(!st.groups.length&&!st.vars.length)list.append(emptyState('No controls yet','Add a trigger or a variable control.'));
+  if(st.vars.length)list.append(h('div',{class:'vhead'},h('h3',{},'Variable controls')));
   list.append(...varBlock(),footEl);
   const n=issues();
   return h('div',{class:'dlg rt'},
     h('div',{class:'head'},ic('rt',18),'Remote Triggers',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Connect devices',title:'Connect devices',onclick:()=>{st.open.rt=false;st.open.pop=false;st.open.pr=true;render()}},ic('wave')),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.rt=false;render()}},ic('close'))),h('div',{class:'acc'}),
     h('div',{class:'body'},
-      (st.noIntro?null:h('div',{class:'intro'},h('div',{class:'ph'},ic('wifi')),h('div',{class:'grow'},h('h3',{},'Control Play from any device'),h('p',{},'A trigger runs its connected flows. A variable control changes one value.'))
+      (st.noIntro?null:h('div',{class:'intro'},h('div',{class:'ph'},ic('wifi')),h('div',{class:'grow'},h('h3',{},'Control Play from any device'),h('p',{},'A trigger starts one instance. A control changes one variable.'))
 ,h('button',{class:'ib','aria-label':'Dismiss',onclick:()=>{st.noIntro=true;render()}},ic('close')))),
       n?h('div',{class:'banner'},ic('info'),`${n} item${n>1?'s':''} need attention. Their controls are paused.`):null,
       h('div',{class:'lhead'},h('h2',{},'Remote List'),h('span',{class:'sp'}),h('div',{class:'addw'},h('button',{class:'btn pri big','aria-haspopup':'menu','aria-expanded':String(!!st.open.menu),disabled:null,onclick:()=>{st.open.menu=!st.open.menu;render()}},ic('plus'),'Add New'),st.open.menu?h('div',{class:'amenu',role:'menu'},h('button',{role:'menuitem',onclick:addTrigger},ic('rt',16),'Trigger button'),h('button',{role:'menuitem',onclick:addVar},ic('folder',16),'Variable control')):null)),
@@ -503,19 +509,19 @@ function treeLines(b,arr,i){
   const nx=arr[i+1];if(nx&&nx.lv>x.lv)ln(PADS[Math.min(x.lv,2)]+9,27,1,11)}
 function picker(){
   const g=st.groups.find(x=>x.id===st.pickFor);const q=st.pick.q.toLowerCase();
-  const tree=h('div',{class:'tree'});
+  const tree=h('div',{class:'tree',role:'radiogroup','aria-label':'Select Instance'});
   const arr=INST.filter(x=>!q||x.n.toLowerCase().includes(q));arr.forEach((x,idx)=>{
-    const added=g&&g.items.some(i=>i.inst===x.id);const on=st.pick.sel.includes(x.id);const dis=x.grp||added;
-    const b=h('button',{class:'tn leaf'+(on?' sel':'')+(dis?' dis':'')+(x.grp?' grpn':''),style:`padding-left:${PADS[Math.min(x.lv,2)]}px`,onclick:()=>{if(dis)return;st.pick.sel=on?st.pick.sel.filter(i=>i!==x.id):st.pick.sel.concat(x.id);render()}},ic(x.i,18),h('span',{class:'g'},x.n),
+    const added=g&&g.items.some(i=>i.inst===x.id);const on=st.pick.sel.includes(x.id);const dis=x.grp;
+    const b=h('button',{class:'tn leaf'+(on?' sel':'')+(dis?' dis':'')+(x.grp?' grpn':''),role:dis?null:'radio','aria-checked':String(on),disabled:dis?true:null,style:`padding-left:${PADS[Math.min(x.lv,2)]}px`,onclick:()=>{if(dis)return;st.pick.sel=on?[]:[x.id];render()}},ic(x.i,18),h('span',{class:'g'},x.n),
       added?h('span',{title:'Already in this group',style:'display:flex;color:var(--accent)'},ic('link',16)):null,st.pick.tab==='pv'?h('span',{class:'tag'},x.ctl[0].kind==='Toggle'?'Bool':x.ctl[0].kind):(x.ctl&&x.ctl.length?h('span',{title:'Has things to remote',style:'display:flex;color:var(--text2)'},ic('conn',16)):null));
-    if(!dis)b.append(h('span',{class:'cbx static'+(on?' on':'')},on?ic('check'):null));
+    if(!dis)b.append(h('span',{class:'cbx static radio'+(on?' on':''),'aria-hidden':'true'},on?ic('check'):null));
     treeLines(b,arr,idx);tree.append(b)});
-  if(!tree.children.length)tree.append(st.pick.q?emptyState('No instance matches “'+st.pick.q+'”','Try another name.'):emptyState('No instances yet','Add an object in Edit mode first.'));
+  if(!tree.children.length)tree.append(st.pick.q?emptyState('No instance matches “'+st.pick.q+'”','Try another name.'):emptyState('No instance selected','Add an object in Edit mode first.'));
   const f=h('input',{class:'fld',placeholder:'Find...',value:st.pick.q,'aria-label':'Find'});f.addEventListener('input',()=>{st.pick.q=f.value;const p=f.selectionStart;render();const n=$('.pk .fld');n.focus();n.setSelectionRange(p,p)});
   const close=()=>{st.open.pick=false;st.pick.q='';if(st.pickNew){const gg=st.groups.find(x=>x.id===st.pickNew);if(gg&&!gg.items.length)st.groups=st.groups.filter(x=>x!==gg);st.pickNew=null;touch()}render()};
-  return h('div',{class:'dlg pk'},h('div',{class:'head'},ic('cube',18),'Select Instances',h('span',{class:'sp'}),h('button',{class:'ib',onclick:close},ic('close'))),h('div',{class:'acc'}),
+  return h('div',{class:'dlg pk'},h('div',{class:'head'},ic('cube',18),'Select Instance',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:close},ic('close'))),h('div',{class:'acc'}),
     h('div',{class:'body'},h('div',{class:'sr'},f,h('button',{class:'ib tint',style:'width:36px;height:36px','aria-label':'Search'},ic('search')),h('button',{class:'ib',style:'width:36px;height:36px;color:var(--accent)','aria-label':'Sort',onclick:()=>toast('Sorted by name')},ic('sort')),h('button',{class:'ib',style:'width:36px;height:36px;color:var(--accent)','aria-label':'Filter',onclick:()=>toast('Filter: all instances')},ic('filter'))),tree,
-      h('button',{class:'btn ter wide',disabled:st.pick.sel.length?null:true,onclick:()=>{const ids=st.pick.sel.slice();ids.forEach(id=>g.items.push({inst:id,issue:'',ctl:{}}));st.pickNew=null;st.open.pick=false;st.pick.q='';touch();render();toast(ids.length+' instance'+(ids.length>1?'s':'')+' added to '+g.name)}},st.pick.sel.length?`Add ${st.pick.sel.length} instance${st.pick.sel.length>1?'s':''}`:'Add instances')))}
+      h('button',{class:'btn ter wide',disabled:st.pick.sel.length?null:true,onclick:()=>{const ids=st.pick.sel.slice(0,1);g.items=ids.map(id=>({inst:id,issue:'',ctl:{}}));st.pickNew=null;st.open.pick=false;st.pick.q='';touch();render();toast(ids.length+' instance'+(ids.length>1?'s':'')+' added to '+g.name)}},st.pick.sel.length?'Use instance':'Select instance')))}
 
 /* ---------- variable controls (one variable per section) ---------- */
 const VK=['Number','Text','Toggle'];
@@ -528,7 +534,7 @@ function varSettings(v){
   const mn=d?d.min:v.s.min,mx=d?d.max:v.s.max,bad=!!d&&mn>=mx;
   const num=(lab,k,min)=>{const val=d&&(k==='min'||k==='max')?d[k]:v.s[k];const err=bad&&(k==='min'||k==='max');
     const x=h('input',{class:'fld'+(err?' bad':''),type:'number',value:val,min:min,'aria-label':lab});
-    x.addEventListener('change',()=>{let n=+x.value;if(k==='dec')n=Math.max(0,Math.min(3,Math.round(n)));if(k==='maxc')n=Math.max(1,Math.min(200,Math.round(n)));
+    x.addEventListener('change',()=>{if(!x.value.trim()||!Number.isFinite(+x.value)){x.setCustomValidity('Enter a number');x.reportValidity();return}x.setCustomValidity('');let n=+x.value;if(k==='dec')n=Math.max(0,Math.min(3,Math.round(n)));if(k==='maxc')n=Math.max(1,Math.min(200,Math.round(n)));
       if(k==='min'||k==='max'){const nm=k==='min'?n:mn,nx=k==='max'?n:mx;if(nm>=nx){st.draft={id:v.id,min:nm,max:nx};render();return}v.s.min=nm;v.s.max=nx;st.draft=null;touch();render();return}
       v.s[k]=n;touch();render()});
     return h('label',{class:'vf'},h('span',{},lab),x,err&&k==='min'?h('span',{class:'verr'},'Min must be lower than Max'):null)};
@@ -553,7 +559,7 @@ function varPicker(){
   const vp=st.vpick,proj=vp.tab==='pv';
   const close=()=>{st.open.vpick=false;render()};
   const q=(vp.q||'').toLowerCase();
-  const tree=h('div',{class:'tree'});
+  const tree=h('div',{class:'tree',role:'radiogroup','aria-label':'Select Instance'});
   const arr=INST.filter(x=>!q||x.n.toLowerCase().includes(q));
   arr.forEach((x,idx)=>{const cat=x.grp||x.id==='ground';const on=!proj&&vp.inst===x.id;
     const b=h('button',{class:'tn leaf'+(on?' sel':'')+(cat?' grpn':''),style:`padding-left:${PADS[Math.min(x.lv,2)]}px`,disabled:proj||cat?true:null,onclick:()=>{vp.inst=x.id;vp.sel=null;render()}},ic(x.i,18),h('span',{class:'g'},x.n));
@@ -584,11 +590,11 @@ function drawQr(cv,seed){const n=29,g=cv.getContext('2d');cv.width=cv.height=n;g
   g.fillStyle='#fff';g.fillRect(11,11,7,7);g.fillStyle='#7d5bc4';g.fillRect(12,12,5,5)}
 const URL_L='http://192.168.1.24:3001',URL_P='https://gallery-tiger-42.trycloudflare.com';
 function srvReload(starting){
-  const d=String(st.portDraft).trim();
+  const oldPort=st.port;const d=String(st.portDraft).trim();
   if(!/^\d+$/.test(d)||+d<1024||+d>65535){st.portErr='Use a number from 1024 to 65535.';render();return}
-  st.portErr='';st.srvErr='';st.srv='reloading';st.busyLbl=starting?'Starting server…':'Reloading server…';render();
-  setTimeout(()=>{if(+d===3000){st.srv='off';st.phones=[];st.portErr='Port 3000 is in use. Try 3002.';st.srvErr='The server could not start.'}else{st.port=+d;st.portDraft=String(d);st.srv='on'}render()},1500)}
-function srvOff(){st.srv='off';st.phones=[];st.pub='off';st.open.offConfirm=false;st.srvErr='';if(['deck','projects','connecting'].includes(ph.screen))ph.screen='ended';render()}
+  st.portErr='';st.srvErr='';st.srv='reloading';sensor.owner=null;st.busyLbl=starting?'Starting server…':'Reloading server…';render();
+  setTimeout(()=>{if(+d===3000){st.srv='off';st.phones=[];st.portErr='Port 3000 is in use. Try 3002.';st.srvErr='The server could not start.'}else{st.port=+d;st.portDraft=String(d);st.srv='on';if(oldPort!==st.port){ph.conn='drop';st.phones=[];sensor.owner=null;ph.sheet=null;toast('Address changed. Open the new link or scan the new QR.')}else if(ph.screen==='deck'){ph.conn='local';st.snap=JSON.parse(JSON.stringify({groups:st.groups,orient:st.orient,vars:st.vars}));ph.changed=false}}render()},1500)}
+function srvOff(){st.srv='off';st.phones=[];st.pub='off';st.open.offConfirm=false;st.srvErr='';sensor.owner=null;ph.conn='drop';if(['deck','projects','connecting'].includes(ph.screen))ph.screen='server-off';render()}
 
 function prPop(){const n=st.phones.length,on=st.srv==='on';
   return h('div',{class:'prpop'},h('div',{style:'display:flex;align-items:center;gap:8px'},h('b',{style:'flex:1;font-size:15px'},'Remote control'),h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Local · 6 ms':'Offline')),
@@ -610,12 +616,12 @@ function prWin(){
     hint=h('div',{class:'muted',style:'font-size:12px'},st.pub==='failed'?'Could not create a public link. Check the connection and try again.':pubBusy?'A few seconds.':playing?'Optional. Works on any network.':'Press Play in XRCC to use a public link.');
   }else{
     linkRow=h('div',{class:'lrow'},h('div',{class:'url',style:on&&playing?'':'color:var(--text3)'},on&&playing?url:'Not available yet'),h('button',{class:'btn sec',disabled:on&&playing?null:true,onclick:()=>{try{navigator.clipboard.writeText(url)}catch(e){}toast('Link copied')}},'Copy'));
-    hint=pubTab?h('div',{style:'display:flex;gap:8px;align-items:center'},h('span',{class:'pill'},h('span',{class:'dot warn'}),'Public · 35 ms'),h('span',{class:'muted',style:'font-size:12px;flex:1'},'Stops when Play ends.'),h('button',{class:'btn ter sm',onclick:()=>{st.pub='off';st.phones=st.phones.filter(p=>p.via!=='Public');render()}},'Turn off link')):
+    hint=pubTab?h('div',{style:'display:flex;gap:8px;align-items:center'},h('span',{class:'pill'},h('span',{class:'dot warn'}),'Public · 35 ms'),h('span',{class:'muted',style:'font-size:12px;flex:1'},'Stops when Play ends.'),h('button',{class:'btn ter sm',onclick:()=>{disablePublic()}},'Turn off link')):
       h('div',{style:'display:flex;gap:8px;align-items:center'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?(playing?'Local · 6 ms':'Ready'):'Offline'),h('span',{class:'muted',style:'font-size:12px'},on?(playing?'About 6 ms':'Starts with Play'):'Turn the server on in Launcher'));
   }
   const phones=h('div',{style:'display:flex;flex-direction:column;gap:8px'});
   if(!st.phones.length)phones.append(h('div',{class:'empty'},ic('wifi',18),on?'No devices yet':'Devices appear once the server is on.'));
-  st.phones.forEach(p=>phones.append(h('div',{class:'phr'},h('div',{class:'av'},ic('user',18)),h('div',{class:'t'},h('b',{},p.name),h('small',{},p.joined+sensTxt(p))),h('button',{class:'btn ter sm',onclick:()=>{st.phones=st.phones.filter(x=>x!==p);if(p.me)ph.screen='ended';render()}},'Disconnect'))));
+  st.phones.forEach(p=>phones.append(h('div',{class:'phr'},h('div',{class:'av'},ic('user',18)),h('div',{class:'t'},h('b',{},p.name),h('small',{},p.joined+sensTxt(p))),h('button',{class:'btn ter sm',onclick:()=>{st.phones=st.phones.filter(x=>x!==p);if(sensor.owner===p.name)sensor.owner=null;if(p.me){ph.screen='host-disconnected';ph.conn='drop'}render()}},'Disconnect'))));
   return h('div',{class:'dlg prw'},h('div',{class:'head'},ic('phone',18),'Remote control',h('span',{class:'pill',style:'font-weight:400'},'Server runs in Launcher'),h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.pr=false;st.open.confirm=false;render()}},ic('close'))),h('div',{class:'acc'}),
     h('div',{class:'prb'},h('div',{style:'display:flex;flex-direction:column;align-items:center;gap:12px;flex:none'},h('div',{class:'halo'},qr),h('div',{class:'muted',style:'font-size:12px'},cap)),
       h('div',{class:'prr'},h('h3',{style:'margin:0;font-size:20px'},'Control from any device'),h('div',{class:'muted'},'Same Wi-Fi, no app needed.'),seg,linkRow,hint,
@@ -630,7 +636,7 @@ function launcher(){
   const phones=h('div',{style:'display:flex;flex-direction:column;gap:8px'});
   if(!st.phones.length)phones.append(h('div',{class:'empty'},ic('wifi',18),on?'No devices yet':'Devices appear once the server is on.'));
   st.phones.forEach(p=>phones.append(h('div',{class:'phr'},h('div',{class:'av'},ic('user',18)),h('div',{class:'t'},h('b',{},p.name),h('small',{},p.joined+sensTxt(p))),
-    h('span',{class:'pill'},h('span',{class:'dot'+(p.via==='Public'?' warn':'')}),p.via+' · '+(p.via==='Public'?35:6)+' ms'),h('button',{class:'btn ter sm',onclick:()=>{st.phones=st.phones.filter(x=>x!==p);if(p.me)ph.screen='ended';render()}},'Disconnect'))));
+    h('span',{class:'pill'},h('span',{class:'dot'+(p.via==='Public'?' warn':'')}),p.via+' · '+(p.via==='Public'?35:6)+' ms'),h('button',{class:'btn ter sm',onclick:()=>{st.phones=st.phones.filter(x=>x!==p);if(sensor.owner===p.name)sensor.owner=null;if(p.me){ph.screen='host-disconnected';ph.conn='drop'}render()}},'Disconnect'))));
   const pin=h('input',{class:'pin'+(st.portErr?' err':''),value:st.portDraft,inputmode:'numeric','aria-label':'Port',disabled:busy?'':null});
   pin.addEventListener('input',()=>{st.portDraft=pin.value.replace(/\D/g,'').slice(0,5);st.portErr='';render();const e=$('.pin');if(e){e.focus();e.setSelectionRange(e.value.length,e.value.length)}});
   pin.addEventListener('keydown',e=>{if(e.key==='Enter'&&(on||dirty))srvReload(!on)});
@@ -638,7 +644,7 @@ function launcher(){
   const qr=h('div',{class:'qr'+(on?'':busy?' load':' off')},cv,busy?h('span',{class:'spin big'}):null);
   const pub=h('div',{class:'pubr'},h('div',{style:'flex:1'},h('b',{style:'font-size:13px'},'Public link'),h('div',{class:'muted',style:'font-size:12px'},
       st.pub==='failed'?'Could not create a public link. Check the connection and try again.':st.pub==='opening'?'Creating a secure address…':pubOn?URL_P:'Optional. Works on any network.')),
-    pubOn?h('button',{class:'btn ter sm',onclick:()=>{st.pub='off';st.phones=st.phones.filter(p=>p.via!=='Public');render()}},'Turn off'):
+    pubOn?h('button',{class:'btn ter sm',onclick:()=>{disablePublic()}},'Turn off'):
     h('button',{class:'btn sec sm',disabled:on&&st.playing&&st.pub!=='opening'?null:true,title:st.playing?'':'Press Play to use a public link',onclick:()=>{st.open.confirm=true;render()}},st.pub==='failed'?'Try again':'Turn on'));
   return h('div',{class:'mpane'},
     h('div',{style:'display:flex;flex-direction:column;gap:8px'},h('h2',{class:'mtitle'},'Connections'),h('div',{class:'muted'},'Keys are encrypted and kept on this computer. Projects never contain them, and VOTANIC never sees them.')),
@@ -681,35 +687,39 @@ function offDlg(){return h('div',{class:'dlg cf'},h('div',{class:'head'},'Turn o
 function delVDlg(v){return h('div',{class:'dlg cf'},h('div',{class:'head'},'Remove "'+v.name+'"?',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.delV=null;render()}},ic('close'))),h('div',{class:'acc'}),h('div',{class:'body'},h('p',{},`This removes the ${v.name} control. The variable and its value stay in your project.`),h('div',{class:'pf'},h('button',{class:'btn ter',onclick:()=>{st.delV=null;render()}},'Cancel'),h('button',{class:'btn pri',onclick:()=>{st.vars=st.vars.filter(x=>x!==v);if(st.selV===v.id)st.selV=null;st.delV=null;touch();render();toast(v.name+' removed')}},'Remove control'))))}
 function delDlg(){const dv=st.delV&&st.vars.find(x=>x.id===st.delV);if(dv)return delVDlg(dv);const g=st.groups.find(x=>x.id===st.delG);if(!g)return null;const n=g.items.length;
   return h('div',{class:'dlg cf'},h('div',{class:'head'},'Remove "'+g.name+'"?',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.delG=null;render()}},ic('close'))),h('div',{class:'acc'}),
-    h('div',{class:'body'},h('p',{},`This removes the group and its ${n} item${n===1?'':'s'} from the list. The instance${n===1?'':'s'} in your scene stay.`),
-    h('div',{class:'pf'},h('button',{class:'btn ter',onclick:()=>{st.delG=null;render()}},'Cancel'),h('button',{class:'btn pri',onclick:()=>{st.groups=st.groups.filter(x=>x!==g);st.delG=null;touch();render();toast(g.name+' removed')}},'Remove group'))))}
+    h('div',{class:'body'},h('p',{},'This removes the trigger button. The Instance and its Behaviour stay in your project.'),
+    h('div',{class:'pf'},h('button',{class:'btn ter',onclick:()=>{st.delG=null;render()}},'Cancel'),h('button',{class:'btn pri',onclick:()=>{st.groups=st.groups.filter(x=>x!==g);st.delG=null;touch();render();toast(g.name+' removed')}},'Remove trigger'))))}
 function confirmDlg(){return h('div',{class:'dlg cf'},h('div',{class:'head'},'Turn on a public link?'),h('div',{class:'acc'}),h('div',{class:'body'},h('p',{},'Anyone with the link can control this project while Play runs. Optional, and good for demos, not for anything private.'),
   h('div',{class:'pf'},h('button',{class:'btn ter',onclick:()=>{st.open.confirm=false;render()}},'Cancel'),h('button',{class:'btn pri',onclick:()=>{st.open.confirm=false;st.pub='opening';render();setTimeout(()=>{if(!st.playing)return;if(st.failNext){st.pub='failed';st.failNext=false}else st.pub='on';render()},1400)}},'Turn on'))))}
+function disablePublic(){const me=st.phones.find(p=>p.me&&p.via==='Public');if(me){ph.screen='public-off';ph.conn='drop';sensor.owner=null}st.pub='off';st.phones=st.phones.filter(p=>p.via!=='Public');render()}
 /* ---------- phone ---------- */
+const sensor={permission:'prompt',owner:null};
 const ph={screen:'connecting',dev:'phone',land:st.orient==='landscape',conn:'local',sheet:null,changed:false};
-const colsFor=()=>({phone:{p:3,l:6},ipad:{p:6,l:8},desktop:{p:8,l:8}})[ph.dev][ph.land?'l':'p'];
-function fit(g){g.style.setProperty('--cols',colsFor());const f=()=>{const c=colsFor(),x=g.clientWidth;if(x)g.style.setProperty('--cell',Math.floor((x-8*(c-1))/c)+'px')};f();requestAnimationFrame(f);try{new ResizeObserver(f).observe(g)}catch(e){}}
+const colsFor=(width)=>{const w=width||DIM[ph.dev][ph.land?'l':'p'][0];return w<600?3:w<900?6:8};
+function fit(g){g.style.setProperty('--cols',colsFor());const f=()=>{const x=g.clientWidth,c=colsFor(x);g.style.setProperty('--cols',c);if(x)g.style.setProperty('--cell',Math.floor((x-8*(c-1))/c)+'px')};f();requestAnimationFrame(f);try{new ResizeObserver(f).observe(g)}catch(e){}}
 function fb(msg,err){const f=$('.fb');if(!f)return;f.className='fb show'+(err?' err':'');f.innerHTML=(err?'⚠ ':'✓ ')+msg;clearTimeout(fb.t);fb.t=setTimeout(()=>f.classList.remove('show'),err?3000:1300)}
 function press(c,val){
-  if(ph.conn!=='local')return fb('No connection',1);
+  if(ph.nextResult){const result=ph.nextResult;ph.nextResult=null;return fb(result==='unknown'?'Confirmation unavailable (simulated). Check XRCC before trying again.':'Command rejected (simulated). The last confirmed value is unchanged.',1)}
+  if(ph.conn!=='local'||st.srv!=='on'||ph.changed||!st.playing)return fb('Controls paused. Reconnect and refresh first.',1);
   if(c.issue)return fb(c.label+' needs attention in XRCC',1);
   if(c.s.ro&&c.kind!=='Trigger')return fb(c.label+' is read-only',1);
   if(c.kind==='Toggle')st.vals[c.key]=!valOf(c.key);else if(c.kind!=='Trigger')st.vals[c.key]=val;
   const v=st.vals[c.key];
-  fb(c.kind==='Trigger'?c.label+' sent':c.kind==='Toggle'?`${c.label} ${v?'On':'Off'}`:`${c.label} set to ${String(v).slice(0,20)}`);
+  fb(c.kind==='Trigger'?c.label+' confirmed (simulated)':c.kind==='Toggle'?`${c.label} ${v?'On':'Off'} (simulated)`:`${c.label} set to ${String(v).slice(0,20)} (simulated)`);
 }
 function keyEl(c){
-  const v=valOf(c.key),s=c.s,dis=c.issue||(s.ro&&c.kind!=='Trigger');
+  const v=valOf(c.key),s=c.s,dis=c.issue||(s.ro&&c.kind!=='Trigger')||ph.conn!=='local'||st.srv!=='on'||ph.changed||!st.playing;
   const wide=c.kind==='Text'||(c.kind==='Number'&&s.control==='slider');
-  const e=h('div',{class:'key'+(c.kind==='Toggle'&&v?' on':'')+(s.ro&&c.kind!=='Trigger'?' ro':'')+(c.issue?' bad':'')+(wide?' wide':''),style:`grid-column:span ${w2(c)?2:1}`,tabindex:'0',role:'button','aria-label':c.label});
+  const e=h('div',{class:'key'+(dis?' paused':'')+(c.kind==='Toggle'&&v?' on':'')+(s.ro&&c.kind!=='Trigger'?' ro':'')+(c.issue?' bad':'')+(wide?' wide':''),style:`grid-column:span ${w2(c)?2:1}`,tabindex:['Trigger','Toggle'].includes(c.kind)?'0':null,role:['Trigger','Toggle'].includes(c.kind)?'button':'group','aria-disabled':String(!!dis),'aria-label':c.label});
+  e.addEventListener('keydown',ev=>{if(ev.target===e&&['Trigger','Toggle'].includes(c.kind)&&(ev.key==='Enter'||ev.key===' ')){ev.preventDefault();e.click()}});
   const rr=()=>{if(ph.screen==='deck')renderPhone()};
   const col=s.color||'#d9b0fd';
-  if(c.kind==='Trigger'){e.append(h('div',{class:'ic2',style:`background:${col}33;color:${col}`},ic(c.i,20)),h('div',{class:'l'},c.label));e.onclick=()=>{press(c);e.classList.add('sent');setTimeout(()=>e.classList.remove('sent'),900)}}
+  if(c.kind==='Trigger'){e.append(h('div',{class:'ic2',style:`background:${col}33;color:${col}`},ic(c.i,20)),h('div',{class:'l'},c.label));e.onclick=()=>{if(dis)return press(c);press(c);e.classList.add('sent');setTimeout(()=>e.classList.remove('sent'),900)}}
   if(c.kind==='Toggle'){e.append(h('i',{class:'led'}),h('span',{style:'color:'+col},ic(c.i,22)),h('div',{class:'l'},c.label),h('div',{class:'v'},v?'On':'Off'));e.onclick=()=>{press(c);rr()}}
   if(c.kind==='Colour'){e.append(h('div',{class:'swt',style:'background:'+v}),h('div',{class:'l'},c.label),h('div',{class:'v'},String(v).toUpperCase()));e.onclick=()=>{if(dis)return press(c);ph.sheet=c.key;renderPhone()}}
-  if(c.kind==='Number'&&s.control==='input'){const step=Math.pow(10,-s.dec);e.append(h('div',{class:'v'},c.label),h('div',{class:'big'},(+v).toFixed(s.dec)),s.ro?null:h('div',{class:'step'},h('button',{'aria-label':'Minus',onclick:ev=>{ev.stopPropagation();press(c,Math.max(s.min,+(+v-step).toFixed(s.dec)));rr()}},'−'),h('button',{'aria-label':'Plus',onclick:ev=>{ev.stopPropagation();press(c,Math.min(s.max,+(+v+step).toFixed(s.dec)));rr()}},'+')));e.style.cursor='default'}
+  if(c.kind==='Number'&&s.control==='input'){const x=h('input',{class:'tx',type:'number',inputmode:'decimal',min:s.min,max:s.max,step:Math.pow(10,-s.dec),value:v,'aria-label':c.label,disabled:dis?true:null});const commit=()=>{const n=Number(x.value);if(!x.value.trim()||!Number.isFinite(n)||n<s.min||n>s.max){x.setCustomValidity('Use a number from '+s.min+' to '+s.max);x.reportValidity();return}if(+n.toFixed(s.dec)!==n){x.setCustomValidity('Use up to '+s.dec+' decimal places');x.reportValidity();return}x.setCustomValidity('');const value=+n.toFixed(s.dec);if(value!==valOf(c.key))press(c,value)};x.addEventListener('change',commit);x.addEventListener('keydown',ev=>{if(ev.key==='Enter'){commit();x.blur()}});e.append(h('div',{class:'v'},c.label),x,h('div',{class:'v'},s.min+'–'+s.max));e.style.cursor='default'}
   if(c.kind==='Number'&&s.control==='slider'){const n=h('span',{class:'n'},(+v).toFixed(s.dec));const r=h('input',{type:'range',min:s.min,max:s.max,step:Math.pow(10,-s.dec),value:v,disabled:dis?true:null,'aria-label':c.label});
-    r.addEventListener('input',()=>{n.textContent=(+r.value).toFixed(s.dec);st.vals[c.key]=+r.value});r.addEventListener('change',()=>press(c,+r.value));
+    let last=0;r.addEventListener('input',()=>{n.textContent=(+r.value).toFixed(s.dec);if(performance.now()-last>=50){last=performance.now();press(c,+r.value)}});r.addEventListener('change',()=>press(c,+r.value));
     e.append(h('div',{class:'hd'},h('span',{style:'color:'+col},ic(c.i,18)),h('span',{class:'l'},c.label),n),r,h('div',{class:'sc'},h('span',{},s.min),h('span',{},s.max)))}
   if(c.kind==='Text'){const x=h('input',{class:'tx',value:v,maxlength:String(s.maxc),disabled:dis?true:null,'aria-label':c.label});const n=h('div',{class:'v'},`${String(v).length} / ${s.maxc}`);
     x.addEventListener('input',()=>{n.textContent=`${x.value.length} / ${s.maxc}`});x.addEventListener('change',()=>press(c,x.value));e.append(h('div',{class:'v'},c.label),x,n)}
@@ -719,12 +729,12 @@ function keyEl(c){
 const ptop=(t,s,back)=>h('div',{class:'ptop'},back?h('button',{class:'ib','aria-label':'Back',onclick:back,style:'transform:scaleX(-1)'},ic('arrow',18)):null,h('div',{class:'t'},h('b',{},t),h('small',{},s)),h('button',{class:'pill',title:'This device','aria-label':'This device',onclick:()=>{ph.sheet='device';renderPhone()}},h('span',{class:'dot'+(ph.conn==='local'?'':' warn')}),ph.conn==='local'?'Local · 6 ms':'Reconnecting…'));
 const DIM={phone:{p:[390,844],l:[844,390]},ipad:{p:[820,1180],l:[1180,820]},desktop:{p:[1100,720],l:[1100,720]}};
 const DEVN={phone:'Phone · Safari',ipad:'iPad · Safari',desktop:'Desktop · Chrome'};
-function sensTxt(p){if(p.has===false)return ' · No motion sensors';const f=st.phones.findIndex(x=>x.has!==false);return st.phones[f]===p?' · Using sensors':''}
+function sensTxt(p){return sensor.owner===p.name?' · Using sensors':p.has===false?' · No motion sensors':''}
 function fillDeck(g,groups,vars){cellsOf(groups,vars).filter(c=>!c.sec).forEach(c=>g.append(keyEl(c)))}
 function renderPhone(){
   const P_=$('#phone');if(!P_)return;P_.innerHTML='';
   const d=DIM[ph.dev][ph.land?'l':'p'];
-  if(innerWidth>600){P_.style.width=`min(100%,${d[0]}px)`;P_.style.height=`min(${d[1]}px,calc(100dvh - 150px))`;P_.style.minHeight='340px'}else{P_.style.width='';P_.style.height=''}
+  if(innerWidth>900){P_.style.width=`min(100%,${d[0]}px)`;P_.style.height=`min(${d[1]}px,calc(100dvh - 150px))`;P_.style.minHeight='340px'}else{P_.style.width='';P_.style.height=''}
   P_.append(h('div',{class:'sb'},h('span',{},'9:41'),h('span',{},'5G ▮▮▮')));
   const s=h('div',{class:'scr'});const sc=ph.screen;const go=x=>{ph.screen=x;ph.sheet=null;renderPhone()};
   const snap=st.snap||{groups:st.groups,orient:st.orient,vars:st.vars};
@@ -733,15 +743,18 @@ function renderPhone(){
     clearTimeout(ph.t);ph.t=setTimeout(()=>{if(ph.screen!=='connecting')return;st.phones.push({name:ph.dev==='desktop'?"Alan's laptop":ph.dev==='ipad'?"Alan's iPad":"Alan's iPhone",joined:'Joined just now',via:'Local',me:true,has:ph.dev!=='desktop'});go('projects');render()},1400)}
   if(sc==='projects'){P_.append(ptop('Projects','Connected to ALAN-PC'));if(!st.playing)s.append(emptyState('Waiting for Play','Press Play in XRCC to start.'));else s.append(h('button',{class:'proj',onclick:()=>go('deck')},h('div',{class:'th'},ic('folder')),h('div',{style:'flex:1'},h('b',{},'Pop-up Gallery'),h('div',{class:'muted',style:'font-size:12px'},'Scene: Intro'),h('div',{style:'font-size:12px;color:var(--ok)'},'● Playing now')),ic('arrow',18)))}
   if(sc==='deck'){P_.append(ptop('Pop-up Gallery','Scene: Intro',()=>go('projects')));
-    if((ph.land?'landscape':'portrait')!==snap.orient)s.append(h('div',{class:'bn',style:'text-align:center'},'Best in '+snap.orient));
-    if(ph.changed)s.append(h('div',{class:'bn w'},'List updated. Applies next Play.'));
+    // Orientation follows the viewport; no orientation warning.
+    if(ph.conn!=='local')s.append(h('div',{class:'bn w'},'Controls paused. Reconnect using the current link.',h('button',{class:'btn pri',onclick:()=>{ph.conn='local';ph.screen='connecting';renderPhone()}},'Reconnect')));
+    if(ph.changed)s.append(h('div',{class:'bn w'},'Controls updated. Refresh before continuing.',h('button',{class:'btn pri',onclick:()=>{st.snap=JSON.parse(JSON.stringify({groups:st.groups,orient:st.orient,vars:st.vars}));ph.changed=false;renderPhone()}},'Refresh list')));
     if(cellsOf(snap.groups,snap.vars).length){const g=h('div',{class:'pdeck'+(ph.conn!=='local'?' paused':'')});fillDeck(g,snap.groups,snap.vars);s.append(g);fit(g)}
     else s.append(emptyState('No controls yet','Add controls in XRCC.'))}
-  if(sc==='ended'){s.classList.add('c');s.append(h('div',{class:'hero',style:'background:var(--elev)'},ic('info')),h('h2',{style:'margin:0'},'Play ended'),h('div',{class:'muted'},'Controls return with the next Play.'),h('button',{class:'btn pri',onclick:()=>go('connecting')},'Reconnect'))}
+  if(['server-off','public-off','host-disconnected'].includes(sc)){const info={'server-off':['Remote control is off','Ask the host to turn it on in Launcher.'],'public-off':['Public link is off','Ask the host for a current link.'],'host-disconnected':['Disconnected by host','Reconnect with the current link.']}[sc];s.classList.add('c');s.append(h('h2',{},info[0]),h('p',{class:'muted'},info[1]),h('button',{class:'btn pri',onclick:()=>go('connecting')},'Reconnect'))}
+  if(sc==='ended'){s.classList.add('c');s.append(h('div',{class:'hero',style:'background:var(--elev)'},ic('info')),h('h2',{style:'margin:0'},'Play ended'),h('div',{class:'muted'},'Controls return with the next Play.'),h('button',{class:'btn pri',onclick:()=>go('projects')},'Back to projects'))}
   P_.append(s);
   if(ph.sheet==='device'){const has=ph.dev!=='desktop';const row=(ic_,n,ok)=>h('div',{class:'sensr'},ic(ic_,20),h('b',{},n),h('span',{class:'tag'+(ok?' ok':'')},ok?'Available':'Not available'));
     const close=()=>{ph.sheet=null;renderPhone()};
-    P_.append(h('div',{class:'sh-s',onclick:close}),h('div',{class:'sheet'},h('div',{style:'display:flex;align-items:center'},h('b',{style:'flex:1;font-size:20px'},'This device'),h('button',{class:'ib','aria-label':'Close',onclick:close},ic('close'))),h('div',{class:'muted',style:'font-size:12px'},DEVN[ph.dev]),h('div',{},row('gyro','Gyroscope',has),row('accel','Accelerometer',has),row('mic','Microphone',true)),h('div',{class:'muted',style:'font-size:12px'},'Sensors turn on when a project needs them.')))}
+    P_.append(h('div',{class:'sh-s',onclick:close}),h('div',{class:'sheet'},h('div',{style:'display:flex;align-items:center'},h('b',{style:'flex:1;font-size:20px'},'This device'),h('button',{class:'ib','aria-label':'Close',onclick:close},ic('close'))),h('div',{class:'muted',style:'font-size:12px'},DEVN[ph.dev]),h('div',{},row('gyro','Gyroscope',has),row('accel','Accelerometer',has),row('mic','Microphone',true)),h('div',{class:'muted',style:'font-size:12px'},'Prototype: sensor permission and ownership are simulated.')))}
+  if(ph.sheet==='device'){const sh=P_.querySelector('.sheet');const owner=st.phones.find(x=>x.me)?.name||DEVN[ph.dev];sh.append(h('p',{},sensor.permission==='denied'?'Permission denied. Retry or check browser settings.':sensor.owner?'Source: '+sensor.owner:'Sensor data is paused.'),h('button',{class:'btn pri',onclick:()=>{if(sensor.owner&&sensor.owner!==owner&&!confirm('Replace '+sensor.owner+' as the sensor source?'))return;sensor.permission='granted';sensor.owner=owner;renderPhone()}},sensor.owner===owner?'Sharing (simulated)':sensor.owner?'Request takeover':'Allow sensors (simulate)'),h('button',{class:'btn ter',onclick:()=>{sensor.owner=null;renderPhone()}},'Stop sharing'),h('button',{class:'btn ter',onclick:()=>{sensor.permission='denied';sensor.owner=null;renderPhone()}},'Simulate permission denied'));}
   else if(ph.sheet){const c=cellsOf(snap.groups,snap.vars).find(x=>x.key===ph.sheet);if(c)P_.append(h('div',{class:'sh-s',onclick:()=>{ph.sheet=null;renderPhone()}}),h('div',{class:'sheet'},h('b',{},c.label),h('div',{class:'sw'},PAL.concat(['#c0392b','#e8467c','#2e8b57']).map(x=>h('i',{class:valOf(c.key)===x?'on':'',style:'background:'+x,onclick:()=>{press(c,x);ph.sheet=null;renderPhone()}}))),h('button',{class:'btn ter',onclick:()=>{ph.sheet=null;renderPhone()}},'Cancel')))}
   P_.append(h('div',{class:'fb'}))}
 /* ---------- render ---------- */
@@ -760,12 +773,12 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&st.bhv&&!/INPUT|SEL
 function render(){
   $$('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.t===st.tab)));
   $('#playPill').innerHTML=st.playing?'<span class="dot"></span> Playing'+(st.phones.length?' · '+st.phones.length+' device'+(st.phones.length>1?'s':''):''):'<span class="dot off"></span> Editing';
-  const v=$('#view'),dev=$('#dev');v.innerHTML='';dev.innerHTML='';
+  const active=document.activeElement;const focusName=active?.getAttribute('aria-label');const focusText=active?.tagName==='BUTTON'?active.textContent:null;requestAnimationFrame(()=>{if(document.activeElement===document.body){const scope=$('.xpick .dlg')||$('#view');const next=Array.from(scope?.querySelectorAll('button,input,select')||[]).find(n=>!n.disabled&&((focusName&&n.getAttribute('aria-label')===focusName)||(!focusName&&focusText&&n.textContent===focusText)));next?.focus()}});const v=$('#view'),dev=$('#dev');v.innerHTML='';dev.innerHTML='';
   if(st.tab==='phone'){v.append(h('div',{class:'pt'},h('div',{class:'phone',id:'phone'})));renderPhone();
-    dev.append(h('span',{},'Remote device test controls'),
+    dev.append(h('span',{},'Remote device test controls'),h('button',{class:'btn ter sm',onclick:()=>{ph.nextResult='rejected';toast('Next command will be rejected')}},'Reject next command'),h('button',{class:'btn ter sm',onclick:()=>{ph.nextResult='unknown';toast('Next command confirmation will be unavailable')}},'Lose next confirmation'),
       h('button',{class:'btn ter sm',onclick:()=>{ph.dev=ph.dev==='phone'?'ipad':ph.dev==='ipad'?'desktop':'phone';render()}},'Device: '+(ph.dev==='phone'?'Phone':ph.dev==='ipad'?'iPad':'Desktop')),
       h('button',{class:'btn ter sm',onclick:()=>{ph.land=!ph.land;renderPhone()}},'Rotate'),
-      h('button',{class:'btn ter sm',onclick:()=>{if(ph.screen!=='deck')return toast('Open the list on the device first');ph.conn=ph.conn==='local'?'drop':'local';renderPhone();if(ph.conn==='drop'){clearTimeout(ph.rt);ph.rt=setTimeout(()=>{ph.conn='local';renderPhone()},5000)}}},'Simulate network drop'),
+      h('button',{class:'btn ter sm',onclick:()=>{if(ph.screen!=='deck')return toast('Open the list on the device first');ph.conn=ph.conn==='local'?'drop':'local';if(ph.conn==='drop')sensor.owner=null;renderPhone();if(ph.conn==='drop'){clearTimeout(ph.rt);ph.rt=setTimeout(()=>{ph.conn='local';renderPhone()},5000)}}},'Simulate network drop'),
       h('button',{class:'btn ter sm',onclick:()=>{st.phones=st.phones.filter(p=>!p.me);ph.conn='local';ph.screen='connecting';renderPhone();render()}},'Restart device'));
     return}
   if(st.tab==='editor'&&st.bhv){v.append(h('div',{class:'xstage',style:'display:flex;flex-direction:column'},bar(),bhvBoard()));dev.append(h('span',{},'Behaviour board for '+IB[st.bhv].n));return}
@@ -792,6 +805,8 @@ function render(){
     h('button',{class:'btn ter sm',disabled:st.playing&&st.pub==='on'?null:true,onclick:()=>{st.phones.push({name:"Sam's laptop",joined:'Joined just now',via:'Public',has:false});render()}},'Add a public device'));
 }
 $$('.tab').forEach(t=>t.addEventListener('click',()=>{st.tab=t.dataset.t;if(st.tab==='editor')st.open.rt=true;if(st.tab==='launcher'){st.lnPage='connections';st.open.offConfirm=false}render()}));
+document.addEventListener('keydown',e=>{const modal=Array.from(document.querySelectorAll('.xpick .dlg')).at(-1);if(!modal)return;if(e.key==='Escape'){e.preventDefault();const close=modal.querySelector('.head [aria-label=Close]');close?.click();return}if(e.key==='Tab'){const items=Array.from(modal.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),[tabindex="0"]')).filter(n=>n.getClientRects().length);if(!items.length)return;const first=items[0],last=items.at(-1);if(e.shiftKey&&(document.activeElement===first||!modal.contains(document.activeElement))){e.preventDefault();last.focus()}else if(!e.shiftKey&&(document.activeElement===last||!modal.contains(document.activeElement))){e.preventDefault();first.focus()}}});
+window.addEventListener('resize',()=>{if(st.tab==='phone')renderPhone()});
 render();
 })();
 </script>

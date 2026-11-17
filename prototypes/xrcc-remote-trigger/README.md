@@ -19,7 +19,7 @@ Working rules in short: reply to Alan in Cantonese, write reports in formal writ
 
 ## Run locally
 
-Open `index.html` in a browser, or run `python3 -m http.server` in this folder. State is shared between browser tabs through BroadcastChannel and saved in localStorage.
+Open `index.html` in a browser, or run `python3 -m http.server` in this folder. Editor configuration is saved in localStorage. This prototype does not implement cross-tab transport or a real XRCC connection.
 
 Smoke test with Playwright: open the page, click "B2 Remote control window", switch to tab 3, and check there are no console errors.
 
@@ -34,9 +34,9 @@ Smoke test with Playwright: open the page, click "B2 Remote control window", swi
 
 File "XRCC Claude Workbench" (key `ZBOB48n4eLsZABCTnhh5kk`), page "XRCC Remote Trigger (P1)" (node `1481:10758`). Do not touch the "Notes" sections or the old UI frame; they belong to Alan.
 
-- **A series, XRCC editor (section `1497:3722`)**: A1 empty list, A2 choose what to add, A3 select instances, A4 trigger added, A5 button colour, A6 hover a row, A7 reorder a section (dragging), A8 needs attention, A9 live while playing, A10–A12 and A23–A25 variable pickers and states, A13 connect an instance (Remote Start), A14 and A18 remove, A15 and A16 settings, A17 rename, A19–A22 empty states.
+- **A series, XRCC editor (section `1497:3722`)**: A1 empty list, A2 choose what to add, A3 select one Instance, A4 trigger added, A5 button colour, A6 hover a row, A7 reorder a section (dragging), A8 needs attention, A9 configuration locked while playing, A10–A12 and A23–A25 variable pickers and states, A13 connect an instance (Remote Start), A14 and A18 remove, A15 and A16 settings, A17 rename, A19–A22 empty states.
 - **B series, Play and Launcher (section `1501:5114`)**: B1 Play popover, B2–B8 Remote control window states (ready, device joined, public link on/opening/on/failed, waiting for Play), B9–B16 Launcher Connections (running, device joined, turn off, server off, reloading, port changed, port in use, link copied).
-- **C series, controller (section `1506:5871`)**: C2–C15 connecting, project list, deck, key sent, slider, text, reconnecting, deck changed, play ended, orientations, empty deck; C16 This device (sensors).
+- **C series, controller (section `1506:5871`)**: C2–C15 connecting, project list, deck, key sent, slider, text, reconnecting, deck changed, play ended, orientations, empty deck; C16 This device; C17–C22 sensor permission, ownership and takeover; C23–C25 server/public/host disconnection; C26–C28 rejected, unknown and invalid input; C29 desktop deck.
 - Section `1510:7606` holds the micro-interaction and tooltip specs, section `1510:7721` the Overview.
 
 ## Decisions to keep
@@ -44,13 +44,23 @@ File "XRCC Claude Workbench" (key `ZBOB48n4eLsZABCTnhh5kk`), page "XRCC Remote T
 - Launcher (server control) and XRCC window (join and monitor) are separate: no QR or device list in the Launcher. Settings has no Remote Trigger item.
 - Two entries to the Remote control window: Play popover "Open", and editor "Connect devices".
 - No orientation toggle in the Remote List; layout follows the device.
-- Sensors turn on by default, no control section. C16 and the device row ("Using sensors" / "No motion sensors") only show availability; the Notion spec says one device uses sensors at a time.
+- Sensor permission is requested by a user gesture. Availability, permission and active source are separate. One source at a time; takeover requires confirmation; losing the source pauses data. Permission and transport are simulated here.
 - Public link is off by default and ends when Play ends.
 
-## Not synced or open
+## 2026-11-17 implementation update
 
-- Figma lets triggers and variable sections mix in one list; the prototype keeps triggers first, then variables, and reorders each kind separately.
-- Figma A1 to B8 has no visible flow arrow, only a prototype link and an annotation.
-- The help card icon in the Remote Triggers window is still phone-shaped.
-- Behaviours, timings and sensor handling are assumptions; check the Notion spec "Remote Trigger Implementation Spec" (read-only) before changing them.
+The latest user decision replaces the old multi-Instance model: each Trigger button binds one Instance; each Variable control binds one Instance or Project variable. Trigger buttons and Variable controls are separate categories, sorted within their category. All large editor selectors and Remote control windows are 640×680; confirmation dialogs remain compact.
+
+The recommendations requested by Alan are implemented as reviewable design proposals: 50 ms slider throttling plus final release value, confirmation based on XRCC acknowledgement, width-based 3/6/8 columns, read-only configuration during Play, snapshot refresh before stale controls resume, and explicit sensor ownership. These are not claims about the current Unity implementation.
+
+See [implementation-20261117.md](implementation-20261117.md) for changes, tests, and engineering dependencies. Regression checks: `node prototypes/xrcc-remote-trigger/tests/smoke.cjs` (requires Playwright; `CHROMIUM_PATH` optionally selects Chromium).
+
+## Publication and integration status
+
+- Update only branch `claude/project-thread-pddqur`, existing draft PR #7.
+- The original Claude Artifact has not been republished by this update: no Artifact publishing tool is available in this session. The repository source is newer; do not present the Artifact URL as this revision.
+- Figma uses the current Library; no new design tokens and no Library Publish.
 - Only Alan can Publish the Figma Library.
+- This is a frontend simulation. QR/address, latency, acknowledgement, sensor capability/permission and device/server operations are mocked. Real browser permission prompts, sensor streams, Unity ACK/revision handling and public tunnel behavior require integration.
+- Existing multi-target local demo data is backed up under `xrcc-rt6-before-single` and split into single-target examples. This is not an approved migration for production projects.
+- The shared execution guide and Library change log referenced above are absent from this workspace. This local implementation report records the update; the shared log has not been edited.
