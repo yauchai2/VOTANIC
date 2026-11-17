@@ -6,7 +6,7 @@
   "entry": "index.html",
   "purpose": "prototype review build",
   "liveUrl": "https://xrcc-remote-trigger.vercel.app/",
-  "deploymentId": "dpl_2bghW4BL5bt3fpeuGezxGAhSd6LZ",
-  "sourceCommit": "8527d19",
-  "design": "Launcher-centered simplified flow \u00b7 2026-11-17"
+  "deploymentId": "dpl_ChpMTTj9A88MkbKoeGVuRNCSJLsC",
+  "sourceCommit": "b84c977032ee263e9a0b585e3a5237074522d78f",
+  "design": "Refined Launcher visual hierarchy \u00b7 Public activation \u00b7 always-visible Port \u00b7 2026-11-17"
 }
