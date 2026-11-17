@@ -451,7 +451,7 @@ function rtDialog(){
   list.append(...varBlock(),footEl);
   const n=issues();
   return h('div',{class:'dlg rt'},
-    h('div',{class:'head'},ic('rt',18),'Remote Triggers',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.rt=false;render()}},ic('close'))),h('div',{class:'acc'}),
+    h('div',{class:'head'},ic('rt',18),'Remote Triggers',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Connect devices',title:'Connect devices',onclick:()=>{st.open.rt=false;st.open.pop=false;st.open.pr=true;render()}},ic('wave')),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.rt=false;render()}},ic('close'))),h('div',{class:'acc'}),
     h('div',{class:'body'},
       (st.noIntro?null:h('div',{class:'intro'},h('div',{class:'ph'},ic('wifi')),h('div',{class:'grow'},h('h3',{},'Control Play from any device'),h('p',{},'A trigger runs its connected flows. A variable control changes one value.'))
 ,h('button',{class:'ib','aria-label':'Dismiss',onclick:()=>{st.noIntro=true;render()}},ic('close')))),
@@ -586,9 +586,9 @@ function prWin(){
       h('button',{class:'btn sec',disabled:on&&playing&&!pubBusy?null:true,onclick:()=>{st.open.confirm=true;render()}},st.pub==='failed'?'Try again':'Turn on'));
     hint=h('div',{class:'muted',style:'font-size:12px'},st.pub==='failed'?'Could not create a public link. Check the connection and try again.':pubBusy?'A few seconds.':playing?'Optional. Works on any network.':'Press Play in XRCC to use a public link.');
   }else{
-    linkRow=h('div',{class:'lrow'},h('div',{class:'url',style:on&&playing?'':'color:var(--text3)'},on?url:'Not available yet'),h('button',{class:'btn sec',disabled:on?null:true,onclick:()=>{try{navigator.clipboard.writeText(url)}catch(e){}toast('Link copied')}},'Copy'));
+    linkRow=h('div',{class:'lrow'},h('div',{class:'url',style:on&&playing?'':'color:var(--text3)'},on&&playing?url:'Not available yet'),h('button',{class:'btn sec',disabled:on&&playing?null:true,onclick:()=>{try{navigator.clipboard.writeText(url)}catch(e){}toast('Link copied')}},'Copy'));
     hint=pubTab?h('div',{style:'display:flex;gap:8px;align-items:center'},h('span',{class:'pill'},h('span',{class:'dot warn'}),'Public · 35 ms'),h('span',{class:'muted',style:'font-size:12px;flex:1'},'Stops when Play ends.'),h('button',{class:'btn ter sm',onclick:()=>{st.pub='off';st.phones=st.phones.filter(p=>p.via!=='Public');render()}},'Turn off link')):
-      h('div',{style:'display:flex;gap:8px;align-items:center'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?'Local · 6 ms':'Offline'),h('span',{class:'muted',style:'font-size:12px'},on?'About 6 ms on this Wi-Fi':'Turn the server on in Launcher'));
+      h('div',{style:'display:flex;gap:8px;align-items:center'},h('span',{class:'pill'},h('span',{class:'dot'+(on?'':' off')}),on?(playing?'Local · 6 ms':'Ready'):'Offline'),h('span',{class:'muted',style:'font-size:12px'},on?(playing?'About 6 ms':'Starts with Play'):'Turn the server on in Launcher'));
   }
   const phones=h('div',{style:'display:flex;flex-direction:column;gap:8px'});
   if(!st.phones.length)phones.append(h('div',{class:'empty'},ic('wifi',18),on?'No devices yet':'Devices appear once the server is on.'));
