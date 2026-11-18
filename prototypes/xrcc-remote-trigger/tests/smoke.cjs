@@ -222,10 +222,10 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     assert.equal(await page.locator('.qr-caption').count(),0);
     assert.equal(await page.getByRole('switch',{name:'Server',exact:true}).getAttribute('aria-checked'),'false');
     const summaryStatus=page.locator('.remote-summary [role=status]');
-    for(const [screen,label,colour] of [
+    for(const [screen,label,colour,y=220] of [
       ['B9','Server running · No devices connected','rgb(55, 149, 75)'],
-      ['B27','Server running · 1 device connected','rgb(55, 149, 75)'],
-      ['B22','Server off','rgb(53, 53, 53)'],
+      ['B27','Server running · 1 device connected','rgb(55, 149, 75)',200],
+      ['B22','Server off','rgb(53, 53, 53)',200],
     ]){
       await page.selectOption('#screenReview',screen);
       assert.equal(await summaryStatus.innerText(),label);
@@ -242,8 +242,26 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
           colour:getComputedStyle(dot).backgroundColor,
         };
       });
-      assert.deepEqual(geometry,{card:[345,220,650,120],dot:[120,70,8,8],labelX:136,colour},screen);
+      assert.deepEqual(geometry,{card:[345,y,650,120],dot:[120,70,8,8],labelX:136,colour},screen);
     }
+    await page.selectOption('#screenReview','B9');
+    const overview=page.locator('.connections-overview');
+    const overviewBoxes=await overview.evaluate(root=>{
+      const shell=root.closest('.lsh').getBoundingClientRect();
+      return [...root.querySelectorAll('.connections-summary-row,.connections-cleanup,.retention-select')].map(n=>{
+        const b=n.getBoundingClientRect();
+        return [b.x-shell.x,Math.round(b.y-shell.y),b.width,b.height];
+      });
+    });
+    assert.deepEqual(overviewBoxes,[[345,356,650,66],[345,438,650,66],[345,536,650,98],[345,598,285,36]]);
+    assert.equal(await page.getByRole('combobox',{name:'Clear unused connection information'}).inputValue(),'90 days');
+    assert.equal(await page.locator('.lpage').evaluate(n=>n.scrollHeight<=n.clientHeight),true);
+    await page.getByRole('button',{name:/^AI keys/}).click();
+    await page.getByRole('textbox',{name:'Search keys'}).fill('Office');
+    assert.equal(await page.locator('.provider-row:visible').count(),1);
+    await page.locator('.connections-subpage').getByRole('button',{name:'Connections',exact:true}).click();
+    await page.getByRole('button',{name:/^Speech commands/}).click();
+    assert.equal(await page.getByText('Lobby kiosk token',{exact:true}).isVisible(),true);
     await page.selectOption('#screenReview','B27');
     await page.getByRole('button',{name:'Manage devices',exact:true}).click();
     assert.equal(await page.locator('.device-row').count(),1);
