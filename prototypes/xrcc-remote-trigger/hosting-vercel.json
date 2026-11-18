@@ -6,7 +6,7 @@
   "entry": "index.html",
   "purpose": "prototype review build",
   "liveUrl": "https://xrcc-remote-trigger.vercel.app/",
-  "deploymentId": "dpl_CRbXVVcm2iz4tjJjuKGE2eJDgzgr",
-  "sourceCommit": "9eef82f417076550512f847527b4f716050120cc",
-  "design": "Match the Figma Public link retry action \u00b7 2026-11-18"
+  "deploymentId": "dpl_4FeyzTi9jX9C3cuvamQpyhG9svh1",
+  "sourceCommit": "23c062552d91f195cc988d92781c599a86a354cb",
+  "design": "Use press-only feedback for remote Trigger buttons \u00b7 2026-11-18"
 }
