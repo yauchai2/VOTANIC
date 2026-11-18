@@ -95,7 +95,7 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     await page.setViewportSize({width:1440,height:1100});
     await page.locator('.review-tools summary').click();
     const allScreens=await page.evaluate(()=>Object.keys(FLOW_NAMES));
-    assert.equal(allScreens.length,80);
+    assert.equal(allScreens.length,81);
     for(const screen of allScreens){
       await page.selectOption('#screenReview',screen);
       await page.waitForTimeout(20);
@@ -199,6 +199,16 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     await page.selectOption('#screenReview','B9');
     const summary=await page.locator('[data-figma=summary]').boundingBox(),shell=await page.locator('.lsh').boundingBox();
     assert.deepEqual([summary.x-shell.x,Math.round(summary.y-shell.y),summary.width,summary.height],[345,220,650,120]);
+    assert.equal(await page.locator('.summary-connected-dot').count(),0);
+    await page.selectOption('#screenReview','B27');
+    const summaryStatus=page.locator('.remote-summary [role=status]');
+    assert.equal(await summaryStatus.innerText(),'Server running · 1 device connected');
+    assert.equal(await summaryStatus.locator('.summary-connected-dot').isVisible(),true);
+    await page.getByRole('button',{name:'Manage devices',exact:true}).click();
+    await page.getByRole('button',{name:'Disconnect',exact:true}).click();
+    await page.getByRole('button',{name:'Connections',exact:true}).last().click();
+    assert.match(await summaryStatus.innerText(),/No devices connected/);
+    assert.equal(await summaryStatus.locator('.summary-connected-dot').count(),0);
     await page.selectOption('#screenReview','A9');
     const rowIndents=await page.locator('.rt .irow .nm').evaluateAll(nodes=>{const r=document.querySelector('.rt').getBoundingClientRect();return nodes.map(n=>n.getBoundingClientRect().x-r.x)});
     for(const x of rowIndents)assert.ok(Math.abs(x-81)<1,'Instance and Variable label alignment');
@@ -325,7 +335,7 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     assert.deepEqual(deckBounds,[[20,112,111,111],[139,112,230,111],[20,231,111,111],
       [139,231,111,111],[20,350,230,111],[258,350,111,111]],'C5 matches all six Figma card bounds');
     assert.deepEqual(errors, []);
-    console.log('PASS: single binding, cancel/Esc without replacement or Radio, slider, numeric validation, rejection/unknown, sensor permission, stale guard, network guard, Play/server/public lifecycle, changed port, responsive 3/6/8 columns, all 80 Figma states, 1100px Launcher and takeover confirmation, Library notification dismissal, inline errors and no rejected-number retry; no page errors.');
+    console.log('PASS: single binding, cancel/Esc without replacement or Radio, slider, numeric validation, rejection/unknown, sensor permission, stale guard, network guard, Play/server/public lifecycle, changed port, responsive 3/6/8 columns, all 81 Figma states, 1100px Launcher and takeover confirmation, Library notification dismissal, inline errors and no rejected-number retry; no page errors.');
   } finally {
     if (browser) await browser.close();
     await new Promise(resolve => server.close(resolve));
