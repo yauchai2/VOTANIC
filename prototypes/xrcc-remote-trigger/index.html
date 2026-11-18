@@ -468,7 +468,8 @@ button.pill{background:transparent;cursor:pointer;font:inherit;color:inherit}but
 .play-scene{position:absolute;inset:0;display:grid;place-items:center}
 .play-scene .scene-title{transform:translateY(-4px);display:flex;flex-direction:column;align-items:center;gap:var(--xrcc-spacing-8);color:var(--xrcc-text-secondary);font:var(--xrcc-body-lg)}
 .play-scene>.btn{position:absolute;right:24px;top:24px;background:var(--xrcc-surface-canvas);font:var(--xrcc-body-md)}
-.play-scene .stop-play{left:24px;right:auto;width:auto}
+.stage-play{min-height:max(320px,calc(100dvh - 100px))}
+#stopPlay[hidden]{display:none}
 body.presentation .stage-play{min-height:100dvh}
 .pk2 .vtabs button.on.pv{background:#654616;color:var(--xrcc-text-primary)}
 .xmain.covered{visibility:hidden}
@@ -611,6 +612,7 @@ body.presentation .lstage{margin-inline:auto}
 <body>
 <header class="top">
   <b>XRCC Remote Trigger</b><span class="pill">Prototype · simulated data</span><span class="pill" id="playPill"></span>
+  <button class="btn ter sm" id="stopPlay" type="button" hidden>Stop</button>
   <nav class="tabs" role="tablist">
     <button class="tab" data-t="editor" role="tab">1 · XRCC editor</button>
     <button class="tab" data-t="launcher" role="tab">2 · Launcher</button>
@@ -672,14 +674,26 @@ const vsample=()=>[
 const sample=()=>[
  {id:'g1',name:'Show controls',color:'#65a7ff',items:[{inst:'scene',issue:'',ctl:{}}]},
  {id:'g2',name:'Stage',color:'#a62b2b',items:[{inst:'spot',issue:'',ctl:{}}]}];
-const st={tab:'editor',prTab:'local',lnPage:'connections',lnDetail:false,origin:false,originAlive:true,portOpen:false,orient:'portrait',groups:sample(),vars:vsample(),order:['grp|g1','var|p.Spot intensity','grp|g2'],selV:null,vpick:{tab:'pv',sel:null},selG:null,selI:null,panel:null,rename:null,colorFor:null,
+const sampleList=()=>({groups:sample(),vars:vsample(),order:['grp|g1','var|p.Spot intensity','grp|g2']});
+const st={tab:'editor',prTab:'local',lnPage:'connections',lnDetail:false,origin:false,originAlive:true,portOpen:false,orient:'portrait',...sampleList(),selV:null,vpick:{tab:'pv',sel:null},selG:null,selI:null,panel:null,rename:null,colorFor:null,
   open:{rt:true,pick:false,ln:true,confirm:false,offConfirm:false},pickFor:null,pick:{sel:[],q:''},
   noIntro:true,playing:false,srv:'on',busyLbl:'',port:3001,portDraft:'3001',portErr:'',srvErr:'',pub:'off',pubTab:'local',failNext:false,phones:[],snap:null,
   vals:{}};
 const VD={'p.Spot intensity':64,'p.House lights':true,'result.Title text':'Opening night','p.Guest count':3,'p.Welcome text':'Welcome to the gallery','v1':64,'v2':'Opening night','v3':true,'Beam width':3,'Lights':false,'Mood colour':'#e8467c','Guests':12,'Show title':'Welcome to the gallery','Intensity':64,'Colour':'#ffffff','Enabled':true,'Music':false,'Volume':40};
 const key=(inst,n)=>inst+'|'+n;
 const valOf=k=>{if(!(k in st.vals)){const n=k.split('|')[1];st.vals[k]=n in VD?VD[n]:0}return st.vals[k]};
-try{const s=JSON.parse(localStorage.getItem('xrcc-rt6')||'null');if(s&&Array.isArray(s.groups)){st.groups=s.groups;st.orient=s.orient||'portrait';if(Array.isArray(s.vars))st.vars=s.vars;st.order=Array.isArray(s.order)?s.order:[]}}catch(e){}
+try{
+  const saved=JSON.parse(localStorage.getItem('xrcc-rt6')||'null');
+  if(saved&&Array.isArray(saved.groups)){
+    st.orient=saved.orient||'portrait';
+    const vars=Array.isArray(saved.vars)?saved.vars:[];
+    if(saved.groups.length||vars.length){
+      st.groups=saved.groups;
+      st.vars=Array.isArray(saved.vars)?vars:st.vars;
+      st.order=Array.isArray(saved.order)?saved.order:[];
+    }
+  }
+}catch(e){}
 // Preserve older multi-target mock data by splitting controls; retain a backup.
 if(st.groups.some(g=>g.items.length>1)){try{localStorage.setItem('xrcc-rt6-before-single',JSON.stringify(st.groups))}catch(e){}st.groups=st.groups.flatMap(g=>g.items.length>1?g.items.map((it,i)=>({...g,id:g.id+'-'+i,name:g.name+' · '+IB[it.inst].n,items:[it]})):[g]);}
 const save=()=>{try{localStorage.setItem('xrcc-rt6',JSON.stringify({groups:st.groups,orient:st.orient,vars:st.vars,order:st.order}))}catch(e){}};
@@ -709,16 +723,14 @@ function connectDevicesButton(){
   return h('button',{class:'btn ter connect-devices',onclick:openLauncher},ximg('rt-head',16),'Connect devices');
 }
 function playView(){
-  const showStop=!(presentation&&st.preview==='B1');
   return h('div',{class:'play-scene'},
     h('div',{class:'scene-title'},ximg('scene-play',48),'Scene view · Play'),
-    connectDevicesButton(),
-    showStop?h('button',{class:'btn ter stop-play',onclick:stop},'Stop'):null);
+    connectDevicesButton());
 }
-function play(){if(st.playing)return;st.open.pick=false;st.open.vpick=false;st.open.menu=false;if(!nCells())toast('No controls yet.');st.playing=true;st.colorFor=null;st.snap=snapshot();ph.changed=false;if(st.srv==='on'&&ph.conn==='local'&&ph.via!=='Public'&&['waiting','ended'].includes(ph.screen))ph.screen='deck';render()}
+function play(){if(st.playing)return;st.rtBeforePlay=st.open.rt;st.open.rt=false;st.bhv=null;st.open.pick=false;st.open.vpick=false;st.open.menu=false;if(!nCells())toast('No controls yet.');st.playing=true;st.colorFor=null;st.snap=snapshot();ph.changed=false;if(st.srv==='on'&&ph.conn==='local'&&ph.via!=='Public'&&['waiting','ended'].includes(ph.screen))ph.screen='deck';render()}
 let publicGeneration=0;
 let serverGeneration=0;
-function stop(){publicGeneration++;const publicDevice=ph.via==='Public';st.playing=false;sensor.owner=null;st.pub='off';st.phones=st.phones.filter(p=>p.via!=='Public');if(publicDevice){ph.screen='public-off';ph.conn='drop'}else if(ph.screen==='deck')ph.screen='ended';render()}
+function stop(){publicGeneration++;const publicDevice=ph.via==='Public';st.playing=false;st.open.rt=st.rtBeforePlay??true;st.rtBeforePlay=null;sensor.owner=null;st.pub='off';st.phones=st.phones.filter(p=>p.via!=='Public');if(publicDevice){ph.screen='public-off';ph.conn='drop'}else if(ph.screen==='deck')ph.screen='ended';render()}
 const touch=()=>{save();if(st.playing)ph.changed=true};
 /* ---------- XRCC stage ---------- */
 function bar(){
@@ -1371,7 +1383,7 @@ function renderPhone(){
 const FLOW_NAMES={A1:'Empty list',A2:'Choose what to add',A3:'Select Instance',A4:'Trigger added',A5:'Button colour',A6:'Row actions',A7:'Reorder',A8:'Needs attention',A9:'Playing',A10:'Project variable',A11:'Instance variable',A12:'Variable added',A13:'Remote Start',A14:'Remove trigger',A15:'Number settings error',A16:'Text settings',A17:'Rename',A18:'Remove variable',A19:'No instance variables',A20:'No instance selected',A21:'No search results',A22:'Empty scene',A23:'No project variables',A24:'All variables added',A25:'Pick instance first',B1:'Play · Connect devices',B2:'Local ready',B3:'Device joined',B4:'Public confirmation',B5:'Opening public link',B6:'Public ready',B7:'Public failure',B8:'Waiting for Play',B9:'Server running',B10:'Device joined',B11:'Turn off server',B12:'Server off',B13:'Reloading',B14:'Port changed',B15:'Port in use',B16:'Copied',B17:'Starting server',B18:'Independent entry',B21:'Corrected port',B22:'Connections · server off',B23:'Independent · server off',B24:'Independent · starting',B25:'Public link · Play required',B26:'Public link · Off',B27:'Connections · Device connected',A26:'Opening Launcher',A27:'Launcher unavailable',A28:'Launcher unavailable · Playing',C2:'Connecting',C3:'Projects',C4:'Waiting for Play',C5:'Deck',C6:'After triggering',C7:'Slider',C8:'Text input',C9:'Reconnecting',C10:'Stale controls',C11:'Play ended',C12:'Landscape',C13:'Tablet portrait',C14:'Tablet landscape',C15:'Empty deck',C16:'This device',C17:'Permission needed',C18:'Permission denied',C19:'Other sensor source',C20:'Sensors active',C21:'Sensor source lost',C22:'Confirm takeover',C23:'Server unavailable',C24:'Public link disabled',C26:'Command rejected',C27:'Confirmation unavailable',C28:'Invalid number',C29:'Desktop'};
 function reviewScreen(k){
  if(!FLOW_NAMES[k])return;clearTimeout(toast.t);$('#toast')?.remove();st.reviewRevision=(st.reviewRevision||0)+1;const url=new URL(location.href);url.searchParams.set('screen',k);history.replaceState(null,'',url);
- clearTimeout(ph.t);clearTimeout(ph.rt);st.preview=k;st.groups=sample();st.vars=vsample();st.order=['grp|g1','var|p.Spot intensity','grp|g2'];st.vals={};st.playing=false;st.srv='on';st.pub='off';st.bhv=null;st.delG=st.delV=st.rename=st.renameV=null;st.selV=null;st.draft=null;st.colorFor=null;st.noIntro=true;st.phones=[];st.launcherUnavailable=false;st.blockedPort=3000;st.origin=true;st.originAlive=true;st.portOpen=false;st.port=3001;st.portDraft='3001';st.portErr='';st.srvErr='';st.lnDetail=true;st.open={rt:true,pick:false,vpick:false,menu:false,ln:true,pr:false,pop:false,confirm:false,offConfirm:false};st.pick={sel:[],q:''};st.pickNew=null;
+ clearTimeout(ph.t);clearTimeout(ph.rt);st.preview=k;Object.assign(st,sampleList());st.vals={};st.playing=false;st.rtBeforePlay=null;st.srv='on';st.pub='off';st.bhv=null;st.delG=st.delV=st.rename=st.renameV=null;st.selV=null;st.draft=null;st.colorFor=null;st.noIntro=true;st.phones=[];st.launcherUnavailable=false;st.blockedPort=3000;st.origin=true;st.originAlive=true;st.portOpen=false;st.port=3001;st.portDraft='3001';st.portErr='';st.srvErr='';st.lnDetail=true;st.open={rt:true,pick:false,vpick:false,menu:false,ln:true,pr:false,pop:false,confirm:false,offConfirm:false};st.pick={sel:[],q:''};st.pickNew=null;
  Object.assign(ph,{nextResult:null,via:'Local',scoped:true,screen:'deck',conn:'local',changed:false,sheet:null,dev:'phone',land:false,confirmTakeover:false,sensorLost:false,capability:null});sensor.owner=null;sensor.permission='prompt';
  if(k[0]==='A'){
   st.tab='editor';
@@ -1449,6 +1461,7 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&st.bhv&&!/INPUT|SEL
 function render(){
   $$('.tab').forEach(t=>t.setAttribute('aria-selected',String(t.dataset.t===st.tab)));
   $('#playPill').innerHTML=st.playing?'<span class="dot"></span> Playing'+(st.phones.length?' · '+st.phones.length+' device'+(st.phones.length>1?'s':''):''):'<span class="dot off"></span> Editing';
+  $('#stopPlay').hidden=!(st.tab==='editor'&&st.playing&&!st.open.rt);
   const previousScroll=$('.rt .body')?.scrollTop||0;
   const active=document.activeElement;const focusName=active?.getAttribute('aria-label');const focusCard=active?.closest('[data-control-key]')?.dataset.controlKey;const focusText=active?.tagName==='BUTTON'?active.textContent:null;requestAnimationFrame(()=>{if(document.activeElement===document.body){const scope=$('.xpick .dlg')||(focusCard&&$$('[data-control-key]').find(card=>card.dataset.controlKey===focusCard))||$('#view');const next=Array.from(scope?.querySelectorAll('button,input,select')||[]).find(n=>!n.disabled&&((focusName&&n.getAttribute('aria-label')===focusName)||(!focusName&&focusText&&n.textContent===focusText)));next?.focus()}});const v=$('#view'),dev=$('#dev');v.innerHTML='';dev.innerHTML='';
   if(st.tab==='phone'){v.append(h('div',{class:'pt'},h('div',{class:'phone',id:'phone'})));renderPhone();
@@ -1499,14 +1512,15 @@ function render(){
   if(st.tab==='editor')dev.append(h('span',{},'Test controls'),
     h('button',{class:'btn ter sm',onclick:()=>{const its=st.groups.flatMap(g=>g.items);if(!its.length)return toast('Add an instance first');const cur=its.find(i=>i.issue);const o=['','missing','type'];if(!cur)its[0].issue='missing';else cur.issue=o[(o.indexOf(cur.issue)+1)%3];render()}},'Simulate problem'),
     h('button',{class:'btn ter sm',onclick:()=>{st.groups=[];st.vars=[];st.noIntro=false;st.selG=st.selI=st.panel=null;touch();render()}},'Clear list'),
-    h('button',{class:'btn ter sm',onclick:()=>{st.groups=sample();st.vars=vsample();st.order=[];st.panel=null;touch();render()}},'Load sample list'),
+    h('button',{class:'btn ter sm',onclick:()=>{Object.assign(st,sampleList(),{noIntro:true,panel:null});touch();render()}},'Load sample list'),
     h('button',{class:'btn ter sm',onclick:()=>{st.launcherUnavailable=!st.launcherUnavailable;toast(st.launcherUnavailable?'Launcher unavailable for next attempt':'Launcher available')}},'Test Launcher unavailable'));
   else dev.append(h('span',{},'Connection test · simulated data'),h('button',{class:'btn ter sm',disabled:st.srv==='on'&&(st.prTab!=='public'||(st.pub==='on'&&st.playing))?null:true,onclick:joinDevice},'Open shared link'),
 
     h('label',{},h('input',{type:'checkbox',checked:st.failNext?'':null,onchange:e=>st.failNext=e.target.checked}),' Next public link fails'));
 
 }
-$$('.tab').forEach(t=>t.addEventListener('click',()=>{st.tab=t.dataset.t;if(st.tab==='editor')st.open.rt=true;if(st.tab==='launcher'){st.lnPage='connections';st.lnDetail=false;st.lnSection=null;st.origin=false;st.originAlive=true;st.open.offConfirm=false}render()}));
+$('#stopPlay').addEventListener('click',stop);
+$$('.tab').forEach(t=>t.addEventListener('click',()=>{st.tab=t.dataset.t;if(st.tab==='editor'&&!st.playing)st.open.rt=true;if(st.tab==='launcher'){st.lnPage='connections';st.lnDetail=false;st.lnSection=null;st.origin=false;st.originAlive=true;st.open.offConfirm=false}render()}));
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&st.colorFor&&$('.cpop')){e.preventDefault();closeColour();return}const modal=Array.from(document.querySelectorAll('.xpick .dlg,.sheet[role=dialog]')).at(-1);if(!modal)return;if(e.key==='Escape'){e.preventDefault();const close=modal.querySelector('[aria-label=Close]');close?.click();return}if(e.key==='Tab'){const items=Array.from(modal.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),[tabindex="0"]')).filter(n=>n.getClientRects().length);if(!items.length)return;const first=items[0],last=items.at(-1);if(e.shiftKey&&(document.activeElement===first||!modal.contains(document.activeElement))){e.preventDefault();last.focus()}else if(!e.shiftKey&&(document.activeElement===last||!modal.contains(document.activeElement))){e.preventDefault();first.focus()}}});
 window.addEventListener('resize',()=>{if(st.tab==='phone')renderPhone()});
 const requestedScreen=new URLSearchParams(location.search).get('screen');if(requestedScreen==='C25')reviewScreen('C9');else if(FLOW_NAMES[requestedScreen])reviewScreen(requestedScreen);else render();
