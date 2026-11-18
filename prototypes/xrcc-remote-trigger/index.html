@@ -399,7 +399,11 @@ button.pill{background:transparent;cursor:pointer;font:inherit;color:inherit}but
 .pk2 .vpi .ty{margin-left:0;justify-self:start;color:#e5e5e5;font:inherit}
 .pk2 .vcol.r>.btn{height:36px;min-height:36px;flex:none}
 .detail-breadcrumb>.ib{padding-left:4px;padding-right:8px;gap:12px}
-.rt .head>.btn{width:105px;font:400 12px/18px Roboto,sans-serif;background:#1e1e21}
+.rt .lhead>.connect-devices,.play-scene>.connect-devices{background:#1e1e21;border:1px solid #545454;border-radius:8px;color:#e5e5e5;height:36px;width:145px;flex:none;padding:7px 12px 7px 10px;gap:4px;font:400 14px/20px Roboto,sans-serif}
+.connect-devices .xrcc-asset{width:16px;height:16px}
+.rt .lhead{gap:16px}
+@media(max-width:480px){.rt .lhead{flex-wrap:wrap;gap:8px}.rt .lhead>.sp{min-width:0}.rt .lhead>.connect-devices,.rt .lhead .addw>.btn{font-size:12px;padding-inline:8px;width:auto;min-width:0}}
+@media(max-width:360px){.rt .lhead h2{flex-basis:100%}.rt .lhead>.sp{display:none}}
 .rt .head>.rt-playing{gap:4px;font:400 11px/16px Roboto,sans-serif}
 .rt .body .addw>.btn{height:36px;width:99px;min-width:99px;padding-inline:10px;font:400 14px/20px Roboto,sans-serif}
 .rt .body .addw>.btn:disabled{background:#353535;color:#676767;opacity:1}
@@ -415,7 +419,7 @@ button.pill{background:transparent;cursor:pointer;font:inherit;color:inherit}but
 }
 .play-scene{position:absolute;inset:0;display:grid;place-items:center}
 .play-scene .scene-title{transform:translateY(-4px);display:flex;flex-direction:column;align-items:center;gap:8px;color:#c8c8c8;font:400 16px/24px Roboto,sans-serif}
-.play-scene>.btn{position:absolute;right:24px;top:24px;width:127px;background:#1e1e21;font:400 14px/20px Roboto,sans-serif}
+.play-scene>.btn{position:absolute;right:24px;top:24px;background:#1e1e21;font:400 14px/20px Roboto,sans-serif}
 .play-scene .stop-play{left:24px;right:auto;width:auto}
 body.presentation .stage-play{min-height:100dvh}
 .pk2 .vtabs button.on.pv{background:#654616;color:#e5e5e5}
@@ -498,6 +502,29 @@ body.presentation .phone{width:100%!important;height:100dvh!important;min-height
 body.presentation .lstage{margin-inline:auto}
 .device-artwork{display:grid;place-items:center;flex:none;width:64px;height:56px;border-radius:16px;background:#2a2531}
 .device-artwork.summary-artwork{width:80px;height:80px}
+.share-connection{background:#2a2531;border:1px solid #392e52;border-radius:12px}
+.connection-illustration{background:#1e1e21}
+.connection-progress{width:128px;height:28px;display:inline-flex;align-items:center;gap:8px;padding:0 10px;border-radius:14px;background:#392e52;color:#b89afa;font:400 12px/18px Roboto,sans-serif}
+.connection-progress .spin{width:12px;height:12px;border-color:#b89afa50;border-top-color:#b89afa}
+.server-strip{grid-template-columns:minmax(0,1fr) auto 76px;gap:16px;padding:16px;border:1px solid #353535;border-radius:12px;background:#1e1e21}
+.server-identity{display:flex;align-items:center;gap:12px;min-width:0}
+.server-info{min-width:0}
+.server-icon{display:grid;place-items:center;border-radius:8px;background:#2a2531;width:44px;height:44px;flex:none}
+.server-state{display:flex;align-items:center;gap:6px}
+.server-state i{width:8px;height:8px;background:#818181;border-radius:50%;flex:none}
+.server-state.on i{background:#37954b}.server-state.busy i{background:#b89afa}.server-state.error i{background:#ff453a}
+.port-and-reload{display:flex;align-items:flex-start;gap:8px}
+.port-and-reload .ib{width:36px;height:36px;margin-top:20px;border-radius:8px}
+.server-strip .server-toggle>span{font:400 14px/20px Roboto,sans-serif}
+.server-strip .sw2{width:40px;height:23px;flex:none;padding:0;border:0;background:#4b4b50}
+.server-strip .sw2.on{background:#4b387d}
+.server-strip .sw2::after{width:17px;height:17px;left:3px;top:3px}
+.server-strip .sw2.on::after{left:20px;background:#b89afa}
+@media(max-width:820px){
+ .server-strip{grid-template-columns:minmax(0,1fr) auto;row-gap:12px}
+ .server-strip .server-toggle{grid-column:2;grid-row:1}
+ .port-and-reload{grid-column:1/-1}
+}
 </style>
 </head>
 <body>
@@ -597,11 +624,14 @@ const nCells=()=>cellsOf(st.groups,st.vars).filter(c=>!c.sec).length;
 const NOTICE_BELL='<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M16 6C9 6 8 12 8 17C8 22 5 25 5 25H27C27 25 24 22 24 17C24 12 23 6 16 6ZM16 6V3M20 25C20 25 20 29 16 29C12 29 12 25 12 25" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 function noticeContent(el,message,persistent,onClose){el.replaceChildren();el.setAttribute('role',persistent?'alert':'status');const icon=h('span',{class:'notice-icon','aria-hidden':'true'});icon.innerHTML=NOTICE_BELL;const bar=h('span',{class:'notice-countdown','aria-hidden':'true'});el.append(icon,h('span',{class:'notice-message'},message),h('button',{class:'notice-close','aria-label':'Close notification',onclick:onClose},ic('close')),bar);if(!persistent)requestAnimationFrame(()=>{bar.style.transition='transform 2s linear';bar.style.transform='scaleX(0)'});}
 const toast=(message,persistent=false)=>{let t=$('#toast');if(!t){t=h('div',{id:'toast',class:'xrcc-notice'});document.body.append(t)}clearTimeout(toast.t);const close=()=>{clearTimeout(toast.t);t.style.display='none'};noticeContent(t,message,persistent,close);t.style.display='flex';if(!persistent)toast.t=setTimeout(close,2000)};
+function connectDevicesButton(){
+  return h('button',{class:'btn ter connect-devices',onclick:openLauncher},ximg('rt-head',16),'Connect devices');
+}
 function playView(){
   const showStop=!(presentation&&st.preview==='B1');
   return h('div',{class:'play-scene'},
     h('div',{class:'scene-title'},ximg('scene-play',48),'Scene view · Play'),
-    h('button',{class:'btn ter',onclick:openLauncher},'Connect devices'),
+    connectDevicesButton(),
     showStop?h('button',{class:'btn ter stop-play',onclick:stop},'Stop'):null);
 }
 function play(){if(st.playing)return;st.open.pick=false;st.open.vpick=false;st.open.menu=false;if(!nCells())toast('No controls yet.');st.playing=true;st.colorFor=null;st.snap=snapshot();ph.changed=false;if(st.srv==='on'&&ph.conn==='local'&&ph.via!=='Public'&&['waiting','ended'].includes(ph.screen))ph.screen='deck';render()}
@@ -749,12 +779,12 @@ function rtDialog(){
   list.append(footEl);
   const n=issues();
   return h('div',{class:'dlg rt'},
-    h('div',{class:'head'},ximg('rt-head',20),'Remote Triggers',st.playing?h('span',{class:'rt-playing'},h('i',{class:'dot'}),'Playing'):null,h('span',{class:'sp'}),h('button',{class:'btn ter sm','aria-label':'Connect devices',onclick:openLauncher},'Connect devices'),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.rt=false;render()}},ic('close'))),h('div',{class:'acc'}),
+    h('div',{class:'head'},ximg('rt-head',20),'Remote Triggers',st.playing?h('span',{class:'rt-playing'},h('i',{class:'dot'}),'Playing'):null,h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.rt=false;render()}},ic('close'))),h('div',{class:'acc'}),
     h('div',{class:'body'},
       (st.noIntro?null:h('div',{class:'intro'},h('div',{class:'ph'},ic('wifi')),h('div',{class:'grow'},h('h3',{},'Control Play from any device'),h('p',{},'A trigger starts one instance. A control changes one variable.'))
 ,h('button',{class:'ib','aria-label':'Dismiss',onclick:()=>{st.noIntro=true;render()}},ic('close')))),
       n?h('div',{class:'banner'},ic('info'),`${n} item${n>1?'s':''} need attention. Their controls are paused.`):null,
-      h('div',{class:'lhead'},h('h2',{},'Remote List'),h('span',{class:'sp'}),h('div',{class:'addw'},h('button',{class:'btn pri big','aria-haspopup':'menu','aria-expanded':String(!!st.open.menu),disabled:null,onclick:()=>{st.open.menu=!st.open.menu;render()}},ic('plus'),'Add New'),st.open.menu?h('div',{class:'amenu',role:'menu'},h('button',{role:'menuitem',onclick:addTrigger},ic('rt',16),'Trigger button'),h('button',{role:'menuitem',onclick:addVar},ic('folder',16),'Variable control')):null)),
+      h('div',{class:'lhead'},h('h2',{},'Remote List'),h('span',{class:'sp'}),connectDevicesButton(),h('div',{class:'addw'},h('button',{class:'btn pri big','aria-haspopup':'menu','aria-expanded':String(!!st.open.menu),disabled:null,onclick:()=>{st.open.menu=!st.open.menu;render()}},ic('plus'),'Add New'),st.open.menu?h('div',{class:'amenu',role:'menu'},h('button',{role:'menuitem',onclick:addTrigger},ic('rt',16),'Trigger button'),h('button',{role:'menuitem',onclick:addVar},ic('folder',16),'Variable control')):null)),
       list,
       null))}
 function previewCard(){
@@ -1025,18 +1055,27 @@ function sharingCard(){
   const visual=ready?h('button',{class:'qr-open','aria-label':'Scan QR to join',title:'Simulate scanning the QR code',onclick:joinDevice},ximg('qr',184,184)):h('div',{class:'connection-illustration'},pub?ximg('world',64):deviceArtwork());
   const controls=h('div',{class:'share-controls','data-figma':'sharing-controls'},connectionTabs(),h('div',{class:'connection-description'},h('b',{},title),h('span',{class:'muted'},hint)));
   if(ready)controls.append(h('div',{class:'connection-link'},h('input',{class:'url',value:sharedURL(),readonly:'','aria-label':'Connection address'}),h('button',{class:'btn sec',onclick:copyLink},'Copy')),h('div',{class:'connection-status-row'},h('span',{class:'connection-pill'},h('i',{class:'status-dot'}),pub?'Public · 35 ms':'Local · 6 ms'),pub?h('button',{class:'btn ter',onclick:disablePublic},'Turn off link'):null));
+  else if(pub&&on&&publicBusy)controls.append(h('div',{class:'connection-action'},h('span',{class:'connection-progress',role:'status'},h('i',{class:'spin','aria-hidden':'true'}),'In progress')));
   else controls.append(h('div',{class:'connection-action'},h('button',{class:'btn pri',disabled:disabled?true:null,onclick:action},label),pub&&st.pub==='failed'?h('button',{class:'btn ter',onclick:()=>{st.prTab='local';render()}},'Use local link'):null));
   return h('section',{class:'share-connection','data-figma':'share'},h('div',{class:'qr-column'},visual,h('span',{class:'muted qr-caption'},caption)),controls);
 }
 function serverCard(){
   const on=st.srv==='on',busy=st.srv==='reloading',dirty=String(st.port)!==String(st.portDraft).trim();
-  const pin=h('input',{class:'pin'+(st.portErr?' err':''),value:st.portDraft,inputmode:'numeric','aria-label':'Port','aria-invalid':st.portErr?'true':null,disabled:busy?true:null});
+  const pin=h('input',{class:'pin'+(st.portErr?' err':''),value:st.portDraft,inputmode:'numeric','aria-label':'Port','aria-invalid':st.portErr?'true':null,'aria-describedby':st.portErr||dirty?'server-port-helper':null,disabled:busy?true:null});
   pin.addEventListener('input',()=>{st.portDraft=pin.value.replace(/\D/g,'').slice(0,5);st.portErr='';render();const el=document.querySelector('.pin');el?.focus();el?.setSelectionRange(el.value.length,el.value.length)});
   pin.addEventListener('keydown',e=>{if(e.key==='Enter')srvReload(!on)});
   const helper=st.portErr?st.portErr.startsWith('Port ')?'Port in use.':'Use 1024–65535.':dirty?(on?'Reload to apply.':'Start to apply.'):null;
-  return h('section',{class:'server-strip','data-figma':'server'},h('div',{class:'server-info'},h('b',{},'Server'),h('span',{class:'muted'},busy?st.busyLbl:st.srvErr?'Could not start server':on?'Server running':'Server off')),
-    h('label',{class:'port-field'},h('span',{},'Port'),pin,helper?h('small',{class:st.portErr?'port-error':'muted'},helper):null),
-    h('div',{class:'server-actions'},h('div',{class:'server-toggle'},h('button',{class:'sw2'+(on?' on':''),role:'switch','aria-checked':String(on),'aria-label':'Server',disabled:busy?true:null,onclick:()=>{if(on){if(st.phones.length){st.open.offConfirm=true;render()}else srvOff()}else srvReload(true)}}),h('span',{},on?'On':'Off')),h('button',{class:'ib','aria-label':'Reload server',title:'Reload server',disabled:!on||busy?true:null,onclick:()=>srvReload(false)},ximg('reload'))));
+  const state=busy?'busy':st.srvErr?'error':on?'on':'off';
+  const stateText=busy?st.busyLbl:st.srvErr?'Could not start server':on?'Server running':'Server off';
+  const reload=h('button',{class:'ib','aria-label':'Reload server',title:'Reload server',disabled:!on||busy?true:null,onclick:()=>srvReload(false)},ximg('reload'));
+  const toggle=h('button',{class:'sw2'+(on?' on':''),role:'switch','aria-checked':String(on),'aria-label':'Server',disabled:busy?true:null,onclick:()=>{if(on){if(st.phones.length){st.open.offConfirm=true;render()}else srvOff()}else srvReload(true)}});
+  return h('section',{class:'server-strip','data-figma':'server'},
+    h('div',{class:'server-identity'},h('span',{class:'server-icon'},ximg('pc',24)),h('div',{class:'server-info'},h('b',{},'Server'),
+      h('span',{class:'server-state muted '+state,role:'status'},h('i',{'aria-hidden':'true'}),stateText))),
+    h('div',{class:'port-and-reload'},
+      h('label',{class:'port-field'},h('span',{},'Port'),pin,helper?h('small',{class:st.portErr?'port-error':'muted',id:'server-port-helper'},helper):null),
+      reload),
+    h('div',{class:'server-toggle'},toggle,h('span',{},on?'On':'Off')));
 }
 function remoteDetail(){
   return h('div',{class:'mpane remote-detail'},h('div',{class:'detail-breadcrumb','data-figma':'breadcrumb'},h('button',{class:'ib','aria-label':'Connections',onclick:()=>{st.lnDetail=false;render()}},ximg('back'),h('span',{class:'muted'},'Connections'))),
@@ -1282,7 +1321,7 @@ function render(){
   if(showRt&&(st.delG||st.delV))stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},delDlg()));
   if(showLn&&st.open.offConfirm)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},offDlg()));
   if(showLn&&st.open.confirm)stage.append(h('div',{class:'xscrim2'}),h('div',{class:'xpick'},confirmDlg()));
-  if(st.playing){stage.querySelectorAll('.rt input,.rt select,.rt button:not(.head button)').forEach(n=>{n.disabled=true;n.title='Stop Play to edit'});}
+  if(st.playing){stage.querySelectorAll('.rt input,.rt select,.rt button:not(.head button,.connect-devices)').forEach(n=>{n.disabled=true;n.title='Stop Play to edit'});}
   v.append(stage);
   const remoteBody=stage.querySelector('.rt .body');
   if(remoteBody){
