@@ -484,7 +484,8 @@ const defaultModel=(p,t)=>p.model||(P[p.pid].M[t.id]||[P[p.pid].n])[0];
 const modelsFor=(p,t)=>(MODELS[t.id]?.[p.pid]||[[defaultModel(p,t),'','']]).filter(m=>!m[3]);
 const model=(p,t)=>S.assign[t.id]===p.id&&S.models[t.id]?S.models[t.id]:defaultModel(p,t);
 const extra=(p,t)=>t.id==='tts'&&S.voices.length?S.voices.length+' '+(S.voices.length===1?'voice':'voices'):'';
-const isReady=t=>{const p=prov(S.assign[t.id]);return p&&(p.pid==='custom'||keyOf(p))&&!isLocked(p)&&p.status!=='failed'};
+const needsKey=p=>!keyOf(p)&&(p.pid!=='custom'||Boolean(p.key));
+const isReady=t=>{const p=prov(S.assign[t.id]);return p&&!needsKey(p)&&!isLocked(p)&&p.status!=='failed'};
 let stack=[],keys=[],openerStack=[];
 let returnFocus;
 const paint=()=>{
@@ -494,6 +495,7 @@ const paint=()=>{
  ov.classList.toggle('on',stack.length>0);
  const layer=activeLayer();
  if(layer){
+  refreshCustomKeys(layer);
   const modal=layer.firstElementChild;
   modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.tabIndex=-1;
   const title=modal.querySelector('.h .lgb,.phead .fill,.lt span,.sh');
@@ -551,10 +553,10 @@ function providers(){
  return `${S.introOff?'':`<div class="intro"><img src="data:image/png;base64,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" width="48" height="48" alt="" style="display:block;border-radius:12px;flex:none"><div class="col g4 fill"><div class="mdb">Bring your own key</div><div class="sm t2">Connect a provider with your own key, then pick a model for each task. Your keys stay encrypted on this computer and never pass through VOTANIC.</div></div><button class="iconbtn s28" data-introx data-tip="Hide this tip" aria-label="Dismiss">${ic('Close','i16')}</button></div>`}
  <div class="col g12"><div class="row g8"><span class="lgb">Providers</span><span class="badge">${S.providers.length}</span><span class="fill"></span><button class="btn" data-add>Add provider</button></div>
  <div class="pgrid">${S.providers.length?'':EM('Plug','No providers connected','Add one to start using AI in this project. Your key stays on this computer.','<button class="btn pri" data-add>Add a provider</button>')}${S.providers.map(p=>{const k=keyOf(p);const lk=isLocked(p);const failed=p.status==='failed';
-  const tok=TOK[p.pid];const st=!k&&p.pid!=='custom'?'<span class="sm t2">Needs key</span>':p.pid==='custom'?'<span class="sm tok">Configured</span><span class="sm t2">· Custom · No API key required</span>':lk?`<span class="t2">${ic('Lock')}</span><span class="sm t2">Password needed</span><span class="sm t2">· ${esc(k.name)}</span>`:failed?`<i class="dot8" style="background:var(--b-err)"></i><span class="sm terr">Test failed</span><span class="sm t2">· couldn't reach ${P[p.pid].n}</span>`:`<i class="dot8"></i><span class="sm tok">Connected</span><span class="sm t2">· ${esc(k.name)}</span><span class="sm t3" data-tip="${p.pid==='custom'?'Your server does not report usage':'Tokens used by this project this month'}">· ${tok}</span>`;
-  const act=!k&&p.pid!=='custom'?'<button class="btn" data-manage>Manage keys</button>':lk?`<button class="btn out" data-unlock="${p.id}" data-tip="Enter the key password">Enter password</button>`:failed?`<button class="btn out" data-test="${p.id}" data-tip="Check the key and connection">Test again</button>`:(p.pid==='custom'?'':`<button class="btn" data-test="${p.id}" data-tip="Check the key and connection">Test</button>`);
+  const tok=TOK[p.pid];const st=needsKey(p)?'<span class="sm t2">Needs key</span>':p.pid==='custom'&&!lk?`<span class="sm tok">Configured</span><span class="sm t2">· Custom · ${k?esc(k.name):'No key'}</span>`:lk?`<span class="t2">${ic('Lock')}</span><span class="sm t2">Password needed</span><span class="sm t2">· ${esc(k.name)}</span>`:failed?`<i class="dot8" style="background:var(--b-err)"></i><span class="sm terr">Test failed</span><span class="sm t2">· couldn't reach ${P[p.pid].n}</span>`:`<i class="dot8"></i><span class="sm tok">Connected</span><span class="sm t2">· ${esc(k.name)}</span><span class="sm t3" data-tip="${p.pid==='custom'?'Your server does not report usage':'Tokens used by this project this month'}">· ${tok}</span>`;
+  const act=needsKey(p)?(p.pid==='custom'&&p.serverId?`<button class="btn" data-editserver="${p.serverId}">Edit server</button>`:'<button class="btn" data-manage>Manage keys</button>'):lk?`<button class="btn out" data-unlock="${p.id}" data-tip="Enter the key password">Enter password</button>`:failed?`<button class="btn out" data-test="${p.id}" data-tip="Check the key and connection">Test again</button>`:(p.pid==='custom'?'':`<button class="btn" data-test="${p.id}" data-tip="Check the key and connection">Test</button>`);
   const head=`<div class="prow" data-prov="${p.id}">${lg(p.pid,40)}<div class="col g4 fill"><div class="mdb">${esc(p.name||P[p.pid].n)}</div><div class="row g8">${st}</div><div class="row g8 t3" style="margin-top:2px">${P[p.pid].caps.map(c=>`<span data-tip="${CNAME[c][0].toUpperCase()+CNAME[c].slice(1)}">${ic(CIC[c])}</span>`).join('')}</div></div>${S.open===p.id?ic('Down','i16'):act}</div>`;
-  if(S.open===p.id){return `<div class="pcard">${head}<div class="det"><div class="field"><div class="lrow"><span class="mdb fill">${p.pid==='custom'?'Saved server':'API key'}</span><button class="lnk" data-manage>Manage keys</button></div><div class="sel" aria-readonly="true"><span>${esc(k?.name||p.name||'No key yet')}${k?.end?' · ends '+k.end:''}</span></div></div>
+  if(S.open===p.id){return `<div class="pcard">${head}<div class="det"><div class="field"><div class="lrow"><span class="mdb fill">${p.pid==='custom'?'Saved server':'API key'}</span>${p.pid==='custom'?p.serverId?`<button class="lnk" data-editserver="${p.serverId}">Edit server</button>`:'':'<button class="lnk" data-manage>Manage keys</button>'}</div><div class="sel" aria-readonly="true"><span>${esc(p.pid==='custom'?p.name:k?.name||'No key yet')}${p.pid!=='custom'&&k?.end?' · ends '+k.end:''}</span></div>${p.pid==='custom'?`<div class="helper">API key · ${k?esc(k.name):p.key?'Key no longer available':'No key'}</div>`:''}</div>
    ${p.pid==='custom'?`<div class="note">${ic('Info')}<span>XRCC can't test a custom server. Run a task that uses it to check it answers.</span></div>`:`<div class="note tok">${ic('Check')}<span>Last test replied in 0.8 s · today 14:32</span></div>`}
    <div class="note">${ic('Chart')}<span>${tok}${p.pid==='custom'?'':' · resets 1 Dec'}</span></div>
    <div class="row g12">${p.pid==='custom'?'':`<button class="btn out" data-test="${p.id}">Test response</button>`}<span class="fill"></span><button class="btn des" data-remove="${p.id}">Remove provider</button></div></div></div>`}
@@ -647,26 +649,58 @@ const keySel=()=>{
  const value=custom
   ?`<select class="sel" aria-label="Saved server" data-select-server>${existing.map(k=>`<option value="${k.id}" ${k.id===S.addKey?'selected':''}>${esc(k.name)}</option>`).join('')}</select>`
   :`<div class="sel" aria-readonly="true"><span>${esc(current?.name)}</span></div>`;
- return `<div class="field"><div class="lrow"><span class="mdb fill">${custom?'Saved server':'API key'}</span><button class="lnk" data-manage>Manage keys</button></div>
+ return `<div class="field"><div class="lrow"><span class="mdb fill">${custom?'Saved server':'API key'}</span>${custom?'':'<button class="lnk" data-manage>Manage keys</button>'}</div>
   ${current?value:`<div class="missing-key row g12"><div class="tile">${ic('Key')}</div><b class="mdb fill">No ${P[S.addSel].n} keys here yet</b><button class="btn out" data-addkey>Add a key</button></div>`}
-  ${custom?'<button class="lnk" data-addserver>Add a new server…</button>':''}</div>`;
+  ${custom?`<div class="row g12"><button class="lnk" data-addserver>Add a new server…</button>${current?`<button class="lnk" data-editserver="${current.id}">Edit server</button>`:''}</div>`:''}</div>`;
 };
 document.addEventListener('change',event=>{
- if(event.target.matches('[data-select-server]'))S.addKey=event.target.value;
+ if(event.target.matches('[data-select-server]')){
+  S.addKey=event.target.value;
+  const editServer=event.target.closest('.field').querySelector('[data-editserver]');
+  if(editServer)editServer.dataset.editserver=S.addKey;
+ }
 });
 function addDlg(){
  const p=P[S.addSel];const ks=choicesForProvider();if(!ks.find(k=>k.id===S.addKey))S.addKey=ks[0]?ks[0].id:'';
  const tile=(id,v)=>{const caps=v.caps;const cn=(id!=='custom'&&!!S.providers.find(p=>p.pid===id));const dn=cn||(S.forCap&&id!=='custom'&&!v.caps.includes(S.forCap));const shown=caps.slice(0,3);const more=caps.length-3;
   return `<button class="ptile ${S.addSel===id?'on':''}" ${cn?'style="cursor:default" aria-disabled="true" data-tip="Already connected. Manage its keys on its provider card."':dn?'style="opacity:.45;filter:grayscale(1);cursor:not-allowed;pointer-events:none" disabled aria-disabled="true"':`data-sel="${id}"`}>${lg(id,40)}<span class="mdb">${v.n}</span><span class="can">${S.providers.find(p=>p.pid===id)&&id!=='custom'?`<span class="sm tok" style="display:inline-flex;align-items:center;gap:4px">${ic('Check')}Connected</span>`:shown.map(c=>ic(CIC[c])).join('')}${S.providers.find(p=>p.pid===id)&&id!=='custom'?'':more>0?`<span class="sm ${S.addSel===id?'tacc':'t3'}" data-tip="Also: ${caps.slice(3).map(c=>CNAME[c]||c).join(', ')}">+${more}</span>`:''}</span></button>`};
- dlg('Add a provider',`<div class="lg">Pick a provider and a saved key. We'll test it right away.</div><div class="content"><div class="col g12"><div class="mdb">Pick a provider</div><div class="row g8">${Object.entries(P).map(([i,v])=>tile(i,v)).join('')}</div>${S.forCap?`<div class="sm t2">Showing who can do ${CNAME[S.forCap]}. The others are dimmed.</div>`:''}</div>
+ dlg('Add a provider',`<div class="lg">${S.addSel==='custom'?'Choose a saved server or add a new one.':"Pick a provider and a saved key. We'll test it right away."}</div><div class="content"><div class="col g12"><div class="mdb">Pick a provider</div><div class="row g8">${Object.entries(P).map(([i,v])=>tile(i,v)).join('')}</div>${S.forCap?`<div class="sm t2">Showing who can do ${CNAME[S.forCap]}. The others are dimmed.</div>`:''}</div>
  <div class="row g8 sm t2" style="align-items:flex-start">${ic('Info','i16')}<span>Icons under each name show what it can do. ${p.n}: ${({gemini:'chat, quiz, speech, images and speech to text',minimax:'chat, speech and music',poe:'chat, quiz, images and more',openrouter:'chat, quiz and images',custom:'whatever your server supports'})[S.addSel]}.</span></div>${keySel(p)}</div>`,
  `${cancel}<button class="btn pri" data-connect ${ks.length?'':'disabled'}>Connect ${p.n}</button>`);}
 const pwwrap=h=>`<div class="pw">${h}<button type="button" class="iconbtn s24 eye" data-eye data-tip="Show password" aria-label="Show password">${ic('Eye')}</button></div>`;
 const inp=(l,v,ph,h,opt,type)=>`<div class="field"><div class="lrow"><span class="mdb">${l}</span>${opt?'<span class="sm t3">Optional</span>':''}</div>${type==='password'?pwwrap(`<input class="input" value="${esc(v)}" placeholder="${ph||''}" type="password">`):`<input class="input" value="${esc(v)}" placeholder="${ph||''}" ${type?`type="${type}"`:''}>`}${h?`<div class="helper">${h}</div>`:''}</div>`;
-function customDlg(err){const have=S.servers.length>0;dlg('Add your own server',`<div class="lg">For a model running in your studio or any OpenAI-style endpoint.</div><div class="content">${inp('Name',have?'':'Studio LLM',have?'e.g. Render box':'')}${inp('Base URL',have?(err?'http://192.168.1.20:8080/v1':''):'http://192.168.1.20:8080/v1',have?'http://192.168.1.30:8080/v1':'','We can only check that this address answers.').replace('class="input"','class="input'+(err?' err':'')+'"')}${err?`<div class="caption terr" id="curlerr" style="margin-top:-8px">${err}</div>`:''}
- <div class="field"><div class="lrow"><span class="mdb">API key</span><span class="sm t3">Optional</span></div><div class="sel"><span class="md fill">No key</span>${ic('Down','i12')}</div></div>${inp('Model name','llama-3.3-70b','','Type it exactly as your server expects.')}
+function refreshCustomKeys(layer){
+ const select=layer.querySelector('[data-custom-key]');
+ if(!select)return;
+ const selected=select.dataset.selectedKey;
+ const available=S.keys.filter(key=>key.prov==='custom');
+ select.replaceChildren(new Option('No key',''),...available.map(key=>new Option(key.name,key.id)));
+ if(selected&&!available.some(key=>key.id===selected)){
+  const missing=new Option('Saved key no longer available',selected);
+  missing.disabled=true;
+  select.add(missing);
+ }
+ select.value=selected;
+}
+function preserveServerForm(){
+ const layer=activeLayer();
+ const select=layer?.querySelector('[data-custom-key]');
+ if(!select)return;
+ select.dataset.selectedKey=select.value;
+ for(const input of layer.querySelectorAll('.dlg input'))input.setAttribute('value',input.value);
+ stack[stack.length-1]=layer.innerHTML;
+}
+function customDlg(server){
+ const first=!S.servers.length;
+ dlg(server?'Edit custom server':'Add your own server',`<div class="lg">For a model running in your studio or any OpenAI-style endpoint.</div><div class="content">
+ ${inp('Name',server?.name??(first?'Studio LLM':''),'e.g. Studio LLM')}
+ ${inp('Base URL',server?.endpoint??(first?'http://192.168.1.20:8080/v1':''),'http://192.168.1.20:8080/v1','We can only check that this address answers.')}
+ <div class="field"><div class="lrow"><label class="mdb" for="custom-key">API key</label><span class="sm t3">Optional</span><span class="fill"></span><button class="lnk" data-manage>Manage keys</button></div>
+ <select class="sel" id="custom-key" data-custom-key data-selected-key="${esc(server?.key)}"></select></div>
+ ${inp('Model name',server?.model??'llama-3.3-70b','','Type it exactly as your server expects.')}
  <div class="adv"><div class="top" data-cadv>${ic('Chevron')}<span class="md t2">Advanced</span><span class="fill"></span><span class="sm t3" data-csum>OpenAI format · 30 s timeout</span><button class="btn" data-creset style="display:none">Reset</button></div>
- <div data-cbody class="bot" style="display:none"><div class="field"><div class="lrow"><span class="mdb">Request format</span></div><div class="sel"><span class="md fill">OpenAI chat completions</span>${ic('Down','i12')}</div></div>${inp('Timeout','30 s')}${inp('Extra header','','Optional, e.g. X-Studio: lobby')}</div></div></div>`,`${cancel}<button class="btn pri" data-customadd>Add provider</button>`,'sub')}
+ <div data-cbody class="bot" style="display:none"><div class="field"><div class="lrow"><span class="mdb">Request format</span></div><div class="sel"><span class="md fill">OpenAI chat completions</span>${ic('Down','i12')}</div></div>${inp('Timeout','30 s')}${inp('Extra header','','Optional, e.g. X-Studio: lobby')}</div></div></div>`,`${cancel}<button class="btn pri" data-customadd="${server?.id||''}">${server?'Save changes':'Add provider'}</button>`,'sub');
+}
 function witDlg(){dlg('Add a Wit.ai token',`<div class="lg">Speech commands use this token. It stays on this computer.</div><div class="content">${inp('Token name','Lobby kiosk token','Lobby kiosk token','Only you see this name.')}<div class="field"><div class="mdb">Server access token</div><input class="input" id="kv" type="password" placeholder="Paste your Wit.ai token"><div class="helper">Wit.ai tokens don't take a password.</div></div></div>`,`${cancel}<button class="btn pri" data-savewit disabled data-tip="Paste your token first">Save token</button>`,'sub')}
 function captureKeyDraft(){
  const p=activeLayer();
@@ -835,7 +869,7 @@ document.addEventListener('click',e=>{
  if(e.target.closest('[data-savesess]')){const i=activeLayer().querySelectorAll('.dlg input,.dlg textarea');{const idx=e.target.closest('[data-savesess]').dataset.savesess;const obj={n:i[0].value.trim()||'Untitled session',u:'Not used yet',p:'“'+((i[1]&&i[1].value)||'Write the character prompt here.').trim()+'”'};if(idx!==''){obj.u=S.sessions[+idx].u;S.sessions[+idx]=obj}else S.sessions.push(obj)}S.tab='sessions';toast('Session saved');return renderPanel()}
  if(km){S.kmenu=S.kmenu===km.dataset.kmenu?null:km.dataset.kmenu;return redrawConnections()}
  if(S.kmenu&&ov.querySelector('.win')){S.kmenu=null;redrawConnections()}
- const t=e.target.closest('[data-eye],[data-conn],[data-connback],[data-addwit],[data-savewit],[data-vall],[data-nai],[data-sx],[data-x],[data-back],[data-manage],[data-ext],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-unset],[data-pu],[data-doun],[data-dokey],[data-addserver],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dEmpty,#dLaunch,#dLaunch0,#dLConn,#dSeed,#dLaunchCustom,[data-lmanage],[data-ladd],[data-clear-search],[data-wrename],[data-remote],[data-remote-tab],[data-remote-power],[data-remote-copy],[data-vchoose],[data-vprovider],[data-vretry],[data-vreset],[data-creset]');
+ const t=e.target.closest('[data-eye],[data-conn],[data-connback],[data-addwit],[data-savewit],[data-vall],[data-nai],[data-sx],[data-x],[data-back],[data-manage],[data-ext],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-unset],[data-pu],[data-doun],[data-dokey],[data-addserver],[data-editserver],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dEmpty,#dLaunch,#dLaunch0,#dLConn,#dSeed,#dLaunchCustom,[data-lmanage],[data-ladd],[data-clear-search],[data-wrename],[data-remote],[data-remote-tab],[data-remote-power],[data-remote-copy],[data-vchoose],[data-vprovider],[data-vretry],[data-vreset],[data-creset]');
  if(!t)return;const d=t.dataset;
  if('vretry' in d){captureVoice();return loadVoiceList()}
  if('vchoose' in d){captureVoice();S.voiceDraft.voice=d.vchoose;return newVoice()}
@@ -860,7 +894,7 @@ document.addEventListener('click',e=>{
  if(t.id==='dLaunch0'){S.launchEndpoint=null;S.launchManage=false;S.launchKeys=[];return launchDlg();}
  if(t.id==='dEmpty'){S.keys=[];S.witTokens=[];S.models={};S.voices=[];S.sessions=[];S.providers=[];S.assign={};S.tab='providers';S.fromSettings=false;return renderPanel()}
  if(t.id==='dLConn'){S.launchManage=false;S.fromSettings=true;S.launcher=true;S.conn=null;S.keys=S.keys.length?S.keys:structuredClone(KEYS0);if(!S.witTokens.length)S.witTokens=[{id:'wit-sample',name:'Lobby kiosk token',meta:'Wit.ai · last used 28 Oct'}];return settings(false,true)}
- if('manage' in d){S.fromSettings=true;S.conn='ai';S.launcher=false;return settings(true)}
+ if('manage' in d){preserveServerForm();S.fromSettings=true;S.conn='ai';S.launcher=false;return settings(true)}
  if('ext' in d)return toast('Opens aistudio.google.com/apikey in your browser');
  if('x' in d){if(S.launchManage&&keys.at(-1)==='settings'){S.launchManage=false;return launchDlg()}return stack.length>1?pop():hide();}
  if('back' in d){if(S.launchManage&&keys.at(-1)==='settings'){S.launchManage=false;return launchDlg()}return stack.length>1?pop():hide()}
@@ -886,6 +920,7 @@ document.addEventListener('click',e=>{
  if('remoteCopy' in d){return navigator.clipboard?.writeText(activeLayer().querySelector('[data-remote-link]').value).then(()=>toast('Link copied'),()=>toast('Could not copy link'))}
  if(d.pickkey){S.menuOpen=false;const kk=S.keys.find(k=>k.id===d.pickkey);S.addKey=d.pickkey;return addDlg()}
  if('addserver' in d){S.menuOpen=false;return customDlg()}
+ if(d.editserver){const server=S.servers.find(item=>item.id===d.editserver);if(server)return customDlg(server);}
  if(d.dokey){const key=S.keys.find(k=>k.id===d.dokey);const value=read(activeLayer(),'#pw');
   if(value!=='xrcc')return keyUnlockDlg(key.id,true);
   key.locked=false;S.addKey=key.id;pop();return activeLayer().querySelector('[data-connect]').click();
@@ -914,9 +949,23 @@ document.addEventListener('click',e=>{
  if('customadd' in d){
   const inputs=activeLayer().querySelectorAll('.content input');
   let endpoint;try{endpoint=new URL(inputs[1].value.trim());if(!['http:','https:'].includes(endpoint.protocol))throw new Error();}catch{inputs[1].classList.add('err');inputs[1].focus();return;}
-  const same=S.servers.find(server=>server.endpoint===endpoint.href);
+  const same=S.servers.find(server=>server.id!==d.customadd&&server.endpoint===endpoint.href);
   if(same){inputs[1].classList.add('err');inputs[1].focus();return toast('That address is already saved as '+same.name);}
-  const server={id:uniqueId('s'),name:inputs[0].value.trim()||'Studio LLM',endpoint:endpoint.href,model:inputs[2].value.trim()};
+  const keySelect=activeLayer().querySelector('[data-custom-key]');
+  const key=keySelect.value;
+  if(key&&!S.keys.some(item=>item.id===key&&item.prov==='custom')){
+   keySelect.focus();return toast('Choose an available API key or No key');
+  }
+  const existing=S.servers.find(item=>item.id===d.customadd);
+  const details={name:inputs[0].value.trim()||'Studio LLM',endpoint:endpoint.href,model:inputs[2].value.trim(),key};
+  if(existing){
+   Object.assign(existing,details);
+   for(const provider of S.providers.filter(item=>item.serverId===existing.id))Object.assign(provider,details);
+   pop();
+   if(keys.at(-1)==='Add a provider')return addDlg();
+   return renderPanel();
+  }
+  const server={id:uniqueId('s'),...details};
   S.servers.push(server);
   const provider={...server,id:uniqueId('p'),serverId:server.id,pid:'custom'};
   S.providers.push(provider);
