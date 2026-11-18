@@ -6,7 +6,7 @@
   "entry": "index.html",
   "purpose": "prototype review build",
   "liveUrl": "https://xrcc-remote-trigger.vercel.app/",
-  "deploymentId": "dpl_7uRVnHUZqNgD2zXWPCfGeKw5uWut",
-  "sourceCommit": "2e42fb2f4b08c7e96df4536035be298b834d0379",
-  "design": "Align the Connections Server status Badge with Figma \u00b7 2026-11-18"
+  "deploymentId": "dpl_CRbXVVcm2iz4tjJjuKGE2eJDgzgr",
+  "sourceCommit": "9eef82f417076550512f847527b4f716050120cc",
+  "design": "Match the Figma Public link retry action \u00b7 2026-11-18"
 }
