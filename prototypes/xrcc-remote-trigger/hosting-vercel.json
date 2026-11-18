@@ -6,7 +6,7 @@
   "entry": "index.html",
   "purpose": "prototype review build",
   "liveUrl": "https://xrcc-remote-trigger.vercel.app/",
-  "deploymentId": "dpl_EgX891A3rfZ5yiABqiPPhRTLyyX9",
-  "sourceCommit": "6fcb113",
-  "design": "Mixed Remote List and recovery improvements \u00b7 2026-11-18"
+  "deploymentId": "dpl_BR3kKFKq39ARr7ro1wCEsHApiFEh",
+  "sourceCommit": "73c27f12e4513d52df191b568df8c81531d3eee5",
+  "design": "Figma row and device parity with restored actions \u00b7 2026-11-18"
 }
