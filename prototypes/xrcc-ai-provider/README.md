@@ -1,9 +1,14 @@
 # XRCC AI Provider · interactive prototype
 
-Single-file web prototype (HTML, CSS and JS, no build step) of the XRCC AI Provider screen flow designed in Figma (XRCC Claude Workbench, "XRCC AI Provider · Screen flow").
+This web prototype follows the [XRCC AI Provider flow in Figma](https://www.figma.com/design/ZBOB48n4eLsZABCTnhh5kk/?node-id=1354-2549) using the existing HTML, CSS and JavaScript. Figma artwork and the Roboto font are bundled locally. No build step or external service is required.
 
-Open `index.html`, or use the preview link in the pull request.
+Serve the prototype from this directory and open http://localhost:8080:
 
-Try: AI button → Add a provider → pick Gemini or Poe → Tasks, Voices (play, loading, error), Sessions, Providers (Test shows the Gemini VPN timeout; Poe's key unlocks with password `xrcc`), and Settings → Connections.
+```sh
+python3 -m http.server 8080
+```
 
-All data is fake and kept in memory. No keys are stored or sent anywhere.
+- Use the sparkle button to go through first-time setup. **Configured project** loads the Models, Providers, Voices and Sessions examples.
+- Try **Gate: no keys** to add a key and return to the same project's connection check. **Launcher keys** opens Connections, including AI keys, Wit.ai and Phone remote.
+- **Voices failed** opens the preset form in its recovery state. Use **Try again** to reload the list without losing the draft.
+- The sample Poe key accepts `xrcc`. Key entry, connection tests, voice preview, and launching XRCC simulate the workflow with in-memory data.
