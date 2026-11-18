@@ -6,7 +6,7 @@
   "entry": "index.html",
   "purpose": "prototype review build",
   "liveUrl": "https://xrcc-remote-trigger.vercel.app/",
-  "deploymentId": "dpl_4FeyzTi9jX9C3cuvamQpyhG9svh1",
-  "sourceCommit": "23c062552d91f195cc988d92781c599a86a354cb",
-  "design": "Use press-only feedback for remote Trigger buttons \u00b7 2026-11-18"
+  "deploymentId": "dpl_HML4pcMKnhrdqM7sAt4d9Uf9N3g2",
+  "sourceCommit": "f952b01006c5654098dda83fd613e147a04a93e9",
+  "design": "Align the Launcher Connections overview with the latest Figma layout \u00b7 2026-11-18"
 }
