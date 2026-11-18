@@ -6,7 +6,7 @@
   "entry": "index.html",
   "purpose": "prototype review build",
   "liveUrl": "https://xrcc-remote-trigger.vercel.app/",
-  "deploymentId": "dpl_28QrAhWn8g3rkiFKiE79AsBQCaaS",
-  "sourceCommit": "2eb6ea7d7a74105e184aa4bf301b3a40e96236f4",
-  "design": "Remove per-device Disconnect from P1 \u00b7 2026-11-18"
+  "deploymentId": "dpl_7uRVnHUZqNgD2zXWPCfGeKw5uWut",
+  "sourceCommit": "2e42fb2f4b08c7e96df4536035be298b834d0379",
+  "design": "Align the Connections Server status Badge with Figma \u00b7 2026-11-18"
 }
