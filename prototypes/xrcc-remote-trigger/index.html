@@ -580,6 +580,8 @@ body.presentation .lstage{margin-inline:auto}
 .sharing-content .connection-description{width:100%}
 .sharing-content .connection-action{justify-content:center;flex-wrap:wrap}
 .sharing-content .public-enable{min-width:200px}
+.sharing-content.is-public-error{gap:var(--xrcc-spacing-16)}
+.is-public-error .connection-description>span{line-height:18px}
 .connection-tabs{flex:none}
 @media(max-width:700px){.sharing-content{min-height:110px}.share-controls{min-width:100%}}
 .summary-status{display:flex;align-items:center;gap:var(--xrcc-spacing-8)}
@@ -1125,9 +1127,9 @@ function sharingCard(){
   }else if(st.pub==='opening'){
     main.append(h('span',{class:'connection-progress',role:'status'},h('i',{class:'spin','aria-hidden':'true'}),'Creating public link…'),description(null,'Keep this page open.'));
   }else if(st.pub==='failed'){
+    main.classList.add('is-public-error');
     main.append(description('Public link unavailable','Check your connection and try again.'),
-      h('div',{class:'connection-action'},h('button',{class:'btn pri',onclick:startPublic},'Try again'),
-        h('button',{class:'btn ter',onclick:()=>{st.prTab='local';render()}},'Use local link')));
+      h('div',{class:'connection-action'},h('button',{class:'btn sec',onclick:startPublic},'Try again')));
   }else{
     main.append(description('Connect from any network',st.playing?'Share a link outside your local network.':'Start Play in XRCC to enable the link.'));
     if(st.playing)main.append(h('div',{class:'connection-action'},h('button',{class:'btn pri public-enable',onclick:()=>{st.open.confirm=true;render()}},'Turn on public link')));
