@@ -247,6 +247,48 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     assert.equal(await page.locator('.fb.show').count(),1);
     await page.evaluate(()=>{stop();play()});
     assert.equal(await page.evaluate(()=>ph.screen),'deck','Local recovers after Play restarts');
+    // Follow the same affordances shown by the Figma interactions.
+    await page.selectOption('#screenReview','A11');
+    const search=page.getByRole('textbox',{name:'Find',exact:true});
+    await page.getByRole('button',{name:'Search',exact:true}).click();
+    assert.equal(await search.evaluate(n=>n===document.activeElement),true);
+    await page.getByRole('tab',{name:'Project variables',exact:true}).click();
+    await page.getByRole('button',{name:/Welcome text/}).click();
+    await page.getByRole('button',{name:'Add control',exact:true}).click();
+    const card=page.locator('[data-control-key="var|p.Welcome text"]');
+    const row=card.getByRole('button',{name:'Settings for Welcome text'});
+    assert.equal(await row.getAttribute('aria-expanded'),'true');
+    const relative=await card.evaluate(n=>{
+      const root=n.getBoundingClientRect();
+      const left=selector=>Math.round(n.querySelector(selector).getBoundingClientRect().left-root.left);
+      return [left('.dh'),left('.cs'),left('.vr img'),left('.vr .nm'),left('.chv')];
+    });
+    assert.deepEqual(relative,[8,36,36,64,550]);
+    await card.locator('.chv').click();
+    assert.equal(await row.getAttribute('aria-expanded'),'false');
+    await card.locator('.chv').click();
+    assert.equal(await row.getAttribute('aria-expanded'),'true');
+    const frame=page.locator('.rt');
+    const beforePalette=await frame.boundingBox();
+    const colour=card.getByRole('button',{name:'Control colour'});
+    await colour.click();
+    const afterPalette=await frame.boundingBox();
+    assert.deepEqual(afterPalette,beforePalette,'Opening a palette does not displace the dialog');
+    await page.locator('.pal').getByRole('button',{name:'Use #FF0000',exact:true}).click();
+    assert.equal(await colour.evaluate(n=>n.style.backgroundColor),'rgb(255, 0, 0)');
+    await page.keyboard.press('Escape');
+    assert.equal(await page.locator('.cpop').count(),0);
+    assert.equal(await colour.evaluate(n=>n===document.activeElement),true);
+    if(screenshotDir)await frame.screenshot({path:path.join(screenshotDir,'aligned-remote-list.png')});
+
+    await page.selectOption('#screenReview','B8');
+    await page.getByRole('button',{name:'Scan QR to join',exact:true}).click();
+    await page.waitForFunction(()=>ph.screen==='waiting');
+    await page.selectOption('#screenReview','B2');
+    await page.getByRole('button',{name:'Scan QR to join',exact:true}).click();
+    await page.waitForFunction(()=>ph.screen==='deck');
+    await page.selectOption('#screenReview','B25');
+    assert.equal(await page.getByRole('button',{name:'Scan QR to join',exact:true}).count(),0);
     assert.deepEqual(errors, []);
     console.log('PASS: single binding, cancel/Esc without replacement or Radio, slider, numeric validation, rejection/unknown, sensor permission, stale guard, network guard, Play/server/public lifecycle, changed port, responsive 3/6/8 columns, all 80 Figma states, 1100px Launcher and takeover confirmation, Library notification dismissal, inline errors and no rejected-number retry; no page errors.');
   } finally {
