@@ -528,7 +528,13 @@ const push=(h,k)=>{
  paint();
 };
 const hide=()=>{S.keyDraft=null;stack=[];keys=[];openerStack=[];paint()};
-const pop=()=>{if(keys.at(-1)==='Add an AI key')S.keyDraft=null;const opener=openerStack.pop();stack.pop();keys.pop();paint();if(opener)activeLayer()?.querySelector(opener)?.focus()};
+const pop=()=>{
+ if(keys.at(-1)==='Add an AI key')S.keyDraft=null;
+ const returningToCustomKey=activeLayer()?.querySelector('[data-customadd][data-from-key]');
+ const opener=openerStack.pop();stack.pop();keys.pop();paint();
+ if(returningToCustomKey){S.addSel='custom';S.keyOrigin='settings';updateKeySave();}
+ if(opener)activeLayer()?.querySelector(opener)?.focus();
+};
 /* header */
 $('#projName').innerHTML=ic('Bookmark','i24')+'<span class="md">Lobby · Museum tour</span>';
 $('#tabEdit').innerHTML=ic('Edit','i24')+'Edit';$('#tabBeh').innerHTML=ic('Beh','i24')+'Behaviour';
@@ -693,15 +699,21 @@ function refreshCustomKeys(layer){
  }
  select.value=selected;
 }
-function preserveServerForm(){
+function preserveDialogInputs(){
  const layer=activeLayer();
- const select=layer?.querySelector('[data-custom-key]');
- if(!select)return;
- select.dataset.selectedKey=select.value;
- for(const input of layer.querySelectorAll('.dlg input'))input.setAttribute('value',input.value);
+ for(const input of layer.querySelectorAll('.dlg input')){
+  if(input.type==='checkbox')input.toggleAttribute('checked',input.checked);
+  else input.setAttribute('value',input.value);
+ }
  stack[stack.length-1]=layer.innerHTML;
 }
-function customDlg(server){
+function preserveServerForm(){
+ const select=activeLayer()?.querySelector('[data-custom-key]');
+ if(!select)return;
+ select.dataset.selectedKey=select.value;
+ preserveDialogInputs();
+}
+function customDlg(server,{fromKey=false}={}){
  const first=!S.servers.length;
  dlg(server?'Edit custom server':'Add your own server',`<div class="lg">For a model running in your studio or any OpenAI-style endpoint.</div><div class="content">
  ${inp('Name',server?.name??(first?'Studio LLM':''),'e.g. Studio LLM')}
@@ -710,7 +722,7 @@ function customDlg(server){
  <select class="sel" id="custom-key" data-custom-key data-selected-key="${esc(server?.key)}"></select></div>
  ${inp('Model name',server?.model??'llama-3.3-70b','','Type it exactly as your server expects.')}
  <div class="adv"><div class="top" data-cadv>${ic('Chevron')}<span class="md t2">Advanced</span><span class="fill"></span><span class="sm t3" data-csum>OpenAI format · 30 s timeout</span><button class="btn" data-creset style="display:none">Reset</button></div>
- <div data-cbody class="bot" style="display:none"><div class="field"><div class="lrow"><span class="mdb">Request format</span></div><div class="sel"><span class="md fill">OpenAI chat completions</span>${ic('Down','i12')}</div></div>${inp('Timeout','30 s')}${inp('Extra header','','Optional, e.g. X-Studio: lobby')}</div></div></div>`,`${cancel}<button class="btn pri" data-customadd="${server?.id||''}">${server?'Save changes':'Add provider'}</button>`,'sub');
+ <div data-cbody class="bot" style="display:none"><div class="field"><div class="lrow"><span class="mdb">Request format</span></div><div class="sel"><span class="md fill">OpenAI chat completions</span>${ic('Down','i12')}</div></div>${inp('Timeout','30 s')}${inp('Extra header','','Optional, e.g. X-Studio: lobby')}</div></div></div>`,`${cancel}<button class="btn pri" data-customadd="${server?.id||''}" ${fromKey?'data-from-key':''}>${server?'Save changes':'Add provider'}</button>`,'sub');
 }
 function witDlg(){dlg('Add a Wit.ai token',`<div class="lg">Speech commands use this token. It stays on this computer.</div><div class="content">${inp('Token name','Lobby kiosk token','Lobby kiosk token','Only you see this name.')}<div class="field"><div class="mdb">Server access token</div><input class="input" id="kv" type="password" placeholder="Paste your Wit.ai token"><div class="helper">Wit.ai tokens don't take a password.</div></div></div>`,`${cancel}<button class="btn pri" data-savewit disabled data-tip="Paste your token first">Save token</button>`,'sub')}
 function captureKeyDraft(){
@@ -722,12 +734,13 @@ function keyDlg(){
  const draft=S.keyDraft||{};
  const docs={gemini:'https://aistudio.google.com/apikey',minimax:'https://platform.minimax.io/',poe:'https://poe.com/api_key',openrouter:'https://openrouter.ai/keys'};
  const selected=P[S.addSel];
+ const customSetup=S.addSel==='custom'&&S.keyOrigin==='settings'&&!S.launcher&&!S.launchManage&&!keys.includes('Add your own server');
  dlg('Add an AI key',`<div class="lg">Keys stay on this computer. VOTANIC never sees them.</div><div class="content">${inp('Key name',draft.name,selected.n+' key','Only you see this name.')}
  <div class="col g8"><div class="mdb">Provider</div><div class="row g8" style="flex-wrap:wrap">${Object.entries(P).map(([i,v])=>{
   const disabled=(S.keyOrigin==='launch'&&i!==S.addSel)||(i!=='custom'&&list.some(k=>k.prov===i));
   return `<button class="chip ${S.addSel===i?'on':''}" data-ksel="${i}" ${disabled?'disabled':''} title="${disabled?'Unavailable in this step':'Key for '+v.n}">${lg(i,20)}${v.n}</button>`;
  }).join('')}</div></div>
- <div class="field"><label class="mdb" for="kv">API key</label><input class="input" id="kv" type="password" value="${esc(draft.api)}" placeholder="Paste your key" autocomplete="off">${docs[S.addSel]?`<a class="lnk" href="${docs[S.addSel]}" target="_blank" rel="noopener noreferrer">Where do I find my ${selected.n} key?</a>`:''}</div>
+ <div class="field"><label class="mdb" for="kv">API key</label><input class="input" id="kv" type="password" value="${esc(draft.api)}" placeholder="Paste your key" autocomplete="off" ${customSetup?'aria-describedby="custom-key-help"':''}>${customSetup?`<div class="row g8" style="flex-wrap:wrap"><span class="helper" id="custom-key-help">Save this key to use with a custom server.</span><button type="button" class="lnk" data-setupserver>Set up a custom server</button></div>`:docs[S.addSel]?`<a class="lnk" href="${docs[S.addSel]}" target="_blank" rel="noopener noreferrer">Where do I find my ${selected.n} key?</a>`:''}</div>
  <div class="col g8"><label class="row g8"><input type="checkbox" id="pwon" ${draft.protect?'checked':''}>Protect this key with a password</label><div id="pwfield" ${draft.protect?'':'hidden'}>${pwwrap(`<input class="input" id="kpw" aria-label="Key password" type="password" value="${esc(draft.password)}" placeholder="Add a password" autocomplete="new-password">`)}<div class="helper">Asked each time a project opens. It can't be recovered, so pick one you'll remember.</div></div></div></div>`,
  `${cancel}<button class="btn pri" data-savekey disabled>Save key</button>`,S.keyOrigin==='settings'?'':'sub');
  updateKeySave();
@@ -880,7 +893,7 @@ document.addEventListener('click',e=>{
  if(e.target.closest('[data-savesess]')){const i=activeLayer().querySelectorAll('.dlg input,.dlg textarea');{const idx=e.target.closest('[data-savesess]').dataset.savesess;const obj={n:i[0].value.trim()||'Untitled session',u:'Not used yet',p:'“'+((i[1]&&i[1].value)||'Write the character prompt here.').trim()+'”'};if(idx!==''){obj.u=S.sessions[+idx].u;S.sessions[+idx]=obj}else S.sessions.push(obj)}S.tab='sessions';toast('Session saved');return renderPanel()}
  if(km){S.kmenu=S.kmenu===km.dataset.kmenu?null:km.dataset.kmenu;return redrawConnections()}
  if(S.kmenu&&ov.querySelector('.win')){S.kmenu=null;redrawConnections()}
- const t=e.target.closest('[data-eye],[data-conn],[data-connback],[data-addwit],[data-savewit],[data-vall],[data-nai],[data-sx],[data-x],[data-back],[data-manage],[data-ext],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-unset],[data-pu],[data-doun],[data-dokey],[data-addserver],[data-editserver],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dEmpty,#dLaunch,#dLaunch0,#dLConn,#dSeed,#dLaunchCustom,[data-lmanage],[data-ladd],[data-clear-search],[data-wrename],[data-remote],[data-remote-tab],[data-remote-power],[data-remote-copy],[data-vchoose],[data-vprovider],[data-vretry],[data-vreset],[data-creset]');
+ const t=e.target.closest('[data-eye],[data-conn],[data-connback],[data-addwit],[data-savewit],[data-vall],[data-nai],[data-sx],[data-x],[data-back],[data-manage],[data-ext],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-unset],[data-pu],[data-doun],[data-dokey],[data-addserver],[data-setupserver],[data-editserver],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dEmpty,#dLaunch,#dLaunch0,#dLConn,#dSeed,#dLaunchCustom,[data-lmanage],[data-ladd],[data-clear-search],[data-wrename],[data-remote],[data-remote-tab],[data-remote-power],[data-remote-copy],[data-vchoose],[data-vprovider],[data-vretry],[data-vreset],[data-creset]');
  if(!t)return;const d=t.dataset;
  if('vretry' in d){captureVoice();return loadVoiceList()}
  if('vchoose' in d){captureVoice();S.voiceDraft.voice=d.vchoose;return newVoice()}
@@ -930,6 +943,7 @@ document.addEventListener('click',e=>{
  if('remotePower' in d){S.remoteStopped=!S.remoteStopped;return redrawConnections()}
  if('remoteCopy' in d){return navigator.clipboard?.writeText(activeLayer().querySelector('[data-remote-link]').value).then(()=>toast('Link copied'),()=>toast('Could not copy link'))}
  if(d.pickkey){S.menuOpen=false;const kk=S.keys.find(k=>k.id===d.pickkey);S.addKey=d.pickkey;return addDlg()}
+ if('setupserver' in d){preserveDialogInputs();return customDlg(null,{fromKey:true});}
  if('addserver' in d){S.menuOpen=false;return customDlg()}
  if(d.editserver){const server=S.servers.find(item=>item.id===d.editserver);if(server)return customDlg(server);}
  if(d.dokey){const key=S.keys.find(k=>k.id===d.dokey);const value=read(activeLayer(),'#pw');
@@ -980,7 +994,7 @@ document.addEventListener('click',e=>{
   S.servers.push(server);
   const provider={...server,id:uniqueId('p'),serverId:server.id,pid:'custom'};
   S.providers.push(provider);
-  const task=S.ret;S.ret=null;S.tab=task?'tasks':'providers';renderPanel();
+  const task='fromKey' in d?null:S.ret;S.ret=null;S.tab=task?'tasks':'providers';renderPanel();
   if(task){S.pick={t:task,p:provider.id,m:0};return pickDlg(task);}
   return;
  }
