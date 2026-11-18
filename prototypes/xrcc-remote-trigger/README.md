@@ -2,6 +2,8 @@
 
 [Web prototype](https://xrcc-remote-trigger.vercel.app/) · [Figma](https://www.figma.com/design/ZBOB48n4eLsZABCTnhh5kk/XRCC-Claude-Workbench?node-id=1481-10758)
 
+Share the Web prototype URL above for every release. Add a query such as `?screen=B2&present=1` to link directly to a review state. The Vercel project alias forwards to the same address. Build-specific deployment URLs and the archived Claude Artifact refer to historical versions.
+
 The prototype follows the refined Launcher design and simplified Figma flow updated on 17 November 2026. It uses XRCC Library component styling and existing tokens; no Library assets were published.
 
 ## Main journey
@@ -28,5 +30,5 @@ Tests require Playwright and Chromium. Coverage includes the scoped and generic 
 - Exact Library wordmark, QR, device art, provider assets and icons are embedded, together with Roboto for matching font metrics. Major Launcher layout bounds are checked against Figma within 1 px.
 - Library Notification / Dark, Type=Default is used for feedback. `library-token-map.json` records the source components and token aliases.
 - Source: `yauchai2/VOTANIC`, branch `claude/project-thread-pddqur`, draft PR #7. Push only to this branch.
-- Deploy to the existing Vercel project recorded in `hosting-vercel.json`. The stable URL is also linked from the Figma page overview. Vercel account access may be required by existing project protection.
+- Deploy `index.html`, `font-license.txt` and `vercel.json` together to the production target of the project recorded in `hosting-vercel.json`. The stable URL is also linked from the Figma page overview. Vercel account access may be required by existing project protection.
 - This is an interaction prototype: QR, network, devices, server, sensor permissions and XRCC acknowledgements are simulated. It does not implement real cross-window or cross-device transport.
