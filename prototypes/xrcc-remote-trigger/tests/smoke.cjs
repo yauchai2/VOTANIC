@@ -250,8 +250,15 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     // Follow the same affordances shown by the Figma interactions.
     await page.selectOption('#screenReview','A11');
     const search=page.getByRole('textbox',{name:'Find',exact:true});
-    await page.getByRole('button',{name:'Search',exact:true}).click();
+    await search.fill('Stage');
     assert.equal(await search.evaluate(n=>n===document.activeElement),true);
+    await search.clear();
+    const sortInstances=page.getByRole('button',{name:'Sort instances',exact:true});
+    await sortInstances.click();
+    assert.equal(await sortInstances.getAttribute('aria-pressed'),'true');
+    const variableFilter=page.getByRole('button',{name:'Show instances with variables',exact:true});
+    await variableFilter.click();
+    assert.equal(await variableFilter.getAttribute('aria-pressed'),'true');
     await page.getByRole('tab',{name:'Project variables',exact:true}).click();
     await page.getByRole('button',{name:/Welcome text/}).click();
     await page.getByRole('button',{name:'Add control',exact:true}).click();
@@ -289,6 +296,25 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     await page.waitForFunction(()=>ph.screen==='deck');
     await page.selectOption('#screenReview','B25');
     assert.equal(await page.getByRole('button',{name:'Scan QR to join',exact:true}).count(),0);
+    const base='http://127.0.0.1:'+server.address().port;
+    for(const [screen,selector,box] of [
+      ['A3','.pk',{x:640,y:200,width:640,height:680}],
+      ['A9','.rt',{x:640,y:200,width:640,height:680}],
+      ['A11','.pk2',{x:480,y:200,width:960,height:680}],
+    ]){
+      await page.setViewportSize({width:1920,height:1080});
+      await page.goto(base+'/?screen='+screen+'&present=1');
+      assert.deepEqual(await page.locator(selector).boundingBox(),box,screen+' matches the Figma frame bounds');
+    }
+    await page.setViewportSize({width:390,height:844});
+    await page.goto(base+'/?screen=C5&present=1');
+    await page.evaluate(()=>document.fonts.ready);
+    const deckBounds=await page.locator('.pdeck .key').evaluateAll(nodes=>nodes.map(node=>{
+      const {x,y,width,height}=node.getBoundingClientRect();
+      return [x,y,width,height];
+    }));
+    assert.deepEqual(deckBounds,[[20,112,111,111],[139,112,230,111],[20,231,111,111],
+      [139,231,111,111],[20,350,230,111],[258,350,111,111]],'C5 matches all six Figma card bounds');
     assert.deepEqual(errors, []);
     console.log('PASS: single binding, cancel/Esc without replacement or Radio, slider, numeric validation, rejection/unknown, sensor permission, stale guard, network guard, Play/server/public lifecycle, changed port, responsive 3/6/8 columns, all 80 Figma states, 1100px Launcher and takeover confirmation, Library notification dismissal, inline errors and no rejected-number retry; no page errors.');
   } finally {
