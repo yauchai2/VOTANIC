@@ -6,7 +6,7 @@
   "entry": "index.html",
   "purpose": "prototype review build",
   "liveUrl": "https://xrcc-remote-trigger.vercel.app/",
-  "deploymentId": "dpl_7dQGKEPXt67uVksp1n9R7aiMSH7P",
-  "sourceCommit": "a8bfcbca35a910d7c91d8eb5315c9a5495a1569e",
-  "design": "Show the positive status Badge for connected devices \u00b7 2026-11-18"
+  "deploymentId": "dpl_28QrAhWn8g3rkiFKiE79AsBQCaaS",
+  "sourceCommit": "2eb6ea7d7a74105e184aa4bf301b3a40e96236f4",
+  "design": "Remove per-device Disconnect from P1 \u00b7 2026-11-18"
 }
