@@ -12,7 +12,7 @@ The prototype follows the refined Launcher design and simplified Figma flow upda
 2. **Connect devices** opens **Launcher › Connections › Remote control**, carrying the originating project and window. Launcher owns QR, Local/Public links, Server, Port and Devices. Switching between the simulated applications preserves Play and configuration. There is no Back to XRCC button.
 3. Open the shared link using the prototype test control. A project link skips the project catalog. Local devices can join before Play and wait; controls appear when Play starts. Public links require Play.
 
-Opening Launcher directly uses a Connections summary and **Manage devices**. Its generic link opens the project catalog. Port is always visible. The Public tab remains available before Play, with a reason beside its disabled activation button. Server startup, occupied Port, Reload, Public failure/retry, disconnect and stale controls have recovery states.
+Opening Launcher directly uses a Connections summary and **Manage devices**. Its generic link opens the project catalog. Port is always visible. The Public tab remains available before Play, with a reason beside its disabled activation button. Server startup, occupied Port, Reload, Public failure/retry, network loss and stale controls have recovery states. Device rows are read-only in P1.
 
 ## Run and verify
 
