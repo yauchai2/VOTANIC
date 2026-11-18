@@ -6,7 +6,7 @@
   "entry": "index.html",
   "purpose": "prototype review build",
   "liveUrl": "https://xrcc-remote-trigger.vercel.app/",
-  "deploymentId": "dpl_BR3kKFKq39ARr7ro1wCEsHApiFEh",
-  "sourceCommit": "73c27f12e4513d52df191b568df8c81531d3eee5",
-  "design": "Figma row and device parity with restored actions \u00b7 2026-11-18"
+  "deploymentId": "dpl_G1zJe3qNUC9arpQeZn2K99hSopHY",
+  "sourceCommit": "791c990325c10f600ab9ec46fc65ac591796f4e5",
+  "design": "Measured Workbench frame and component parity \u00b7 2026-11-18"
 }
