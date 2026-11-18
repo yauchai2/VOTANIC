@@ -6,7 +6,7 @@
   "entry": "index.html",
   "purpose": "prototype review build",
   "liveUrl": "https://xrcc-remote-trigger.vercel.app/",
-  "deploymentId": "dpl_Au99d8nRKzj7yeKRzRLNAAiSJdu4",
-  "sourceCommit": "dd672d067e6eba893602eb981f6b42f6d6a0ea3c",
-  "design": "Match the simplified server-first Launcher reference \u00b7 2026-11-18"
+  "deploymentId": "dpl_9XdhBDNxDxVm5cibdfP4K2mzmBtH",
+  "sourceCommit": "58828174fc115205493cc29e465179d0335c8691",
+  "design": "Apply XRCC Design Library tokens and native Server status Badges \u00b7 2026-11-18"
 }
