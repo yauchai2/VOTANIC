@@ -6,7 +6,7 @@
   "entry": "index.html",
   "purpose": "prototype review build",
   "liveUrl": "https://xrcc-remote-trigger.vercel.app/",
-  "deploymentId": "dpl_HrAYtkHLYB3LbBtsXrqvr6h7gHBe",
-  "sourceCommit": "b33986983ffa578da8c2beffafbf17e1878c80ce",
-  "design": "Refined Launcher sharing, Server settings, and XRCC connection entry \u00b7 2026-11-18"
+  "deploymentId": "dpl_Au99d8nRKzj7yeKRzRLNAAiSJdu4",
+  "sourceCommit": "dd672d067e6eba893602eb981f6b42f6d6a0ea3c",
+  "design": "Match the simplified server-first Launcher reference \u00b7 2026-11-18"
 }
