@@ -1,6 +1,17 @@
 <!doctype html>
 <html lang="en">
 <head>
+<script>
+(() => {
+  if (location.hostname !== "htmlpreview.github.io") return;
+  const source = new URL(location.search.slice(1), location.href);
+  const path = "/yauchai2/VOTANIC/claude/project-thread-hk97f3/prototypes/xrcc-ai-provider/index.html";
+  const github = source.hostname === "github.com" &&
+    source.pathname === path.replace("/VOTANIC/", "/VOTANIC/blob/");
+  const raw = source.hostname === "raw.githubusercontent.com" && source.pathname === path;
+  if (github || raw) location.replace("https://htmlpreview.github.io/?https://github.com/yauchai2/VOTANIC/blob/prototype/xrcc-ai-provider/prototypes/xrcc-ai-provider/index.html" + location.hash);
+})();
+</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>XRCC AI Provider · Interactive prototype</title>
