@@ -1410,7 +1410,13 @@ function reviewScreen(k){
  if(k==='C28'){const input=document.querySelector('input[type=number]');if(input){input.value='99';input.dispatchEvent(new Event('change'))}}
  document.getElementById('screenReview').value=k;
 }
-const reviewLabel=h('label',{class:'reviewnav'},'Figma screen ',h('select',{id:'screenReview','aria-label':'Figma screen',onchange:e=>reviewScreen(e.target.value)},h('option',{value:''},'Interactive prototype'),...Object.entries(FLOW_NAMES).map(([k,v])=>h('option',{value:k},k+' · '+v))));
+const reviewLabel=h('label',{class:'reviewnav'},'Figma screen ',h('select',{id:'screenReview','aria-label':'Figma screen',onchange:e=>{
+  if(e.target.value){reviewScreen(e.target.value);return}
+  const url=new URL(location.href);
+  url.searchParams.delete('screen');
+  url.searchParams.delete('present');
+  location.assign(url);
+}},h('option',{value:''},'Interactive prototype'),...Object.entries(FLOW_NAMES).map(([k,v])=>h('option',{value:k},k+' · '+v))));
 const reviewTools=h('details',{class:'review-tools'},h('summary',{},'Review states'),reviewLabel);
 let presentation=new URL(location.href).searchParams.get('present')==='1';
 document.body.classList.toggle('presentation',presentation);
