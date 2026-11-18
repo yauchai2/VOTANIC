@@ -9,6 +9,7 @@ python3 -m http.server 8080
 ```
 
 - Use the sparkle button to go through first-time setup. **Configured project** loads the Models, Providers, Voices and Sessions examples.
-- Try **Gate: no keys** to add a key and return to the same project's connection check. **Launcher keys** opens Connections, including AI keys, Wit.ai and Phone remote.
+- Try **Gate: no keys** to add a key and return to the same project's connection check. **Launcher keys** opens Launcher Connections, including Remote control, AI keys and Wit.ai.
+- **Settings Connections** opens the XRCC overview with a sample connected device. **Manage devices** opens Launcher. Use **Back to XRCC** to return to the overview. The retention selector and remote server/link controls use demo state.
 - **Voices failed** opens the preset form in its recovery state. Use **Try again** to reload the list without losing the draft.
 - The sample Poe key accepts `xrcc`. Key entry, connection tests, voice preview, and launching XRCC simulate the workflow with in-memory data.
