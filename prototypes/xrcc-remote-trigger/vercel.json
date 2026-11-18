@@ -1,6 +1,17 @@
 {
   "redirects": [
     {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "xrcc-remote-trigger-alan-chans-projects-b0935d44.vercel.app"
+        }
+      ],
+      "destination": "https://xrcc-remote-trigger.vercel.app/",
+      "permanent": false
+    },
+    {
       "source": "/:path*",
       "has": [
         {
