@@ -6,7 +6,7 @@
   "entry": "index.html",
   "purpose": "prototype review build",
   "liveUrl": "https://xrcc-remote-trigger.vercel.app/",
-  "deploymentId": "dpl_7pRNr8VGacVZLXMkojpp2ijLcVgf",
-  "sourceCommit": "a2121b5cb71ee93cbb55a22fa4c2ac0914a4097c",
-  "design": "Default to XRCC Editor with Play off \u00b7 2026-11-18"
+  "deploymentId": "dpl_SGfxZnh8o2RxyygJiTXyknkWbZK7",
+  "sourceCommit": "285ea92792b57882f865105446830c9fa154951f",
+  "design": "Start with sample controls and open the Play viewport \u00b7 2026-11-18"
 }
