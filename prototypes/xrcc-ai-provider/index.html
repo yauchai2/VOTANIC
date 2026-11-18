@@ -205,13 +205,11 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 /* Settings window */
 .win{width:960px;max-width:100%;height:min(680px,82vh);display:flex;background:var(--panel);border:1px solid var(--b-sub);border-radius:16px;overflow:hidden}
 .side{width:236px;background:var(--header);display:flex;flex-direction:column;flex:none}
-.side .sh{height:40px;background:var(--canvas);display:flex;align-items:center;gap:16px;padding:8px 32px;font-weight:700;font-size:16px;line-height:24px;color:var(--t1)}
 .side .ml{padding-top:43px;display:flex;flex-direction:column;flex:1;overflow:auto}
 .side .m{min-height:48px;padding:12px 32px 12px 44px;display:flex;align-items:center;gap:16px;color:var(--t1);font-size:14px}
 .side .m.on{background:var(--canvas);color:var(--pc);border-radius:24px 0 0 24px;margin-left:12px;padding-left:20px}
 .side .ver{height:100px;padding:16px 32px;color:var(--t3);font-size:14px;margin-top:auto;display:flex;align-items:flex-end}
 .rp{flex:1;display:flex;flex-direction:column;min-width:0}
-.rp .tb2{height:40px;background:var(--canvas);display:flex;justify-content:flex-end;flex:none}
 .rp .rb{flex:1;overflow:auto;padding:32px 45px;display:flex;flex-direction:column;gap:32px;background:var(--panel)}
 .win.lw{width:1100px;height:min(723px,88vh);flex-direction:column;background:#1e1e21;border-radius:16px 0 16px 16px}
 .lw .lt{height:32px;flex:none;background:#2a2531;display:flex;align-items:center;justify-content:space-between;padding-left:36px;font-size:14px;color:var(--t1)}
@@ -307,10 +305,44 @@ button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(
 .lw .lpage{padding:36px 24px 32px}
 .lw .lcol{width:min(650px,100%);min-width:0;gap:24px;height:max-content}
 .lw .krow{min-height:66px}
-.lw .retention{width:min(285px,100%);margin-top:4px;padding:0 8px}
+.settings-window{position:relative;height:min(720px,calc(100dvh - 32px));padding-top:40px}
+.settings-window .settings-header{position:absolute;inset:0 0 auto;height:40px;display:flex;align-items:center;gap:16px;padding:0 0 0 32px;background:var(--canvas)}
+.settings-window .settings-header .iconbtn{width:40px;height:40px}
+.settings-window .rp .rb{padding:45px clamp(20px,6vw,70px);gap:32px}
+.settings-window .side .ver{position:relative;isolation:isolate;overflow:hidden;justify-content:flex-end;padding:12px 32px}
+.settings-window .side .ver::before{content:"";position:absolute;z-index:-1;inset:auto auto 0 0;width:103px;height:108px;background:url("./assets/settings-mark.svg") left bottom / contain no-repeat}
+.settings-window .side .m{font-size:16px;line-height:24px}
+.settings-window .side .m span{min-width:0}
+.settings-window .side .ml{padding-top:42px}
+.connections-list{gap:16px}
+.connections-list .connection-row{min-height:66px}
+.connection-row:focus-visible,.remote-summary button:focus-visible,.retention:focus-visible{outline:2px solid var(--b-int);outline-offset:2px}
+.remote-summary{display:flex;align-items:center;gap:20px;min-height:120px;padding:20px;background:var(--canvas);border-radius:8px}
+.remote-summary-art{width:80px;height:80px;display:grid;place-items:center;flex:none;border-radius:16px;background:var(--header)}
+.remote-summary-art img{width:44px;height:44px}
+.remote-summary .btn{padding:0 18px;white-space:nowrap}
+.lw .remote-summary{min-height:88px;padding:16px 20px}
+.lw .remote-summary-art{width:48px;height:48px;border-radius:12px}
+.lw .remote-summary-art img{width:36px;height:36px}
+.remote-summary-copy{min-width:0}
+.remote-status{align-items:flex-start}
+.remote-status::before{content:"";width:8px;height:8px;flex:none;margin-top:6px;border-radius:50%;background:var(--t3)}
+.remote-status.running::before{background:var(--ok)}
+.retention{width:min(285px,100%)}
+@media(max-width:700px){
+ .settings-window .side{width:62px}
+ .settings-window .side .m,.settings-window .side .m.on{padding:12px;justify-content:center;margin-left:0}
+ .settings-window .side .m span,.settings-window .side .ver{display:none}
+ .settings-window .rp .rb{padding:24px 20px}
+ .remote-summary{flex-wrap:wrap;gap:12px}
+ .remote-summary-art{width:52px;height:52px;border-radius:8px}
+ .remote-summary-art img{width:28px;height:28px}
+ .remote-summary .btn{margin-left:64px}
+}
 .connection-row{width:100%;text-align:left}
 .connection-row:hover,.key-menu button:hover,#cmenu button:hover{background:var(--elevated)}
-.wit-icon{background:#510e69;border-color:#723786;color:var(--pc)}
+.connection-badge{background:var(--muted);border-color:var(--b-sub)}
+.connection-badge img{display:block}
 .key-menu-anchor{position:relative}
 .menu.key-menu{left:auto;right:0;min-width:200px;z-index:9}
 .menu button{display:block;min-height:36px;width:100%;padding:0 16px;text-align:left}
@@ -321,7 +353,9 @@ button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(
 .remote-share{align-items:stretch;padding:20px;gap:24px}
 .qr-slot{align-items:center;width:184px;flex:none}
 .qr-slot img{background:white;border-radius:8px}
-.remote-server{border-top:1px solid var(--b-dis);padding:20px 0}
+.remote-server{border:1px solid var(--b-dis);flex-wrap:wrap}
+.remote-share .fill{min-width:min(100%,260px)}
+.remote-info .i24{flex:none}
 .remote-server input{width:100px}
 @media(max-width:760px){.first-tasks{flex-wrap:wrap;justify-content:center}.remote-share{flex-wrap:wrap}.first-art{max-height:40dvh}}
 @media(max-width:640px){.lay{padding:12px 8px}.panel,.panel.first,.panel.voices-panel{height:calc(100dvh - 24px)}.panel.first .pbody{padding:24px 16px;gap:24px}.first-tasks{padding:0}.win.lw{height:calc(100dvh - 24px)}}
@@ -361,7 +395,6 @@ button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(
  <symbol id="lg-poe" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M20.708 6.876C20.573 6.741 20.413 6.635 20.236 6.563C20.059 6.492 19.87 6.457 19.679 6.461H19.673C19.408 6.461 19.145 6.409 18.899 6.307C18.654 6.206 18.431 6.057 18.243 5.869C18.056 5.681 17.907 5.458 17.806 5.212C17.704 4.967 17.653 4.704 17.653 4.438C17.656 4.252 17.622 4.066 17.554 3.893C17.485 3.72 17.382 3.562 17.252 3.428C17.122 3.295 16.967 3.188 16.796 3.114C16.625 3.041 16.44 3.002 16.254 3H4.871C4.685 3.001 4.5 3.04 4.329 3.113C4.157 3.186 4.002 3.292 3.872 3.425C3.742 3.559 3.639 3.716 3.57 3.889C3.501 4.063 3.467 4.248 3.47 4.434C3.47 4.971 3.256 5.486 2.877 5.866C2.497 6.245 1.982 6.459 1.445 6.459V6.461C1.256 6.457 1.068 6.491 0.893 6.56C0.717 6.63 0.557 6.734 0.422 6.867C0.287 6.999 0.181 7.158 0.108 7.332C0.036 7.507 -0.001 7.694 0 7.883V11.525C-0.001 11.714 0.036 11.901 0.109 12.075C0.181 12.249 0.288 12.407 0.423 12.54C0.557 12.672 0.717 12.776 0.892 12.846C1.068 12.915 1.255 12.949 1.444 12.945C1.98 12.945 2.495 13.158 2.874 13.536C3.254 13.915 3.468 14.429 3.469 14.965V18.658C3.469 18.762 3.501 18.863 3.561 18.947C3.621 19.032 3.705 19.095 3.803 19.13C3.901 19.164 4.007 19.167 4.106 19.139C4.206 19.11 4.294 19.052 4.359 18.971L6.41 16.404H16.253C16.439 16.402 16.623 16.364 16.795 16.291C16.966 16.218 17.121 16.112 17.252 15.978C17.382 15.845 17.484 15.687 17.553 15.514C17.622 15.341 17.656 15.156 17.653 14.97V14.968C17.653 13.848 18.557 12.943 19.679 12.943C19.868 12.948 20.056 12.914 20.232 12.845C20.408 12.775 20.568 12.671 20.702 12.539C20.837 12.406 20.944 12.248 21.017 12.074C21.089 11.899 21.126 11.712 21.125 11.523V7.88C21.125 7.517 20.985 7.154 20.708 6.876ZM18.288 11.563C18.283 12.097 18.067 12.607 17.688 12.982C17.309 13.357 16.797 13.568 16.263 13.568H4.861C4.327 13.568 3.815 13.357 3.436 12.982C3.057 12.607 2.841 12.097 2.836 11.563V7.843C2.842 7.31 3.057 6.8 3.436 6.425C3.815 6.049 4.327 5.839 4.86 5.838H16.26C16.794 5.838 17.306 6.049 17.685 6.424C18.065 6.799 18.281 7.309 18.286 7.843V11.563H18.288Z" fill="#fff"/><path fill-rule="evenodd" d="M7.413 7.57C7.036 7.57 6.675 7.719 6.408 7.985C6.141 8.252 5.991 8.613 5.99 8.99V10.412C5.99 10.789 6.14 11.151 6.407 11.418C6.673 11.684 7.035 11.834 7.412 11.834C7.789 11.834 8.151 11.684 8.418 11.418C8.684 11.151 8.834 10.789 8.834 10.412V8.99C8.834 8.206 8.198 7.568 7.412 7.568L7.413 7.57ZM13.71 7.57C13.333 7.57 12.972 7.72 12.705 7.986C12.438 8.253 12.289 8.614 12.288 8.991V10.413C12.288 10.79 12.438 11.152 12.705 11.419C12.971 11.685 13.333 11.835 13.71 11.835C14.087 11.835 14.449 11.685 14.716 11.419C14.982 11.152 15.132 10.79 15.132 10.413V8.99C15.132 8.206 14.496 7.568 13.71 7.568V7.57Z" fill="#fff"/><path fill-rule="evenodd" d="M7.292 22.643L9.285 20.151H19.129C19.315 20.149 19.499 20.111 19.67 20.038C19.842 19.965 19.997 19.859 20.127 19.725C20.257 19.592 20.36 19.434 20.428 19.261C20.497 19.088 20.532 18.903 20.529 18.717C20.528 18.181 20.74 17.667 21.118 17.287C21.496 16.907 22.01 16.692 22.546 16.69H22.556C22.745 16.695 22.933 16.661 23.108 16.592C23.284 16.523 23.444 16.419 23.579 16.286C23.713 16.154 23.82 15.995 23.892 15.821C23.965 15.646 24.001 15.459 24 15.27V11.676C24 11.332 23.887 10.996 23.676 10.725L23.279 10.206V14.333C23.279 14.522 23.242 14.709 23.17 14.883C23.097 15.057 22.99 15.215 22.856 15.347C22.721 15.48 22.562 15.584 22.386 15.653C22.211 15.723 22.023 15.757 21.835 15.753H21.828C21.292 15.755 20.779 15.969 20.401 16.349C20.022 16.728 19.81 17.242 19.81 17.778C19.813 17.964 19.778 18.15 19.709 18.323C19.64 18.496 19.538 18.654 19.407 18.788C19.277 18.921 19.122 19.027 18.95 19.101C18.779 19.174 18.594 19.212 18.408 19.214H8.565L6.396 21.926C6.31 22.046 6.274 22.193 6.295 22.339C6.315 22.484 6.39 22.616 6.505 22.708C6.62 22.8 6.765 22.844 6.912 22.831C7.058 22.819 7.194 22.751 7.292 22.641Z" fill="url(#pA)"/><path fill-rule="evenodd" d="M5.004 19.992L7.124 17.342H16.968C17.154 17.34 17.339 17.302 17.51 17.229C17.682 17.156 17.838 17.049 17.968 16.916C18.098 16.782 18.201 16.624 18.27 16.45C18.339 16.277 18.373 16.092 18.37 15.905C18.37 14.789 19.27 13.884 20.384 13.88H20.396C20.584 13.884 20.772 13.85 20.948 13.78C21.123 13.711 21.283 13.606 21.417 13.474C21.552 13.341 21.659 13.183 21.731 13.009C21.803 12.834 21.84 12.647 21.839 12.458V8.328L22.359 9.008C22.569 9.281 22.683 9.615 22.683 9.958V13.552C22.683 13.741 22.646 13.927 22.573 14.101C22.501 14.276 22.394 14.433 22.26 14.566C22.125 14.698 21.966 14.802 21.791 14.872C21.616 14.942 21.428 14.976 21.24 14.972H21.23C20.694 14.975 20.181 15.189 19.803 15.569C19.426 15.949 19.214 16.462 19.214 16.998C19.216 17.184 19.182 17.37 19.113 17.543C19.044 17.716 18.941 17.874 18.811 18.007C18.681 18.141 18.525 18.247 18.354 18.32C18.182 18.393 17.998 18.431 17.812 18.433H7.97L6.054 20.833C5.942 20.972 5.78 21.061 5.603 21.081C5.426 21.101 5.249 21.049 5.11 20.938C4.97 20.827 4.881 20.665 4.862 20.488C4.842 20.311 4.893 20.133 5.005 19.994L5.004 19.992Z" fill="url(#pB)"/></symbol>
  <symbol id="lg-openrouter" viewBox="0 0 24 17"><path d="M18.5319 0C21.3233 0 23.586 2.26284 23.586 5.05416C23.586 7.84549 21.3233 10.1083 18.5319 10.1083L23.5452 15.1215C24.1819 15.7583 23.7309 16.8472 22.8304 16.8472H8.42359C3.77137 16.8472 0 13.0758 0 8.42359C0 3.77137 3.77137 0 8.42359 0H18.5319ZM8.42359 3.36945C5.63226 3.36945 3.36943 5.63226 3.36943 8.42359C3.36943 11.2149 5.63226 13.4777 8.42359 13.4777C11.2149 13.4777 13.4777 11.2149 13.4777 8.42359C13.4777 5.63226 11.2149 3.36945 8.42359 3.36945Z" fill="#7624F4"/></symbol>
  <symbol id="lg-custom" viewBox="0 0 24 24"><path d="M5.14286 0H8.57143V7.2H5.14286V0ZM15.4286 0H18.8571V7.2H15.4286V0ZM0 7.2H24V10.8C24 15.444 18.6343 19.2 12 19.2C5.36571 19.2 0 15.444 0 10.8V7.2ZM10.2857 18H13.7143V24H10.2857V18Z" fill="#B89AFA"/></symbol>
- <symbol id="lg-wit" viewBox="0 0 24 24"><path d="M4 10V14M8 7V17M12 4V20M16 7V17M20 10V14" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round"/></symbol>
 </svg>
 <div class="bench">
   <div class="filemenu">
@@ -381,7 +414,7 @@ button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(
   <div class="stage">Your project workspace</div>
 </div>
 <div class="hint-bar">Prototype of the XRCC AI Provider flow · Help › My Settings opens Settings
-  <button id="dLoad">Voices loading</button><button id="dFail">Voices failed</button><button id="dLaunch">Launcher gate</button><button id="dLaunch0">Gate: no keys</button><button id="dLaunchCustom">Gate: Custom provider</button><button id="dLConn">Launcher keys</button><button id="dSeed">Configured project</button><button id="dEmpty">Empty states</button><button id="reset">Reset</button></div>
+  <button id="dLoad">Voices loading</button><button id="dFail">Voices failed</button><button id="dLaunch">Launcher gate</button><button id="dLaunch0">Gate: no keys</button><button id="dLaunchCustom">Gate: Custom provider</button><button id="dLConn">Launcher keys</button><button id="dSettings">Settings Connections</button><button id="dSeed">Configured project</button><button id="dEmpty">Empty states</button><button id="reset">Reset</button></div>
 <div class="overlay" id="ov"></div>
 <div class="toast" id="toast" role="status"></div>
 
@@ -458,6 +491,7 @@ const init=(demo=false)=>({tab:'tasks',providers:[],keys:[],assign:{},models:{},
  voices:demo?[{id:'v1',n:'Warm host',prov:'minimax',meta:'Cantonese',tag:'Used by 3 characters'},{id:'v2',n:'Museum guide',prov:'gemini',meta:'English · Kore',tag:'Used by 3 characters'},{id:'v3',n:'Quiz master',prov:'gemini',meta:'English · Puck',tag:'Default for AI quiz'}]:[],
  playing:null,vstate:'ok',preview:'Welcome to the gallery! Mind the dinosaur, he bites.',vf:'all',
  sessions:demo?[{n:'Friendly docent',ex:['Where is the T. rex?','Right around the corner! Want a fun fact on the way?'],u:'Used in 3 places',p:'“You are a cheerful museum guide. Keep every answer under three sentences and end with a question.”'},{n:'Fire safety coach',ex:['What if I smell smoke?','Good question. First, where is the nearest exit?'],u:'Used in 1 place',p:'“Ask one question at a time. If the learner is wrong, explain why in plain words before moving on.”'}]:[],
+ retention:'90 days',remoteStopped:!demo,remoteDevices:demo?1:0,
  open:null,fromSettings:false,addSel:'gemini',addKey:'k1',menuOpen:false,adv:false,advOpen:false,pick:null});
 let S=init();
 const $=s=>document.querySelector(s),ov=$('#ov');
@@ -465,14 +499,14 @@ const activeLayer=()=>ov.lastElementChild;
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const read=(el,selector)=>el?.querySelector(selector)?.value.trim()||'';
 const uniqueId=prefix=>prefix+crypto.randomUUID();
-function sample() {
+function sample(showPanel=true) {
  S=init(true);
  S.keys=structuredClone(KEYS0);
- S.witTokens=[{id:'wit-sample',name:'Lobby kiosk token',meta:'Wit.ai · last used 28 Oct'}];
+ S.witTokens=[{id:'wit-sample',name:'Lobby kiosk token',meta:'Wit.ai · last used 28 Oct',lastUsed:'2026-10-28'}];
  S.servers=[{id:'studio',name:'Studio LLM',endpoint:'http://192.168.1.20:8080/v1',model:'llama-3.3-70b'}];
  S.providers=['gemini','minimax','poe'].map((pid,i)=>({id:'p'+(i+1),pid,key:S.keys[i].id}));
  S.assign={chat:'p1',tts:'p2',music:'p2',image:'p3',stt:'p1'};
- renderPanel();
+ if(showPanel)renderPanel();
 }
 const toast=t=>{const e=$('#toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),2200)};
 const prov=id=>S.providers.find(p=>p.id===id);
@@ -520,7 +554,9 @@ const hide=()=>{S.keyDraft=null;stack=[];keys=[];openerStack=[];paint()};
 const pop=()=>{
  if(keys.at(-1)==='Add an AI key')S.keyDraft=null;
  const returningToCustomKey=activeLayer()?.querySelector('[data-customadd][data-from-key]');
- const opener=openerStack.pop();stack.pop();keys.pop();paint();
+ const returningFromRemote=keys.at(-1)==='remote-xrcc';
+ const opener=openerStack.pop();stack.pop();keys.pop();
+ if(returningFromRemote)redrawConnections();else paint();
  if(returningToCustomKey){S.addSel='custom';S.keyOrigin='settings';updateKeySave();}
  if(opener)activeLayer()?.querySelector(opener)?.focus();
 };
@@ -820,9 +856,9 @@ function connBody(launcher=false){
  const protectedCount=list.filter(k=>k.pw).length;
  const lead='Keys are encrypted and kept on this computer. Projects never contain them, and VOTANIC never sees them.';
  const back=`<button class="lnk row g4 back-link" data-connback>${ic('Left')}Connections</button>`;
- const head=(t,l)=>`<div class="col g4">${S.conn&&!launcher?back:''}${S.launchManage?`<button class="lnk row g4 back-link" data-back>${ic('Left')}Back to connection check</button>`:''}<div class="h2">${t}</div><div class="md t2">${l}</div></div>`;
+ const head=(t,l)=>`<div class="col g4" style="gap:8px">${S.conn&&!launcher?back:''}${S.launchManage?`<button class="lnk row g4 back-link" data-back>${ic('Left')}Back to connection check</button>`:''}<h2 class="h2" tabindex="-1">${t}</h2><div class="md t2">${l}</div></div>`;
  const row=(key,icon,t,m)=>`<button class="krow connection-row" data-conn="${key}">${icon}<span class="col g4 fill"><b class="mdb">${t}</b><span class="sm t2">${m}</span></span>${ic('Chevron')}</button>`;
- const witIcon=`<span class="logo l32 wit-icon"><svg viewBox="0 0 24 24"><use href="#lg-wit"/></svg></span>`;
+ const witIcon=`<span class="logo l32 connection-badge"><img src="./assets/wit-ai.svg" width="20" height="20" alt=""></span>`;
  const keyMenu=k=>S.kmenu===k.id?`<div class="menu on key-menu"><button data-kact="pw|${k.id}">${k.pw?'Change password':'Set password'}</button><button data-kact="ren|${k.id}">Rename</button><hr><button class="terr" data-kact="del|${k.id}">Remove key</button></div>`:'';
  const keyRows=list.map(k=>`<div class="krow" data-kt="${esc((k.name+' '+k.meta).toLowerCase())}">${lg(k.prov,32)}<div class="col g4 fill"><b class="mdb">${esc(k.name)}</b><span class="sm t2">${esc(k.meta)}</span></div><span class="row g4 sm ${k.pw?'tacc':'t2'}">${ic(k.pw?'Lock':'Key')}${k.pw?'Password set':'No password'}</span><span class="key-menu-anchor"><button class="iconbtn s28" data-kmenu="${k.id}" aria-label="More actions for ${esc(k.name)}">${ic('MoreH')}</button>${keyMenu(k)}</span></div>`).join('');
  const AI=`<section class="col g12"><div class="row g12"><div class="col g4 fill"><div class="lgb">${launcher?'AI keys':'Saved on this computer'}</div><div class="sm t2">Used by AI providers in every project on this computer.</div></div>${list.length?`<button class="btn pri" data-addkey2>Add key</button>`:''}</div>
@@ -830,45 +866,77 @@ function connBody(launcher=false){
   <div class="col g8">${keyRows||EM('Key','No AI keys yet','Add a key for Gemini, MiniMax, Poe, OpenRouter or a custom provider. It is encrypted and stays on this computer.','<button class="btn pri" data-addkey2>Add key</button>')}<div class="no-match" id="knone" hidden><b class="mdb"></b><div class="sm t2">Try the key name or the provider. Clear the search to see every key.</div><button class="btn" data-clear-search>Clear search</button></div></div></section>`;
  const tokenRows=S.witTokens.map(k=>`<div class="krow">${witIcon}<div class="col g4 fill"><b class="mdb">${esc(k.name)}</b><span class="sm t2">${esc(k.meta)}</span></div><button class="iconbtn s28" data-cm="wit|${k.id}" aria-label="More actions for ${esc(k.name)}">${ic('MoreH')}</button></div>`).join('');
  const WIT=`<section class="col g8"><div class="row g12"><div class="col g4 fill"><div class="lgb">${launcher?'Speech commands (Wit.ai)':'Tokens'}</div>${launcher?'':'<div class="sm t2">Used for speech commands in every project on this computer.</div>'}</div><button class="btn" data-addwit>Add token</button></div><div class="col g8">${tokenRows||'<span class="sm t2">No Wit.ai token yet.</span>'}</div></section>`;
- if(launcher)return head('Connections',lead)+AI+WIT+`<button class="krow connection-row" data-remote="phone"><span class="logo l32 wit-icon"><img src="./assets/phone-remote.svg" width="16" height="16" alt=""></span><span class="col g4 fill"><b class="mdb">Phone remote</b><span class="sm t2">Manage the remote control server</span></span>${ic('Chevron')}</button>`;
+ if(launcher)return head('Connections','AI keys and speech tokens stay on this computer.')+(S.launchManage?AI+WIT+remoteSummary():remoteSummary()+AI+WIT)+retentionControl();
  if(S.conn==='ai')return head('AI keys',lead)+AI;
  if(S.conn==='wit')return head('Speech commands (Wit.ai)','A token lets people control the scene by voice. It is saved on this computer, never in a project.')+WIT;
- return head('Connections',lead)+`<div class="col g8">${row('ai',`<div class="tile key-icon">${ic('Key')}</div>`,'AI keys',list.length?`${list.length} ${list.length===1?'key':'keys'} · ${protectedCount} protected with a password`:'No keys yet')}${row('wit',witIcon,'Speech commands (Wit.ai)',S.witTokens.length?`${S.witTokens.length} ${S.witTokens.length===1?'token':'tokens'}`:'No token yet')}</div>`;
+ const lastUsed=S.witTokens.map(t=>t.lastUsed).filter(Boolean).sort().at(-1);
+ const tokenSummary=S.witTokens.length?`${S.witTokens.length} ${S.witTokens.length===1?'token':'tokens'}${lastUsed?' · last used '+new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(lastUsed)):''}`:'No tokens yet';
+ const keySummary=list.length?`${list.length} ${list.length===1?'key':'keys'}${protectedCount?' · '+protectedCount+' protected with a password':''}`:'No keys yet';
+ return head('Connections','AI keys and speech tokens stay on this computer.')+`<div class="col connections-list">${remoteSummary(true)}${row('ai',`<div class="logo l32 connection-badge"><img src="./assets/connection-key.svg" width="20" height="20" alt=""></div>`,'AI keys',keySummary)}${row('wit',witIcon,'Speech commands (Wit.ai)',tokenSummary)}</div>`+retentionControl();
+}
+function openSettingsConnections(){
+ S.launcher=false;S.launchManage=false;S.conn=null;S.kmenu=null;S.fromSettings=true;
+ return settings();
 }
 function settings(over,lch){
  if(lch)return launcherWin(over);
- const items=lch?[['Projects','Display'],['Versions','Refresh'],['Connections','Link'],['License','Id'],['Settings','Set']]:[['Display','Display'],['Control','Mouse'],['Edit','Pencil'],['Networking','Wifi'],['Sketchfab','Image'],['Security and Privacy','Shield'],['Licensing','Id'],['Devices','Head'],['Connections','Link']];
- (over?(h=>push(h,'settings')):show)(`<div class="win"><div class="side"><div class="sh">${ic('Set','i20')}${lch?'XRCC Launcher':'My Setting'}</div><div class="ml">${items.map(i=>`<div class="m ${i[0]==='Connections'?'on':''}">${ic(i[1],'i20')}${i[0]}</div>`).join('')}</div><div class="ver">Version 3.1.0</div></div>
- <div class="rp"><div class="tb2"><button class="iconbtn" data-x data-tip="Close" aria-label="Close">${ic('Close')}</button></div><div class="rb">
+ const items=[['Display','Display'],['Control','Mouse'],['Edit','Pencil'],['Networking','Wifi'],['Sketchfab','Image'],['Security and Privacy','Shield'],['Licensing','Id'],['Devices','Head'],['Connections','Link']];
+ (over?(h=>push(h,'settings')):show)(`<div class="win settings-window"><header class="settings-header sh">${ic('Set','i20')}<strong class="lgb fill">My Setting</strong><button class="iconbtn" data-x data-tip="Close" aria-label="Close">${ic('Close')}</button></header><div class="side"><div class="ml">${items.map(i=>`<div class="m ${i[0]==='Connections'?'on':''}" ${i[0]==='Connections'?'aria-current="page"':''} title="${i[0]}">${ic(i[1],'i20')}<span>${i[0]}</span></div>`).join('')}</div><div class="ver">Version 3.1.0</div></div>
+ <div class="rp"><div class="rb">
 ${connBody()}
  </div></div></div>`)}
 
-function remoteBody(){
+function remoteSummary(fromXRCC=false){
+ const running=!S.remoteStopped;
+ const count=running?S.remoteDevices:0;
+ const status=running?`Server running · ${count===0?'No devices connected':`${count} ${count===1?'device':'devices'} connected`}`:'Server off';
+ const action=!running?'Set up remote control':count?'Manage devices':'Connect a device';
+ return `<section class="remote-summary"><div class="remote-summary-art" aria-hidden="true"><img src="./assets/remote-control.svg" alt=""></div><div class="col g4 fill remote-summary-copy"><h3 class="lgb">Remote control</h3><div class="row g8 md t2 remote-status ${running?'running':''}">${status}</div></div><button class="btn pri m" ${fromXRCC?'data-remote-from-xrcc':'data-remote="phone"'}>${action}</button></section>`;
+}
+function retentionControl(){
+ return `<section class="col g8"><label for="connection-retention" class="lgb">Clear unused connection information</label><div id="connection-retention-hint" class="sm t2">Choose how long to keep unused connection information.</div><select class="sel retention" id="connection-retention" data-retention aria-describedby="connection-retention-hint">${['90 days','30 days','Never'].map(value=>`<option ${S.retention===value?'selected':''}>${value}</option>`).join('')}</select></section>`;
+}
+function redrawRemote(focus){
+ if(keys.at(-1)==='remote-xrcc')launcherWin(true,true);
+ else redrawConnections();
+ activeLayer()?.querySelector(focus)?.focus();
+}
+function remoteBody(fromXRCC){
  const publicLink=S.remoteTab==='public';
  const running=!S.remoteStopped;
+ const sharing=running&&(!publicLink||S.remotePublic);
+ const count=running?S.remoteDevices:0;
  const link=publicLink?'https://example.invalid/remote/demo':'http://192.168.1.24:3001/?project=pop-up-gallery';
- return `<button class="lnk row g4 back-link" data-remote="">${ic('Left')}Connections</button>
- <div class="col g4"><h2>Remote control</h2><span class="sm t2">Pop-up Gallery · Scene: Intro · <span class="tok">Playing</span></span></div>
- <section class="remote-share krow"><div class="qr-slot col g8"><img src="./assets/remote-qr.png" width="184" height="184" alt="Demo pairing code"><span class="caption t2">Scan to join</span></div>
- <div class="col fill g12"><div class="tabs"><button class="tab ${!publicLink?'on':''}" data-remote-tab="local">Local network</button><button class="tab ${publicLink?'on':''}" data-remote-tab="public">Public link</button></div>
- <strong>${publicLink?'Share a public link':'Connect on the same network'}</strong><span class="sm t2">${running?'Scan the code or open the link on your device.':'Start the server to share the connection.'}</span>
- <div class="row g12"><input class="input fill" data-remote-link value="${link}" aria-label="Remote link" readonly><button class="btn out" data-remote-copy ${running?'':'disabled'}>Copy</button></div>${running?'<span class="remote-latency caption tok">Local · 6 ms</span>':''}</div></section>
- <section class="col g12"><div class="row g8"><strong>Devices</strong><span class="caption">0</span></div><div class="krow">${ic('Display','i24')}<div class="col g4"><strong>No devices yet</strong><span class="sm t2">Devices appear here when they join.</span></div></div></section>
- <section class="remote-server row g16"><div class="col fill"><strong>Server</strong><span class="sm t2">${running?'Server running':'Server off'}</span></div><label class="col g4 sm">Port<input class="input" value="3001" readonly></label><button class="row g8 remote-switch" data-remote-power role="switch" aria-checked="${running}"><span class="toggle-track ${running?'on':''}"></span>${running?'On':'Off'}</button></section>`;
+ const back=fromXRCC?'data-remote-return':'data-remote=""';
+ return `<div class="col g12"><button class="lnk row g4 back-link" ${back}>${ic('Left')}${fromXRCC?'Back to XRCC':'Connections'}</button><div class="col g4"><h2 class="h2" tabindex="-1">Remote control</h2><div class="sm t2">Pop-up Gallery · Scene: Intro</div></div></div>
+ <section class="remote-server krow row g16"><div class="tile" aria-hidden="true">${ic('Display','i20')}</div><div class="col g4 fill"><h3 class="mdb">Server</h3><span class="row g8 sm t2 remote-status ${running?'running':''}">${running?'Server running':'Server off'}</span></div><label class="col g4 sm">Port<input class="input" value="3001" readonly></label><button class="row g8 remote-switch" data-remote-power role="switch" aria-label="Remote control server" aria-checked="${running}"><span class="toggle-track ${running?'on':''}"></span>${running?'On':'Off'}</button></section>
+ <section class="remote-share krow">${sharing&&!publicLink?'<div class="qr-slot col g8"><img src="./assets/remote-qr.png" width="184" height="184" alt="Demo pairing code"><span class="caption t2">Scan to join</span></div>':''}
+ <div class="col fill g12"><div class="tabs"><button class="tab ${!publicLink?'on':''}" aria-pressed="${!publicLink}" data-remote-tab="local">Local network</button><button class="tab ${publicLink?'on':''}" aria-pressed="${publicLink}" data-remote-tab="public">Public link</button></div>
+ <strong>${!running?'Start remote control':publicLink?'Share a public link':'Connect on the same network'}</strong>
+ ${sharing?`<div class="row g12"><input class="input fill" data-remote-link value="${link}" aria-label="Remote link" readonly><button class="btn out" data-remote-copy>Copy</button></div>`:`<span class="sm t2">${running?'Enable sharing to create a public link.':'Start the server so devices can connect.'}</span>`}
+ ${running&&publicLink?`<button class="btn out" data-remote-public>${S.remotePublic?'Disable public link':'Enable public link'}</button>`:''}</div></section>
+ <section class="col g12"><div class="row g8"><h3 class="lgb">Devices</h3><span class="caption">${count}</span></div><div class="krow remote-info">${ic('Display','i24')}<div class="col g4 fill"><strong>${count?'Studio iPad':'No devices yet'}</strong><span class="sm t2">${count?'Sensor source':'Devices appear here when they join.'}</span></div>${count?'<span class="caption t2">Local · 6 ms</span>':''}</div></section>`;
 }
-function launcherWin(over){
+function launcherWin(over,fromXRCC=false){
+ const open=fromXRCC?(h=>push(h,'remote-xrcc')):over?(h=>push(h,'settings')):show;
  const nav=[['Projects','Folder'],['Content Library','World'],['Packages','Image'],['Profiles','Pencil'],['Versions','Layers'],['License','Id']];
- (over?(h=>push(h,'settings')):show)(`<div class="win lw"><div class="lt"><span>XRCC Launcher</span><div><button data-tip="Minimise" aria-label="Minimise">${ic('Min')}</button><button data-x data-tip="Close" aria-label="Close">${ic('Close')}</button></div></div>
+ open(`<div class="win lw"><div class="lt"><span>XRCC Launcher</span><div><button data-tip="Minimise" aria-label="Minimise">${ic('Min')}</button><button data-x data-tip="Close" aria-label="Close">${ic('Close')}</button></div></div>
  <div class="lbody"><div class="lside"><div class="launcher-nav-top"><img class="launcher-mark" src="./assets/xrcc.svg" alt="XRCC"><div class="ver">${ic('Layers','i20')}<span>4.0</span>${ic('Down','i16')}</div>
  <div class="ln">${nav.map(i=>`<div>${ic(i[1],'i20')}${i[0]}</div>`).join('')}</div></div>
  <div class="ln lbot"><div>${ic('Set','i20')}Settings</div><div class="on">${ic('Link','i20')}Connections</div><div>${ic('MoreH','i20')}More</div></div></div>
- <div class="lmain"><div class="fb">${ic('Download','i20')}</div><div class="lpage"><div class="lcol">${S.conn==='phone'?remoteBody():connBody(true)+`<div class="col g8"><div class="lgb">Clear unused connection information</div><div class="sm t2">Automatically delete connections that have not been used for a long time.</div><select class="sel retention" aria-label="Clear unused connection information"><option>90 days</option><option>30 days</option><option>Never</option></select></div>`}</div></div></div></div></div>`);
+ <div class="lmain"><div class="fb">${ic('Download','i20')}</div><div class="lpage"><div class="lcol">${fromXRCC||S.conn==='phone'?remoteBody(fromXRCC):connBody(true)}</div></div></div></div></div>`);
 }
+document.addEventListener('change',event=>{
+ if(event.target.matches('[data-retention]')){
+  S.retention=event.target.value;
+  toast('Connection retention updated');
+ }
+});
 /* events */
 const MENUS=$('#helpBtn');
 document.addEventListener('click',e=>{
  const hb=e.target.closest('#helpBtn');
- if(e.target.closest('#mySettings')){S.launcher=false;S.launchManage=false;S.conn=null;$('#helpMenu').classList.remove('on');MENUS.classList.remove('on');S.fromSettings=true;return settings()}
+ if(e.target.closest('#mySettings')){$('#helpMenu').classList.remove('on');MENUS.classList.remove('on');return openSettingsConnections()}
  if(hb){const m=$('#helpMenu');m.classList.toggle('on');MENUS.classList.toggle('on');return}
  $('#helpMenu').classList.remove('on');MENUS.classList.remove('on');
  const km=e.target.closest('[data-kmenu]'),ka=e.target.closest('[data-kact]');
@@ -882,7 +950,7 @@ document.addEventListener('click',e=>{
  if(e.target.closest('[data-savesess]')){const i=activeLayer().querySelectorAll('.dlg input,.dlg textarea');{const idx=e.target.closest('[data-savesess]').dataset.savesess;const obj={n:i[0].value.trim()||'Untitled session',u:'Not used yet',p:'“'+((i[1]&&i[1].value)||'Write the character prompt here.').trim()+'”'};if(idx!==''){obj.u=S.sessions[+idx].u;S.sessions[+idx]=obj}else S.sessions.push(obj)}S.tab='sessions';toast('Session saved');return renderPanel()}
  if(km){S.kmenu=S.kmenu===km.dataset.kmenu?null:km.dataset.kmenu;return redrawConnections()}
  if(S.kmenu&&ov.querySelector('.win')){S.kmenu=null;redrawConnections()}
- const t=e.target.closest('[data-eye],[data-conn],[data-connback],[data-addwit],[data-savewit],[data-vall],[data-nai],[data-sx],[data-x],[data-back],[data-manage],[data-ext],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-unset],[data-pu],[data-doun],[data-dokey],[data-addserver],[data-setupserver],[data-editserver],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dEmpty,#dLaunch,#dLaunch0,#dLConn,#dSeed,#dLaunchCustom,[data-lmanage],[data-ladd],[data-clear-search],[data-wrename],[data-remote],[data-remote-tab],[data-remote-power],[data-remote-copy],[data-vchoose],[data-vprovider],[data-vretry],[data-vreset],[data-creset]');
+ const t=e.target.closest('[data-eye],[data-conn],[data-connback],[data-addwit],[data-savewit],[data-vall],[data-nai],[data-sx],[data-x],[data-back],[data-manage],[data-ext],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-unset],[data-pu],[data-doun],[data-dokey],[data-addserver],[data-setupserver],[data-editserver],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dEmpty,#dLaunch,#dLaunch0,#dLConn,#dSettings,#dSeed,#dLaunchCustom,[data-lmanage],[data-ladd],[data-clear-search],[data-wrename],[data-remote],[data-remote-from-xrcc],[data-remote-return],[data-remote-stop],[data-remote-public],[data-remote-public-confirm],[data-remote-tab],[data-remote-power],[data-remote-copy],[data-vchoose],[data-vprovider],[data-vretry],[data-vreset],[data-creset]');
  if(!t)return;const d=t.dataset;
  if('vretry' in d){captureVoice();return loadVoiceList()}
  if('vchoose' in d){captureVoice();S.voiceDraft.voice=d.vchoose;return newVoice()}
@@ -890,8 +958,8 @@ document.addEventListener('click',e=>{
  if('creset' in d){for(const [name,value] of [['Timeout','30 s'],['Extra header','']]){const field=[...activeLayer().querySelectorAll('.field')].find(n=>n.querySelector('.mdb')?.textContent===name);if(field)field.querySelector('input').value=value;}return}
  if('vreset' in d){captureVoice();Object.assign(S.voiceDraft,{speed:'50',pitch:'50',emotion:'Auto'});return newVoice()}
  if('eye' in d){const i=t.parentElement.querySelector('input');const show=i.type==='password';i.type=show?'text':'password';t.innerHTML=ic(show?'EyeOff':'Eye');t.dataset.tip=show?'Hide password':'Show password';t.setAttribute('aria-label',t.dataset.tip);return}
- if('conn' in d){S.conn=d.conn;return redrawConnections()}
- if('connback' in d){S.conn=null;return redrawConnections()}
+ if('conn' in d){S.conn=d.conn;redrawConnections();return activeLayer()?.querySelector('h2')?.focus()}
+ if('connback' in d){const from=S.conn;S.conn=null;redrawConnections();return activeLayer()?.querySelector('[data-conn="'+from+'"]')?.focus()}
  if(t.id==='openAI')return openPanel();
  if(t.id==='reset'){S=init();hide();return toast('Prototype reset')}
  if(t.id==='dLoad'||t.id==='dFail'){
@@ -902,11 +970,12 @@ document.addEventListener('click',e=>{
   return newVoice();
  }
  if(t.id==='dSeed')return sample();
+ if(t.id==='dSettings'){sample(false);return openSettingsConnections()}
  if(t.id==='dLaunch'){S.launchEndpoint=null;S.launchManage=false;S.launchKeys=structuredClone(KEYS0);return launchDlg();}
  if(t.id==='dLaunchCustom'){S.launchManage=false;S.launchKeys=structuredClone(KEYS0);S.launchEndpoint='http://192.168.1.20:8080/v1';return launchDlg()}
  if(t.id==='dLaunch0'){S.launchEndpoint=null;S.launchManage=false;S.launchKeys=[];return launchDlg();}
  if(t.id==='dEmpty'){S.keys=[];S.witTokens=[];S.models={};S.voices=[];S.sessions=[];S.providers=[];S.assign={};S.tab='providers';S.fromSettings=false;return renderPanel()}
- if(t.id==='dLConn'){S.launchManage=false;S.fromSettings=true;S.launcher=true;S.conn=null;S.keys=S.keys.length?S.keys:structuredClone(KEYS0);if(!S.witTokens.length)S.witTokens=[{id:'wit-sample',name:'Lobby kiosk token',meta:'Wit.ai · last used 28 Oct'}];return settings(false,true)}
+ if(t.id==='dLConn'){S.remoteStopped=false;S.launchManage=false;S.fromSettings=true;S.launcher=true;S.conn=null;S.keys=S.keys.length?S.keys:structuredClone(KEYS0);if(!S.witTokens.length)S.witTokens=[{id:'wit-sample',name:'Lobby kiosk token',meta:'Wit.ai · last used 28 Oct',lastUsed:'2026-10-28'}];return settings(false,true)}
  if('manage' in d){preserveServerForm();S.fromSettings=true;S.conn='ai';S.launcher=false;return settings(true)}
  if('ext' in d)return toast('Opens aistudio.google.com/apikey in your browser');
  if('x' in d){if(S.launchManage&&keys.at(-1)==='settings'){S.launchManage=false;return launchDlg()}return stack.length>1?pop():hide();}
@@ -927,9 +996,23 @@ document.addEventListener('click',e=>{
  }
  if('wrename' in d){const token=S.witTokens.find(k=>k.id===d.wrename);const name=read(activeLayer(),'.content input');if(!name)return;if(token)token.name=name;return redrawConnections()}
  if('clearSearch' in d){const search=activeLayer().querySelector('[data-kq]');search.value='';search.dispatchEvent(new Event('input',{bubbles:true}));search.focus();return}
- if('remote' in d){S.conn=d.remote||null;return redrawConnections()}
- if('remoteTab' in d){S.remoteTab=d.remoteTab;return redrawConnections()}
- if('remotePower' in d){S.remoteStopped=!S.remoteStopped;return redrawConnections()}
+ if('remoteFromXrcc' in d){launcherWin(true,true);return activeLayer()?.querySelector('h2')?.focus()}
+ if('remoteReturn' in d)return pop();
+ if('remote' in d){
+  S.conn=d.remote||null;redrawConnections();
+  return activeLayer()?.querySelector(S.conn?'h2':'[data-remote="phone"]')?.focus();
+ }
+ if('remoteTab' in d){S.remoteTab=d.remoteTab;return redrawRemote('[data-remote-tab="'+d.remoteTab+'"]')}
+ if('remotePublic' in d){
+  if(S.remotePublic){S.remotePublic=false;return redrawRemote('[data-remote-public]')}
+  return dlg('Enable public link?',`<div class="lg">Anyone with the link can join while sharing is on.</div>`,`${cancel}<button class="btn pri" data-remote-public-confirm>Enable public link</button>`,'md');
+ }
+ if('remotePublicConfirm' in d){S.remotePublic=true;pop();return redrawRemote('[data-remote-copy]')}
+ if('remotePower' in d){
+  if(S.remoteStopped){S.remoteStopped=false;return redrawRemote('[data-remote-power]')}
+  return dlg('Turn off remote control?',`<div class="lg">Connected devices will be disconnected and links will stop working.</div>`,`${cancel}<button class="btn des" data-remote-stop>Turn off</button>`,'md');
+ }
+ if('remoteStop' in d){S.remoteStopped=true;S.remoteDevices=0;S.remotePublic=false;pop();return redrawRemote('[data-remote-power]')}
  if('remoteCopy' in d){return navigator.clipboard?.writeText(activeLayer().querySelector('[data-remote-link]').value).then(()=>toast('Link copied'),()=>toast('Could not copy link'))}
  if(d.pickkey){S.menuOpen=false;const kk=S.keys.find(k=>k.id===d.pickkey);S.addKey=d.pickkey;return addDlg()}
  if('setupserver' in d){preserveDialogInputs();return customDlg(null,{fromKey:true});}
@@ -1029,7 +1112,7 @@ document.addEventListener('click',e=>{
  if('news' in d)return newSession();
 });
 ov.addEventListener('mousedown',e=>{if(e.target.classList.contains('lay'))pop()});
-document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='0'){e.preventDefault();S.fromSettings=true;settings()}if(e.key==='Escape'){const menu=$('#cmenu');if(menu){const owner=menu.dataset.for;menu.remove();[...ov.querySelectorAll('[data-cm]')].find(b=>b.dataset.cm===owner)?.focus();return;}if(stack.length)pop();}
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='0'){e.preventDefault();openSettingsConnections()}if(e.key==='Escape'){const menu=$('#cmenu');if(menu){const owner=menu.dataset.for;menu.remove();[...ov.querySelectorAll('[data-cm]')].find(b=>b.dataset.cm===owner)?.focus();return;}if(stack.length)pop();}
  if(e.key==='Tab'&&activeLayer()&&!$('#cmenu')){
   const focusable=[...activeLayer().querySelectorAll('button:not(:disabled),a[href],input:not(:disabled),select,textarea')].filter(el=>el.getClientRects().length);
   if(!focusable.length)return;
