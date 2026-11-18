@@ -218,7 +218,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .gl{grid-column:1/-1;display:flex;align-items:center;gap:var(--xrcc-spacing-8);font-size:12px;color:var(--text2);height:auto!important;align-self:end}.gl i{width:10px;height:10px;border-radius:var(--xrcc-radius-xs)}
 .key{background:var(--panel);border:1px solid var(--subtle);border-radius:10px;padding:var(--xrcc-spacing-8);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--xrcc-spacing-4);text-align:center;position:relative;overflow:hidden;min-width:0;user-select:none;cursor:pointer}
 .key .l{font-size:12px;font-weight:600}.key .v{font-size:11px;color:var(--text2)}.key .big{font-size:22px;font-weight:700;line-height:1}
-.key.sent{background:var(--xrcc-surface-canvas);border-color:var(--ok)}.key.sent::after{content:'✓';position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:50%;background:var(--ok);color:var(--canvas);font-size:12px;line-height:18px;text-align:center}.key.on{background:var(--sel2);border-color:var(--primary)}
+.key.on{background:var(--sel2);border-color:var(--primary)}
 .key .led{position:absolute;top:8px;right:8px;width:6px;height:6px;border-radius:50%;background:var(--text3)}.key.on .led{background:var(--ok)}
 .key.ro{opacity:.7}.key.bad{opacity:.5;border-color:var(--warn)}
 .key .ic2{width:36px;height:36px;border-radius:50%;display:grid;place-items:center}
@@ -506,6 +506,7 @@ body.presentation .stage-play{min-height:100dvh}
 .pdeck{grid-template-columns:repeat(var(--cols,3),var(--cell,100px))}
 .key{border-radius:var(--xrcc-radius-lg);border-color:var(--xrcc-border-subtle)}
 .key-trigger,.key-toggle,.key-slider{background:var(--xrcc-surface-elevated);border-color:var(--xrcc-border-default)}
+.key-trigger[aria-disabled=false]:active{background:var(--xrcc-surface-canvas)}
 .key-trigger,.key-toggle{padding:var(--xrcc-spacing-8) var(--xrcc-spacing-12);gap:var(--xrcc-spacing-8)}
 .key-trigger .l,.key-toggle .l{width:100%;font:700 14px/17px Roboto,sans-serif;overflow-wrap:anywhere}
 .key.key-toggle.on{background:var(--xrcc-surface-elevated);border-color:var(--xrcc-text-accent);box-shadow:inset 0 0 0 1px var(--xrcc-text-accent)}
@@ -1238,19 +1239,20 @@ function press(c,val){
   if(ph.conn!=='local'||st.srv!=='on'||ph.changed||!st.playing)return fb('Controls paused. Reconnect and refresh first.',1);
   if(c.issue)return fb(c.label+' needs attention in XRCC',1);
   if(c.s.ro&&c.kind!=='Trigger')return fb(c.label+' is read-only',1);
-  if(c.kind==='Toggle')st.vals[c.key]=!valOf(c.key);else if(c.kind!=='Trigger')st.vals[c.key]=val;
+  if(c.kind==='Trigger')return true;
+  st.vals[c.key]=c.kind==='Toggle'?!valOf(c.key):val;
   const v=st.vals[c.key];
-  fb(c.kind==='Trigger'?c.label+' confirmed':c.kind==='Toggle'?`${c.label} ${v?'On':'Off'}`:`${c.label} set to ${String(v).slice(0,20)}`);
+  fb(c.kind==='Toggle'?`${c.label} ${v?'On':'Off'}`:`${c.label} set to ${String(v).slice(0,20)}`);
   return true;
 }
 function keyEl(c){
   const v=valOf(c.key),s=c.s,dis=c.issue||(s.ro&&c.kind!=='Trigger')||ph.conn!=='local'||st.srv!=='on'||ph.changed||!st.playing;
   const wide=c.kind==='Text'||(c.kind==='Number'&&s.control==='slider');
-  const e=h('div',{class:'key key-'+(c.kind==='Number'?s.control:c.kind.toLowerCase())+(dis?' paused':'')+(c.kind==='Toggle'&&v?' on':'')+(s.ro&&c.kind!=='Trigger'?' ro':'')+(c.issue?' bad':'')+(wide?' wide':''),style:`grid-column:span ${w2(c)?2:1}`,tabindex:['Trigger','Toggle'].includes(c.kind)?'0':null,role:['Trigger','Toggle'].includes(c.kind)?'button':'group','aria-disabled':String(!!dis),'aria-label':c.label});
+  const e=h(c.kind==='Trigger'?'button':'div',{type:c.kind==='Trigger'?'button':null,class:'key key-'+(c.kind==='Number'?s.control:c.kind.toLowerCase())+(dis?' paused':'')+(c.kind==='Toggle'&&v?' on':'')+(s.ro&&c.kind!=='Trigger'?' ro':'')+(c.issue?' bad':'')+(wide?' wide':''),style:`grid-column:span ${w2(c)?2:1}`,tabindex:['Trigger','Toggle'].includes(c.kind)?'0':null,role:['Trigger','Toggle'].includes(c.kind)?'button':'group','aria-disabled':String(!!dis),'aria-label':c.label});
   let output=e;
-  e.addEventListener('keydown',ev=>{if(ev.target===e&&['Trigger','Toggle'].includes(c.kind)&&(ev.key==='Enter'||ev.key===' ')){ev.preventDefault();e.click()}});
+  e.addEventListener('keydown',ev=>{if(ev.target===e&&c.kind==='Toggle'&&(ev.key==='Enter'||ev.key===' ')){ev.preventDefault();e.click()}});
   const col=s.color||'#d9b0fd';
-  if(c.kind==='Trigger'){e.append(h('div',{class:'ic2',style:`background:${col};color:var(--text)`},ximg('key-trigger',20)),h('div',{class:'l'},c.label));e.onclick=()=>{if(dis)return press(c);if(press(c)){e.classList.add('sent');setTimeout(()=>e.classList.remove('sent'),900)}}}
+  if(c.kind==='Trigger'){e.append(h('span',{class:'ic2',style:`background:${col};color:var(--text)`},ximg('key-trigger',20)),h('span',{class:'l'},c.label));e.onclick=()=>press(c)}
   if(c.kind==='Toggle'){e.setAttribute('role','switch');e.setAttribute('aria-checked',String(!!v));e.append(h('i',{class:'led'}),h('div',{class:'ic2',style:'background:'+col},ximg('key-toggle',20)),h('div',{class:'l'},c.label),h('div',{class:'v'},v?'On':'Off'));e.onclick=()=>{if(!press(c))return;const enabled=!!valOf(c.key);e.classList.toggle('on',enabled);e.setAttribute('aria-checked',String(enabled));e.querySelector('.v').textContent=enabled?'On':'Off'}}
   if(c.kind==='Colour'){e.append(h('div',{class:'swt',style:'background:'+v}),h('div',{class:'l'},c.label),h('div',{class:'v'},String(v).toUpperCase()));e.onclick=()=>{if(dis)return press(c);ph.sheet=c.key;renderPhone()}}
   if(c.kind==='Number'&&s.control==='input'){
@@ -1310,7 +1312,7 @@ function renderPhone(){
   else if(ph.sheet){const c=cellsOf(snap.groups,snap.vars,snap.order).find(x=>x.key===ph.sheet);if(c)P_.append(h('div',{class:'sh-s',onclick:()=>{ph.sheet=null;renderPhone()}}),h('div',{class:'sheet'},h('b',{},c.label),h('div',{class:'sw'},PAL.concat(['#c0392b','#e8467c','#2e8b57']).map(x=>h('i',{class:valOf(c.key)===x?'on':'',style:'background:'+x,onclick:()=>{press(c,x);ph.sheet=null;renderPhone()}}))),h('button',{class:'btn ter',onclick:()=>{ph.sheet=null;renderPhone()}},'Cancel')))}
   P_.append(h('div',{class:'fb'}))}
 
-const FLOW_NAMES={A1:'Empty list',A2:'Choose what to add',A3:'Select Instance',A4:'Trigger added',A5:'Button colour',A6:'Row actions',A7:'Reorder',A8:'Needs attention',A9:'Playing',A10:'Project variable',A11:'Instance variable',A12:'Variable added',A13:'Remote Start',A14:'Remove trigger',A15:'Number settings error',A16:'Text settings',A17:'Rename',A18:'Remove variable',A19:'No instance variables',A20:'No instance selected',A21:'No search results',A22:'Empty scene',A23:'No project variables',A24:'All variables added',A25:'Pick instance first',B1:'Play · Connect devices',B2:'Local ready',B3:'Device joined',B4:'Public confirmation',B5:'Opening public link',B6:'Public ready',B7:'Public failure',B8:'Waiting for Play',B9:'Server running',B10:'Device joined',B11:'Turn off server',B12:'Server off',B13:'Reloading',B14:'Port changed',B15:'Port in use',B16:'Copied',B17:'Starting server',B18:'Independent entry',B21:'Corrected port',B22:'Connections · server off',B23:'Independent · server off',B24:'Independent · starting',B25:'Public link · Play required',B26:'Public link · Off',B27:'Connections · Device connected',A26:'Opening Launcher',A27:'Launcher unavailable',A28:'Launcher unavailable · Playing',C2:'Connecting',C3:'Projects',C4:'Waiting for Play',C5:'Deck',C6:'Confirmed',C7:'Slider',C8:'Text input',C9:'Reconnecting',C10:'Stale controls',C11:'Play ended',C12:'Landscape',C13:'Tablet portrait',C14:'Tablet landscape',C15:'Empty deck',C16:'This device',C17:'Permission needed',C18:'Permission denied',C19:'Other sensor source',C20:'Sensors active',C21:'Sensor source lost',C22:'Confirm takeover',C23:'Server unavailable',C24:'Public link disabled',C26:'Command rejected',C27:'Confirmation unavailable',C28:'Invalid number',C29:'Desktop'};
+const FLOW_NAMES={A1:'Empty list',A2:'Choose what to add',A3:'Select Instance',A4:'Trigger added',A5:'Button colour',A6:'Row actions',A7:'Reorder',A8:'Needs attention',A9:'Playing',A10:'Project variable',A11:'Instance variable',A12:'Variable added',A13:'Remote Start',A14:'Remove trigger',A15:'Number settings error',A16:'Text settings',A17:'Rename',A18:'Remove variable',A19:'No instance variables',A20:'No instance selected',A21:'No search results',A22:'Empty scene',A23:'No project variables',A24:'All variables added',A25:'Pick instance first',B1:'Play · Connect devices',B2:'Local ready',B3:'Device joined',B4:'Public confirmation',B5:'Opening public link',B6:'Public ready',B7:'Public failure',B8:'Waiting for Play',B9:'Server running',B10:'Device joined',B11:'Turn off server',B12:'Server off',B13:'Reloading',B14:'Port changed',B15:'Port in use',B16:'Copied',B17:'Starting server',B18:'Independent entry',B21:'Corrected port',B22:'Connections · server off',B23:'Independent · server off',B24:'Independent · starting',B25:'Public link · Play required',B26:'Public link · Off',B27:'Connections · Device connected',A26:'Opening Launcher',A27:'Launcher unavailable',A28:'Launcher unavailable · Playing',C2:'Connecting',C3:'Projects',C4:'Waiting for Play',C5:'Deck',C6:'After triggering',C7:'Slider',C8:'Text input',C9:'Reconnecting',C10:'Stale controls',C11:'Play ended',C12:'Landscape',C13:'Tablet portrait',C14:'Tablet landscape',C15:'Empty deck',C16:'This device',C17:'Permission needed',C18:'Permission denied',C19:'Other sensor source',C20:'Sensors active',C21:'Sensor source lost',C22:'Confirm takeover',C23:'Server unavailable',C24:'Public link disabled',C26:'Command rejected',C27:'Confirmation unavailable',C28:'Invalid number',C29:'Desktop'};
 function reviewScreen(k){
  if(!FLOW_NAMES[k])return;clearTimeout(toast.t);$('#toast')?.remove();st.reviewRevision=(st.reviewRevision||0)+1;const url=new URL(location.href);url.searchParams.set('screen',k);history.replaceState(null,'',url);
  clearTimeout(ph.t);clearTimeout(ph.rt);st.preview=k;st.groups=sample();st.vars=vsample();st.order=['grp|g1','var|p.Spot intensity','grp|g2'];st.vals={};st.playing=false;st.srv='on';st.pub='off';st.bhv=null;st.delG=st.delV=st.rename=st.renameV=null;st.selV=null;st.draft=null;st.colorFor=null;st.noIntro=true;st.phones=[];st.launcherUnavailable=false;st.blockedPort=3000;st.origin=true;st.originAlive=true;st.portOpen=false;st.port=3001;st.portDraft='3001';st.portErr='';st.srvErr='';st.lnDetail=true;st.open={rt:true,pick:false,vpick:false,menu:false,ln:true,pr:false,pop:false,confirm:false,offConfirm:false};st.pick={sel:[],q:''};st.pickNew=null;
@@ -1348,7 +1350,6 @@ function reviewScreen(k){
  }
  render();
  if(['A27','A28'].includes(k))toast('Open Launcher › Connections › Remote control, then try again.',true);
- if(k==='C6'&&press(cellsOf(st.snap.groups,st.snap.vars)[0]))document.querySelector('.key')?.classList.add('sent');
  if(k==='C26'||k==='C27'){ph.nextResult=k==='C26'?'rejected':'unknown';press(cellsOf(st.snap.groups,st.snap.vars)[0]);}
  if(k==='C28'){const input=document.querySelector('input[type=number]');if(input){input.value='99';input.dispatchEvent(new Event('change'))}}
  document.getElementById('screenReview').value=k;
