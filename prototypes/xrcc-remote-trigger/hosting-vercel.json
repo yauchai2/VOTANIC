@@ -6,7 +6,7 @@
   "entry": "index.html",
   "purpose": "prototype review build",
   "liveUrl": "https://xrcc-remote-trigger.vercel.app/",
-  "deploymentId": "dpl_HML4pcMKnhrdqM7sAt4d9Uf9N3g2",
-  "sourceCommit": "f952b01006c5654098dda83fd613e147a04a93e9",
-  "design": "Align the Launcher Connections overview with the latest Figma layout \u00b7 2026-11-18"
+  "deploymentId": "dpl_7pRNr8VGacVZLXMkojpp2ijLcVgf",
+  "sourceCommit": "a2121b5cb71ee93cbb55a22fa4c2ac0914a4097c",
+  "design": "Default to XRCC Editor with Play off \u00b7 2026-11-18"
 }
