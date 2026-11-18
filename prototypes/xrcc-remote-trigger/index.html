@@ -583,7 +583,8 @@ body.presentation .lstage{margin-inline:auto}
 .connection-tabs{flex:none}
 @media(max-width:700px){.sharing-content{min-height:110px}.share-controls{min-width:100%}}
 .summary-status{display:flex;align-items:center;gap:var(--xrcc-spacing-8)}
-.summary-connected-dot{width:8px;height:8px;flex:none;border-radius:50%;background:var(--xrcc-status-ok)}
+.summary-server-dot{width:8px;height:8px;flex:none;border-radius:50%;background:var(--xrcc-surface-elevated)}
+.summary-server-dot.running{background:var(--xrcc-status-ok)}
 </style>
 </head>
 <body>
@@ -1169,7 +1170,7 @@ function launcher(){
   const keys=h('div',{class:'provider-list'},...data.map(r=>h('div',{class:'provider-row'},ximg(r[3],32),h('div',{class:'provider-info'},h('b',{},r[0]),h('small',{class:'muted'},r[1])),h('small',{class:r[2]==='Password set'?'protected':'muted'},r[2]==='Password set'?ic('key',12):null,r[2]),h('button',{class:'ib','aria-label':r[0]+' actions',onclick:()=>toast('AI key actions are outside this Remote control prototype')},'···'))));
   const search=h('input',{class:'key-search',placeholder:'Search keys','aria-label':'Search keys',oninput:e=>{const q=e.target.value.toLowerCase();Array.from(keys.children).forEach((row,i)=>row.hidden=!data[i][0].toLowerCase().includes(q))}});
   return h('div',{class:'mpane connections-overview'},h('header',{class:'connections-heading'},h('h2',{},'Connections'),h('p',{class:'muted'},'Keys are encrypted and kept on this computer. Projects never contain them, and VOTANIC never sees them.')),
-    h('section',{class:'remote-summary','data-figma':'summary'},deviceArtwork(true),h('div',{class:'summary-copy'},h('b',{},'Remote control'),h('span',{class:'muted summary-status',role:'status'},count?h('i',{class:'summary-connected-dot','aria-hidden':'true'}):null,status+' · '+deviceStatus)),h('button',{class:'btn pri',onclick:()=>{st.lnDetail=true;render()}},'Manage devices')),
+    h('section',{class:'remote-summary','data-figma':'summary'},deviceArtwork(true),h('div',{class:'summary-copy'},h('b',{},'Remote control'),h('span',{class:'muted summary-status',role:'status'},h('i',{class:'summary-server-dot'+(online?' running':''),'aria-hidden':'true'}),h('span',{},online?status+' · '+deviceStatus:status))),h('button',{class:'btn pri',onclick:()=>{st.lnDetail=true;render()}},'Manage devices')),
     h('section',{class:'ai-keys-section'},h('div',{class:'ai-heading'},h('div',{},h('h3',{},'AI keys'),h('p',{class:'muted'},'Used by AI providers in every project on this computer.')),h('button',{class:'btn pri sm',onclick:()=>toast('AI provider setup is outside this Remote control prototype')},'Add key')),search,keys),
     h('section',{class:'speech-section'},h('h3',{},'Speech commands (Wit.ai)'),h('div',{class:'provider-row'},ximg('wit',32),h('div',{class:'provider-info'},h('b',{},'Lobby kiosk token'),h('small',{class:'muted'},'Wit.ai · last used 28 Oct')),h('button',{class:'ib','aria-label':'Speech command actions',onclick:()=>toast('Speech setup is outside this Remote control prototype')},'···'))),
     h('section',{class:'clear-section'},h('h3',{},'Clear unused connection information')));

@@ -196,22 +196,38 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     assert.equal(await page.locator('[data-figma=share]').evaluate(el=>el.offsetHeight),234);
     assert.equal(await page.locator('.qr-caption').count(),0);
     assert.equal(await page.getByRole('switch',{name:'Server',exact:true}).getAttribute('aria-checked'),'false');
-    await page.selectOption('#screenReview','B9');
-    const summary=await page.locator('[data-figma=summary]').boundingBox(),shell=await page.locator('.lsh').boundingBox();
-    assert.deepEqual([summary.x-shell.x,Math.round(summary.y-shell.y),summary.width,summary.height],[345,220,650,120]);
-    assert.equal(await page.locator('.summary-connected-dot').count(),0);
-    await page.selectOption('#screenReview','B27');
     const summaryStatus=page.locator('.remote-summary [role=status]');
-    assert.equal(await summaryStatus.innerText(),'Server running · 1 device connected');
-    assert.equal(await summaryStatus.locator('.summary-connected-dot').isVisible(),true);
+    for(const [screen,label,colour] of [
+      ['B9','Server running · No devices connected','rgb(55, 149, 75)'],
+      ['B27','Server running · 1 device connected','rgb(55, 149, 75)'],
+      ['B22','Server off','rgb(53, 53, 53)'],
+    ]){
+      await page.selectOption('#screenReview',screen);
+      assert.equal(await summaryStatus.innerText(),label);
+      const geometry=await summaryStatus.evaluate(row=>{
+        const card=row.closest('.remote-summary').getBoundingClientRect();
+        const shell=row.closest('.lsh').getBoundingClientRect();
+        const dot=row.querySelector('.summary-server-dot');
+        const rect=dot.getBoundingClientRect();
+        const text=row.querySelector('span').getBoundingClientRect();
+        return {
+          card:[card.x-shell.x,Math.round(card.y-shell.y),card.width,card.height],
+          dot:[rect.x-card.x,rect.y-card.y,rect.width,rect.height],
+          labelX:text.x-card.x,
+          colour:getComputedStyle(dot).backgroundColor,
+        };
+      });
+      assert.deepEqual(geometry,{card:[345,220,650,120],dot:[120,70,8,8],labelX:136,colour},screen);
+    }
+    await page.selectOption('#screenReview','B27');
     await page.getByRole('button',{name:'Manage devices',exact:true}).click();
     assert.equal(await page.locator('.device-row').count(),1);
     assert.equal(await page.getByRole('button',{name:'Disconnect',exact:true}).count(),0);
     await page.getByRole('switch',{name:'Server',exact:true}).click();
     await page.getByRole('button',{name:'Turn off',exact:true}).click();
     await page.getByRole('button',{name:'Connections',exact:true}).last().click();
-    assert.match(await summaryStatus.innerText(),/No devices connected/);
-    assert.equal(await summaryStatus.locator('.summary-connected-dot').count(),0);
+    assert.equal(await summaryStatus.innerText(),'Server off');
+    assert.equal(await summaryStatus.locator('.summary-server-dot.running').count(),0);
     await page.selectOption('#screenReview','A9');
     const rowIndents=await page.locator('.rt .irow .nm').evaluateAll(nodes=>{const r=document.querySelector('.rt').getBoundingClientRect();return nodes.map(n=>n.getBoundingClientRect().x-r.x)});
     for(const x of rowIndents)assert.ok(Math.abs(x-81)<1,'Instance and Variable label alignment');
