@@ -6,7 +6,7 @@
   "entry": "index.html",
   "purpose": "prototype review build",
   "liveUrl": "https://xrcc-remote-trigger.vercel.app/",
-  "deploymentId": "dpl_G1zJe3qNUC9arpQeZn2K99hSopHY",
-  "sourceCommit": "791c990325c10f600ab9ec46fc65ac591796f4e5",
-  "design": "Measured Workbench frame and component parity \u00b7 2026-11-18"
+  "deploymentId": "dpl_CEdjma91pimTVRwjiywkMP8wuwuC",
+  "sourceCommit": "d9ba5927df5500143167caa3bf09a5ba1077274c",
+  "design": "Use Workbench monitor and phone artwork in Remote Trigger \u00b7 2026-11-18"
 }
