@@ -6,7 +6,7 @@
   "entry": "index.html",
   "purpose": "prototype review build",
   "liveUrl": "https://xrcc-remote-trigger.vercel.app/",
-  "deploymentId": "dpl_ChpMTTj9A88MkbKoeGVuRNCSJLsC",
-  "sourceCommit": "b84c977032ee263e9a0b585e3a5237074522d78f",
-  "design": "Refined Launcher visual hierarchy \u00b7 Public activation \u00b7 always-visible Port \u00b7 2026-11-17"
+  "deploymentId": "dpl_EgX891A3rfZ5yiABqiPPhRTLyyX9",
+  "sourceCommit": "6fcb113",
+  "design": "Mixed Remote List and recovery improvements \u00b7 2026-11-18"
 }
