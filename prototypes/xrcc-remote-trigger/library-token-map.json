@@ -1,13 +1,240 @@
 {
   "source": "https://www.figma.com/design/De8nKqO81yciw4wH5xfpxA/Library?node-id=17465-276",
-  "notification": {"name":"Notification / Dark", "variant":"Type=Default", "componentKey":"69b782e559257123f79e35a3a2a234862147b0f4", "undo":false, "close":true},
-  "bell": {"name":"icon/outline/bell-02", "componentKey":"24dbda9a12f9e719ea480dd32ca862a055a338a5"},
-  "cssAliasesForExistingTokens": {
-    "--xrcc-surface-canvas": {"figma":"surface/canvas", "value":"#1e1e21"},
-    "--xrcc-text-accent": {"figma":"text/accent", "value":"#b89afa"},
-    "--xrcc-text-error": {"figmaPaintVariable":"VariableID:d34ae247df0b6f6706a7155dcb28fe5d66122e39/17459:1119", "source":"A15 inline field error", "value":"#ff453a"},
-    "--xrcc-yellow-100": {"figma":"color/yellow/100", "value":"#f9ac2f"}
+  "notification": {
+    "name": "Notification / Dark",
+    "variant": "Type=Default",
+    "componentKey": "69b782e559257123f79e35a3a2a234862147b0f4",
+    "undo": false,
+    "close": true
   },
-  "layout": {"padding":"spacing/16, spacing/20", "radius":"radius/md (8)", "typography":"typography/body/lg (16/24), Roboto Regular"},
-  "note":"CSS aliases map existing Library values; no Figma token or component was created or published."
+  "bell": {
+    "name": "icon/outline/bell-02",
+    "componentKey": "24dbda9a12f9e719ea480dd32ca862a055a338a5"
+  },
+  "cssAliasesForExistingTokens": {
+    "--xrcc-surface-canvas": {
+      "figma": "surface/canvas",
+      "value": "#1e1e21"
+    },
+    "--xrcc-surface-panel": {
+      "figma": "surface/panel",
+      "value": "#161616"
+    },
+    "--xrcc-surface-header": {
+      "figma": "surface/header",
+      "value": "#2a2531"
+    },
+    "--xrcc-surface-elevated": {
+      "figma": "surface/elevated",
+      "value": "#353535"
+    },
+    "--xrcc-surface-accent-muted": {
+      "figma": "surface/accent-muted",
+      "value": "#5f4b8b"
+    },
+    "--xrcc-surface-row-hover": {
+      "figma": "surface/row-hover",
+      "value": "#2a2531"
+    },
+    "--xrcc-action-primary-bg": {
+      "figma": "action/primary/background/default",
+      "value": "#392e52"
+    },
+    "--xrcc-action-primary-pressed": {
+      "figma": "action/primary/background/pressed",
+      "value": "#4b387d"
+    },
+    "--xrcc-action-primary-content": {
+      "figma": "action/primary/content/default",
+      "value": "#b89afa"
+    },
+    "--xrcc-action-destructive-bg": {
+      "figma": "action/destructive/background/default",
+      "value": "#a32929"
+    },
+    "--xrcc-selection-bg": {
+      "figma": "selection/background/default",
+      "value": "#392e52"
+    },
+    "--xrcc-text-primary": {
+      "figma": "text/primary",
+      "value": "#e5e5e5"
+    },
+    "--xrcc-text-secondary": {
+      "figma": "text/secondary",
+      "value": "#c8c8c8"
+    },
+    "--xrcc-text-subtle": {
+      "figma": "text/subtle",
+      "value": "#818181"
+    },
+    "--xrcc-text-accent": {
+      "figma": "text/accent",
+      "value": "#b89afa"
+    },
+    "--xrcc-text-error": {
+      "figma": "status/error/text",
+      "value": "#ff453a"
+    },
+    "--xrcc-border-default": {
+      "figma": "border/default",
+      "value": "#545454"
+    },
+    "--xrcc-border-subtle": {
+      "figma": "border/subtle",
+      "value": "#676767"
+    },
+    "--xrcc-border-disabled": {
+      "figma": "border/disabled",
+      "value": "#353535"
+    },
+    "--xrcc-border-interactive": {
+      "figma": "border/interactive",
+      "value": "#b89afa"
+    },
+    "--xrcc-border-error": {
+      "figma": "border/error",
+      "value": "#ff453a"
+    },
+    "--xrcc-status-ok": {
+      "figma": "status/success/default",
+      "value": "#37954b"
+    },
+    "--xrcc-status-warn": {
+      "figma": "status/warning/default",
+      "value": "#c7843a"
+    },
+    "--xrcc-status-error": {
+      "figma": "status/error/default",
+      "value": "#a32929"
+    },
+    "--xrcc-yellow-100": {
+      "figma": "color/yellow/100",
+      "value": "#f9ac2f"
+    },
+    "--xrcc-spacing-2": {
+      "figma": "spacing/2",
+      "value": "2px"
+    },
+    "--xrcc-spacing-4": {
+      "figma": "spacing/4",
+      "value": "4px"
+    },
+    "--xrcc-spacing-8": {
+      "figma": "spacing/8",
+      "value": "8px"
+    },
+    "--xrcc-spacing-12": {
+      "figma": "spacing/12",
+      "value": "12px"
+    },
+    "--xrcc-spacing-16": {
+      "figma": "spacing/16",
+      "value": "16px"
+    },
+    "--xrcc-spacing-20": {
+      "figma": "spacing/20",
+      "value": "20px"
+    },
+    "--xrcc-spacing-24": {
+      "figma": "spacing/24",
+      "value": "24px"
+    },
+    "--xrcc-spacing-28": {
+      "figma": "spacing/28",
+      "value": "28px"
+    },
+    "--xrcc-spacing-32": {
+      "figma": "spacing/32",
+      "value": "32px"
+    },
+    "--xrcc-spacing-36": {
+      "figma": "spacing/36",
+      "value": "36px"
+    },
+    "--xrcc-spacing-40": {
+      "figma": "spacing/40",
+      "value": "40px"
+    },
+    "--xrcc-spacing-48": {
+      "figma": "spacing/48",
+      "value": "48px"
+    },
+    "--xrcc-radius-xs": {
+      "figma": "radius/xs",
+      "value": "2px"
+    },
+    "--xrcc-radius-sm": {
+      "figma": "radius/sm",
+      "value": "4px"
+    },
+    "--xrcc-radius-md": {
+      "figma": "radius/md",
+      "value": "8px"
+    },
+    "--xrcc-radius-lg": {
+      "figma": "radius/lg",
+      "value": "16px"
+    },
+    "--xrcc-radius-2xl": {
+      "figma": "radius/2xl",
+      "value": "24px"
+    },
+    "--xrcc-radius-3xl": {
+      "figma": "radius/3xl",
+      "value": "32px"
+    },
+    "--xrcc-project-variable": {
+      "figma": "behaviour/project-variable",
+      "value": "#8f7509"
+    }
+  },
+  "layout": {
+    "padding": "spacing/16, spacing/20",
+    "radius": "radius/md (8)",
+    "typography": "typography/body/lg (16/24), Roboto Regular"
+  },
+  "note": "CSS aliases map published XRCC Library values. Feature-specific artwork and layout are listed separately.",
+  "typographyAliases": {
+    "--xrcc-body-lg": {
+      "figma": "body/lg",
+      "value": "400 16px/24px Roboto"
+    },
+    "--xrcc-body-lg-bold": {
+      "figma": "body/lg-bold",
+      "value": "700 16px/24px Roboto"
+    },
+    "--xrcc-body-md": {
+      "figma": "body/md",
+      "value": "400 14px/20px Roboto"
+    },
+    "--xrcc-body-md-bold": {
+      "figma": "body/md-bold",
+      "value": "700 14px/20px Roboto"
+    },
+    "--xrcc-body-sm": {
+      "figma": "body/sm",
+      "value": "400 12px/18px Roboto"
+    },
+    "--xrcc-caption": {
+      "figma": "caption",
+      "value": "400 11px/16px Roboto"
+    }
+  },
+  "serverStatusBadge": {
+    "name": "Badge",
+    "variant": "variant=solid, size=small, rounded=true, empty=true",
+    "keys": {
+      "positive": "4ece9e85ddf09978185ffe5a2d48253bf6fe5e88",
+      "neutral": "2ed454cf2b7e839a81267bfaeb8c0fbf0a06b5a1",
+      "primary": "33db9eab4570aa311b8e3964ebe9a6ab8ea547e9",
+      "critical": "bc8f88820328400a854964ea8224936a52104eac"
+    }
+  },
+  "featureSpecific": {
+    "Remote Key and layout controls": "Reuse the shared Workbench Remote Key components for Trigger, Slider, Toggle, Text and Number. These are feature-specific controls.",
+    "Device and QR art": "Reuse the Workbench device artwork and QR instance. The QR content, project data and user-selected control colours are feature data.",
+    "Scrims and scene canvases": "The XRCC Library exposes no matching scrim or XRCC scene backdrop token. Preserve the existing viewport mock and state overlays.",
+    "Port and share composition": "Compose the XRCC Switch, input, button, tabs and badge variants with Library styles. The server settings and sharing groups are feature-specific layouts."
+  }
 }
