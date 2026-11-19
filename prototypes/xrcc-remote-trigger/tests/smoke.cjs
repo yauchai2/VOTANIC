@@ -91,10 +91,8 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     await page.locator('.fb').getByRole('button',{name:'Close notification'}).click();
     assert.equal(await page.locator('.fb').evaluate(n=>n.classList.contains('show')),false);
     await page.getByRole('button', { name: 'This device', exact: true }).click();
-    await page.getByRole('button', { name: 'Allow sensors', exact: true }).click();
-    assert.equal(await page.evaluate(() => sensor.permission), 'granted');
-    await page.getByRole('button', { name: 'Simulate permission denied', exact: true }).click();
-    assert.equal(await page.evaluate(() => sensor.owner), null);
+    assert.equal(await page.getByRole('button', { name: 'Allow sensors', exact: true }).count(), 0);
+    assert.match(await page.locator('.sheet').innerText(), /on by default/);
     await page.evaluate(() => { ph.sheet = null; ph.changed = true; renderPhone(); });
     assert.equal(await page.locator('input[type=range]').isDisabled(), true);
     await page.getByRole('button', { name: 'Refresh list', exact: true }).click();
@@ -122,7 +120,7 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     await page.setViewportSize({width:1440,height:1100});
     await page.locator('.review-tools summary').click();
     const allScreens=await page.evaluate(()=>Object.keys(FLOW_NAMES));
-    assert.equal(allScreens.length,80);
+    assert.equal(allScreens.length,74);
     for(const screen of allScreens){
       await page.selectOption('#screenReview',screen);
       await page.waitForTimeout(20);
@@ -167,10 +165,8 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     assert.equal(await page.getByRole('spinbutton',{name:'Guest count'}).inputValue(),'99');
     assert.equal(await page.locator('.field-error.show').isVisible(),true);
     if(screenshotDir) await page.locator('#phone').screenshot({path:path.join(screenshotDir,'remote-inline-error.png')});
-    await page.selectOption('#screenReview','C22');
-    await page.getByRole('button',{name:'Confirm takeover',exact:true}).click();
-    assert.notEqual(await page.evaluate(()=>sensor.owner),"Alan's iPad");
-    assert.equal(await page.evaluate(()=>ph.confirmTakeover),false);
+    await page.selectOption('#screenReview','C16');
+    assert.equal(await page.locator('.sheet .tag.ok').count(),3);
     // Main journey follows Figma: local devices can join before Play, directly into the scoped project.
     await page.selectOption('#screenReview','A4');
     assert.equal(await page.locator('.rt .head .connect-devices').count(),0);
@@ -435,7 +431,7 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     assert.deepEqual(deckBounds,[[20,112,111,111],[139,112,230,111],[20,231,111,111],
       [139,231,111,111],[20,350,230,111],[258,350,111,111]],'C5 matches all six Figma card bounds');
     assert.deepEqual(errors, []);
-    console.log('PASS: single binding, cancel/Esc without replacement or Radio, slider, numeric validation, rejection/unknown, sensor permission, stale guard, network guard, Play/server/public lifecycle, changed port, responsive 3/6/8 columns, all 80 Figma states, 1100px Launcher and takeover confirmation, Library notification dismissal, inline errors and no rejected-number retry; no page errors.');
+    console.log('PASS: single binding, cancel/Esc without replacement or Radio, slider, numeric validation, rejection/unknown, sensor default-on, stale guard, network guard, Play/server/public lifecycle, changed port, responsive 3/6/8 columns, all 74 Figma states, 1100px Launcher, Library notification dismissal, inline errors and no rejected-number retry; no page errors.');
   } finally {
     if (browser) await browser.close();
     await new Promise(resolve => server.close(resolve));

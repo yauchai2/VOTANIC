@@ -31,4 +31,4 @@ Tests require Playwright and Chromium. Coverage includes the scoped and generic 
 - Library Notification / Dark, Type=Default is used for feedback. `library-token-map.json` records the source components and token aliases.
 - Source: `yauchai2/VOTANIC`, branch `claude/project-thread-pddqur`, draft PR #7. Push only to this branch.
 - Deploy `index.html`, `font-license.txt` and `vercel.json` together to the production target of the project recorded in `hosting-vercel.json`. The stable URL is also linked from the Figma page overview. Vercel account access may be required by existing project protection.
-- This is an interaction prototype: QR, network, devices, server, sensor permissions and XRCC acknowledgements are simulated. It does not implement real cross-window or cross-device transport.
+- This is an interaction prototype: QR, network, devices, server, sensors and XRCC acknowledgements are simulated. It does not implement real cross-window or cross-device transport.
