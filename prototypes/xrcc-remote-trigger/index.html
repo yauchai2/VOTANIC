@@ -563,8 +563,14 @@ body.presentation .lstage{margin-inline:auto}
 .server-state{display:flex;align-items:center;gap:6px}
 .server-state i{width:8px;height:8px;background:var(--xrcc-surface-elevated);border-radius:50%;flex:none}
 .server-state.on i{background:var(--xrcc-status-ok)}.server-state.busy i{background:var(--xrcc-action-primary-bg)}.server-state.error i{background:var(--xrcc-status-error)}
-.port-and-reload{display:flex;align-items:flex-start;gap:var(--xrcc-spacing-8)}
-.port-and-reload .ib{width:36px;height:36px;margin-top:20px;border-radius:var(--xrcc-radius-md)}
+.port-and-reload{display:flex;align-items:center;gap:var(--xrcc-spacing-8)}
+.port-and-reload .port-field{position:relative;display:flex;flex-direction:row;align-items:center;gap:var(--xrcc-spacing-12);width:auto}
+.port-and-reload .port-field>span{width:23px}
+.port-and-reload .port-field .pin{width:112px}
+.port-and-reload .port-field small{position:absolute;left:35px;top:40px}
+.port-and-reload .ib{width:36px;height:36px;border-radius:var(--xrcc-radius-md)}
+.server-strip:has(.port-field small){padding-bottom:var(--xrcc-spacing-36)}
+.server-strip .server-toggle{gap:var(--xrcc-spacing-8)}
 .server-strip .server-toggle>span{font:var(--xrcc-body-md)}
 .server-strip .sw2{width:40px;height:23px;flex:none;padding:0;border:0;background:var(--xrcc-surface-elevated)}
 .server-strip .sw2.on{background:var(--xrcc-action-primary-pressed)}.server-strip .sw2:not(.on)::after{background:var(--xrcc-text-accent)}

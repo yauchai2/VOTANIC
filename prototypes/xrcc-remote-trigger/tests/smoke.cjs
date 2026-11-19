@@ -240,9 +240,20 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     assert.equal(await page.locator('.connection-progress[role=status]').innerText(),'Creating public link…');
     assert.equal(await page.getByRole('button',{name:'Creating…',exact:true}).count(),0);
     await page.selectOption('#screenReview','B2');
-    const expected={breadcrumb:[280,112,780,28],heading:[280,164,780,60],server:[280,248,780,90],share:[280,362,780,266],devices:[280,652,780,132],empty:[280,688,780,96]};
+    const expected={breadcrumb:[280,112,780,28],heading:[280,164,780,60],server:[280,248,780,82],share:[280,354,780,266],devices:[280,644,780,132],empty:[280,680,780,96]};
     const geometry=await page.locator('.lsh').evaluate(root=>{const r=root.getBoundingClientRect();return Object.fromEntries(Array.from(root.querySelectorAll('[data-figma]')).map(n=>{const b=n.getBoundingClientRect();return[n.dataset.figma,[b.x-r.x,b.y-r.y,b.width,b.height]]}))});
     for(const [name,box]of Object.entries(expected))for(let i=0;i<4;i++)assert.ok(Math.abs(geometry[name][i]-box[i])<=1,`Figma geometry ${name}[${i}]: ${geometry[name][i]} vs ${box[i]}`);
+    for(const screen of ['B2','B12','B14','B15','B17']){
+      await page.selectOption('#screenReview',screen);
+      const aligned=await page.locator('.server-strip').evaluate(card=>{
+        const outer=card.getBoundingClientRect();
+        return ['.port-field>span','.pin','[aria-label="Reload server"]','.server-toggle'].map(selector=>{
+          const rect=card.querySelector(selector).getBoundingClientRect();
+          return [Math.round(rect.left-outer.left),rect.top+rect.height/2-outer.top];
+        });
+      });
+      assert.deepEqual(aligned,[[480,41],[515,41],[635,41],[687,41]],screen);
+    }
     await page.selectOption('#screenReview','B12');
     assert.equal(await page.locator('.remote-detail').evaluate(el=>[...el.children].map(n=>n.dataset.figma).slice(-3).join(',')),'server,share,devices');
     assert.equal(await page.locator('[data-figma=share]').evaluate(el=>el.offsetHeight),234);
