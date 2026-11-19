@@ -152,6 +152,7 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     await page.mouse.down();
     assert.notEqual(await keyColour(),idleColour);
     await page.mouse.up();
+    await page.mouse.move(2,2);
     assert.equal(await keyColour(),idleColour);
     assert.equal(await page.locator('.fb.show').count(),0);
     await triggerKey.press('Space');

@@ -507,10 +507,11 @@ body.presentation .stage-play{min-height:100dvh}
 .pdeck{grid-template-columns:repeat(var(--cols,3),var(--cell,100px))}
 .key{border-radius:var(--xrcc-radius-lg);border-color:var(--xrcc-border-subtle)}
 .key-trigger,.key-toggle,.key-slider{background:var(--xrcc-surface-elevated);border-color:var(--xrcc-border-default)}
-.key-trigger[aria-disabled=false]:active{background:var(--xrcc-surface-canvas)}
+.key-trigger[aria-disabled=false]:hover,.key-toggle[aria-disabled=false]:not(.on):hover{background:var(--xrcc-surface-row-hover)}
+.key-trigger[aria-disabled=false]:active{background:var(--xrcc-selection-bg);border-color:var(--xrcc-text-accent)}.key-trigger[aria-disabled=false]:active .ic2{background:var(--xrcc-selection-bg)!important}
 .key-trigger,.key-toggle{padding:var(--xrcc-spacing-8) var(--xrcc-spacing-12);gap:var(--xrcc-spacing-8)}
 .key-trigger .l,.key-toggle .l{width:100%;font:700 14px/17px Roboto,sans-serif;overflow-wrap:anywhere}
-.key.key-toggle.on{background:var(--xrcc-surface-elevated);border-color:var(--xrcc-text-accent);box-shadow:inset 0 0 0 1px var(--xrcc-text-accent)}
+.key.key-toggle.on{background:var(--xrcc-selection-bg);border-color:var(--xrcc-text-accent);box-shadow:none}
 .key-toggle.on .v{color:var(--xrcc-text-accent)}
 .key .led{top:11px;right:11px;width:8px;height:8px}.key.on .led{background:var(--xrcc-status-ok)}
 .key .ic2{width:44px;height:44px;flex:none}
