@@ -14,7 +14,7 @@
 
 ## 驗證
 
-操作測試涵蓋 74 個狀態、唯一綁定、直接點列選取、分類排序、Local Play 前加入、Public 開關／失敗／撤銷、Port 重試、等待裝置的 Server shutdown、輸入驗證、sensor 接管、stale／斷線、3／6／8 欄。無 pageerror。
+操作測試涵蓋 75 個狀態、唯一綁定、直接點列選取、分類排序、Local Play 前加入、Public 開關／失敗／撤銷、Port 重試、等待裝置的 Server shutdown、輸入驗證、sensor 接管、stale／斷線、3／6／8 欄。無 pageerror。
 
 Web 量度：Launcher 1100×952；詳細頁內容 x280／y112／w780，share x280／y248／780×264，devices y536，server y692。主要區塊與 Figma 差異不超過 1 px；Instance／Variable 文字起點 x81；Connections 摘要 x345／y220／650×120。
 
