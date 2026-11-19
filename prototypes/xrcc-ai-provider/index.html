@@ -358,12 +358,12 @@ button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(
 @media(max-width:760px){.first-tasks{flex-wrap:wrap;justify-content:center}.remote-share{flex-wrap:wrap}.first-art{max-height:40dvh}}
 @media(max-width:640px){.lay{padding:12px 8px}.panel,.panel.first,.panel.voices-panel{height:calc(100dvh - 24px)}.panel.first .pbody{padding:24px 16px;gap:24px}.first-tasks{padding:0}.win.lw{height:calc(100dvh - 24px)}}
 @media(prefers-reduced-motion:reduce){.wave i,.skel i{animation:none}}
-.voice-picks{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 .voice-catalog{overflow:hidden;border:1px solid var(--b-def);border-radius:8px;background:var(--canvas)}
 .voice-columns{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,47.5%) 66px;padding:8px 12px;background:var(--header);border-bottom:1px solid var(--b-dis);font-weight:700}
 .voice-columns span:last-child{text-align:right}
 .voice-scroll{max-height:240px;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
 .voice-scroll ul{list-style:none}
+.voice-loading .skel{height:40px;border:0;border-radius:0;gap:24%;padding:0 12px}
 .voice-option{display:grid;grid-template-columns:minmax(0,1fr) 52px;min-height:40px;align-items:center}
 .voice-option[hidden],.voice-empty[hidden]{display:none}
 .voice-option:hover{background:var(--faded)}
@@ -373,13 +373,10 @@ button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(
 .voice-option.on .mdb,.voice-check{color:var(--pc)}
 .voice-option .voice-audition{display:grid;place-items:center;justify-self:center;width:28px;height:28px;border-radius:50%;background:var(--muted)}
 .voice-audition:disabled{opacity:.45;cursor:default}
-.voice-featured{display:flex;align-items:center}
-.voice-featured [data-vchoose]{height:100%;justify-content:center}
 .voice-search{gap:8px}
 .voice-search input{flex:1;min-width:0;background:none;border:0;color:var(--t1);font:inherit;outline:0}
 .voice-search:focus-within{border-color:var(--b-int)}
 .voice-empty{padding:16px 12px;text-align:center}
-.voice-expand{align-self:flex-start}
 .voice-provider{padding:12px 16px;background:var(--canvas);border:1px solid var(--b-sub);border-radius:8px;min-height:68px}
 .voice-grid{width:min(896px,100%)}
 .voice-grid>.voice,.voice-grid>.new{min-height:160px}
@@ -684,7 +681,7 @@ document.addEventListener('click',e=>{
 function cmAct(act,t,id){
  if(t==='voice'){const v=S.voices.find(v=>v.id===id);
   if(act==='prev'){[...ov.querySelectorAll('[data-play]')].find(b=>b.dataset.play===id)?.click();return}
-  if(act==='edit'||act==='dup'){S.voiceDraft={...v,n:act==='dup'?v.n+' copy':v.n,edit:act==='edit'?v.id:null,copy:act==='dup',preview:S.preview};S.advOpen=false;S.vall=false;return newVoice()}
+  if(act==='edit'||act==='dup'){S.voiceDraft={...v,n:act==='dup'?v.n+' copy':v.n,edit:act==='edit'?v.id:null,copy:act==='dup',preview:S.preview};S.advOpen=false;return newVoice()}
   return dlg('Delete '+v.n+'?',`<div class="lg">Review the voice settings of any characters that used this preset.</div>`,`${cancel}<button class="btn pri" data-cdel="voice|${id}" style="background:var(--err,#c92e5f)">Delete preset</button>`,'sub')}
  if(t==='sess'){const s=S.sessions[+id];
   if(act==='edit')return newSession(s,+id);
@@ -811,8 +808,8 @@ function captureVoice(){
  for(const field of b.querySelectorAll('[data-voice-param]')) S.voiceDraft[field.dataset.voiceParam]=field.value;
 }
 function voiceRecovery(state){
- const skeleton='<div class="skel"><i style="width:32px;height:32px"></i><i style="width:110px;height:12px"></i></div>';
- if(state==='loading')return `<div class="col g8" role="status"><b class="mdb">Voice</b><div class="voice-picks">${skeleton.repeat(4)}</div><div class="sm t2">Getting your MiniMax voices. Voices from your account show up here too.</div></div>`;
+ const skeleton='<div class="skel"><i style="width:96px;height:12px"></i><i style="width:120px;height:12px"></i></div>';
+ if(state==='loading')return `<div class="col g8" role="status"><b class="mdb">Voice</b><div class="voice-catalog voice-loading">${skeleton.repeat(6)}</div><div class="sm t2">Getting your MiniMax voices. Voices from your account show up here too.</div></div>`;
  return `<div class="col g8"><b class="mdb">Voice</b><div class="errbox" role="alert">${ic('Refresh','i20','color:var(--err)')}<div class="col g4 fill"><b class="mdb">Couldn't load MiniMax voices</b><span class="sm">MiniMax didn't answer. Check the key in Providers, or try again in a moment.</span></div><button class="btn inv" data-vretry>Try again</button></div></div>`;
 }
 function loadVoiceList(){
@@ -834,11 +831,9 @@ function voiceChoices(draft){
  const language=draft.meta||'Cantonese';
  const preview=(name)=>{const playing=name===draft.audition;return `<button class="pb voice-audition" data-audition="${esc(name)}" aria-label="${playing?'Stop':'Preview'} ${esc(name)}" ${draft.preview.trim()?'':'disabled'}>${ic(playing?'Stop':'Play','i16')}</button>`;};
  const row=([name,tone])=>{const selected=name===draft.voice;return `<li class="voice-option ${selected?'on':''}" data-vt="${esc((name+' '+tone).toLowerCase())}"><button class="voice-choice" aria-pressed="${selected}" data-vchoose="${esc(name)}"><span class="mdb">${name}</span><span class="sm t2">${tone}</span><span class="voice-check" aria-hidden="true">${selected?ic('Check','i16'):''}</span></button>${preview(name)}</li>`;};
- const cards=VLIST.slice(0,4).map(([name,tone])=>{const selected=name===draft.voice;return `<div class="pick voice-featured ${selected?'on':''}">${preview(name)}<button class="col g4 fill" data-vchoose="${esc(name)}" aria-pressed="${selected}"><b class="mdb ${selected?'tacc':''}">${name}</b><span class="sm t2">${tone}</span></button></div>`;}).join('');
- const other=draft.voice&&!VLIST.slice(0,4).some(v=>v[0]===draft.voice);
- return `<section class="col g8 voice-picker"><div class="row"><span class="mdb fill">Voice</span><span class="sm t2">${S.vall?esc(language):VLIST.length+' '+esc(language)+' voices'}</span></div>
- ${S.vall?`<label class="input voice-search">${ic('Search')}<input type="search" data-vq aria-label="Search by name or tone" placeholder="Search by name or tone" value="${esc(draft.query)}"></label>
- <div class="voice-catalog"><div class="voice-columns sm t2" aria-hidden="true"><span>Voice</span><span>Tone &amp; style</span><span>Preview</span></div><div class="voice-scroll" data-voice-list><ul aria-label="Available voices">${VLIST.map(row).join('')}</ul><div class="sm t2 voice-empty" data-voice-empty hidden>No voices match your search.</div></div></div><div class="row g8"><button class="lnk fill" data-vall>Show recommended only</button><span class="sm t2" data-voice-count role="status"></span></div>`:`<div class="caption t3">RECOMMENDED FOR ${esc(language.toUpperCase())}</div><div class="voice-picks">${cards}</div>${other?`<div class="sm t2">Selected: <span class="t1">${esc(draft.voice)}</span></div>`:''}<button class="lnk voice-expand" data-vall>Show all ${VLIST.length} voices</button>`}</section>`;
+ return `<section class="col g8 voice-picker"><div class="row"><span class="mdb fill">Voice</span><span class="sm t2">${esc(language)}</span></div>
+ <label class="input voice-search">${ic('Search')}<input type="search" data-vq aria-label="Search by name or tone" placeholder="Search by name or tone" value="${esc(draft.query)}"></label>
+ <div class="voice-catalog"><div class="voice-columns sm t2" aria-hidden="true"><span>Voice</span><span>Tone &amp; style</span><span>Preview</span></div><div class="voice-scroll" data-voice-list><ul aria-label="Available voices">${VLIST.map(row).join('')}</ul><div class="sm t2 voice-empty" data-voice-empty hidden>No voices match your search.</div></div></div><div class="row" style="justify-content:flex-end"><span class="sm t2" data-voice-count role="status"></span></div></section>`;
 }
 function newVoice(focus){const draft=S.voiceDraft||(S.voiceDraft={n:'',prov:'minimax',meta:'Cantonese',preview:'早晨！歡迎嚟到博物館。',voice:'Lyrical'});
  dlg(draft.copy?'Duplicate voice preset':draft.edit?'Edit voice preset':'New voice preset',`<div class="lg">Pick a voice by ear. You can change it any time.</div><div class="content">${inp('Name',draft.n,'Gallery narrator')}
@@ -849,7 +844,15 @@ function newVoice(focus){const draft=S.voiceDraft||(S.voiceDraft={n:'',prov:'min
  <div class="adv"><div class="top" data-adv>${ic('Chevron','i16',S.advOpen?'transform:rotate(90deg)':'')}<span class="md t2">Advanced</span><span class="fill"></span>${S.advOpen?'<button class="btn" data-vreset>Reset</button>':'<span class="sm t3">Speed 1.0 · Pitch 0 · Emotion auto</span>'}</div>
  ${S.advOpen?`<div class="bot"><div class="col g8"><div class="row sm t2"><span class="fill">Speed</span><output class="t1">${((Number(draft.speed??50)+50)/100).toFixed(1)}×</output></div><input aria-label="Speed" type="range" min="0" max="100" data-voice-param="speed" value="${draft.speed||50}"></div><div class="col g8"><div class="row sm t2"><span class="fill">Pitch</span><output class="t1">${Number(draft.pitch??50)-50}</output></div><input aria-label="Pitch" type="range" min="0" max="100" data-voice-param="pitch" value="${draft.pitch||50}"></div><div class="col g8"><span class="sm t2">Emotion</span><select class="sel" aria-label="Emotion" data-voice-param="emotion">${['Auto','Neutral','Warm'].map(value=>`<option ${value===draft.emotion?'selected':''}>${value}</option>`).join('')}</select></div></div>`:''}</div></div>`,`${cancel}<button class="btn pri" data-savev ${draft.state&&draft.state!=='ready'?'disabled':''}>${draft.copy?'Save copy':draft.edit?'Save changes':'Save preset'}</button>`);
  const layer=activeLayer(),list=layer.querySelector('[data-voice-list]');
- if(list){filterVoiceRows(list.closest('.voice-picker'));list.scrollTop=draft.listScroll||0;}
+ if(list){
+  filterVoiceRows(list.closest('.voice-picker'));
+  if(draft.listScroll!=null)list.scrollTop=draft.listScroll;
+  else{
+   const selected=list.querySelector('[aria-pressed="true"]')?.closest('.voice-option');
+   if(selected&&selected.getBoundingClientRect().bottom>list.getBoundingClientRect().bottom)
+    list.scrollTop=selected.getBoundingClientRect().top-list.getBoundingClientRect().top;
+  }
+ }
  if(focus)layer.querySelector(focus)?.focus({preventScroll:true});
 }
 function pickDlg(id){const t=TASKS.find(x=>x.id===id);const ps=S.providers;
@@ -995,7 +998,7 @@ document.addEventListener('click',e=>{
  if(e.target.closest('[data-savesess]')){const i=activeLayer().querySelectorAll('.dlg input,.dlg textarea');{const idx=e.target.closest('[data-savesess]').dataset.savesess;const obj={n:i[0].value.trim()||'Untitled session',u:'Not used yet',p:'“'+((i[1]&&i[1].value)||'Write the character prompt here.').trim()+'”'};if(idx!==''){obj.u=S.sessions[+idx].u;S.sessions[+idx]=obj}else S.sessions.push(obj)}S.tab='sessions';toast('Session saved');return renderPanel()}
  if(km){S.kmenu=S.kmenu===km.dataset.kmenu?null:km.dataset.kmenu;return redrawConnections()}
  if(S.kmenu&&ov.querySelector('.win')){S.kmenu=null;redrawConnections()}
- const t=e.target.closest('[data-eye],[data-conn],[data-connback],[data-addwit],[data-savewit],[data-vall],[data-nai],[data-sx],[data-x],[data-back],[data-manage],[data-ext],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-unset],[data-pu],[data-doun],[data-dokey],[data-addserver],[data-setupserver],[data-editserver],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dEmpty,#dLaunch,#dLaunch0,#dLConn,#dSettings,#dSeed,#dLaunchCustom,[data-lmanage],[data-ladd],[data-clear-search],[data-wrename],[data-remote],[data-remote-from-xrcc],[data-remote-return],[data-remote-stop],[data-remote-public],[data-remote-public-confirm],[data-remote-tab],[data-remote-power],[data-remote-copy],[data-vchoose],[data-audition],[data-vprovider],[data-vretry],[data-vreset],[data-creset]');
+ const t=e.target.closest('[data-eye],[data-conn],[data-connback],[data-addwit],[data-savewit],[data-nai],[data-sx],[data-x],[data-back],[data-manage],[data-ext],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-unset],[data-pu],[data-doun],[data-dokey],[data-addserver],[data-setupserver],[data-editserver],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dEmpty,#dLaunch,#dLaunch0,#dLConn,#dSettings,#dSeed,#dLaunchCustom,[data-lmanage],[data-ladd],[data-clear-search],[data-wrename],[data-remote],[data-remote-from-xrcc],[data-remote-return],[data-remote-stop],[data-remote-public],[data-remote-public-confirm],[data-remote-tab],[data-remote-power],[data-remote-copy],[data-vchoose],[data-audition],[data-vprovider],[data-vretry],[data-vreset],[data-creset]');
  if(!t)return;const d=t.dataset;
  if('vretry' in d){captureVoice();return loadVoiceList()}
  if('vchoose' in d){captureVoice();S.voiceDraft.voice=d.vchoose;return newVoice('[data-vchoose="'+CSS.escape(d.vchoose)+'"]')}
@@ -1024,7 +1027,7 @@ document.addEventListener('click',e=>{
  if(t.id==='dLoad'||t.id==='dFail'){
   sample();S.tab='voices';renderPanel();
   S.voiceDraft={n:'Gallery narrator',prov:'minimax',meta:'Cantonese',preview:'早晨！歡迎嚟到博物館。',voice:'Lyrical',state:t.id==='dFail'?'failed':'loading'};
-  S.vall=false;S.advOpen=false;
+  S.advOpen=false;
   if(t.id==='dLoad')return loadVoiceList();
   return newVoice();
  }
@@ -1045,7 +1048,6 @@ document.addEventListener('click',e=>{
  if('menu' in d){S.menuOpen=!S.menuOpen;return addDlg()}
  if('nai' in d){hide();S.launchManage=false;S.providers=[];S.assign={};S.models={};return toast('XRCC started without AI. Add keys any time in Settings')}
  if('sx' in d){const saved=S.launchKeys||S.keys;S.keys=[...saved];S.providers=saved.filter(k=>k.prov!=='custom').map(k=>({id:uniqueId('p'),pid:k.prov,key:k.id}));S.assign={};S.models={};const endpoint=read(activeLayer(),'[data-launch-endpoint]');if(endpoint)S.providers.push({id:uniqueId('p'),pid:'custom',name:'Studio LLM',endpoint});S.launchManage=false;hide();return toast('XRCC started with available AI connections')}
- if('vall' in d){captureVoice();S.vall=!S.vall;return newVoice(S.vall?'[data-vq]':'[data-vall]')}
  if('addwit' in d)return witDlg();
  if('savewit' in d){
   const pane=activeLayer();
@@ -1158,7 +1160,7 @@ document.addEventListener('click',e=>{
  if(d.play){if(!S.preview.trim()){toast('Type a preview line first');return}const v=S.voices.find(v=>v.id===d.play);if(!v||v.gone)return;if(S.playing===v.id){S.playing=null;return renderPanel()}if(S.asking)return;S.playing=null;S.pfail=null;S.asking=v.id;renderPanel();setTimeout(()=>{if(S.asking!==v.id)return;S.asking=null;if(v.id==='v2'&&!S.v2tried){S.v2tried=true;S.pfail=v.id;if(ov.querySelector('.panel'))renderPanel();return}S.playing=v.id;if(ov.querySelector('.panel'))renderPanel();setTimeout(()=>{if(S.playing===v.id){S.playing=null;if(ov.querySelector('.wave'))renderPanel()}},4000)},700);return}
  if('all' in d){toast('Playing each voice with the same line');return}
  if(d.vf){S.vf=d.vf;return renderPanel()}
- if('newv' in d){S.advOpen=false;S.vall=false;S.voiceDraft=null;return newVoice()}
+ if('newv' in d){S.advOpen=false;S.voiceDraft=null;return newVoice()}
  if('adv' in d){captureVoice();S.advOpen=!S.advOpen;return newVoice()}
  if('cadv' in d){const box=t.closest('.dlg'),b=box.querySelector('[data-cbody]'),open=b.style.display==='none';b.style.display=open?'':'none';t.querySelector('svg,.ico,i')&&(t.firstElementChild.style.transform=open?'rotate(90deg)':'');box.querySelector('[data-csum]').style.display=open?'none':'';box.querySelector('[data-creset]').style.display=open?'':'none';return}
  if('savev' in d){
