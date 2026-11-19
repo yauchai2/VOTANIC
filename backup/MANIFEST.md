@@ -1,4 +1,4 @@
-# 備份清單 (generated 2026-11-17 UTC)
+# 備份清單 (generated 2026-11-19 UTC)
 
 | 路徑 | bytes | sha256 (前 12 位) |
 |---|---|---|
@@ -77,6 +77,7 @@
 | `backup/project-files/design-system/screens/20261106-provider-card-key-menu-prototype.png` | 100717 | c3a7c7d74b88 |
 | `backup/project-files/design-system/screens/20261106-unlock-key-prototype.png` | 77006 | 5e8814ec7f94 |
 | `backup/project-files/design-system/screens/20261106-voice-list-prototype.png` | 119589 | 6858a3266958 |
+| `backup/project-files/exports/thread-export-20261109-20261117.md` | 122592 | c26bc36d7357 |
 | `backup/project-files/icons-96/chat-bot.svg` | 8230 | 37dbfe3f834a |
 | `backup/project-files/icons-96/landscape.svg` | 8221 | 34dab5711335 |
 | `backup/project-files/icons-96/robot.svg` | 8175 | a4e114c4a0b7 |
@@ -732,7 +733,7 @@
 | `backup/project-files/xrcc-user-flow/20261012-xrcc-user-flow.html` | 189363 | ed3435dd2ab7 |
 | `backup/project-files/xrcc-user-flow/20261012-xrcc-user-flow.json` | 2218 | 6ab597ddcd6d |
 | `backup/team-memory/.memory-sync` | 67 | 0d2ad1e163e1 |
-| `backup/team-memory/.memory-sync-basis` | 7346 | 45fdb4fdb2ee |
+| `backup/team-memory/.memory-sync-basis` | 7346 | 53d446e5cab9 |
 | `backup/team-memory/MEMORY.md` | 7038 | 3e7d5b655ea8 |
 | `backup/team-memory/ai-provider-capability-assumptions.md` | 931 | 316e52eb2f9e |
 | `backup/team-memory/ai-provider-prototype-not-ux-reference.md` | 846 | ddf7a880ce12 |
@@ -785,5 +786,3 @@
 | `backup/team-memory/xrcc-studio-feel-direction.md` | 1859 | 4b5be1630476 |
 | `backup/team-memory/xrcc-typography-system.md` | 1391 | 0381567da0b4 |
 | `backup/team-memory/xrcc-visual-language-study.md` | 1138 | bffc8ea4b9e4 |
-
-註：StreamDeck.zip（約 224 MB）因體積過大未納入備份。
