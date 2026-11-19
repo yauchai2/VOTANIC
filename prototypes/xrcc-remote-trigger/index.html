@@ -1142,7 +1142,7 @@ function deviceArtwork(summary=false){
 }
 function deviceRows(){const rows=h('section',{class:'connected-devices','data-figma':'devices'},h('div',{class:'devices-heading'},h('b',{},'Devices'),h('span',{class:'muted'},String(st.phones.length))));
   if(!st.phones.length)rows.append(h('div',{class:'devices-empty','data-figma':'empty'},deviceArtwork(),h('div',{class:'empty-copy'},h('b',{},'No devices yet'),h('span',{class:'muted'},'Devices appear here when they join.'))));
-  st.phones.forEach(p=>rows.append(h('div',{class:'device-row'},h('div',{class:'av'},ic('user',20)),h('div',{class:'device-info'},h('b',{},p.name),h('small',{class:'muted'},sensor.owner===p.name?'Sensor source':p.joined)),h('span',{class:'connection-pill'},h('i',{class:'status-dot'}),p.via+' · '+(p.via==='Public'?35:6)+' ms'))));return rows;
+  st.phones.forEach(p=>rows.append(h('div',{class:'device-row'},h('div',{class:'av'},ic('user',20)),h('div',{class:'device-info'},h('b',{},p.name),h('small',{class:'muted'},p.joined)),h('span',{class:'connection-pill'},h('i',{class:'status-dot'}),p.via+' · '+(p.via==='Public'?35:6)+' ms'))));return rows;
 }
 function sharingCard(){
   const on=st.srv==='on',busy=st.srv==='reloading',pub=st.prTab==='public';
