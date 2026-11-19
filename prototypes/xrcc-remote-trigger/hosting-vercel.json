@@ -6,7 +6,7 @@
   "entry": "index.html",
   "purpose": "prototype review build",
   "liveUrl": "https://xrcc-remote-trigger.vercel.app/",
-  "deploymentId": "dpl_SGfxZnh8o2RxyygJiTXyknkWbZK7",
-  "sourceCommit": "285ea92792b57882f865105446830c9fa154951f",
-  "design": "Start with sample controls and open the Play viewport \u00b7 2026-11-18"
+  "deploymentId": "dpl_HvnSCPd1MMWEosndeakvzDME9ALz",
+  "sourceCommit": "a219422dd7b5865d94f3afa66012fe2ec975db7f",
+  "design": "Align inline Server and Port controls across states \u00b7 2026-11-19"
 }
