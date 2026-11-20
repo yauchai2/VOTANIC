@@ -378,11 +378,11 @@ button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(
 .voice-option{display:grid;grid-template-columns:minmax(0,1fr) 52px;min-height:40px;align-items:center}
 .voice-option[hidden],.voice-empty[hidden]{display:none}
 .voice-option:hover{background:var(--faded)}
-.voice-option.on{background:var(--pbg)}
-.voice-choice{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,49%) 20px;align-items:center;gap:8px;min-height:40px;padding:6px 8px 6px 12px}
+.voice-option.on{background:var(--pbg);box-shadow:inset 2px 0 0 var(--b-int)}
+.voice-choice{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,49%);align-items:center;gap:8px;min-height:40px;padding:6px 8px 6px 12px}
 .voice-choice:focus-visible,.voice-audition:focus-visible{outline:2px solid var(--b-int);outline-offset:-2px}
 .voice-option.on .mdb,.voice-check{color:var(--pc)}
-.voice-option .voice-audition{display:grid;place-items:center;justify-self:center;width:28px;height:28px;border-radius:50%;background:var(--muted)}
+.voice-option .voice-audition{display:grid;place-items:center;justify-self:center;width:28px;height:28px;border-radius:50%;background:none}
 .voice-audition:disabled{opacity:.45;cursor:default}
 .voice-search{gap:8px}
 .voice-search input{flex:1;min-width:0;background:none;border:0;color:var(--t1);font:inherit;outline:0}
@@ -846,7 +846,7 @@ function filterVoiceRows(picker){
 function voiceChoices(draft){
  const language=draft.meta||'Cantonese';
  const preview=(name)=>{const playing=name===draft.audition;return `<button class="pb voice-audition" data-audition="${esc(name)}" aria-label="${playing?'Stop':'Preview'} ${esc(name)}" ${draft.preview.trim()?'':'disabled'}>${ic(playing?'Stop':'Play','i16')}</button>`;};
- const row=([name,tone])=>{const selected=name===draft.voice;return `<li class="voice-option ${selected?'on':''}" data-vt="${esc((name+' '+tone).toLowerCase())}"><button class="voice-choice" aria-pressed="${selected}" data-vchoose="${esc(name)}"><span class="mdb">${name}</span><span class="sm t2">${tone}</span><span class="voice-check" aria-hidden="true">${selected?ic('Check','i16'):''}</span></button>${preview(name)}</li>`;};
+ const row=([name,tone])=>{const selected=name===draft.voice;return `<li class="voice-option ${selected?'on':''}" data-vt="${esc((name+' '+tone).toLowerCase())}"><button class="voice-choice" aria-pressed="${selected}" data-vchoose="${esc(name)}"><span class="mdb">${name}</span><span class="sm t2">${tone}</span></button>${preview(name)}</li>`;};
  return `<section class="col g8 voice-picker"><div class="row"><span class="mdb fill">Voice</span><span class="sm t2">${esc(language)}</span></div>
  <label class="input voice-search">${ic('Search')}<input type="search" data-vq aria-label="Search by name or tone" placeholder="Search by name or tone" value="${esc(draft.query)}"></label>
  <div class="voice-catalog"><div class="voice-columns sm t2" aria-hidden="true"><span>Voice</span><span>Tone &amp; style</span><span>Preview</span></div><div class="voice-scroll" data-voice-list><ul aria-label="Available voices">${VLIST.map(row).join('')}</ul><div class="sm t2 voice-empty" data-voice-empty hidden>No voices match your search.</div></div></div><div class="row" style="justify-content:flex-end"><span class="sm t2" data-voice-count role="status"></span></div></section>`;
