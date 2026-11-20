@@ -1264,7 +1264,7 @@ function lnShell(){
 }
 function jump(k){
   st.open.ln=true;st.tab='launcher';st.open.offConfirm=false;st.open.confirm=false;st.srv='on';st.port=3001;st.portDraft='3001';st.portErr='';st.srvErr='';st.phones=[];
-  const ph1={name:"Alan's iPad",joined:'Joined just now',via:'Local'};
+  const ph1={name:'iPhone · Safari',joined:'Joined 10:32',via:'Local'};
   st.lnPage='connections';st.lnSection=null;st.lnDetail=!['B9','B22','B27'].includes(k);st.origin=!['B18','B19','B22','B23','B24','B25'].includes(k);st.originAlive=k!=='B19';st.playing=!['B18','B19','B22','B23','B24','B25'].includes(k);st.prTab=['B25','B26'].includes(k)?'public':'local';st.portOpen=['B14','B15','B20','B21'].includes(k);
   if(k==='B10'||k==='B11'){st.phones=[ph1];sensor.owner=ph1.name;sensor.permission='granted'};
   if(k==='B27')st.phones=[ph1];
@@ -1353,7 +1353,9 @@ function keyEl(c){
   return output}
 const ptop=(t,s,back)=>h('div',{class:'ptop'},back?h('button',{class:'ib','aria-label':'Back',onclick:back,style:'transform:scaleX(-1)'},ic('arrow',20)):null,h('div',{class:'t'},h('b',{},t),h('small',{},s)),h('button',{class:'pill',title:'This device','aria-label':'This device',onclick:()=>{ph.sheet='device';renderPhone();$('.sheet [aria-label=Close]')?.focus()}},h('span',{class:'dot'+(ph.conn==='local'?'':' warn')}),ph.conn==='local'?(ph.via==='Public'?'Public · 35 ms':'Local · 6 ms'):'Reconnecting…'));
 const DIM={phone:{p:[390,844],l:[844,390]},ipad:{p:[820,1180],l:[1180,820]},desktop:{p:[1100,720],l:[1100,720]}};
-const DEVN={phone:'Phone · Safari',ipad:'iPad · Safari',desktop:'Desktop · Chrome'};
+const DEVN={phone:'iPhone · Safari',ipad:'iPad · Safari',desktop:'PC · Chrome'};
+const joinedAt=()=>'Joined '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+const deviceLabel=(dev,list)=>{const base=DEVN[dev]||DEVN.phone;const n=list.filter(x=>x.name===base||x.name.startsWith(base+' (')).length+1;return n>1?base+' ('+n+')':base};
 function sensTxt(p){return sensor.owner===p.name?' · Using sensors':p.has===false?' · No motion sensors':''}
 function fillDeck(g,groups,vars,order){cellsOf(groups,vars,order).filter(c=>!c.sec).forEach(c=>g.append(keyEl(c)))}
 function renderPhone(){
@@ -1365,7 +1367,7 @@ function renderPhone(){
   const snap=st.snap||snapshot();
   if(sc==='connecting'&&st.srv!=='on'){s.classList.add('c');s.append(h('div',{class:'hero',style:'background:var(--elev)'},ic('info')),h('h2',{style:'margin:0'},'Unable to connect'),h('div',{class:'muted'},'Check the link and network, then try again.'),h('button',{class:'btn pri',onclick:()=>go('connecting')},'Try again'));P_.append(s);return}
   if(sc==='connecting'){P_.append(ptop(ph.scoped?'Pop-up Gallery':'Remote control','Connecting to ALAN-PC…'));const g=h('div',{class:'pdeck'});fit(g);cellsOf(snap.groups,snap.vars,snap.order).filter(c=>!c.sec).forEach(c=>g.append(h('div',{class:'sk',style:`grid-column:span ${w2(c)?2:1}`})));s.append(g);
-    clearTimeout(ph.t);ph.t=setTimeout(()=>{if(ph.screen!=='connecting'||st.srv!=='on'||(ph.via==='Public'&&(st.pub!=='on'||!st.playing)))return;st.phones=st.phones.filter(p=>!p.me);st.phones.push({name:ph.dev==='desktop'?"Alan's laptop":ph.dev==='ipad'?"Alan's iPad":"Alan's iPhone",joined:'Joined just now',via:ph.via||'Local',me:true,has:ph.dev!=='desktop'});ph.conn='local';st.snap=snapshot();ph.changed=false;go(ph.scoped?(st.playing?'deck':'waiting'):'projects');render()},1400)}
+    clearTimeout(ph.t);ph.t=setTimeout(()=>{if(ph.screen!=='connecting'||st.srv!=='on'||(ph.via==='Public'&&(st.pub!=='on'||!st.playing)))return;st.phones=st.phones.filter(p=>!p.me);st.phones.push({name:deviceLabel(ph.dev,st.phones),joined:joinedAt(),via:ph.via||'Local',me:true,has:ph.dev!=='desktop'});ph.conn='local';st.snap=snapshot();ph.changed=false;go(ph.scoped?(st.playing?'deck':'waiting'):'projects');render()},1400)}
   if(sc==='waiting'){P_.append(ptop('Pop-up Gallery','Connected to ALAN-PC'));s.append(emptyState('Waiting for Play','Controls appear when this project starts playing.'),h('button',{class:'btn ter',onclick:()=>{ph.scoped=false;go('projects')}},'Back to projects'));}
   if(sc==='projects'){P_.append(ptop('Projects','Connected to ALAN-PC'));s.append(h('button',{class:'proj',onclick:()=>{ph.scoped=true;go(st.playing?'deck':'waiting')}},h('div',{class:'th'},ic('folder')),h('div',{style:'flex:1'},h('b',{},'Pop-up Gallery'),h('div',{class:'muted',style:'font-size:12px'},'Scene: Intro'),h('div',{style:'font-size:12px;color:var(--ok)'},st.playing?'● Playing now':'Waiting for Play')),ic('arrow',18)))}
   if(sc==='deck'){P_.append(ptop('Pop-up Gallery','Scene: Intro',()=>go('projects')));
@@ -1409,7 +1411,7 @@ function reviewScreen(k){
   if(k==='A20'){st.groups=[{id:'g0',name:'New Remote Trigger',color:'#65a7ff',items:[]}];st.vars=[]}
  } else if(k[0]==='B'){
   if(+k.slice(1)>=9){jump(k);return}
-  st.tab=k==='B1'?'editor':'launcher';st.playing=k!=='B8';st.open.rt=false;st.open.pr=false;st.open.pop=false;st.prTab=['B4','B5','B6','B7'].includes(k)?'public':'local';st.pub=k==='B5'?'opening':k==='B6'?'on':k==='B7'?'failed':'off';st.open.confirm=k==='B4';if(k==='B6'){st.phones=[{name:"Alan's iPad",joined:'Joined just now',via:'Public',has:true}];sensor.owner="Alan's iPad"}if(k==='B3'){st.phones=[{name:"Alan's iPad",joined:'Joined just now',via:'Local',has:true}];sensor.owner="Alan's iPad"}
+  st.tab=k==='B1'?'editor':'launcher';st.playing=k!=='B8';st.open.rt=false;st.open.pr=false;st.open.pop=false;st.prTab=['B4','B5','B6','B7'].includes(k)?'public':'local';st.pub=k==='B5'?'opening':k==='B6'?'on':k==='B7'?'failed':'off';st.open.confirm=k==='B4';if(k==='B6'){st.phones=[{name:'iPhone · Safari',joined:'Joined 10:32',via:'Public',has:true}];sensor.owner='iPhone · Safari'}if(k==='B3'){st.phones=[{name:'iPhone · Safari',joined:'Joined 10:32',via:'Local',has:true}];sensor.owner='iPhone · Safari'}
  } else {
   st.tab='phone';play();st.snap=snapshot();
   if(k==='C2')ph.screen='connecting';if(k==='C3')ph.screen='projects';if(k==='C4'){ph.screen='waiting';st.playing=false}
