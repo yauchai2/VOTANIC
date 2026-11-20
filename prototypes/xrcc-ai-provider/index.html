@@ -768,7 +768,7 @@ function preserveServerForm(){
 function customDlg(server,{fromKey=false}={}){
  const first=!S.servers.length;
  dlg(server?'Edit custom provider':'Add a custom provider',`<div class="lg">Connect to an existing OpenAI-compatible endpoint.</div><div class="content">
- ${inp('Name',server?.name??(first?'Studio LLM':''),'e.g. Studio LLM')}
+ ${inp('Name',server?.name??(first?'Studio LLM':''),autoName(server?.id),'',true)}
  ${inp('Base URL',server?.endpoint??(first?'http://192.168.1.20:8080/v1':''),'http://192.168.1.20:8080/v1','We can only check that this address answers.')}
  <div class="field"><div class="lrow"><label class="mdb" for="custom-key">API key</label><span class="sm t3">Optional</span><span class="fill"></span><button class="lnk" data-manage>Manage keys</button></div>
  <select class="sel" id="custom-key" data-custom-key data-selected-key="${esc(server?.key)}"></select></div>
@@ -777,7 +777,8 @@ function customDlg(server,{fromKey=false}={}){
  <div data-cbody class="bot" style="display:none"><div class="field"><div class="lrow"><span class="mdb">Request format</span></div><div class="sel"><span class="md fill">OpenAI chat completions</span>${ic('Down','i12')}</div></div>${inp('Timeout','30 s')}${inp('Extra header','','Optional, e.g. X-Studio: lobby')}</div></div></div>`,`${cancel}<button class="btn pri" data-customadd="${server?.id||''}" ${fromKey?'data-from-key':''}>${server?'Save changes':'Add provider'}</button>`,'sub','custom-provider');
  syncCustomReady();
 }
-function customReady(layer){const i=layer.querySelectorAll('.content input');if(i.length<3)return true;let ok=false;try{ok=['http:','https:'].includes(new URL(i[1].value.trim()).protocol)}catch{}return !!i[0].value.trim()&&ok&&!!i[2].value.trim()}
+function customReady(layer){const i=layer.querySelectorAll('.content input');if(i.length<3)return true;let ok=false;try{ok=['http:','https:'].includes(new URL(i[1].value.trim()).protocol)}catch{}return ok&&!!i[2].value.trim()}
+function autoName(editId){const used=new Set(S.servers.filter(x=>x.id!==editId).map(x=>x.name));let n=1;while(used.has('Custom provider ('+n+')'))n++;return 'Custom provider ('+n+')'}
 function syncCustomReady(){const l=activeLayer();const b=l&&l.querySelector('[data-customadd]');if(!b)return;b.disabled=!customReady(l)}
 function witDlg(){dlg('Add a Wit.ai token',`<div class="lg">Speech commands use this token. It stays on this computer.</div><div class="content">${inp('Token name','Lobby kiosk token','Lobby kiosk token','Only you see this name.')}<div class="field"><div class="mdb">Server access token</div><input class="input" id="kv" type="password" placeholder="Paste your Wit.ai token"><div class="helper">Wit.ai tokens don't take a password.</div></div></div>`,`${cancel}<button class="btn pri" data-savewit disabled data-tip="Paste your token first">Save token</button>`,'sub')}
 function captureKeyDraft(){
@@ -1129,7 +1130,7 @@ document.addEventListener('click',e=>{
    keySelect.focus();return toast('Choose an available API key or No key');
   }
   const existing=S.servers.find(item=>item.id===d.customadd);
-  const details={name:inputs[0].value.trim()||'Studio LLM',endpoint:endpoint.href,model:inputs[2].value.trim(),key};
+  const details={name:inputs[0].value.trim()||autoName(d.customadd),endpoint:endpoint.href,model:inputs[2].value.trim(),key};
   if(existing){
    Object.assign(existing,details);
    for(const provider of S.providers.filter(item=>item.serverId===existing.id))Object.assign(provider,details);
