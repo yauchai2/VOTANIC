@@ -398,17 +398,19 @@ button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(
 .dlg .b>.lg+*{margin-top:4px}
 .task.blocked .lgb{color:var(--t1)}.task.blocked .runs{color:var(--pc)}
 .voices-panel .pbody>.row:has(>[data-vf]) .chip{height:28px}
-#sgrid{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(150px,200px);align-items:stretch}
-#sgrid:has(.sess:nth-child(3)){grid-template-columns:repeat(3,minmax(0,1fr))}
-#sgrid .sess,#sgrid .new{min-height:166px}
-#sgrid .sav{border:1px solid #55c4ef}
-#sgrid .new .pbtn,.voice-grid .new .pbtn{border:1px solid var(--pc)}
+.slist{display:flex;flex-direction:column;background:var(--canvas);border:1px solid var(--b-sub);border-radius:8px;overflow:hidden}
+.srow{display:flex;align-items:center;gap:16px;padding:10px 16px;height:60px;border-top:1px solid var(--b-sub);box-sizing:border-box}
+.srow:first-child{border-top:0}.srow.shead{height:36px;padding:8px 16px;background:var(--panel)}
+.srow.sitem:hover{background:var(--panel)}
+.scol{width:220px;flex:none}.scol.col{gap:2px}.sgap{width:28px;flex:none}
+.sprompt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.voice-grid .new .pbtn{border:1px solid var(--pc)}
 .remote-latency{align-self:flex-start;border-radius:99px;background:var(--panel);padding:0 8px}
 .toggle-track{width:24px;height:14px;border-radius:99px;background:var(--b-def);padding:2px}
 .toggle-track::after{content:"";width:10px;height:10px;display:block;background:var(--t1);border-radius:50%}
 .toggle-track.on{background:var(--muted)}.toggle-track.on::after{margin-left:auto}
 .no-match .btn{align-self:center}
-@media(max-width:640px){#sgrid,#sgrid:has(.sess:nth-child(3)){grid-template-columns:1fr!important}}
+@media(max-width:640px){.scol{width:140px}}
 </style>
 </head>
 <body>
@@ -651,8 +653,7 @@ const SAV=[['#7a4fd6','#4a2a9a'],['#e0763a','#a8431a'],['#2fa38a','#1a6a58'],['#
 function sessions(){const many=S.sessions.length>6;
  if(!S.sessions.length)return `<div class="row g12 head"><div class="col g4 fill"><div class="hsm">Saved prompts for your AI</div><div class="sm t2">A session is a saved system prompt. AI characters, quizzes and behaviours can all use one.</div></div></div>${EM('Chat','No sessions yet','Write once how the AI should act, like a friendly docent or a strict quiz host, then reuse it in characters, quizzes and behaviours.','<button class="btn pri" data-news>New session</button>')}`;
  return `<div class="row g12 head"><div class="col g4 fill"><div class="hsm">Saved prompts for your AI</div><div class="sm t2">A session is a saved system prompt. AI characters, quizzes and behaviours can all use one.</div></div>${many?`<div class="srch"><input class="input" data-sq placeholder="Search ${S.sessions.length} sessions" style="width:240px"></div>`:''}<button class="btn" data-news>New session</button></div>
- <div class="grid3" id="sgrid" >${S.sessions.map((s,si)=>`<div class="card sess" data-st="${esc((s.n+' '+s.p).toLowerCase())}"><div class="row g12"><div class="sav" style="background:linear-gradient(135deg,${SAV[si%SAV.length][0]},${SAV[si%SAV.length][1]})">${esc(s.n[0]?.toUpperCase()||'S')}</div><div class="col g4 fill"><div class="mdb">${esc(s.n)}</div><div class="sm t2">${s.u}</div></div><button class="iconbtn s28" data-cm="sess|${si}" data-tip="More actions">${ic('MoreH')}</button></div><div class="sm t3" style="display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden" data-tip="The saved prompt">${esc(s.p)}</div></div>`).join('')}
- ${many?'':`<button class="new" data-news data-tip="Start a new session"><div class="pbtn" style="width:40px;height:40px">${ic('Plus','i20')}</div><div class="md tacc">New session</div></button>`}</div><div class="md t2" id="snone" style="display:none;padding:24px 0;text-align:center">No session matches that. Try a character name or a word from the prompt.</div>`}
+ <div class="slist" id="sgrid"><div class="srow shead"><span class="sm t2 scol">Session</span><span class="sm t2 fill">Prompt</span><span class="sgap"></span></div>${S.sessions.map((s,si)=>`<div class="srow sitem" data-st="${esc((s.n+' '+s.p).toLowerCase())}"><div class="col g4 scol"><div class="mdb">${esc(s.n)}</div><div class="sm t2">${s.u}</div></div><div class="sm t2 fill sprompt" data-tip="The saved prompt">${esc(s.p)}</div><button class="iconbtn s28" data-cm="sess|${si}" data-tip="More actions">${ic('MoreH')}</button></div>`).join('')}</div><div class="md t2" id="snone" style="display:none;padding:24px 0;text-align:center">No session matches that. Try a character name or a word from the prompt.</div>`}
 document.addEventListener('click',e=>{if(e.target.closest('[data-introx]')){e.stopPropagation();S.introOff=true;renderPanel()}},true);
 document.addEventListener('change',e=>{if(e.target.id==='pwon'){const field=activeLayer().querySelector('#pwfield');if(field)field.hidden=!e.target.checked;const hint=activeLayer().querySelector('#pwhint');if(hint)hint.hidden=e.target.checked;updateKeySave();}});
 document.addEventListener('input',e=>{const vq=e.target.closest?.('[data-vq]');if(vq){filterVoiceRows(vq.closest('.voice-picker'));return}
