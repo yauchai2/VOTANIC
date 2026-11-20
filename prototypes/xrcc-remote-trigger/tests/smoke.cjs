@@ -363,7 +363,8 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     await toggle.focus();
     await toggle.press('Space');
     assert.equal(await toggle.evaluate(n=>n===document.activeElement),true);
-    assert.equal(await page.locator('.fb.show').count(),1);
+    assert.equal(await page.locator('.fb.show').count(),0,'successful updates show no notification');
+    assert.equal(await toggle.getAttribute('aria-checked'),'false');
     await page.evaluate(()=>{stop();play()});
     assert.equal(await page.evaluate(()=>ph.screen),'deck','Local recovers after Play restarts');
     // Follow the same affordances shown by the Figma interactions.

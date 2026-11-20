@@ -367,7 +367,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 @media(max-width:600px){.pk2{height:auto;max-height:90dvh}.body2{flex-direction:column;overflow:auto}.vcol.l{width:auto}.vdiv{width:auto;height:1px}}
 .grow2>.ib.dh{opacity:1!important;pointer-events:auto!important}
 .dh{width:20px!important;height:28px!important;padding:0!important;color:var(--text2);cursor:grab;background:transparent!important;border:0!important;flex:none}.dh:hover,.dh:focus-visible{color:var(--text)}.dh:active{cursor:grabbing}
-.gblk{position:relative}.gblk.dragging{opacity:.4;outline:1px dashed var(--accent);outline-offset:-1px}.gblk.dropb::before,.gblk.dropa::after{content:'';position:absolute;left:0;right:0;height:2px;background:var(--accent);z-index:2;border-radius:var(--xrcc-radius-xs)}.gblk.dropb::before{top:-9px}.gblk.dropa::after{bottom:-9px}
+.gblk{position:relative}.gblk.dragging{opacity:.4;outline:1px dashed var(--accent);outline-offset:-1px}.gblk.dragging .dh{color:var(--xrcc-text-accent)}.gblk.dropped{outline:1px solid var(--accent);outline-offset:-1px}.gblk.dropb::before,.gblk.dropa::after{content:'';position:absolute;left:0;right:0;height:2px;background:var(--accent);z-index:2;border-radius:var(--xrcc-radius-xs)}.gblk.dropb::before{top:-9px}.gblk.dropa::after{bottom:-9px}
 .gblk.held{outline:1px solid var(--accent);box-shadow:0 10px 28px rgba(0,0,0,.55)}
 button.pill{background:transparent;cursor:pointer;font:inherit;color:inherit}button.pill:hover{border-color:var(--accent)}
 .sensr{display:flex;align-items:center;gap:var(--xrcc-spacing-12);padding:10px 0}.sensr b{flex:1;font-size:14px}.sensr .tag{font-size:11px}.sensr .ok{color:var(--ok)}
@@ -800,7 +800,8 @@ function dndWire(card, kind, id) {
     reorder(st.drag, position, order);
     st.drag = null;
     render();
-    toast('Moved to position ' + (position + 1) + ' of ' + order.length);
+    const landed = $$('.gblk').find(row => row.dataset.controlKey === key);
+    if (landed) { landed.classList.add('dropped'); setTimeout(() => landed.classList.toggle('dropped', false), 900); }
   });
   handle.addEventListener('keydown', event => {
     if (st.playing) return;
@@ -1317,7 +1318,6 @@ function press(c,val){
   if(c.kind==='Trigger')return true;
   st.vals[c.key]=c.kind==='Toggle'?!valOf(c.key):val;
   const v=st.vals[c.key];
-  fb(c.kind==='Toggle'?`${c.label} ${v?'On':'Off'}`:`${c.label} set to ${String(v).slice(0,20)}`);
   return true;
 }
 function keyEl(c){
