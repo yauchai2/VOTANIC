@@ -778,6 +778,7 @@ function customDlg(server,{fromKey=false}={}){
  syncCustomReady();
 }
 function customReady(layer){const i=layer.querySelectorAll('.content input');if(i.length<3)return true;let ok=false;try{ok=['http:','https:'].includes(new URL(i[1].value.trim()).protocol)}catch{}return ok&&!!i[2].value.trim()}
+function autoVoiceName(editId){const used=new Set(S.voices.filter(v=>v.id!==editId).map(v=>v.n));if(!used.has('Voice preset'))return 'Voice preset';let n=1;while(used.has('Voice preset ('+n+')'))n++;return 'Voice preset ('+n+')'}
 function autoName(editId){const used=new Set(S.servers.filter(x=>x.id!==editId).map(x=>x.name));if(!used.has('Custom provider'))return 'Custom provider';let n=1;while(used.has('Custom provider ('+n+')'))n++;return 'Custom provider ('+n+')'}
 function syncCustomReady(){const l=activeLayer();const b=l&&l.querySelector('[data-customadd]');if(!b)return;b.disabled=!customReady(l)}
 function witDlg(){dlg('Add a Wit.ai token',`<div class="lg">Speech commands use this token. It stays on this computer.</div><div class="content">${inp('Token name','Lobby kiosk token','Lobby kiosk token','Only you see this name.')}<div class="field"><div class="mdb">Server access token</div><input class="input" id="kv" type="password" placeholder="Paste your Wit.ai token"><div class="helper">Wit.ai tokens don't take a password.</div></div></div>`,`${cancel}<button class="btn pri" data-savewit disabled data-tip="Paste your token first">Save token</button>`,'sub')}
@@ -851,7 +852,7 @@ function voiceChoices(draft){
  <div class="voice-catalog"><div class="voice-columns sm t2" aria-hidden="true"><span>Voice</span><span>Tone &amp; style</span><span>Preview</span></div><div class="voice-scroll" data-voice-list><ul aria-label="Available voices">${VLIST.map(row).join('')}</ul><div class="sm t2 voice-empty" data-voice-empty hidden>No voices match your search.</div></div></div><div class="row" style="justify-content:flex-end"><span class="sm t2" data-voice-count role="status"></span></div></section>`;
 }
 function newVoice(focus){const draft=S.voiceDraft||(S.voiceDraft={n:'',prov:'minimax',meta:'Cantonese',preview:'早晨！歡迎嚟到博物館。',voice:'Lyrical'});
- dlg(draft.copy?'Duplicate voice preset':draft.edit?'Edit voice preset':'New voice preset',`<div class="lg">Pick a voice by ear. You can change it any time.</div><div class="content">${inp('Name',draft.n,'Gallery narrator')}
+ dlg(draft.copy?'Duplicate voice preset':draft.edit?'Edit voice preset':'New voice preset',`<div class="lg">Pick a voice by ear. You can change it any time.</div><div class="content">${inp('Name',draft.n,autoVoiceName(draft.edit),'',true)}
  <div class="col g8"><div class="mdb">Voice from</div><div class="row g8"><button class="chip ${draft.prov==='gemini'?'on':''}" data-vprovider="gemini" aria-pressed="${draft.prov==='gemini'}" >${lg('gemini',20)}Gemini</button><button class="chip ${draft.prov==='minimax'?'on':''}" data-vprovider="minimax" aria-pressed="${draft.prov==='minimax'}">${lg('minimax',20)}MiniMax</button></div></div>
  <div class="row g16"><div class="field fill"><div class="mdb">Model</div><select class="sel" aria-label="Model" data-voice-param="model">${(draft.prov==='gemini'?['Gemini 3.1 Flash TTS']:['Speech 2.8 HD','Speech 2.8 Turbo']).map(m=>`<option ${m===draft.model?'selected':''}>${m}</option>`).join('')}</select></div><div class="field fill"><div class="mdb">Language</div><select class="sel" aria-label="Language" data-voice-param="meta">${['Cantonese','English','Mandarin'].map(m=>`<option ${m===draft.meta?'selected':''}>${m}</option>`).join('')}</select></div></div>
  ${draft.state&&draft.state!=='ready'?voiceRecovery(draft.state):voiceChoices(draft)}
@@ -1180,7 +1181,7 @@ document.addEventListener('click',e=>{
  if('cadv' in d){const box=t.closest('.dlg'),b=box.querySelector('[data-cbody]'),open=b.style.display==='none';b.style.display=open?'':'none';t.querySelector('svg,.ico,i')&&(t.firstElementChild.style.transform=open?'rotate(90deg)':'');box.querySelector('[data-csum]').style.display=open?'none':'';box.querySelector('[data-creset]').style.display=open?'':'none';return}
  if('savev' in d){
   captureVoice();const {edit,copy,query,listScroll,audition,auditionTimer,...draft}=S.voiceDraft;
-  if(!draft.n){activeLayer().querySelector('input')?.focus();return;}
+  if(!draft.n)draft.n=autoVoiceName(edit);
   if(edit)Object.assign(S.voices.find(v=>v.id===edit),draft);
   else S.voices.unshift({...draft,id:uniqueId('v'),tag:'Not used yet'});
   S.voiceDraft=null; S.tab='voices';return renderPanel();
