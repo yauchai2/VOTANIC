@@ -869,7 +869,7 @@ function addTrigger(){const g={id:gid(),name:'New Remote Trigger'+(st.groups.len
 function addVar(){st.order=listOrder();st.open.menu=false;st.vpick={tab:'iv',inst:null,sel:null,q:''};st.open.vpick=true;render()}
 function rtDialog(){
   const list=h('div',{class:'list'});
-  const footEl=h('div',{class:'foot'},ic('info',16),st.playing?'Stop Play to edit.':'Saved with the project.');
+  const footEl=st.playing?h('div',{class:'foot'},ic('info',16),'Playing. The list is locked until you stop.'):null;
   const cards = new Map();
   st.groups.forEach((g,gi)=>{const blk=h('div',{class:'gblk',style:'--gc:'+g.color}),its=h('div',{class:'items'});blk.append(groupHead(g,gi),its);dndWire(blk,'g',g.id);
     g.items.forEach(it=>its.append(itemRow(g,it)));
@@ -877,7 +877,7 @@ function rtDialog(){
   if(!st.groups.length&&!st.vars.length)list.append(emptyState('No controls yet','Add a trigger or a variable control.'));
   for (const card of varBlock()) cards.set(card.dataset.controlKey, card);
   for (const key of listOrder()) list.append(cards.get(key));
-  list.append(footEl);
+  if(footEl)list.append(footEl);
   const n=issues();
   return h('div',{class:'dlg rt'},
     h('div',{class:'head'},ximg('rt-head',20),'Remote Triggers',st.playing?h('span',{class:'rt-playing'},h('i',{class:'dot'}),'Playing'):null,h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.rt=false;render()}},ic('close'))),h('div',{class:'acc'}),
