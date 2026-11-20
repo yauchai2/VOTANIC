@@ -778,7 +778,7 @@ function customDlg(server,{fromKey=false}={}){
  syncCustomReady();
 }
 function customReady(layer){const i=layer.querySelectorAll('.content input');if(i.length<3)return true;let ok=false;try{ok=['http:','https:'].includes(new URL(i[1].value.trim()).protocol)}catch{}return ok&&!!i[2].value.trim()}
-function autoName(editId){const used=new Set(S.servers.filter(x=>x.id!==editId).map(x=>x.name));let n=1;while(used.has('Custom provider ('+n+')'))n++;return 'Custom provider ('+n+')'}
+function autoName(editId){const used=new Set(S.servers.filter(x=>x.id!==editId).map(x=>x.name));if(!used.has('Custom provider'))return 'Custom provider';let n=1;while(used.has('Custom provider ('+n+')'))n++;return 'Custom provider ('+n+')'}
 function syncCustomReady(){const l=activeLayer();const b=l&&l.querySelector('[data-customadd]');if(!b)return;b.disabled=!customReady(l)}
 function witDlg(){dlg('Add a Wit.ai token',`<div class="lg">Speech commands use this token. It stays on this computer.</div><div class="content">${inp('Token name','Lobby kiosk token','Lobby kiosk token','Only you see this name.')}<div class="field"><div class="mdb">Server access token</div><input class="input" id="kv" type="password" placeholder="Paste your Wit.ai token"><div class="helper">Wit.ai tokens don't take a password.</div></div></div>`,`${cancel}<button class="btn pri" data-savewit disabled data-tip="Paste your token first">Save token</button>`,'sub')}
 function captureKeyDraft(){
