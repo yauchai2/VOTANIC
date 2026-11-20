@@ -237,7 +237,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 #toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%)}
 .fb{position:absolute;left:16px;right:16px;bottom:24px;width:auto;max-width:none;transform:translateY(150%);transition:transform .2s;z-index:6}.fb.show{transform:none}.fb:not(.show){pointer-events:none}
 .key{height:var(--cell,100px);align-self:start}.pdeck{grid-auto-rows:minmax(var(--cell,100px),auto)}
-.key-shell{display:flex;flex-direction:column;min-width:0}.key-shell>.key{width:100%;flex:none}.field-error{display:none;color:var(--xrcc-text-error);font-size:11px;line-height:16px;text-align:left;margin-top:8px;overflow-wrap:anywhere}.field-error.show{display:block}.key input[aria-invalid=true]{border-color:var(--xrcc-border-error)}
+.key-shell{display:flex;flex-direction:column;min-width:0}.key-shell>.key{width:100%;flex:none}.field-error{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}.key .v.bad{color:var(--xrcc-text-error)}.key input[aria-invalid=true]{border-color:var(--xrcc-border-error)}
 .sheet{position:absolute;left:0;right:0;bottom:0;background:var(--elev);border-radius:var(--xrcc-radius-lg) var(--xrcc-radius-lg) 0 0;padding:var(--xrcc-spacing-16);display:flex;flex-direction:column;gap:var(--xrcc-spacing-12);z-index:5}
 .sheet .sw{gap:10px}.sheet .sw i{width:36px;height:36px}.sh-s{position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:4}
 .bn{padding:var(--xrcc-spacing-8) var(--xrcc-spacing-12);border-radius:6px;background:var(--elev);font-size:12px;color:var(--text2)}.bn.w{background:#3a2a17;color:var(--text)}
@@ -614,7 +614,7 @@ body.presentation .lstage{margin-inline:auto}
 .lni.on{box-shadow:none}
 .lver>svg{color:var(--xrcc-text-primary)}
 .launcher-import{right:24px}
-</style>
+.vkb{position:absolute;left:0;right:0;bottom:0;z-index:30;background:var(--xrcc-surface-row-hover,#2a2a2c);padding:8px 6px 14px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--xrcc-border-default)}.vkb .r{display:flex;gap:5px;justify-content:center}.vkb button{flex:0 0 auto;min-width:30px;height:40px;border:0;border-radius:6px;background:var(--xrcc-surface-canvas);color:var(--xrcc-text-primary,#fff);font:var(--xrcc-body-md)}.vkb button.w{flex:1}.vkb button.go{min-width:76px;color:var(--xrcc-text-accent)}</style>
 </head>
 <body>
 <header class="top">
@@ -1335,10 +1335,10 @@ function keyEl(c){
     const error=h('div',{class:'field-error',id:errorId,role:'alert'});
     const x=h('input',{class:'tx',type:'number',inputmode:'decimal',min:s.min,max:s.max,step:Math.pow(10,-s.dec),value:v,'aria-label':c.label,'aria-describedby':errorId,disabled:dis?true:null});
     let lastAttempt=null;
-    const invalid=message=>{x.setCustomValidity(message);x.setAttribute('aria-invalid',String(!!message));error.textContent=message;error.classList.toggle('show',!!message)};
+    const rg=h('div',{class:'v'},s.min+'–'+s.max);const invalid=message=>{x.setCustomValidity(message);x.setAttribute('aria-invalid',String(!!message));error.textContent=message;rg.classList.toggle('bad',!!message)};
     const commit=()=>{if(x.value===lastAttempt)return;const n=Number(x.value);if(!x.value.trim()||!Number.isFinite(n)||n<s.min||n>s.max){invalid('Use a number from '+s.min+' to '+s.max+'.');return}if(+n.toFixed(s.dec)!==n){invalid('Use up to '+s.dec+' decimal places.');return}invalid('');lastAttempt=x.value;if(n!==valOf(c.key)&&!press(c,n))x.value=lastAttempt=valOf(c.key)};
     x.addEventListener('input',()=>{lastAttempt=null});x.addEventListener('change',commit);x.addEventListener('keydown',ev=>{if(ev.key==='Enter'){commit();x.blur()}});
-    e.append(h('div',{class:'v'},c.label),x,h('div',{class:'v'},s.min+'–'+s.max));e.style.cursor='default';
+    e.append(h('div',{class:'v'},c.label),x,rg);e.style.cursor='default';
     output=h('div',{class:'key-shell',style:`grid-column:span ${w2(c)?2:1}`},e,error);
   }
   if(c.kind==='Number'&&s.control==='slider'){const number=h('span',{},(+v).toFixed(s.dec));const n=h('span',{class:'n'},number,s.min===0&&s.max===100?h('span',{class:'n-unit'},'%'):null);const r=h('input',{type:'range',min:s.min,max:s.max,step:Math.pow(10,-s.dec),value:v,disabled:dis?true:null,'aria-label':c.label});
@@ -1529,6 +1529,31 @@ $$('.tab').forEach(t=>t.addEventListener('click',()=>{st.tab=t.dataset.t;if(st.t
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&st.colorFor&&$('.cpop')){e.preventDefault();closeColour();return}const modal=Array.from(document.querySelectorAll('.xpick .dlg,.sheet[role=dialog]')).at(-1);if(!modal)return;if(e.key==='Escape'){e.preventDefault();const close=modal.querySelector('[aria-label=Close]');close?.click();return}if(e.key==='Tab'){const items=Array.from(modal.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),[tabindex="0"]')).filter(n=>n.getClientRects().length);if(!items.length)return;const first=items[0],last=items.at(-1);if(e.shiftKey&&(document.activeElement===first||!modal.contains(document.activeElement))){e.preventDefault();last.focus()}else if(!e.shiftKey&&(document.activeElement===last||!modal.contains(document.activeElement))){e.preventDefault();first.focus()}}});
 window.addEventListener('resize',()=>{if(st.tab==='phone')renderPhone()});
 const requestedScreen=new URLSearchParams(location.search).get('screen');if(requestedScreen==='C25')reviewScreen('C9');else if(FLOW_NAMES[requestedScreen])reviewScreen(requestedScreen);else render();
+})();
+
+</script>
+<script>
+/* Simple on-screen keyboard sketch for desktop browsers (a real phone shows its own keyboard). Typing never sends; Return or tapping outside commits. */
+(function(){
+  const phoneEl=()=>document.getElementById('phone');
+  const rows=['qwertyuiop','asdfghjkl','zxcvbnm'];
+  let kb=null,target=null;
+  const close=()=>{if(kb){kb.remove();kb=null}target=null};
+  const put=text=>{if(!target)return;const a=target.selectionStart??target.value.length,b=target.selectionEnd??a;target.setRangeText(text,a,b,'end');target.dispatchEvent(new Event('input',{bubbles:true}))};
+  const back=()=>{if(!target)return;const a=target.selectionStart??target.value.length;if(a>0){target.setRangeText('',a-1,a,'end');target.dispatchEvent(new Event('input',{bubbles:true}))}};
+  const open=x=>{
+    const ph=phoneEl();if(!ph||window.innerWidth<=900)return;
+    target=x;if(kb)kb.remove();
+    const num=x.type==='number';
+    const key=(label,fn,cls)=>{const b=document.createElement('button');b.type='button';b.textContent=label;if(cls)b.className=cls;b.addEventListener('mousedown',e=>e.preventDefault());b.addEventListener('click',fn);return b};
+    const row=(...k)=>{const r=document.createElement('div');r.className='r';k.forEach(n=>r.append(n));return r};
+    kb=document.createElement('div');kb.className='vkb';kb.setAttribute('aria-hidden','true');
+    if(num){kb.append(row(...'123'.split('').map(c=>key(c,()=>put(c)))),row(...'456'.split('').map(c=>key(c,()=>put(c)))),row(...'789'.split('').map(c=>key(c,()=>put(c)))),row(key('.',()=>put('.')),key('0',()=>put('0')),key('\u232B',back)),row(key('Send',()=>x.blur(),'w go')))}
+    else{rows.forEach(r=>kb.append(row(...r.split('').map(c=>key(c,()=>put(c))))));kb.append(row(key('123',()=>{}),key('space',()=>put(' '),'w'),key('\u232B',back),key('Send',()=>x.blur(),'go')))}
+    ph.append(kb);
+  };
+  document.addEventListener('focusin',e=>{const x=e.target;if(x&&x.matches&&x.matches('#phone input.tx')&&!x.disabled)open(x)});
+  document.addEventListener('focusout',e=>{const x=e.target;if(x&&x===target)setTimeout(()=>{if(document.activeElement!==target)close()},0)});
 })();
 </script>
 </body>
