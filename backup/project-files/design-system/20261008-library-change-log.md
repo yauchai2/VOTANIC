@@ -1620,3 +1620,111 @@ Page Button, Library file. Three sets: `Button / Dark / 40px` (17463:54657, Stat
 - 刪除 Remote List 標題旁的直向/橫向按鈕（24 個編輯端畫面）；原 A7「Landscape layout」改為 A7「Reorder a section」：拖曳區塊浮起（shadow/dark/3 + border/interactive）、虛線 Drop slot；以整個區塊為單位，Trigger / Variable control 各自同類範圍內排序；鍵盤 Space/↑↓/Esc。Spec 的 Tooltip 方向列改為「Drag to reorder」；Overview 同步。
 - Sensor：新增遙控端 C16「This device」（點連線狀態開啟，列出 Gyroscope / Accelerometer / Microphone 是否可用，只供查看）；XRCC 裝置列顯示「Using sensors」或「No motion sensors」。沿用「Sensor 預設啟用、無控制 section」，Notion 規格「同一時間只有一部裝置提供 Sensor、需顯示目前使用者」以文字標示。
 - Prototype v49 同步（拖曳／鍵盤排序、Desktop 裝置示範 Sensor 不可用）。
+
+## 2026-11-17 至 11-19 (Codex 接手期間，由 Claude 於 2026-11-19 審閱後補記)
+- Codex 接手期間（Claude 沒有 token）改動 Workbench「XRCC Remote Trigger (P1)」頁及 prototype；Codex 讀不到 READ FIRST 與本 change log，因此當時沒有記錄。以下由 Claude 唯讀審閱後補記，詳見 reports/20261119-codex-takeover-review.md。
+- Figma：頁面重排為 4 個大 Section 加 Overview，內含 Flow 01–13、77 塊 A/B/C 畫板（部分狀態畫板，如 C25，目前被隱藏）、原生 Annotations 27 則。Select Instance 直接點列（不用 Radio），P1 不提供 Change/Replace instance。Remote control 只在 Launcher（Connections）：QR、Local/Public link、Server、Port、Devices 全在 Launcher，XRCC 沒有獨立 QR 視窗或 Open 小面板（Alan 2026-11-19 確認）。新增 B25 Public needs Play、B26 Public off；移除 Back to XRCC 與展開 Port 畫面。
+- Prototype：PR #7 分支 claude/project-thread-pddqur（Codex 約 20 個 commit，含 Playwright smoke test、Vercel 永久網址 https://xrcc-remote-trigger.vercel.app/）；AI Provider 分支 prototype/xrcc-ai-provider（與 Figma 同步、Custom server、Settings Connections 對齊、voice picker 緊湊清單）。
+- 2026-11-19 Claude 補做（Alan 同意）：(1) 27 則 Annotations 全部加上原生類別（Development / Interaction / Accessibility / Content）；(2) Flow 04、Flow 11、Flow 13 補上 13 條灰色虛線連線（複製 Flow 05 虛線樣式，線寬 2、綁 border/default 變數、箭頭畫在路徑上），標籤為狀態變化，屬「狀態變體」連線；C24 → C26 因 C25 隱藏而跨過 C25；(3) 連線箭頭：Codex 的連線箭頭已畫在向量路徑內（strokeCap 為 NONE 但路徑有箭頭），視覺符合標準，不需改。
+- 沒有新增 token，Library 沒有改動，毋須 Publish。
+
+## 2026-11-19 Remote Trigger P1：C11 狀態 pill 修正
+- Alan 指出 C11「Play ended」的 pill 顯示 "Connected" 但為紅色。原因：Codex 將 Remote / Connection 元件設為 Status=Offline（紅色 status/error/text）卻把文字改成 "Connected"。已改為 Status=Local、文字 "Local · 6 ms"，與 C10 及 C11 annotation（Local 保持連線）一致。沒有新增 token，Library 沒有改動。
+- 全頁檢查 C 系列所有 pill：只有 C11 的文字與顏色語意不符；C23、C24 的 "Disconnected" 為 Offline 紅色，正確；C2、C9 的 Connecting／Reconnecting 為 warning，正確。
+
+## 2026-11-19 Remote Trigger P1：清理隱藏畫板（Alan：沒用可 delete）
+- 刪除已隱藏、不再使用的 B19（Launcher · Remote control · XRCC c…）、B20（Port settings expanded）及其畫板標籤與隱藏連線 B20 → B14；移除指向 B20 的 16 個 prototype reaction（各畫板的 "Port settings" 等，Port 現已常駐顯示）。
+- C25「Disconnected by host」有獨立用途，取消隱藏，連同標籤；連線 C24 → C25、C25 → C26（虛線，標籤「另一狀態」）。
+- 仍有約 18 組隱藏的舊連線（如 B12 → B17、B4 → B5）留在 Launcher flow Section，待 Alan 決定是否一併刪除。
+- 沒有新增 token，Library 沒有改動。
+
+## 2026-11-19 Remote Trigger P1：Sensor 預設全開（Alan 決定）
+- Alan 決定 Sensor 預設全開、無授權與接管流程。刪除 C17–C22（Sensor permission、denied、Another sensor source、Confirm takeover、Sensors active、Source disconnected）及其標籤、4 條連線、6 個失效 prototype reaction。
+- C16「This device」保留為只讀：示例裝置改為 iPad · Safari，Gyroscope／Accelerometer／Microphone 全部 Available（沿用 Badge 元件的 positive faded 變體），移除 Allow sensors 按鈕，說明改為 "Sensors are on by default. Nothing to set up."；Annotation 改為「Sensor 預設啟用，無需設定。此頁只供查看各 Sensor 是否可用。」。Flow 12 重命名為「此裝置 Sensor（只讀）」並縮小 Section。
+- 待辦：B 系列裝置列仍有副標「Sensor source」（指目前提供 Sensor 的裝置），保留，待 Alan 確認；web prototype（PR #7）仍含 Sensor 授權／接管流程，須待 Figma 經 Alan 確認後再同步。
+- 沒有新增 token，Library 沒有改動。
+
+## 2026-11-19 Remote Trigger P1：Review 後續修正（Alan：跟建議做）
+- 第 4 節 Hover 與 Tooltip 規格新增 6 列 Launcher 元素：Server 開關、Reload、Port 欄、Local／Public 分頁、Manage devices、Devices 列（Tooltip 文字英文）。
+- A8、A9 的 Annotation 補上「清單超出視窗高度時在視窗內捲動，底部露出半行作為提示」。
+- 命名：A10 改為「Select a variable · Project tab」；B27 標籤標題改為「Connections · Device connected」，避免與 B9 Running 重複。
+- 虛線標籤改為具體事件：A19→A21 搜尋 Instance、A21→A22 專案沒有 Instance、A23→A24 已有 Project variable、A24→A25 清除 Instance 選取、C24→C25 主機中斷、C25→C26 命令被拒、C26→C27 ACK 逾時。
+- 沒有新增 token，Library 沒有改動。
+
+## 2026-11-19 · Prototype 同步（PR #7）
+- Web prototype 對齊 Figma：Sensor 預設啟用，移除 C17–C22 狀態（80 → 74）及授權／拒絕／接管／停止分享流程，C16「This device」改為只讀（Gyroscope、Accelerometer、Microphone 皆 Available）。
+- 更新 smoke test、README、library-flow 說明；smoke test 全部通過。未重新部署 Vercel。
+
+## 2026-11-19 · 跟進項目（Alan 確認）
+- Figma：刪除 Flow 07／08／09 內 11 條已隱藏的舊連線及其 11 個隱藏 Board title（皆有可見的同名連線）。
+- Figma：3 個 Connected device 列副標題「Sensor source」改為「iPad · Safari」；Overview 第 3 欄 sensor 文案改為「Sensor 預設啟用，無需設定」；C25 內文改為「The host ended this session. Reconnect to continue.」。
+- Pill 核對擴展至 A、B 系列：可見 pill 皆為 Local 綠色配「Local · 6 ms」，無不一致；板內另有隱藏的舊內容，未動。
+- 畫板編號空號不重編（避免連線、標籤、prototype 連結連帶改動）；Scrim、A 板背景等未綁 token 的值維持不綁（不新增 token）。
+- Prototype：device row 移除「Sensor source」副標題，smoke test 通過。
+
+## 2026-11-19 · C6 觸發鍵狀態
+- Figma P1 C6「Command confirmed」的 Remote Key / Trigger（2050:8409）由 State=Sent（綠框＋綠 tick）改為 State=Pressed，與 prototype 簡單按下反應一致；Sent 變體保留（P2 on hold 頁仍在使用）。
+
+## 2026-11-19 · UI/UX 優化檢視
+- 檢視 A4、B9、C3、C6、C16 畫板。C16「Microphone」列圖示由 icon/outline/sound（喇叭）改為 AI Icon / Mic（XRCC AI Workbench Library），描邊綁定原有文字 token 17459:1023，尺寸 20px；prototype 已使用麥克風圖示，無需改動。
+- 其餘畫板的層級、間距、狀態呈現無需改動；未新增 token。
+
+## 2026-11-19 · Remote Key / Trigger 組件（1491:3998）
+- State=Sent 變體改為與 Pressed 一致（紫色 accent 框 2px、深色圖示圓圈），移除綠框（原 17459:1097）及 Sent badge（綠 tick）。使用 Sent 的實例（P1 C6、P2 on hold 的 C6／A7）同步更新。未新增 token。
+
+## 2026-11-19 · Remote Key 組件同步 prototype
+- Alan 手動更新 Remote Key / Trigger、Toggle 組件（Hover 用 row-hover 底、Pressed／Sent／On 用 selection-bg 底加 1px accent 框、Pressed 圖示圓圈同底色）。我較早改的 Sent 變體以 Alan 的版本為準，未再改動 Figma。
+- Prototype 按鍵同步：hover 底色、按下（底色、accent 框、圖示圓圈同底色）、Toggle On（selection-bg 底、1px 框、無額外內框）；smoke test 通過並推送，自動部署。
+
+## 2026-11-19 · Remote Key 組件再同步
+- Alan 再次更新組件：Default 底 surface-elevated；Hover 底 white 3%；Pressed／Sent／On 底 row-hover（#2a2531）加 1px accent 框，圖示圓圈保持按鈕色。Prototype 同步（commit 7482203），smoke test 通過，已 production 部署。Figma 未改動。
+
+## 2026-11-19 · C30 This device · Not available
+- Figma Flow 12 新增 C30（2997:11197）：Desktop · Chrome，Gyroscope／Accelerometer 為 Not available（Badge color=neutral, faded），Microphone 為 Available，頁尾說明「This browser has no motion sensors. Use a phone or tablet for motion control.」；C16 → C30 虛線連線（標籤 No motion sensors）、1 則 Content Annotation、Label · C30；Section 加闊至 1084。只用 Library Badge，未新增 token。
+- Prototype：新增 C30 狀態（75 個狀態），smoke test 通過，已推送並 production 部署。
+
+## 2026-11-20 · 裝置名稱改為自動標籤（開發 Brian 評論）
+- 只能取得裝置類型與瀏覽器，不要求加入時輸入名稱：名稱格式「裝置類型 · 瀏覽器」（iPhone · Safari、Android · Chrome、PC · Chrome），同類型多部按加入順序加序號，例如 iPhone · Safari (2)；副標題改為加入時間（Joined 10:32），取代「Sensor source」。可編輯暱稱留待 P2。
+- Figma（P1）：Remote / Device row 組件預設文字；B6、B10、B11 的 Connected device 列；C16 示例「iPhone · Safari」、C30 示例「PC · Chrome」；B10 加 1 則 Content Annotation。P2 on hold 與 AI Provider 頁的同名列不在範圍，未改。
+- Prototype：DEVN 標籤、joinedAt()、deviceLabel() 序號；移除人名；smoke test 通過。
+
+## 2026-11-20 · Remote List 拖曳排序與成功通知（Alan 的 Figma comment）
+- Figma Flow 03：新增 A29「Reorder · Pick up」（列浮起、陰影、accent 邊框、手柄 accent 色、原位虛線框）、A30「Reorder · Dropped」（落位、accent 邊框短暫保留）；A7 改名「Reorder · Dragging」（虛線插入位置、其他列讓位）；A29 → A7 → A30 連線（Drag／Drop）；各板加 Annotation（含 Esc 取消回原位、Trigger 與 Variable 可混合排序）。A7 移至第 4 排中間，Section 加高至 4992。只用既有組件與 token。
+- Figma：遙控端 C6、C8 移除成功更新的 Notification（Show controls confirmed、Show title updated），C6 Annotation 改為「成功不彈通知，以按鍵 Pressed 與數值即時更新回饋；失敗、斷線、未能確認才用 Notification」。
+- 純提問（滾動範圍與固定底部提示、數值如何確認）只以文字回覆，未改畫板。
+- Prototype：移除成功更新 toast（保留失敗／斷線／拒絕）；拖曳時手柄 accent 色，落位後列短暫 accent 邊框、不再彈出位置通知；smoke test 通過。
+
+## 2026-11-20 · 移除「Saved with the project. Stop Play to edit.」
+- Figma P1：刪除 22 塊 A 板的 Footnote；A9 Playing 保留「Playing. The list is locked until you stop.」。Prototype 同步（只在 Playing 時顯示鎖定提示），smoke test 通過。
+
+## 2026-11-20 Drag boards A29 / A7 / A30 fix
+- Cause: accent stroke on lifted block (A29, A7) and dropped block (A30) was set to visible:false, lifted block had no fill so it looked transparent, handle dots were not accent. No new tokens.
+- Fix: stroke visible (accent), lifted blocks opaque fill (dialog surface variable), 2 drop shadows kept, width 622 / x -8, handle dots bound to accent variable, A30 dropped row has 1px accent stroke. Verified by full-size screenshots.
+
+## 2026-11-20 Flow overlap fix (Workbench page 1481:10758)
+- Cause: Flow 03 grew to 4992px (A29/A30 added) and overlapped Flow 04 by 1140px.
+- Fix: Flow 04 moved to y=9136 (120px below Flow 03), Flow 05 +1260, lane 01 height 13040, lanes 02/03/4 moved down 1240. Connectors/labels move with their Flow sections. No new tokens.
+- Review: all 13 flows and 6 lanes checked for board/flow overlaps (0 left); lane 01 screenshot checked.
+
+## 2026-11-20 Keyboard sketch (C8) and quieter validation (C28)
+- C8 Type a value: Alan added the keyboard UI himself (not touched); annotation rewritten (typing does not send; Return/Send or tap outside commits, validation then send; error see C28). Prototype: simple on-screen keyboard sketch on desktop for phone text/number inputs, Send key commits.
+- C28 Number validation: removed the sentence "Use a number from 0 to 20." (it covered content below). Invalid state = red input border + range hint (0–20) in critical text colour (existing variable 17459:1119). Annotation added (Content). Prototype: sentence visually hidden but kept as role=alert for screen readers; range hint turns red. No new tokens.
+
+## 2026-11-20 Annotation clean-up (Remote Trigger P1, Workbench 1481:10758)
+- 33 -> 29 native annotations: deleted 4 (A29 board and A30 board duplicates of A7, A7 Drop slot restating the dashed slot, C30 duplicate of C16). Shortened 14 (A2, A3, A11, A7, A29 lifted, A30 block, A9, B2, B13, B6, device Name, C8, C28, C11).
+- Kept: behaviour rules, edge cases, accessibility and state-sync notes. Removed: restating visible UI, process notes ("Figma 的計時只展示成功"), repeated scroll sentence on A9. Categories unchanged; no UI, connector or token changes. Prototype has no annotation text, no change needed.
+
+## 2026-11-20 · AI READ FIRST 頁（Workbench 2160:7338）新增協作指南
+- 保留 Alan 原有的 Flow 標準元件（3024:40942），未改動；在其右側新增 frame「AI workflow guide」（3033:2，1100 × 1626），由原元件複製，文字樣式與顏色變數沿用，沒有新增 token 或元件。
+- 內容 A 至 G：必讀順序、各頁用途（1333:8666、1481:10758、2014:14903 等）、Flow 結構與編號慣例、Remote Trigger 現行決定、協作與工作流程、常見錯誤、常用位置。繁中書面語，術語與 UI 名稱用英文。
+- 已截圖自檢（無遮擋、無截斷）；Library 無改動，不需 Publish；Notion 未寫入。
+
+## 2026-11-20 · AI workflow guide 改為通用（Alan 要求不限單一 feature）
+- 刪除「Remote Trigger 現行決定」一節；B、C 節改為通用描述，移除 P1 Lane 與視窗尺寸等 feature 專屬內容；章節重排為 A 至 F。feature 專屬決定只放專案記憶。未新增 token，Library 無改動。
+
+## 2026-11-20 · AI workflow guide 檢視後補充
+- 新增「E. 設計質素與視覺」（設計質素與人味、視覺化簡約、只做 Dark 與狀態齊全、Annotation 類別、複刻舊 UI 條件與假設列明）；原 E、F 順延為 F、G。只動自己新增的 frame，未新增 token，Library 無改動。
+- 觀察（未動 Alan 的 frame）：Flow 標準的連線範例有兩條虛線，其中一條顏色為白色，與「分支虛線綁 border/default」不一致，請 Alan 決定是否保留。
+
+## 2026-11-20 · 連線與標籤以可讀性為最終目標（Alan）
+- AI workflow guide：C 節新增原則「連線、箭咀與畫板標籤清晰簡潔，使用者一眼看懂；顏色與樣式是預設參考，不是死標準」；A 節第 3 點與 F 節第 2 點改為不限死樣式。Alan 的 Flow 標準 frame 未改動。無新增 token，Library 無改動。

@@ -16,3 +16,5 @@ Alan (2026-11-13) was upset that I drew plain arrows and text "Note" frames on R
 
 **Why:** I forgot this and invented my own style; Alan has to re-explain it each time.
 **How to apply:** before any flow, screen-order or annotation work, read this file and inspect the reference page. Related: [[feedback-self-check-after-edits]], [[feedback-own-drawn-elements-use-tokens]], [[remote-trigger-v2-figma-locations]].
+
+**Update 2026-11-20 (Alan):** the connector/label style above is the DEFAULT reference, not a rigid rule. Final goal = clear, concise, readable flow that users understand at a glance; colours and styles may change for readability. Still always show visible arrows and use native Annotations.
