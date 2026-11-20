@@ -1,0 +1,13 @@
+XRCC is the XR authoring tool by VOTANIC (Hong Kong). This design system covers the PC product: Launcher, editor panels, dialogs, Runtime Debug.
+
+Rules that matter most:
+- Dark mode only. Canvas #1e1e21, panels #161616, headers and rails #2a2531. Never pure black or blue-grey slate.
+- Primary action is a deep purple block (#392e52) with light purple text (#b89afa), not a saturated purple. One Primary per decision area. Destructive is red (#a32929) with white text.
+- Font is Roboto. Chinese copy only on request (Noto Sans TC). No letter-spacing.
+- Controls are 48 / 36 / 28 high. Radius 8 for controls, 16 for dialogs and cards. 4px spacing scale.
+- English UI copy, plain and specific, with real names and numbers. Buttons are verb + object. Errors say what happened, the consequence and the next step. Honest status words only: Saved locally, Queued, Accepted, Delivered, Failed.
+- Content first: thumbnails and cards instead of tables for projects, assets and scenes. Give important surfaces one touch of personality (illustration slot, activity line, human empty-state sentence).
+- Orange (Citrus) is a tiny accent only (toast progress line, selected outline), at most twice per screen. Gradient only for the Assets Panel active pill and marketing.
+- Bold display type (48 to 80) is for documents, covers, onboarding and empty-state heroes only. Product UI stays restrained.
+- Out of scope: Light mode, Voyage360, XR/CAVE/HMD library, in-scene diegetic UI.
+Start from ui_kits/xrcc-pc/debug-panel.html and launcher.html.
