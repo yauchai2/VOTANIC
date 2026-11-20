@@ -1193,6 +1193,20 @@ document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='0'){
   else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
  }});
 
+
+/* first-visit coach mark (Figma A1 · First visit) */
+(function(){const b=document.getElementById('openAI');if(!b)return;
+ let seen=false;try{seen=sessionStorage.getItem('coachSeen')==='1'}catch(e){}
+ if(seen||(S.providers&&S.providers.length))return;
+ b.classList.add('pulse');
+ const c=document.createElement('div');c.className='coach';c.id='coach';c.setAttribute('role','dialog');c.setAttribute('aria-label','Start here');
+ c.innerHTML='<div class="mdb">Start here</div><div class="sm t2">Connect an AI provider to use AI in this project.<br>1. Click the sparkle icon above.<br>2. Choose Add a provider and follow the steps.</div><div class="row g8" style="justify-content:flex-end"><button class="btn pri" id="coachOk">Got it</button></div>';
+ document.body.appendChild(c);
+ const place=()=>{const r=b.getBoundingClientRect();const w=300;const l=Math.min(Math.max(8,r.left+r.width/2-w+18),innerWidth-w-8);c.style.left=l+'px';c.style.top=(r.bottom+14)+'px';c.style.setProperty('--ax',Math.max(12,l+w-(r.left+r.width/2)-6)+'px')};
+ place();addEventListener('resize',place);
+ const off=()=>{c.remove();b.classList.remove('pulse');removeEventListener('resize',place);try{sessionStorage.setItem('coachSeen','1')}catch(e){}};
+ document.getElementById('coachOk').addEventListener('click',off);b.addEventListener('click',off);
+})();
 </script>
 </body>
 </html>
