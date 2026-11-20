@@ -775,7 +775,10 @@ function customDlg(server,{fromKey=false}={}){
  ${inp('Model name',server?.model??'llama-3.3-70b','','Type it exactly as your server expects.')}
  <div class="adv"><div class="top" data-cadv>${ic('Chevron')}<span class="md t2">Advanced</span><span class="fill"></span><span class="sm t3" data-csum>OpenAI format · 30 s timeout</span><button class="btn" data-creset style="display:none">Reset</button></div>
  <div data-cbody class="bot" style="display:none"><div class="field"><div class="lrow"><span class="mdb">Request format</span></div><div class="sel"><span class="md fill">OpenAI chat completions</span>${ic('Down','i12')}</div></div>${inp('Timeout','30 s')}${inp('Extra header','','Optional, e.g. X-Studio: lobby')}</div></div></div>`,`${cancel}<button class="btn pri" data-customadd="${server?.id||''}" ${fromKey?'data-from-key':''}>${server?'Save changes':'Add provider'}</button>`,'sub','custom-provider');
+ syncCustomReady();
 }
+function customReady(layer){const i=layer.querySelectorAll('.content input');if(i.length<3)return true;let ok=false;try{ok=['http:','https:'].includes(new URL(i[1].value.trim()).protocol)}catch{}return !!i[0].value.trim()&&ok&&!!i[2].value.trim()}
+function syncCustomReady(){const l=activeLayer();const b=l&&l.querySelector('[data-customadd]');if(!b)return;b.disabled=!customReady(l)}
 function witDlg(){dlg('Add a Wit.ai token',`<div class="lg">Speech commands use this token. It stays on this computer.</div><div class="content">${inp('Token name','Lobby kiosk token','Lobby kiosk token','Only you see this name.')}<div class="field"><div class="mdb">Server access token</div><input class="input" id="kv" type="password" placeholder="Paste your Wit.ai token"><div class="helper">Wit.ai tokens don't take a password.</div></div></div>`,`${cancel}<button class="btn pri" data-savewit disabled data-tip="Paste your token first">Save token</button>`,'sub')}
 function captureKeyDraft(){
  const p=activeLayer();
@@ -1184,6 +1187,7 @@ document.addEventListener('click',e=>{
  if('news' in d)return newSession();
 });
 ov.addEventListener('mousedown',e=>{if(e.target.classList.contains('lay'))pop()});
+document.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('[data-customadd]')===null&&activeLayer()?.querySelector('[data-customadd]'))syncCustomReady()});
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='0'){e.preventDefault();openSettingsConnections()}if(e.key==='Escape'){const menu=$('#cmenu');if(menu){const owner=menu.dataset.for;menu.remove();[...ov.querySelectorAll('[data-cm]')].find(b=>b.dataset.cm===owner)?.focus();return;}if(stack.length)pop();}
  if(e.key==='Tab'&&activeLayer()&&!$('#cmenu')){
   const focusable=[...activeLayer().querySelectorAll('button:not(:disabled),a[href],input:not(:disabled),select,textarea')].filter(el=>el.getClientRects().length);
