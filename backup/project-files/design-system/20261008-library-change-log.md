@@ -1728,3 +1728,92 @@ Page Button, Library file. Three sets: `Button / Dark / 40px` (17463:54657, Stat
 
 ## 2026-11-20 · 連線與標籤以可讀性為最終目標（Alan）
 - AI workflow guide：C 節新增原則「連線、箭咀與畫板標籤清晰簡潔，使用者一眼看懂；顏色與樣式是預設參考，不是死標準」；A 節第 3 點與 F 節第 2 點改為不限死樣式。Alan 的 Flow 標準 frame 未改動。無新增 token，Library 無改動。
+
+## 2026-11-20 Connector clarity review (13 flows)
+- Dashed branch connectors (19) were #545454 on the #444 board background: rebound to existing XRCC Theme variable text/secondary (#c8c8c8), same 2px [6,6] dash. 6 of them (B17→B15, C24→C25, C25→C26, C26→C27, C13→C14, C29→C15) also carried a stray Light-mode variable override that kept them dim: cleared.
+- Flow 10: added dashed C6→C7 ("Slider") and C7→C8 ("輸入數值") so the four states read as one sequence (clones of the existing connector and label).
+- Checked: all 42 connectors+labels, arrow ends (baked in path), label size 16px / #e5e5e5, no crossings, no bad endpoints. Still without connector (parallel state variants, left for Alan's decision): Flow 03 A15–A18, Flow 08 B25, Flow 09 B22/B27, Flow 10 none. No UI, Library or token changes.
+
+## 2026-11-20 AI Provider: first-visit coach mark
+- Cause: coach mark existed only in the prototype (commit 617d858); the Figma sync commit 0b05d72 removed it, and Figma never had it. Not a Library change.
+- Figma Workbench A1 (1354:2551): new state "Entry · first visit" (3078:440) with coach card (3078:511, Library Primary Small "Got it", existing tokens only) and native annotation.
+- Prototype: coach mark restored with the same copy, shown once per session while no provider exists; sparkle pulses until dismissed.
+
+## 2026-11-20 AI Provider: Custom provider required fields
+- Rule (Alan: 由你建議): Name, Base URL (valid http/https) and Model name required; API key and Advanced optional. Add provider stays Disabled until all three are valid.
+- Figma: new board A6d (3082:133, Label 3082:349) using Library Primary Disabled and placeholder inputs, native annotation. No new tokens or components.
+- Prototype: button disabled until valid (live while typing); pre-filled first-time demo values keep it enabled, matching A6.
+
+## 2026-11-20 AI Provider: Custom provider Name optional (Alan)
+- Name is optional; blank auto-names "Custom provider (1)", "(2)"… (placeholder shows the next name). Base URL (valid http/https) and Model name stay required.
+- Figma A6d (3082:133) and A6 (1449:2043): "Optional" tag on Name; A6d placeholder and annotation updated. Prototype synced.
+- 2026-11-20 correction (Alan): blank Name becomes "Custom provider"; a number is added only on a duplicate ("Custom provider (1)", "(2)"…). Figma A6d placeholder and annotation updated; prototype synced.
+- 2026-11-20 prototype aligned to Figma copy: Model name grey placeholder "e.g. llama-3.3-70b" (empty when a server already exists); password-protect hint "Add a password only if you want extra protection."; test success "Connection test succeeded · 0.8 s" / failure "Couldn't reach X"; tooltips (provider tile "This provider is connected", Test "Send a tiny test request to this provider", failed "Check your connection, then test again", unlock "Enter the password you set for this key", "Stop preview", "Play the preview line.", disabled key chip "A key already exists. Manage it in Connections → AI keys.").
+- Figma stale/unaligned (not changed): old Connections backgrounds D2, D5-D8, E4, E5, M5, M6; A6 backdrop still shows old A2 copy ("Give your project a brain and a voice"); Launcher remote-control boards D3R/D0R belong to Launcher.
+
+## 2026-11-20 AI Provider: Intro banner component (Alan: 把全部此 intro 換成此樣式)
+- New feature component "AI Provider / Intro" (3093:23993, Components page > XRCC AI Provider section) built from Alan's B3 Intro 1354:3119 (image tile, bold title, text, 24px dismiss, 7% white stroke, canvas fill). Properties: Title, Text, Show dismiss. Not a Library component, nothing to Publish.
+- All 14 Intro frames (B3, E1, A3p, A6p, B5, B3r, B6, B3u, B3b, B6a, B3m, B3f, B6v, B3c) replaced by instances; copy and dismiss visibility kept. The 74px dialog-background intros (B5, B6, B6a, B6v) are now 92px.
+- Prototype .intro aligned (canvas fill, faded stroke, 24px dismiss).
+- Component audit of the flow: instances dominate (Logo 477, Button Square 402, Badge 277, Tag 152, Task Card 80…). Remaining hand-built candidates: 40px icon "Tile" squares (174, mostly in old Connections backgrounds), "Info"/"Protection" frames in key dialogs.
+
+## 2026-11-20 Prototype: unified AI Provider window size (Alan: 統一視窗大小)
+- Every AI Provider panel state (first run, Providers, Models, Voices, Sessions) is now 960x640 (was 760x609 first run, 960x760 Voices). Content scrolls inside the panel.
+- Figma boards still differ: A2 first run 760x609, Voices C1 family 960x760, C2 family 960x818-1220, D/B2 family 960x720. Not resized; needs Alan's decision.
+
+## 2026-11-20 Figma: unified AI Provider window boards to 960x640 (Alan: Figma也統一; order rule: Figma first, prototype follows)
+- 30 panel boards resized to 960x640 (A2, A3 family, A6 family incl. A6d, A3k, B2 family, C1 family, C2 family, C3a, C2b/C2l/C2f, E6 unchanged size). Body fixed height with clip (content scrolls); Scrim 640; dialogs re-centred.
+- 9 tall dialogs (C2, C2c, C2e, C2b, C3a, C2l, C2f, B2c, A6b) capped at 624 with inner scroll, footer pinned; annotation on C2.
+- Lane 1 section widened to 4660 to hold A6 at 960; A6d + its label moved to lane A (2440,2104). No new tokens.
+- Not changed: Settings window boards (D0-D8, E4, E5: 960x720/820; prototype .win is 960x680), small card boards (A1, B4, B7, C7, A4c, A5, C4, C5). Order slip noted: the prototype 960x640 change was made before Figma; both now match.
+
+## 2026-11-20 Voice preset Name optional (Alan)
+- Figma: "Optional" tag on Name in all 7 voice preset dialogs (C2, C2b, C3a, C2c, C2e, C2l, C2f) via Label row clone; annotation on C2: blank Name = "Voice preset", numbered "(1)" only on duplicate. Prototype synced (placeholder shows the next name; Save no longer blocks).
+
+## 2026-11-20 Voice picker / Catalog row 簡化（XRCC AI Provider，Components 頁 2852:20496）
+- 移除所有變體的圓形 tick 欄（Selected indicator）；選中狀態改為淡紫底、名稱紫色、左側 2px「Selected accent」（綁定 border/interactive）。
+- Preview 播放鈕清除填色，改為純線條圖示（ghost）。
+- Prototype 同步：移除 .voice-check，.voice-option.on 加 inset 2px 左線，.voice-audition 無底。
+- 無新增 token；無 Library 層面改動。
+
+## 2026-11-20 設計審查第 1 至 7 項處理（Workbench XRCC AI Provider，Figma 先行，prototype 跟隨）
+- 問題 1 分頁頁首：Providers（14 塊畫板）與 Voices（16 塊畫板）改為「標題（heading/sm）＋一句說明（body/sm secondary）＋右側主要動作」，與 Models、Sessions 一致；移除 Providers 數量徽章（分頁已有數量）；Voices 的 New voice preset 由篩選列移到頁首。
+- 問題 3 Voices 頂部：provider 條與 Preview line 併為同一列（高 64），說明句 Tap a voice… 併入頁首說明並移除獨立段落，卡片提早約 64px 出現。
+- 問題 2 對話框導語：48 處 Dialog Description 由 16 Regular 改為 body/md（14）＋ text/secondary，於各畫板的實例上覆寫（Library 元件本身未改，見下方待 Publish 項目）。B2 系列導語與內容間距 16。
+- 問題 4 標籤：Choose who runs 對話框的 PROVIDER／MODEL（11 caption 全大寫）改為 Provider／Model（body/md-bold，text/primary），與 Add provider 一致。
+- 問題 5 對比：30 處 12px 以上 helper 由 text/subtle 改 text/secondary；Optional 保留 subtle。
+- 問題 6 鎖定卡片：AI Task Card「State=Blocked」標題恢復 text/primary，Enter your … key password 一列改 text/accent。
+- 問題 7 chip logo：Figma 內全部 provider logo ≥16，無需改動；prototype 的 chip logo 圖形由 60% 放大至 76%。
+- Prototype 同步：頁首、Voices 併列、導語 14/secondary、Provider／Model 標籤、鎖定卡、helper 色。
+- 待 Alan 在 Library 處理：問題 9（舊 en/* 文字樣式）、問題 10（共用 Dialog 元件 Description 綁定 body/md＋secondary，需 Publish）、問題 11（65 處未綁定文字填色）。
+- 無新增 token。
+
+## 2026-11-20 Voices 頂部與整體排版修正（Alan：上方和整體排版怪）
+- Voices 設定列：兩欄都改為「標籤（14 Bold）＋ 36 高控件」，Speech provider 由兩行卡片改為與 Preview line 輸入框同高同底的單行條（logo 20、模型名、Change），標籤與控件上緣對齊。
+- 各分頁頁首右側按鈕改為與標題頂部對齊（原為垂直置中，浮在兩行文字中間），涵蓋 41 塊分頁畫板。
+- Models 與 Voices 的三欄卡片網格由 896 寬拉至內容區全寬 910，右緣與頁首按鈕、進度條對齊（29 個網格）。
+- 移除 Voices 網格內重複的「New voice preset」虛線卡（頁首已有按鈕），避免第二排只剩一張空卡；空狀態維持原樣。
+- Prototype 同步（頁首對齊、設定列、網格全寬、移除虛線卡）。無新增 token。
+
+## 2026-11-20 Sessions 改為單行列表（Alan 選方案 4：不要首字母頭像）
+- Components 頁 AI Feature Components 新增元件集「AI Session Row」（3109:23781）：State=Default／Hover／Header；左欄名稱＋用途（body/md-bold／body/sm secondary，寬 220）、中欄提示詞單行截斷（body/sm secondary）、右側 ⋯ 按鈕；Default／Hover 高 60，Header 高 36，底線 border/subtle，Hover 底色 surface/panel。僅用既有 token，無新增。
+- 10 塊 Sessions 相關畫板（C8、C9、M3、M4、C9b、C8d、C8s、C8r、C9e、C8e）：卡片網格改為帶框的「Session list」＋表頭列＋列實例；已刪除的隱藏卡不轉換；移除重複的 New session 虛線卡（頁首已有按鈕）。舊「AI Session Card」元件保留未刪，待 Alan 確認後再清理。
+- Prototype 同步：列表、表頭、hover 底色、提示詞單行截斷；搜尋仍可用。
+- 自檢：無過時 annotation、無失效的 prototype 連結（3000 條反應皆有目標）。
+
+## 2026-11-20 Provider 卡片加展開指示（Alan：不知道卡片可以打開）
+- Components 頁「AI Provider Card」5 個變體（Connected、Needs key、Locked、Test failed、Testing）右側新增 28x28「Expand」圖示框（icon/outline 箭咀，16px，text/secondary）：向右＝收合，展開狀態（B4）維持向下。無按鈕的卡片（如 Custom 已設定）也有箭咀。
+- B3 首張卡片加一則 Interaction annotation，說明整張卡片可展開、箭咀方向含義，按鈕不會展開卡片。
+- Prototype 同步：所有 provider 卡右側箭咀（收合向右、展開向下，tooltip Show details／Hide details）、卡片 hover 淡底；點 Test 等按鈕不會展開（已測試）。
+- 無新增 token。
+
+## 2026-11-20 分頁頁首按鈕改 Medium（Alan 指定 New voice preset、New session）
+- 41 塊分頁畫板的頁首右側按鈕由 Small（28）改為 Medium（36）：New voice preset、New session，並連同同一模式的 Add provider 一併改，以保持三個分頁一致。實例 Size 屬性改變後文字被還原為預設，已逐一補回原文案；Sessions 空狀態（E3）原本隱藏的按鈕維持隱藏。
+- Prototype 同步（btn m）。無新增 token。
+
+## 2026-11-20 · Workbench Components page (85:1541) 排版整理
+- 範圍：只動位置、分組與 section 命名，沒有改元件外觀、名稱、variant 或 token；沒有刪除任何元件。Library 沒有改動，無需 Publish。
+- 頂層 Section 由左至右頂端對齊、間距 240：Shared · Flow & Scene（新，收納 Flow / Board label、Scene Strip Thumb）→ Asset library → (Test) Data Analytics & Connections → Runtime Debug（收入散落的 Debug Log Group、Debug Log Group Footer）→ XRCC AI Provider（收入散落的 AI Provider / Selection tile 及 Preview）→ Remote Trigger · Components → Drafts · to review（新，收納 icons／icons 2／icons 3 三個圖片占位 section）。
+- Remote Trigger · Components 內分 6 個子 Section 並網格排列：Phone keys、Phone status & library、Pairing · QR & devices、Editor · Rows & nodes、Icons、Empty states，另加 Launcher · Phone remote。
+- 待 Alan 決定（未刪）：AI Session Card（已被 AI Session Row 取代）、Drafts 內三個 exec-… 圖片占位 section、「(Test) Data Analytics & Connections」名稱。
+- 截圖：reports/20261120-components-before.png、reports/20261120-components-after.png
