@@ -174,7 +174,7 @@ svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke
 .pv .h{display:flex;justify-content:space-between;align-items:center;font-weight:700}
 .pvg{display:grid;gap:var(--xrcc-spacing-8);grid-template-columns:repeat(var(--c),1fr)}
 .pvc{aspect-ratio:1;background:var(--xrcc-surface-panel);border-radius:var(--xrcc-radius-md);border:1px solid #4a4a50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--xrcc-spacing-4);font-size:11px;text-align:center;padding:var(--xrcc-spacing-4)}
-.pvc.w2{aspect-ratio:auto;grid-column:span 2}.pvs{grid-column:1/-1;font-size:11px;color:var(--text2);display:flex;gap:6px;align-items:center}.pvs i{width:10px;height:10px;border-radius:var(--xrcc-radius-xs)}
+.pvc.w2{aspect-ratio:auto;grid-column:span 2}.pvc.w3{aspect-ratio:auto;grid-column:span 3}.pvs{grid-column:1/-1;font-size:11px;color:var(--text2);display:flex;gap:6px;align-items:center}.pvs i{width:10px;height:10px;border-radius:var(--xrcc-radius-xs)}
 .pv small{color:var(--text2);font-size:11px}
 .cpop{width:268px;background:var(--panel);border:1px solid var(--interactive);border-radius:12px;padding:var(--xrcc-spacing-16);display:flex;flex-direction:column;gap:14px;flex:none}
 .cpop .cur{display:flex;gap:var(--xrcc-spacing-12);align-items:center}.cpop .cur i{width:44px;height:44px;border-radius:var(--xrcc-radius-sm);flex:none}
@@ -718,7 +718,9 @@ const snapshot = () => JSON.parse(JSON.stringify({
 const colourPaint=control=>(control.opacity??100)===100?control.color:
   'color-mix(in srgb,'+control.color+' '+control.opacity+'%,transparent)';
 function cellsOf(groups,vars,order){const cells=groups.filter(g=>g.items.length&&g.active!==false).map(g=>({key:'grp|'+g.id,label:g.name,kind:'Trigger',i:'play',s:{size:1,on:true,color:colourPaint(g)},color:g.color,issue:g.items.some(x=>x.issue)?'miss':'',iname:g.name})).concat((vars||[]).filter(v=>v.active!==false).map(v=>({key:'var|'+v.id,label:v.name,kind:v.kind,i:v.i,s:Object.assign({size:v.kind==='Text'?2:1,on:true,ro:false},v.s,{color:colourPaint(v)}),issue:''})));const byKey=new Map(cells.map(cell=>[cell.key,cell]));return orderedKeys(groups,vars||[],order).map(key=>byKey.get(key)).filter(Boolean)}
-const w2=c=>c.s.size===2||(c.kind==='Number'&&c.s.control==='slider');
+const isSl=c=>c.kind==='Number'&&c.s.control==='slider';
+const spanOf=c=>isSl(c)?3:c.s.size===2?2:1;
+const w2=c=>spanOf(c)>1;
 const issues=()=>st.groups.reduce((a,g)=>a+g.items.filter(i=>i.issue).length,0);
 const nCells=()=>cellsOf(st.groups,st.vars).filter(c=>!c.sec).length;
 // Library Notification / Dark, Type=Default (69b782e559257123f79e35a3a2a234862147b0f4).
@@ -851,7 +853,7 @@ function ctlPanel(g,it){
     if(on&&(c.kind==='Number'||c.kind==='Trigger'||c.kind==='Text')){const b=h('div',{class:'cb'});
       const row=h('div',{class:'setrow'});
       if(c.kind==='Number'){
-        const sel=h('select',{class:'fld sel','aria-label':'Control'},h('option',{value:'slider'},'Slider'),h('option',{value:'input'},'Input'));sel.value=s.control;sel.addEventListener('change',()=>{s.control=sel.value;if(sel.value==='slider')s.size=2;touch();render()});
+        const sel=h('select',{class:'fld sel','aria-label':'Control'},h('option',{value:'slider'},'Slider'),h('option',{value:'input'},'Input'));sel.value=s.control;sel.addEventListener('change',()=>{s.control=sel.value;if(sel.value==='slider')s.size=3;touch();render()});
         row.append(h('div',{},h('span',{class:'lab'},'Control'),sel));
         [['min','Min'],['max','Max'],['dec','Decimal']].forEach(([f,n])=>{const x=h('input',{class:'fld',type:'number',value:String(s[f])});x.addEventListener('change',()=>{let v=+x.value||0;if(f==='dec')v=Math.max(0,Math.min(3,Math.round(v)));if(f==='max'&&v<=s.min)v=s.min+1;if(f==='min'&&v>=s.max)v=s.max-1;upd(s,f,v)});row.append(h('div',{},h('span',{class:'lab'},n),x))})}
       if(c.kind==='Trigger')row.append(h('div',{style:'grid-column:1/-1'},h('span',{class:'lab'},'Button colour'),h('div',{class:'sw'},COLS.map(x=>h('i',{class:s.color===x?'on':'',style:'background:'+x,onclick:()=>upd(s,'color',x)})))));
@@ -895,7 +897,7 @@ function rtDialog(){
 function previewCard(){
   const c=st.orient==='landscape'?6:3;const cs=cellsOf(st.groups,st.vars,listOrder());
   return h('div',{class:'pv'},h('div',{class:'h'},'Preview',h('span',{class:'pill'},(st.orient==='landscape'?'Landscape':'Portrait')+' · '+c+' columns')),
-    cs.length?h('div',{class:'pvg',style:'--c:'+c},cs.filter(x=>!x.sec).map(x=>h('div',{class:'pvc'+(w2(x)?' w2':'')},h('span',{style:'color:#d9b0fd'},ic('cube',16)),x.label))):h('small',{},'Nothing remoted yet. Use the connect button on an instance.'),
+    cs.length?h('div',{class:'pvg',style:'--c:'+c},cs.filter(x=>!x.sec).map(x=>h('div',{class:'pvc'+(spanOf(x)===3?' w3':spanOf(x)===2?' w2':'')},h('span',{style:'color:#d9b0fd'},ic('cube',16)),x.label))):h('small',{},'Nothing remoted yet. Use the connect button on an instance.'),
     h('small',{},'Items flow left to right, then down, in list order.'))}
 function closeColour(){
   const key = st.colorFor;
@@ -1334,7 +1336,7 @@ function press(c,val){
 function keyEl(c){
   const v=valOf(c.key),s=c.s,dis=c.issue||(s.ro&&c.kind!=='Trigger')||ph.conn!=='local'||st.srv!=='on'||ph.changed||!st.playing||viewOnly();
   const wide=c.kind==='Text'||(c.kind==='Number'&&s.control==='slider');
-  const e=h(c.kind==='Trigger'?'button':'div',{type:c.kind==='Trigger'?'button':null,class:'key key-'+(c.kind==='Number'?s.control:c.kind.toLowerCase())+(dis?' paused':'')+(c.kind==='Toggle'&&v?' on':'')+(s.ro&&c.kind!=='Trigger'?' ro':'')+(c.issue?' bad':'')+(wide?' wide':''),style:`grid-column:span ${w2(c)?2:1}`,tabindex:['Trigger','Toggle'].includes(c.kind)?'0':null,role:['Trigger','Toggle'].includes(c.kind)?'button':'group','aria-disabled':String(!!dis),'aria-label':c.label});
+  const e=h(c.kind==='Trigger'?'button':'div',{type:c.kind==='Trigger'?'button':null,class:'key key-'+(c.kind==='Number'?s.control:c.kind.toLowerCase())+(dis?' paused':'')+(c.kind==='Toggle'&&v?' on':'')+(s.ro&&c.kind!=='Trigger'?' ro':'')+(c.issue?' bad':'')+(wide?' wide':''),style:`grid-column:span ${Math.min(spanOf(c),colsFor())}`,tabindex:['Trigger','Toggle'].includes(c.kind)?'0':null,role:['Trigger','Toggle'].includes(c.kind)?'button':'group','aria-disabled':String(!!dis),'aria-label':c.label});
   let output=e;
   e.addEventListener('keydown',ev=>{if(ev.target===e&&c.kind==='Toggle'&&(ev.key==='Enter'||ev.key===' ')){ev.preventDefault();e.click()}});
   const col=s.color||'#d9b0fd';
@@ -1350,7 +1352,7 @@ function keyEl(c){
     const commit=()=>{if(x.value===lastAttempt)return;const n=Number(x.value);if(!x.value.trim()||!Number.isFinite(n)||n<s.min||n>s.max){invalid('Use a number from '+s.min+' to '+s.max+'.');return}if(+n.toFixed(s.dec)!==n){invalid('Use up to '+s.dec+' decimal places.');return}invalid('');lastAttempt=x.value;if(n!==valOf(c.key)&&!press(c,n))x.value=lastAttempt=valOf(c.key)};
     x.addEventListener('input',()=>{lastAttempt=null});x.addEventListener('change',commit);x.addEventListener('keydown',ev=>{if(ev.key==='Enter'){commit();x.blur()}});
     e.append(h('div',{class:'v'},c.label),x,rg);e.style.cursor='default';
-    output=h('div',{class:'key-shell',style:`grid-column:span ${w2(c)?2:1}`},e,error);
+    output=h('div',{class:'key-shell',style:`grid-column:span ${Math.min(spanOf(c),colsFor())}`},e,error);
   }
   if(c.kind==='Number'&&s.control==='slider'){const number=h('span',{},(+v).toFixed(s.dec));const n=h('span',{class:'n'},number,s.min===0&&s.max===100?h('span',{class:'n-unit'},'%'):null);const r=h('input',{type:'range',min:s.min,max:s.max,step:Math.pow(10,-s.dec),value:v,disabled:dis?true:null,'aria-label':c.label});
     const showValue=()=>{number.textContent=(+r.value).toFixed(s.dec);r.style.setProperty('--level',((r.value-s.min)/Math.max(1,s.max-s.min)*100)+'%')};
@@ -1377,7 +1379,7 @@ function renderPhone(){
   const s=h('div',{class:'scr'});const sc=ph.screen;const go=x=>{ph.screen=x;ph.sheet=null;renderPhone()};
   const snap=st.snap||snapshot();
   if(sc==='connecting'&&st.srv!=='on'){s.classList.add('c');s.append(h('div',{class:'hero',style:'background:var(--elev)'},ic('info')),h('h2',{style:'margin:0'},'Unable to connect'),h('div',{class:'muted'},'Check the link and network, then try again.'),h('button',{class:'btn pri',onclick:()=>go('connecting')},'Try again'));P_.append(s);return}
-  if(sc==='connecting'){P_.append(ptop(ph.scoped?'Pop-up Gallery':'Remote control','Connecting to ALAN-PC…'));const g=h('div',{class:'pdeck'});fit(g);cellsOf(snap.groups,snap.vars,snap.order).filter(c=>!c.sec).forEach(c=>g.append(h('div',{class:'sk',style:`grid-column:span ${w2(c)?2:1}`})));s.append(g);
+  if(sc==='connecting'){P_.append(ptop(ph.scoped?'Pop-up Gallery':'Remote control','Connecting to ALAN-PC…'));const g=h('div',{class:'pdeck'});fit(g);cellsOf(snap.groups,snap.vars,snap.order).filter(c=>!c.sec).forEach(c=>g.append(h('div',{class:'sk',style:`grid-column:span ${Math.min(spanOf(c),colsFor())}`})));s.append(g);
     clearTimeout(ph.t);ph.t=setTimeout(()=>{if(ph.screen!=='connecting'||st.srv!=='on'||(ph.via==='Public'&&(st.pub!=='on'||!st.playing)))return;st.phones=st.phones.filter(p=>!p.me);st.phones.push({name:deviceLabel(ph.dev,st.phones),joined:joinedAt(),via:ph.via||'Local',me:true,has:ph.dev!=='desktop'});ph.conn='local';st.snap=snapshot();ph.changed=false;go(ph.scoped?(st.playing?'deck':'waiting'):'projects');render()},1400)}
   if(sc==='waiting'){P_.append(ptop('Pop-up Gallery','Connected to ALAN-PC'));s.append(emptyState('Waiting for Play','Controls appear when this project starts playing.'),h('button',{class:'btn ter',onclick:()=>{ph.scoped=false;go('projects')}},'Back to projects'));}
   if(sc==='projects'){P_.append(ptop('Projects','Connected to ALAN-PC'));s.append(h('button',{class:'proj',onclick:()=>{ph.scoped=true;go(st.playing?'deck':'waiting')}},h('div',{class:'th'},ic('folder')),h('div',{style:'flex:1'},h('b',{},'Pop-up Gallery'),h('div',{class:'muted',style:'font-size:12px'},'Scene: Intro'),h('div',{style:'font-size:12px;color:var(--ok)'},st.playing?'● Playing now':'Waiting for Play')),ic('arrow',18)))}
