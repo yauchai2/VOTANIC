@@ -794,7 +794,9 @@ function customDlg(server,{fromKey=false}={}){
 function customReady(layer){const i=layer.querySelectorAll('.content input:not([data-newkey])');if(i.length<3)return true;let ok=false;try{ok=['http:','https:'].includes(new URL(i[1].value.trim()).protocol)}catch{}return ok&&!!i[2].value.trim()}
 function autoVoiceName(editId){const used=new Set(S.voices.filter(v=>v.id!==editId).map(v=>v.n));if(!used.has('Voice preset'))return 'Voice preset';let n=1;while(used.has('Voice preset ('+n+')'))n++;return 'Voice preset ('+n+')'}
 function autoName(editId){const used=new Set(S.servers.filter(x=>x.id!==editId).map(x=>x.name));if(!used.has('Custom provider'))return 'Custom provider';let n=1;while(used.has('Custom provider ('+n+')'))n++;return 'Custom provider ('+n+')'}
-function syncCustomReady(){const l=activeLayer();const b=l&&l.querySelector('[data-customadd]');if(!b)return;b.disabled=!customReady(l)}
+function urlValid(v){try{return ['http:','https:'].includes(new URL(v.trim()).protocol)}catch{return false}}
+function showUrlError(l,force){const u=l.querySelectorAll('.content input:not([data-newkey])')[1];if(!u)return;const v=u.value.trim();const bad=!!v&&!urlValid(v);const flagged=u.classList.contains('err');if(!force&&!flagged&&bad&&document.activeElement===u)return;u.classList.toggle('err',bad);let m=l.querySelector('[data-urlerr]');if(bad&&!m){m=document.createElement('div');m.className='helper terr';m.dataset.urlerr='';m.textContent='Start with http:// or https://';u.closest('.field').appendChild(m)}if(!bad&&m)m.remove()}
+function syncCustomReady(){const l=activeLayer();const b=l&&l.querySelector('[data-customadd]');if(!b)return;b.disabled=!customReady(l);showUrlError(l,false)}
 function witDlg(){dlg('Add a Wit.ai token',`<div class="lg">Speech commands use this token. It stays on this computer.</div><div class="content">${inp('Token name','Lobby kiosk token','Lobby kiosk token','Only you see this name.')}<div class="field"><div class="mdb">Server access token</div><input class="input" id="kv" type="password" placeholder="Paste your Wit.ai token"><div class="helper">Wit.ai tokens don't take a password.</div></div></div>`,`${cancel}<button class="btn pri" data-savewit disabled data-tip="Paste your token first">Save token</button>`,'sub')}
 function captureKeyDraft(){
  const p=activeLayer();
@@ -1210,6 +1212,7 @@ document.addEventListener('click',e=>{
  if('news' in d)return newSession();
 });
 ov.addEventListener('mousedown',e=>{if(e.target.classList.contains('lay'))pop()});
+document.addEventListener('focusout',e=>{const l=activeLayer();if(l&&l.querySelector('[data-customadd]')&&e.target.matches&&e.target.matches('.content input'))showUrlError(l,true)});
 document.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('[data-customadd]')===null&&activeLayer()?.querySelector('[data-customadd]'))syncCustomReady()});
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='0'){e.preventDefault();openSettingsConnections()}if(e.key==='Escape'){const menu=$('#cmenu');if(menu){const owner=menu.dataset.for;menu.remove();[...ov.querySelectorAll('[data-cm]')].find(b=>b.dataset.cm===owner)?.focus();return;}if(stack.length)pop();}
  if(e.key==='Tab'&&activeLayer()&&!$('#cmenu')){
