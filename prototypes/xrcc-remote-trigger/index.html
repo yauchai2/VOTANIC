@@ -1144,7 +1144,7 @@ function deviceArtwork(summary=false){
 }
 function deviceRows(){const rows=h('section',{class:'connected-devices','data-figma':'devices'},h('div',{class:'devices-heading'},h('b',{},'Devices'),h('span',{class:'muted'},String(st.phones.length))));
   if(!st.phones.length)rows.append(h('div',{class:'devices-empty','data-figma':'empty'},deviceArtwork(),h('div',{class:'empty-copy'},h('b',{},'No devices yet'),h('span',{class:'muted'},'Devices appear here when they join.'))));
-  st.phones.forEach(p=>rows.append(h('div',{class:'device-row'},h('div',{class:'av'},ic('user',20)),h('div',{class:'device-info'},h('b',{},p.name),h('small',{class:'muted'},p.joined)),h('span',{class:'connection-pill'},h('i',{class:'status-dot'}),p.via+' · '+(p.via==='Public'?35:6)+' ms'))));return rows;
+  st.phones.forEach(p=>rows.append(h('div',{class:'device-row'},h('div',{class:'av'},ic('user',20)),h('div',{class:'device-info'},h('b',{},p.name),h('small',{class:'muted'},p.joined)),h('span',{class:'connection-pill'},h('i',{class:'status-dot'}),'Connected'))));return rows;
 }
 function sharingCard(){
   const on=st.srv==='on',busy=st.srv==='reloading',pub=st.prTab==='public';
@@ -1390,7 +1390,7 @@ function renderPhone(){
   if(ph.sheet==='device'){const has=ph.capability?ph.capability==='motion':ph.dev!=='desktop';const ok=k=>k==='mic'||has;const need=SCENES[viewIdx()].sens;
     const row=(k,used)=>h('div',{class:'sensr'},ic(SENS[k][0],20),h('b',{},SENS[k][1]),h('span',{class:'tag'+(ok(k)&&used?' ok':'')},ok(k)?(used?'Connected':'Available'):'Not available'));
     const close=()=>{ph.sheet=null;ph.confirmTakeover=false;renderPhone();$('.ptop [aria-label="This device"]')?.focus()};
-    const meta=DEVN[ph.dev]+' · '+(ph.conn!=='local'?'Reconnecting…':ph.via==='Public'?'Public link · 35 ms':'Local network · '+(ph.dev==='desktop'?4:6)+' ms');
+    const meta=DEVN[ph.dev]+' · '+(ph.conn!=='local'?'Reconnecting…':ph.via==='Public'?'Public link':'Local network');
     P_.append(h('div',{class:'sh-s',onclick:close}),h('div',{class:'sheet',role:'dialog','aria-modal':'true','aria-label':'This device'},h('div',{style:'display:flex;align-items:center'},h('b',{style:'flex:1;font-size:20px'},'This device'),h('button',{class:'ib','aria-label':'Close',onclick:close},ic('close'))),h('div',{class:'muted',style:'font-size:12px'},meta),
       need.length?h('div',{},h('div',{class:'sens-h'},'Needed by this scene'),need.map(k=>row(k,true))):h('div',{class:'sens-empty'},"This scene doesn't use any sensors."),
       (!has&&need.some(k=>k!=='mic'))?h('div',{class:'muted',style:'font-size:12px'},'This browser has no motion sensors. Use a phone or tablet for motion control.'):null))}
