@@ -657,7 +657,7 @@ function sessions(){const many=S.sessions.length>6;
  <div class="slist" id="sgrid"><div class="srow shead"><span class="sm t2 scol">Session</span><span class="sm t2 fill">Prompt</span><span class="sgap"></span></div>${S.sessions.map((s,si)=>`<div class="srow sitem" data-st="${esc((s.n+' '+s.p).toLowerCase())}"><div class="col g4 scol"><div class="mdb">${esc(s.n)}</div><div class="sm t2">${s.u}</div></div><div class="sm t2 fill sprompt" data-tip="The saved prompt">${esc(s.p)}</div><button class="iconbtn s28" data-cm="sess|${si}" data-tip="More actions">${ic('MoreH')}</button></div>`).join('')}</div><div class="md t2" id="snone" style="display:none;padding:24px 0;text-align:center">No session matches that. Try a character name or a word from the prompt.</div>`}
 document.addEventListener('click',e=>{if(e.target.closest('[data-introx]')){e.stopPropagation();S.introOff=true;renderPanel()}},true);
 document.addEventListener('change',e=>{if(e.target.matches&&e.target.matches('[data-custom-key]')){const w=e.target.closest('.field')?.querySelector('[data-newkey-wrap]');if(w){w.hidden=e.target.value!=='__new';if(!w.hidden)w.querySelector('input')?.focus()}e.target.dataset.selectedKey=e.target.value;}
- if(e.target.id==='pwon'){const field=activeLayer().querySelector('#pwfield');if(field)field.hidden=!e.target.checked;const hint=activeLayer().querySelector('#pwhint');if(hint)hint.hidden=e.target.checked;updateKeySave();}});
+ if(e.target.id==='pwon'){const field=activeLayer().querySelector('#pwfield');if(field)field.hidden=!e.target.checked;updateKeySave();}});
 document.addEventListener('input',e=>{const vq=e.target.closest?.('[data-vq]');if(vq){filterVoiceRows(vq.closest('.voice-picker'));return}
  if(e.target.matches('[data-voice-line]'))for(const button of activeLayer().querySelectorAll('[data-audition]'))button.disabled=!e.target.value.trim()&&button.dataset.audition!==S.voiceDraft?.audition;
  const mq=e.target.closest&&e.target.closest('[data-mq]');if(mq){const v=mq.value.trim().toLowerCase();let c=0;document.querySelectorAll('[data-mt]').forEach(x=>{const ok=!v||x.dataset.mt.includes(v);x.style.display=ok?'':'none';if(ok)c++});const z=document.getElementById('mnone');if(z)z.style.display=c?'none':'';return}
@@ -780,14 +780,13 @@ function preserveServerForm(){
  preserveDialogInputs();
 }
 function customDlg(server,{fromKey=false}={}){
- const first=!S.servers.length;const hasKeys=S.keys.some(k=>k.prov==='custom');
+ const first=!S.servers.length;const saved=server?.key?S.keys.find(k=>k.id===server.key):null;
  dlg(server?'Edit custom provider':'Add a custom provider',`<div class="lg">Connect to an existing OpenAI-compatible endpoint.</div><div class="content">
  ${inp('Name',server?.name??(first?'Studio LLM':''),autoName(server?.id),'',true)}
- ${inp('Base URL',server?.endpoint??(first?'http://192.168.1.20:8080/v1':''),'http://192.168.1.20:8080/v1','We can only check that this address answers.')}
- <div class="field"><div class="lrow"><label class="mdb" for="${hasKeys?'custom-key':'custom-newkey'}">API key</label><span class="sm t3">Optional</span><span class="fill"></span>${hasKeys?'<button class="lnk" data-manage>Manage keys</button>':''}</div>
- ${hasKeys?`<select class="sel" id="custom-key" data-custom-key data-selected-key="${esc(server?.key)}"></select>`:''}
- <div class="col g8" data-newkey-wrap ${hasKeys&&server?.key!=='__new'?'hidden':''}>${pwwrap('<input class="input" id="custom-newkey" data-newkey type="password" placeholder="Paste your API key" autocomplete="off">')}<div class="helper">Saved on this computer and listed in AI keys. Leave empty if no key is needed.</div></div></div>
- ${inp('Model name',server?.model??(first?'llama-3.3-70b':''),'e.g. llama-3.3-70b','Type it exactly as your server expects.')}
+ ${inp('Base URL',server?.endpoint??(first?'http://192.168.1.20:8080/v1':''),'http://192.168.1.20:8080/v1','')}
+ <div class="field"><div class="lrow"><label class="mdb" for="custom-newkey">API key</label><span class="sm t3">Optional</span><span class="fill"></span>${saved?'<button type="button" class="lnk" data-removekey>Remove key</button>':''}</div>
+ ${pwwrap(`<input class="input" id="custom-newkey" data-newkey type="password" placeholder="${saved?'Key saved · ends '+esc(saved.end||''):'Paste your API key'}" autocomplete="off">`)}<div class="helper" data-keyhelp>${saved?'Paste a new key to replace it.':'Saved on this computer. Leave empty if no key is needed.'}</div></div>
+ ${inp('Model name',server?.model??(first?'llama-3.3-70b':''),'e.g. llama-3.3-70b','')}
  <div class="adv"><div class="top" data-cadv>${ic('Chevron')}<span class="md t2">Advanced</span><span class="fill"></span><span class="sm t2" data-csum>OpenAI format · 30 s timeout</span><button class="btn" data-creset style="display:none">Reset</button></div>
  <div data-cbody class="bot" style="display:none"><div class="field"><div class="lrow"><span class="mdb">Request format</span></div><div class="sel"><span class="md fill">OpenAI chat completions</span>${ic('Down','i12')}</div></div>${inp('Timeout','30 s')}${inp('Extra header','','Optional, e.g. X-Studio: lobby')}</div></div></div>`,`${cancel}<button class="btn pri" data-customadd="${server?.id||''}" ${fromKey?'data-from-key':''}>${server?'Save changes':'Add provider'}</button>`,'sub','custom-provider');
  syncCustomReady();
@@ -799,7 +798,7 @@ function syncCustomReady(){const l=activeLayer();const b=l&&l.querySelector('[da
 function witDlg(){dlg('Add a Wit.ai token',`<div class="lg">Speech commands use this token. It stays on this computer.</div><div class="content">${inp('Token name','Lobby kiosk token','Lobby kiosk token','Only you see this name.')}<div class="field"><div class="mdb">Server access token</div><input class="input" id="kv" type="password" placeholder="Paste your Wit.ai token"><div class="helper">Wit.ai tokens don't take a password.</div></div></div>`,`${cancel}<button class="btn pri" data-savewit disabled data-tip="Paste your token first">Save token</button>`,'sub')}
 function captureKeyDraft(){
  const p=activeLayer();
- S.keyDraft={name:read(p,'.content input'),api:read(p,'#kv'),password:read(p,'#kpw'),protect:p.querySelector('#pwon')?.checked};
+ S.keyDraft={name:read(p,'#kname'),api:read(p,'#kv'),password:read(p,'#kpw'),protect:p.querySelector('#pwon')?.checked};
 }
 function keyDlg(){
  const list=S.keyOrigin==='launch'||S.launchManage?(S.launchKeys||[]):S.keys;
@@ -807,13 +806,14 @@ function keyDlg(){
  const docs={gemini:'https://aistudio.google.com/apikey',minimax:'https://platform.minimax.io/',poe:'https://poe.com/api_key',openrouter:'https://openrouter.ai/keys'};
  const selected=P[S.addSel];
  const customSetup=S.addSel==='custom'&&S.keyOrigin==='settings'&&!S.launcher&&!S.launchManage&&!keys.includes('custom-provider');
- dlg('Add an AI key',`<div class="lg">Keys stay on this computer. VOTANIC never sees them.</div><div class="content">${inp('Key name',draft.name,selected.n+' key','Only you see this name.')}
+ dlg('Add an AI key',`<div class="lg">Keys stay on this computer.</div><div class="content">
  <div class="col g8"><div class="mdb">Provider</div><div class="row g8" style="flex-wrap:wrap">${Object.entries(P).map(([i,v])=>{
   const disabled=(S.keyOrigin==='launch'&&i!==S.addSel)||(i!=='custom'&&list.some(k=>k.prov===i));
   return `<button class="chip ${S.addSel===i?'on':''}" data-ksel="${i}" ${disabled?'disabled':''} title="${disabled?(S.keyOrigin==='launch'&&i!==S.addSel?'Unavailable in this step':'A key already exists. Manage it in Connections → AI keys.'):'Key for '+v.n}">${lg(i,20)}${v.n}</button>`;
  }).join('')}</div></div>
- <div class="field"><label class="mdb" for="kv">API key</label><input class="input" id="kv" type="password" value="${esc(draft.api)}" placeholder="Paste your key" autocomplete="off" ${customSetup?'aria-describedby="custom-key-help"':''}>${customSetup?`<div class="row g8" style="flex-wrap:wrap"><span class="helper" id="custom-key-help">Save this key to use with a custom provider.</span><button type="button" class="lnk" data-setupserver>Set up a custom provider</button></div>`:docs[S.addSel]?`<a class="lnk" href="${docs[S.addSel]}" target="_blank" rel="noopener noreferrer">Where do I find my ${selected.n} key?</a>`:''}</div>
- <div class="col g8"><label class="row g8"><input type="checkbox" id="pwon" ${draft.protect?'checked':''}>Protect this key with a password</label><div class="helper" id="pwhint" ${draft.protect?'hidden':''}>Add a password only if you want extra protection.</div><div id="pwfield" ${draft.protect?'':'hidden'}>${pwwrap(`<input class="input" id="kpw" aria-label="Key password" type="password" value="${esc(draft.password)}" placeholder="Add a password" autocomplete="new-password">`)}<div class="helper">Asked each time a project opens. It can't be recovered, so pick one you'll remember.</div></div></div></div>`,
+ <div class="field"><div class="lrow"><label class="mdb fill" for="kv">API key</label>${customSetup?`<button type="button" class="lnk" data-setupserver>Set up a custom provider</button>`:docs[S.addSel]?`<a class="lnk" href="${docs[S.addSel]}" target="_blank" rel="noopener noreferrer" aria-label="Where do I find my ${selected.n} key?">Where to find it</a>`:''}</div>${pwwrap(`<input class="input" id="kv" type="password" value="${esc(draft.api)}" placeholder="Paste your key" autocomplete="off">`)}</div>
+ <div class="field"><div class="lrow"><label class="mdb" for="kname">Key name</label><span class="sm t3">Optional</span></div><input class="input" id="kname" value="${esc(draft.name)}" placeholder="${selected.n} key"></div>
+ <div class="col g8"><label class="row g8"><input type="checkbox" id="pwon" ${draft.protect?'checked':''}>Protect this key with a password</label><div id="pwfield" ${draft.protect?'':'hidden'}>${pwwrap(`<input class="input" id="kpw" aria-label="Key password" type="password" value="${esc(draft.password)}" placeholder="Add a password" autocomplete="new-password">`)}<div class="helper">Asked each time a project opens. It can't be recovered, so pick one you'll remember.</div></div></div></div>`,
  `${cancel}<button class="btn pri" data-savekey disabled>Save key</button>`,S.keyOrigin==='settings'?'':'sub');
  updateKeySave();
 }
@@ -862,7 +862,7 @@ function voiceChoices(draft){
  const language=draft.meta||'Cantonese';
  const preview=(name)=>{const playing=name===draft.audition;return `<button class="pb voice-audition" data-audition="${esc(name)}" aria-label="${playing?'Stop':'Preview'} ${esc(name)}" ${draft.preview.trim()?'':'disabled'}>${ic(playing?'Stop':'Play','i16')}</button>`;};
  const row=([name,tone])=>{const selected=name===draft.voice;return `<li class="voice-option ${selected?'on':''}" data-vt="${esc((name+' '+tone).toLowerCase())}"><button class="voice-choice" aria-pressed="${selected}" data-vchoose="${esc(name)}"><span class="mdb">${name}</span><span class="sm t2">${tone}</span></button>${preview(name)}</li>`;};
- return `<section class="col g8 voice-picker"><div class="row"><span class="mdb fill">Voice</span><span class="sm t2">${esc(language)}</span></div>
+ return `<section class="col g8 voice-picker"><div class="row"><span class="mdb fill">Voice</span></div>
  <label class="input voice-search">${ic('Search')}<input type="search" data-vq aria-label="Search by name or tone" placeholder="Search by name or tone" value="${esc(draft.query)}"></label>
  <div class="voice-catalog"><div class="voice-columns sm t2" aria-hidden="true"><span>Voice</span><span>Tone &amp; style</span><span>Preview</span></div><div class="voice-scroll" data-voice-list><ul aria-label="Available voices">${VLIST.map(row).join('')}</ul><div class="sm t2 voice-empty" data-voice-empty hidden>No voices match your search.</div></div></div><div class="row" style="justify-content:flex-end"><span class="sm t2" data-voice-count role="status"></span></div></section>`;
 }
@@ -1029,7 +1029,7 @@ document.addEventListener('click',e=>{
  if(e.target.closest('[data-savesess]')){const i=activeLayer().querySelectorAll('.dlg input,.dlg textarea');{const idx=e.target.closest('[data-savesess]').dataset.savesess;const obj={n:i[0].value.trim()||'Untitled session',u:'Not used yet',p:'“'+((i[1]&&i[1].value)||'Write the character prompt here.').trim()+'”'};if(idx!==''){obj.u=S.sessions[+idx].u;S.sessions[+idx]=obj}else S.sessions.push(obj)}S.tab='sessions';toast('Session saved');return renderPanel()}
  if(km){S.kmenu=S.kmenu===km.dataset.kmenu?null:km.dataset.kmenu;return redrawConnections()}
  if(S.kmenu&&ov.querySelector('.win')){S.kmenu=null;redrawConnections()}
- const t=e.target.closest('[data-eye],[data-conn],[data-connback],[data-addwit],[data-savewit],[data-nai],[data-sx],[data-x],[data-back],[data-manage],[data-ext],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-unset],[data-pu],[data-doun],[data-dokey],[data-addserver],[data-setupserver],[data-editserver],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dEmpty,#dLaunch,#dLaunch0,#dLConn,#dSettings,#dSeed,#dLaunchCustom,[data-lmanage],[data-ladd],[data-clear-search],[data-wrename],[data-remote],[data-remote-from-xrcc],[data-remote-return],[data-remote-stop],[data-remote-public],[data-remote-public-confirm],[data-remote-tab],[data-remote-power],[data-remote-copy],[data-vchoose],[data-audition],[data-vprovider],[data-vretry],[data-vreset],[data-creset]');
+ const t=e.target.closest('[data-eye],[data-conn],[data-connback],[data-addwit],[data-savewit],[data-nai],[data-sx],[data-x],[data-back],[data-manage],[data-ext],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-unset],[data-pu],[data-doun],[data-dokey],[data-addserver],[data-setupserver],[data-editserver],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dEmpty,#dLaunch,#dLaunch0,#dLConn,#dSettings,#dSeed,#dLaunchCustom,[data-lmanage],[data-ladd],[data-clear-search],[data-wrename],[data-remote],[data-remote-from-xrcc],[data-remote-return],[data-remote-stop],[data-remote-public],[data-remote-public-confirm],[data-remote-tab],[data-remote-power],[data-remote-copy],[data-removekey],[data-vchoose],[data-audition],[data-vprovider],[data-vretry],[data-vreset],[data-creset]');
  if(!t)return;const d=t.dataset;
  if('vretry' in d){captureVoice();return loadVoiceList()}
  if('vchoose' in d){captureVoice();S.voiceDraft.voice=d.vchoose;return newVoice('[data-vchoose="'+CSS.escape(d.vchoose)+'"]')}
@@ -1128,32 +1128,28 @@ document.addEventListener('click',e=>{
   const password=read(pane,'#kpw');
   const list=S.keyOrigin==='launch'||S.launchManage?S.launchKeys:S.keys;
   if(!api||(protectedKey&&!password)||(S.addSel!=='custom'&&list.some(k=>k.prov===S.addSel)))return;
-  const key={id:uniqueId('k'),name:read(pane,'.content input')||P[S.addSel].n+' key',prov:S.addSel,
+  const key={id:uniqueId('k'),name:read(pane,'#kname')||P[S.addSel].n+' key',prov:S.addSel,
    meta:P[S.addSel].n+' · added today',pw:protectedKey,end:api.slice(-4)};
   list.push(key);S.keyDraft=null;
   if(S.keyOrigin==='launch')return launchDlg();
   if(S.keyOrigin==='settings')return redrawConnections();
   S.addKey=key.id;pop();return addDlg();
  }
+ if('removekey' in d){const box=activeLayer().querySelector('[data-newkey]');box.dataset.removed='1';box.value='';box.placeholder='No key';activeLayer().querySelector('[data-keyhelp]').textContent='The key is removed when you save.';t.remove();return}
  if('customadd' in d){
   const inputs=activeLayer().querySelectorAll('.content input:not([data-newkey])');
   let endpoint;try{endpoint=new URL(inputs[1].value.trim());if(!['http:','https:'].includes(endpoint.protocol))throw new Error();}catch{inputs[1].classList.add('err');inputs[1].focus();return;}
   const same=S.servers.find(server=>server.id!==d.customadd&&server.endpoint===endpoint.href);
   if(same){inputs[1].classList.add('err');inputs[1].focus();return toast('That address is already saved as '+same.name);}
-  const keySelect=activeLayer().querySelector('[data-custom-key]');
-  let key=keySelect?keySelect.value:'__new';
-  if(key&&key!=='__new'&&!S.keys.some(item=>item.id===key&&item.prov==='custom')){
-   keySelect.focus();return toast('Choose an available API key or No key');
-  }
   const serverName=inputs[0].value.trim()||autoName(d.customadd);
-  if(key==='__new'){
-   const secret=(activeLayer().querySelector('[data-newkey]')?.value||'').trim();
-   if(!secret)key='';
-   else{
-    const dup=S.keys.find(item=>item.prov==='custom'&&item.sec===secret);
-    if(dup)key=dup.id;
-    else{const saved={id:uniqueId('k'),name:serverName+' key',prov:'custom',meta:'Custom · added today',pw:false,end:secret.slice(-4),sec:secret};S.keys.push(saved);key=saved.id}
-   }
+  const keyBox=activeLayer().querySelector('[data-newkey]');
+  const secret=(keyBox?.value||'').trim();
+  let key=S.servers.find(item=>item.id===d.customadd)?.key||'';
+  if(keyBox?.dataset.removed==='1')key='';
+  if(secret){
+   const dup=S.keys.find(item=>item.prov==='custom'&&item.sec===secret);
+   if(dup)key=dup.id;
+   else{const saved={id:uniqueId('k'),name:serverName+' key',prov:'custom',meta:'Custom · added today',pw:false,end:secret.slice(-4),sec:secret};S.keys.push(saved);key=saved.id}
   }
   const existing=S.servers.find(item=>item.id===d.customadd);
   const details={name:serverName,endpoint:endpoint.href,model:inputs[2].value.trim(),key};
