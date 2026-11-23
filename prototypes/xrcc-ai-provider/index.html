@@ -656,7 +656,8 @@ function sessions(){const many=S.sessions.length>6;
  return `<div class="row g12 head"><div class="col g4 fill"><div class="hsm">Saved prompts for your AI</div><div class="sm t2">A session is a saved system prompt. AI characters, quizzes and behaviours can all use one.</div></div>${many?`<div class="srch"><input class="input" data-sq placeholder="Search ${S.sessions.length} sessions" style="width:240px"></div>`:''}<button class="btn m" data-news>New session</button></div>
  <div class="slist" id="sgrid"><div class="srow shead"><span class="sm t2 scol">Session</span><span class="sm t2 fill">Prompt</span><span class="sgap"></span></div>${S.sessions.map((s,si)=>`<div class="srow sitem" data-st="${esc((s.n+' '+s.p).toLowerCase())}"><div class="col g4 scol"><div class="mdb">${esc(s.n)}</div><div class="sm t2">${s.u}</div></div><div class="sm t2 fill sprompt" data-tip="The saved prompt">${esc(s.p)}</div><button class="iconbtn s28" data-cm="sess|${si}" data-tip="More actions">${ic('MoreH')}</button></div>`).join('')}</div><div class="md t2" id="snone" style="display:none;padding:24px 0;text-align:center">No session matches that. Try a character name or a word from the prompt.</div>`}
 document.addEventListener('click',e=>{if(e.target.closest('[data-introx]')){e.stopPropagation();S.introOff=true;renderPanel()}},true);
-document.addEventListener('change',e=>{if(e.target.id==='pwon'){const field=activeLayer().querySelector('#pwfield');if(field)field.hidden=!e.target.checked;const hint=activeLayer().querySelector('#pwhint');if(hint)hint.hidden=e.target.checked;updateKeySave();}});
+document.addEventListener('change',e=>{if(e.target.matches&&e.target.matches('[data-custom-key]')){const w=e.target.closest('.field')?.querySelector('[data-newkey-wrap]');if(w){w.hidden=e.target.value!=='__new';if(!w.hidden)w.querySelector('input')?.focus()}e.target.dataset.selectedKey=e.target.value;}
+ if(e.target.id==='pwon'){const field=activeLayer().querySelector('#pwfield');if(field)field.hidden=!e.target.checked;const hint=activeLayer().querySelector('#pwhint');if(hint)hint.hidden=e.target.checked;updateKeySave();}});
 document.addEventListener('input',e=>{const vq=e.target.closest?.('[data-vq]');if(vq){filterVoiceRows(vq.closest('.voice-picker'));return}
  if(e.target.matches('[data-voice-line]'))for(const button of activeLayer().querySelectorAll('[data-audition]'))button.disabled=!e.target.value.trim()&&button.dataset.audition!==S.voiceDraft?.audition;
  const mq=e.target.closest&&e.target.closest('[data-mq]');if(mq){const v=mq.value.trim().toLowerCase();let c=0;document.querySelectorAll('[data-mt]').forEach(x=>{const ok=!v||x.dataset.mt.includes(v);x.style.display=ok?'':'none';if(ok)c++});const z=document.getElementById('mnone');if(z)z.style.display=c?'none':'';return}
@@ -751,13 +752,14 @@ function refreshCustomKeys(layer){
  if(!select)return;
  const selected=select.dataset.selectedKey;
  const available=S.keys.filter(key=>key.prov==='custom');
- select.replaceChildren(new Option('No key',''),...available.map(key=>new Option(key.name,key.id)));
+ select.replaceChildren(new Option('No key',''),...available.map(key=>new Option(key.name,key.id)),new Option('Paste a new key…','__new'));
  if(selected&&!available.some(key=>key.id===selected)){
   const missing=new Option('Saved key no longer available',selected);
   missing.disabled=true;
   select.add(missing);
  }
  select.value=selected;
+ const wrap=layer.querySelector('[data-newkey-wrap]');if(wrap)wrap.hidden=select.value!=='__new';
 }
 function preserveDialogInputs(){
  const layer=activeLayer();
@@ -774,18 +776,19 @@ function preserveServerForm(){
  preserveDialogInputs();
 }
 function customDlg(server,{fromKey=false}={}){
- const first=!S.servers.length;
+ const first=!S.servers.length;const hasKeys=S.keys.some(k=>k.prov==='custom');
  dlg(server?'Edit custom provider':'Add a custom provider',`<div class="lg">Connect to an existing OpenAI-compatible endpoint.</div><div class="content">
  ${inp('Name',server?.name??(first?'Studio LLM':''),autoName(server?.id),'',true)}
  ${inp('Base URL',server?.endpoint??(first?'http://192.168.1.20:8080/v1':''),'http://192.168.1.20:8080/v1','We can only check that this address answers.')}
- <div class="field"><div class="lrow"><label class="mdb" for="custom-key">API key</label><span class="sm t3">Optional</span><span class="fill"></span><button class="lnk" data-manage>Manage keys</button></div>
- <select class="sel" id="custom-key" data-custom-key data-selected-key="${esc(server?.key)}"></select></div>
+ <div class="field"><div class="lrow"><label class="mdb" for="${hasKeys?'custom-key':'custom-newkey'}">API key</label><span class="sm t3">Optional</span><span class="fill"></span>${hasKeys?'<button class="lnk" data-manage>Manage keys</button>':''}</div>
+ ${hasKeys?`<select class="sel" id="custom-key" data-custom-key data-selected-key="${esc(server?.key)}"></select>`:''}
+ <div class="col g8" data-newkey-wrap ${hasKeys&&server?.key!=='__new'?'hidden':''}>${pwwrap('<input class="input" id="custom-newkey" data-newkey type="password" placeholder="Paste your API key" autocomplete="off">')}<div class="helper">Saved on this computer and listed in AI keys. Leave empty if no key is needed.</div></div></div>
  ${inp('Model name',server?.model??(first?'llama-3.3-70b':''),'e.g. llama-3.3-70b','Type it exactly as your server expects.')}
  <div class="adv"><div class="top" data-cadv>${ic('Chevron')}<span class="md t2">Advanced</span><span class="fill"></span><span class="sm t2" data-csum>OpenAI format · 30 s timeout</span><button class="btn" data-creset style="display:none">Reset</button></div>
  <div data-cbody class="bot" style="display:none"><div class="field"><div class="lrow"><span class="mdb">Request format</span></div><div class="sel"><span class="md fill">OpenAI chat completions</span>${ic('Down','i12')}</div></div>${inp('Timeout','30 s')}${inp('Extra header','','Optional, e.g. X-Studio: lobby')}</div></div></div>`,`${cancel}<button class="btn pri" data-customadd="${server?.id||''}" ${fromKey?'data-from-key':''}>${server?'Save changes':'Add provider'}</button>`,'sub','custom-provider');
  syncCustomReady();
 }
-function customReady(layer){const i=layer.querySelectorAll('.content input');if(i.length<3)return true;let ok=false;try{ok=['http:','https:'].includes(new URL(i[1].value.trim()).protocol)}catch{}return ok&&!!i[2].value.trim()}
+function customReady(layer){const i=layer.querySelectorAll('.content input:not([data-newkey])');if(i.length<3)return true;let ok=false;try{ok=['http:','https:'].includes(new URL(i[1].value.trim()).protocol)}catch{}return ok&&!!i[2].value.trim()}
 function autoVoiceName(editId){const used=new Set(S.voices.filter(v=>v.id!==editId).map(v=>v.n));if(!used.has('Voice preset'))return 'Voice preset';let n=1;while(used.has('Voice preset ('+n+')'))n++;return 'Voice preset ('+n+')'}
 function autoName(editId){const used=new Set(S.servers.filter(x=>x.id!==editId).map(x=>x.name));if(!used.has('Custom provider'))return 'Custom provider';let n=1;while(used.has('Custom provider ('+n+')'))n++;return 'Custom provider ('+n+')'}
 function syncCustomReady(){const l=activeLayer();const b=l&&l.querySelector('[data-customadd]');if(!b)return;b.disabled=!customReady(l)}
@@ -1129,17 +1132,27 @@ document.addEventListener('click',e=>{
   S.addKey=key.id;pop();return addDlg();
  }
  if('customadd' in d){
-  const inputs=activeLayer().querySelectorAll('.content input');
+  const inputs=activeLayer().querySelectorAll('.content input:not([data-newkey])');
   let endpoint;try{endpoint=new URL(inputs[1].value.trim());if(!['http:','https:'].includes(endpoint.protocol))throw new Error();}catch{inputs[1].classList.add('err');inputs[1].focus();return;}
   const same=S.servers.find(server=>server.id!==d.customadd&&server.endpoint===endpoint.href);
   if(same){inputs[1].classList.add('err');inputs[1].focus();return toast('That address is already saved as '+same.name);}
   const keySelect=activeLayer().querySelector('[data-custom-key]');
-  const key=keySelect.value;
-  if(key&&!S.keys.some(item=>item.id===key&&item.prov==='custom')){
+  let key=keySelect?keySelect.value:'__new';
+  if(key&&key!=='__new'&&!S.keys.some(item=>item.id===key&&item.prov==='custom')){
    keySelect.focus();return toast('Choose an available API key or No key');
   }
+  const serverName=inputs[0].value.trim()||autoName(d.customadd);
+  if(key==='__new'){
+   const secret=(activeLayer().querySelector('[data-newkey]')?.value||'').trim();
+   if(!secret)key='';
+   else{
+    const dup=S.keys.find(item=>item.prov==='custom'&&item.sec===secret);
+    if(dup)key=dup.id;
+    else{const saved={id:uniqueId('k'),name:serverName+' key',prov:'custom',meta:'Custom · added today',pw:false,end:secret.slice(-4),sec:secret};S.keys.push(saved);key=saved.id}
+   }
+  }
   const existing=S.servers.find(item=>item.id===d.customadd);
-  const details={name:inputs[0].value.trim()||autoName(d.customadd),endpoint:endpoint.href,model:inputs[2].value.trim(),key};
+  const details={name:serverName,endpoint:endpoint.href,model:inputs[2].value.trim(),key};
   if(existing){
    Object.assign(existing,details);
    for(const provider of S.providers.filter(item=>item.serverId===existing.id))Object.assign(provider,details);
