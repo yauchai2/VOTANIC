@@ -719,23 +719,27 @@ document.addEventListener('click',e=>{const d=e.target.closest('[data-cdel]');if
 function dlg(title,body,foot,cls='',id=title){push(`<div class="dlg ${cls}"><div class="h">${cls.includes('sub')?`<button class="iconbtn s24" data-back data-tip="Back" aria-label="Back">${ic('Left')}</button>`:''}<span class="lgb fill">${esc(title)}</span><button class="iconbtn s24" data-back data-tip="Close" aria-label="Close">${ic('Close')}</button></div><div class="b">${body}</div><div class="f">${foot}</div></div>`,id)}
 const cancel=`<button class="btn" data-back>Cancel</button>`;
 const choicesForProvider=()=>S.addSel==='custom'?S.servers:S.keys.filter(key=>key.prov===S.addSel);
+const serverDetail=id=>{const sv=S.servers.find(x=>x.id===id);if(!sv)return '';let host=sv.endpoint;try{host=new URL(sv.endpoint).host}catch{}const ky=S.keys.find(x=>x.id===sv.key);return esc(host)+' · '+esc(sv.model||'No model')+' · '+(ky?esc(ky.name):sv.key?'Key no longer available':'No key')};
 const keySel=()=>{
  const existing=choicesForProvider();
  if(!existing.some(k=>k.id===S.addKey))S.addKey=existing[0]?.id||'';
  const current=existing.find(k=>k.id===S.addKey);
  const custom=S.addSel==='custom';
  const value=custom
-  ?`<select class="sel" aria-label="Saved server" data-select-server>${existing.map(k=>`<option value="${k.id}" ${k.id===S.addKey?'selected':''}>${esc(k.name)}</option>`).join('')}</select>`
+  ?`<div class="row g8"><select class="sel fill" aria-label="Saved server" data-select-server>${existing.map(k=>`<option value="${k.id}" ${k.id===S.addKey?'selected':''}>${esc(k.name)}</option>`).join('')}<option value="__add">+ Add a custom provider…</option></select>${current?`<button type="button" class="iconbtn" style="width:36px;height:36px;border-radius:8px" data-editserver="${current.id}" data-tip="Edit custom provider" aria-label="Edit custom provider">${ic('Pencil','i20')}</button>`:''}</div>${current?`<div class="helper" data-server-detail>${serverDetail(current.id)}</div>`:''}`
   :`<div class="sel" aria-readonly="true"><span>${esc(current?.name)}</span></div>`;
  return `<div class="field"><div class="lrow"><span class="mdb fill">${custom?'Saved server':'API key'}</span>${custom?'':'<button class="lnk" data-manage>Manage keys</button>'}</div>
   ${current?value:`<div class="missing-key row g12"><div class="tile">${ic('Key')}</div><b class="mdb fill">No ${P[S.addSel].n} keys here yet</b><button class="btn out" data-addkey>Add a key</button></div>`}
-  ${custom?`<div class="row g12"><button class="lnk" data-addserver>Add a custom provider…</button>${current?`<button class="lnk" data-editserver="${current.id}">Edit custom provider</button>`:''}</div>`:''}</div>`;
+  ${custom&&!current?`<div class="row g12"><button class="lnk" data-addserver>Add a custom provider…</button></div>`:''}</div>`;
 };
 document.addEventListener('change',event=>{
  if(event.target.matches('[data-select-server]')){
+  if(event.target.value==='__add'){event.target.value=S.addKey;S.menuOpen=false;return customDlg()}
   S.addKey=event.target.value;
   const editServer=event.target.closest('.field').querySelector('[data-editserver]');
   if(editServer)editServer.dataset.editserver=S.addKey;
+  const detail=event.target.closest('.field').querySelector('[data-server-detail]');
+  if(detail)detail.innerHTML=serverDetail(S.addKey);
  }
 });
 function addDlg(){
