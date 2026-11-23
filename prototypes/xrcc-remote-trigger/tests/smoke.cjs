@@ -169,13 +169,13 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     if(screenshotDir) await page.locator('#phone').screenshot({path:path.join(screenshotDir,'remote-inline-error.png')});
     await page.selectOption('#screenReview','C16');
     assert.equal(await page.locator('.sheet .tag.ok').count(),2);
-    assert.equal(await page.locator('.sens-o').getAttribute('aria-expanded'),'false');
+    assert.equal(await page.locator('.sens-o').count(),0);
     await page.selectOption('#screenReview','C30');
     assert.equal(await page.locator('.sheet .tag.ok').count(),0);
     assert.match(await page.locator('.sheet').innerText(),/no motion sensors/);
     await page.selectOption('#screenReview','C31');
     assert.match(await page.locator('.sheet').innerText(),/doesn't use any sensors/);
-    assert.equal(await page.locator('.sheet .sensr').count(),3);
+    assert.equal(await page.locator('.sheet .sensr').count(),0);
     // Multi-scene demo: the phone follows the PC scene; viewing another scene is read-only.
     await page.selectOption('#screenReview','C33');
     assert.equal(await page.locator('.scrow').count(),3);

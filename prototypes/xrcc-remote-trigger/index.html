@@ -1306,7 +1306,7 @@ function confirmDlg(){return launcherConfirm('Turn on a public link?','Anyone wi
 function disablePublic(){publicGeneration++;const me=st.phones.find(p=>p.me&&p.via==='Public');if(me||ph.via==='Public'){clearTimeout(ph.t);ph.screen='public-off';ph.conn='drop';sensor.owner=null}st.pub='off';st.phones=st.phones.filter(p=>p.via!=='Public');render()}
 /* ---------- phone ---------- */
 const sensor={permission:'prompt',owner:null};
-const ph={scoped:true,via:'Local',screen:'connecting',dev:'phone',land:st.orient==='landscape',conn:'local',sheet:null,changed:false,pcScene:0,view:null,otherOpen:false};
+const ph={scoped:true,via:'Local',screen:'connecting',dev:'phone',land:st.orient==='landscape',conn:'local',sheet:null,changed:false,pcScene:0,view:null};
 /* Scenes with Remote Trigger (demo). Intro uses the editor list; the others are fixed demo layouts. The phone follows the PC scene unless the user views another one. */
 const SCENES=[{n:'Intro',sens:['gyro','accel']},{n:'Gallery',sens:[],cells:[{key:'demo|g1',label:'Next artwork',kind:'Trigger',i:'play',s:{size:1,on:true,color:'#65a7ff'},issue:''},{key:'demo|g2',label:'Previous',kind:'Trigger',i:'play',s:{size:1,on:true,color:'#c0392b'},issue:''},{key:'demo|g3',label:'Spotlight',kind:'Toggle',i:'bulb',s:{size:1,on:true},issue:''}]},{n:'Finale',sens:['mic'],cells:[{key:'demo|f1',label:'Curtain call',kind:'Trigger',i:'play',s:{size:1,on:true,color:'#2e8b57'},issue:''},{key:'demo|f2',label:'Fireworks',kind:'Trigger',i:'play',s:{size:1,on:true,color:'#e8467c'},issue:''}]}];
 const SENS={gyro:['gyro','Gyroscope'],accel:['accel','Accelerometer'],mic:['mic','Microphone']};
@@ -1387,13 +1387,12 @@ function renderPhone(){
   if(['server-off','public-off'].includes(sc)){const info={'server-off':['Unable to connect','Check the link and network, then try again.','Try again','connecting'],'public-off':['Public link is off','Ask the host for a current link.',null,null]}[sc];s.classList.add('c');s.append(h('h2',{},info[0]),h('p',{class:'muted'},info[1]),info[2]?h('button',{class:'btn pri',onclick:()=>go(info[3])},info[2]):null)}
   if(sc==='ended'){s.classList.add('c');s.append(h('div',{class:'hero',style:'background:var(--elev)'},ic('info')),h('h2',{style:'margin:0'},'Play ended'),h('div',{class:'muted'},'Controls will return when the host starts this project again.'),h('button',{class:'btn pri',onclick:()=>go('projects')},'Back to projects'))}
   P_.append(s);
-  if(ph.sheet==='device'){const has=ph.capability?ph.capability==='motion':ph.dev!=='desktop';const ok=k=>k==='mic'||has;const need=SCENES[viewIdx()].sens,other=Object.keys(SENS).filter(k=>!need.includes(k));
+  if(ph.sheet==='device'){const has=ph.capability?ph.capability==='motion':ph.dev!=='desktop';const ok=k=>k==='mic'||has;const need=SCENES[viewIdx()].sens;
     const row=(k,used)=>h('div',{class:'sensr'},ic(SENS[k][0],20),h('b',{},SENS[k][1]),h('span',{class:'tag'+(ok(k)&&used?' ok':'')},ok(k)?(used?'Connected':'Available'):'Not available'));
     const close=()=>{ph.sheet=null;ph.confirmTakeover=false;renderPhone();$('.ptop [aria-label="This device"]')?.focus()};
     const meta=DEVN[ph.dev]+' · '+(ph.conn!=='local'?'Reconnecting…':ph.via==='Public'?'Public link · 35 ms':'Local network · '+(ph.dev==='desktop'?4:6)+' ms');
     P_.append(h('div',{class:'sh-s',onclick:close}),h('div',{class:'sheet',role:'dialog','aria-modal':'true','aria-label':'This device'},h('div',{style:'display:flex;align-items:center'},h('b',{style:'flex:1;font-size:20px'},'This device'),h('button',{class:'ib','aria-label':'Close',onclick:close},ic('close'))),h('div',{class:'muted',style:'font-size:12px'},meta),
-      h('div',{},h('div',{class:'sens-h'},'Needed by this scene'),need.length?need.map(k=>row(k,true)):h('div',{class:'sens-empty'},"This scene doesn't use any sensors.")),
-      h('div',{},h('button',{class:'sens-o','aria-expanded':String(!!ph.otherOpen),onclick:()=>{ph.otherOpen=!ph.otherOpen;renderPhone();$('.sens-o')?.focus()}},h('span',{class:'sqb'},ic('down',16)),h('b',{},'Other sensors'),h('span',{class:'n'},String(other.length))),ph.otherOpen?other.map(k=>row(k,false)):null),
+      need.length?h('div',{},h('div',{class:'sens-h'},'Needed by this scene'),need.map(k=>row(k,true))):h('div',{class:'sens-empty'},"This scene doesn't use any sensors."),
       (!has&&need.some(k=>k!=='mic'))?h('div',{class:'muted',style:'font-size:12px'},'This browser has no motion sensors. Use a phone or tablet for motion control.'):null))}
   if(ph.sheet==='scenes'){const close=()=>{ph.sheet=null;renderPhone();$('.scsel')?.focus()};
     P_.append(h('div',{class:'sh-s',onclick:close}),h('div',{class:'sheet',role:'dialog','aria-modal':'true','aria-label':'Scenes'},h('div',{style:'display:flex;align-items:center'},h('b',{style:'flex:1;font-size:20px'},'Scenes'),h('button',{class:'ib','aria-label':'Close',onclick:close},ic('close'))),h('div',{class:'muted',style:'font-size:12px'},'Only scenes with remote controls are listed.'),
@@ -1434,7 +1433,7 @@ function reviewScreen(k){
   if(k==='C9')ph.conn='drop';if(k==='C10')ph.changed=true;if(k==='C11'){st.playing=false;ph.screen='ended'}
   if(k==='C12')ph.land=true;if(k==='C13')ph.dev='ipad';if(k==='C14'){ph.dev='ipad';ph.land=true}if(k==='C29')ph.dev='desktop';
   if(k==='C15')st.snap={groups:[],vars:[]};
-  ph.pcScene=0;ph.view=null;ph.otherOpen=false;if(k==='C16'){ph.sheet='device';ph.capability='motion'}if(k==='C31'){ph.sheet='device';ph.capability='motion';ph.pcScene=1;ph.otherOpen=true}if(k==='C33')ph.sheet='scenes';if(k==='C34')ph.view=1;if(k==='C35')ph.pcScene=1;if(k==='C30'){ph.sheet='device';ph.capability='desktop';ph.dev='desktop'}
+  ph.pcScene=0;ph.view=null;if(k==='C16'){ph.sheet='device';ph.capability='motion'}if(k==='C31'){ph.sheet='device';ph.capability='motion';ph.pcScene=1}if(k==='C33')ph.sheet='scenes';if(k==='C34')ph.view=1;if(k==='C35')ph.pcScene=1;if(k==='C30'){ph.sheet='device';ph.capability='desktop';ph.dev='desktop'}
   if(k==='C23'){st.srv='off';ph.screen='server-off';ph.conn='drop'}if(k==='C24'){ph.screen='public-off';ph.conn='drop'}
  }
  render();
