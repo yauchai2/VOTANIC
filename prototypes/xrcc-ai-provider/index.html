@@ -944,7 +944,7 @@ function connBody(launcher=false){
  const lastUsed=S.witTokens.map(t=>t.lastUsed).filter(Boolean).sort().at(-1);
  const tokenSummary=S.witTokens.length?`${S.witTokens.length} ${S.witTokens.length===1?'token':'tokens'}${lastUsed?' · last used '+new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(lastUsed)):''}`:'No tokens yet';
  const keySummary=list.length?`${list.length} ${list.length===1?'key':'keys'}${protectedCount?' · '+protectedCount+' protected with a password':''}`:'No keys yet';
- return head('Connections','AI keys and speech tokens stay on this computer.')+`<div class="col connections-list">${remoteSummary(true)}${row('ai',`<div class="logo l32 connection-badge"><img src="./assets/connection-key.svg" width="20" height="20" alt=""></div>`,'AI keys',keySummary)}${row('wit',witIcon,'Speech commands (Wit.ai)',tokenSummary)}</div>`+retentionControl();
+ return head('Connections','AI keys and speech tokens stay on this computer.')+`<div class="col connections-list">${row('ai',`<div class="logo l32 connection-badge"><img src="./assets/connection-key.svg" width="20" height="20" alt=""></div>`,'AI keys',keySummary)}${row('wit',witIcon,'Speech commands (Wit.ai)',tokenSummary)}</div>`+retentionControl();
 }
 function openSettingsConnections(){
  S.launcher=false;S.launchManage=false;S.conn=null;S.kmenu=null;S.fromSettings=true;
