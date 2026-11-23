@@ -92,7 +92,8 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     assert.equal(await page.locator('.fb').evaluate(n=>n.classList.contains('show')),false);
     await page.getByRole('button', { name: 'This device', exact: true }).click();
     assert.equal(await page.getByRole('button', { name: 'Allow sensors', exact: true }).count(), 0);
-    assert.match(await page.locator('.sheet').innerText(), /on by default/);
+    assert.match(await page.locator('.sheet').innerText(), /Needed by this scene/);
+    assert.equal(await page.locator('.ptop .pill').innerText(), 'Connected');
     await page.evaluate(() => { ph.sheet = null; ph.changed = true; renderPhone(); });
     assert.equal(await page.locator('input[type=range]').isDisabled(), true);
     await page.getByRole('button', { name: 'Refresh list', exact: true }).click();
@@ -120,7 +121,7 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     await page.setViewportSize({width:1440,height:1100});
     await page.locator('.review-tools summary').click();
     const allScreens=await page.evaluate(()=>Object.keys(FLOW_NAMES));
-    assert.equal(allScreens.length,75);
+    assert.equal(allScreens.length,80);
     for(const screen of allScreens){
       await page.selectOption('#screenReview',screen);
       await page.waitForTimeout(20);
@@ -167,10 +168,24 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     assert.equal(await page.locator('.key .v.bad').count(),1);
     if(screenshotDir) await page.locator('#phone').screenshot({path:path.join(screenshotDir,'remote-inline-error.png')});
     await page.selectOption('#screenReview','C16');
-    assert.equal(await page.locator('.sheet .tag.ok').count(),3);
+    assert.equal(await page.locator('.sheet .tag.ok').count(),2);
+    assert.equal(await page.locator('.sens-o').getAttribute('aria-expanded'),'false');
     await page.selectOption('#screenReview','C30');
-    assert.equal(await page.locator('.sheet .tag.ok').count(),1);
+    assert.equal(await page.locator('.sheet .tag.ok').count(),0);
     assert.match(await page.locator('.sheet').innerText(),/no motion sensors/);
+    await page.selectOption('#screenReview','C31');
+    assert.match(await page.locator('.sheet').innerText(),/doesn't use any sensors/);
+    assert.equal(await page.locator('.sheet .sensr').count(),3);
+    // Multi-scene demo: the phone follows the PC scene; viewing another scene is read-only.
+    await page.selectOption('#screenReview','C33');
+    assert.equal(await page.locator('.scrow').count(),3);
+    await page.locator('.scrow',{hasText:'Gallery'}).click();
+    assert.match(await page.locator('.scr').innerText(),/Gallery isn't playing/);
+    assert.equal(await page.locator('.pdeck .key[aria-disabled=true]').count(),3);
+    await page.evaluate(()=>{ph.pcScene=1;ph.view=null;renderPhone()});
+    assert.equal(await page.locator('.pdeck .key[aria-disabled=false]').count(),3);
+    await page.selectOption('#screenReview','C9');
+    assert.equal(await page.locator('.ptop .pill').innerText(),'Reconnecting…');
     // Main journey follows Figma: local devices can join before Play, directly into the scoped project.
     await page.selectOption('#screenReview','A4');
     assert.equal(await page.locator('.rt .head .connect-devices').count(),0);
@@ -436,7 +451,7 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     assert.deepEqual(deckBounds,[[20,112,111,111],[139,112,230,111],[20,231,111,111],
       [139,231,111,111],[20,350,230,111],[258,350,111,111]],'C5 matches all six Figma card bounds');
     assert.deepEqual(errors, []);
-    console.log('PASS: single binding, cancel/Esc without replacement or Radio, slider, numeric validation, rejection/unknown, sensor default-on, stale guard, network guard, Play/server/public lifecycle, changed port, responsive 3/6/8 columns, all 75 Figma states, 1100px Launcher, Library notification dismissal, inline errors and no rejected-number retry; no page errors.');
+    console.log('PASS: single binding, cancel/Esc without replacement or Radio, slider, numeric validation, rejection/unknown, sensor default-on, stale guard, network guard, Play/server/public lifecycle, changed port, responsive 3/6/8 columns, all 80 Figma states, 1100px Launcher, Library notification dismissal, inline errors and no rejected-number retry; no page errors.');
   } finally {
     if (browser) await browser.close();
     await new Promise(resolve => server.close(resolve));
