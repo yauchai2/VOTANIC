@@ -121,7 +121,7 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     await page.setViewportSize({width:1440,height:1100});
     await page.locator('.review-tools summary').click();
     const allScreens=await page.evaluate(()=>Object.keys(FLOW_NAMES));
-    assert.equal(allScreens.length,80);
+    assert.equal(allScreens.length,81);
     for(const screen of allScreens){
       await page.selectOption('#screenReview',screen);
       await page.waitForTimeout(20);
@@ -186,6 +186,15 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     assert.equal(await page.locator('.pdeck .key[aria-disabled=false]').count(),3);
     await page.selectOption('#screenReview','C9');
     assert.equal(await page.locator('.ptop .pill').innerText(),'Reconnecting…');
+    // Active switch: Off keeps the section in the editor list but removes it from the remote deck.
+    await page.selectOption('#screenReview','A31');
+    assert.equal(await page.locator('.gblk.off').count(),2);
+    assert.equal(await page.locator('.sw2.act[aria-checked=false]').count(),2);
+    assert.equal(await page.locator('.sw2.act[aria-checked=true]').count()>=3,true);
+    const deckKeys=await page.evaluate(()=>cellsOf(st.groups,st.vars,st.order).map(c=>c.label));
+    assert.equal(deckKeys.includes('Stage')||deckKeys.includes('Spot intensity'),false);
+    await page.locator('.sw2.act[aria-checked=false]').first().click();
+    assert.equal(await page.locator('.gblk.off').count(),1);
     // Main journey follows Figma: local devices can join before Play, directly into the scoped project.
     await page.selectOption('#screenReview','A4');
     assert.equal(await page.locator('.rt .head .connect-devices').count(),0);
@@ -451,7 +460,7 @@ if (screenshotDir) fs.mkdirSync(screenshotDir, {recursive:true});
     assert.deepEqual(deckBounds,[[20,112,111,111],[139,112,230,111],[20,231,111,111],
       [139,231,111,111],[20,350,230,111],[258,350,111,111]],'C5 matches all six Figma card bounds');
     assert.deepEqual(errors, []);
-    console.log('PASS: single binding, cancel/Esc without replacement or Radio, slider, numeric validation, rejection/unknown, sensor default-on, stale guard, network guard, Play/server/public lifecycle, changed port, responsive 3/6/8 columns, all 80 Figma states, 1100px Launcher, Library notification dismissal, inline errors and no rejected-number retry; no page errors.');
+    console.log('PASS: single binding, cancel/Esc without replacement or Radio, slider, numeric validation, rejection/unknown, sensor default-on, stale guard, network guard, Play/server/public lifecycle, changed port, responsive 3/6/8 columns, all 81 Figma states, 1100px Launcher, Library notification dismissal, inline errors and no rejected-number retry; no page errors.');
   } finally {
     if (browser) await browser.close();
     await new Promise(resolve => server.close(resolve));
