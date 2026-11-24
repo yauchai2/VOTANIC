@@ -445,13 +445,15 @@ button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(
 .cm-line .iconbtn{width:16px;height:16px;position:relative}
 .cm-line .iconbtn::after{content:"";position:absolute;inset:-4px}
 .cm-id{font-size:14px;line-height:20px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.cm-line{position:relative}
-.cm-line [data-cm-def]{position:absolute;right:0;clip-path:inset(50%);white-space:nowrap}
-.cm-row:hover [data-cm-def],.cm-line [data-cm-def]:focus-visible{position:static;clip-path:none}
+.cm-default{flex:0 0 88px;display:flex;justify-content:flex-end;white-space:nowrap}
+.cm-status{flex:0 0 48px;text-align:right}
+.cm-marker{display:flex;width:16px;flex:none}
 .cm-spin{display:block;width:16px;height:16px;flex:none;border:1.5px solid currentColor;border-right-color:transparent;border-radius:50%;animation:cm-spin .8s linear infinite}
 @keyframes cm-spin{to{transform:rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.cm-spin{animation:none}}
 .cm-why{margin-top:4px;padding-left:28px}
+.cm-edit{padding-left:28px;margin-top:8px}
+.cm-edit .input{min-width:0;flex:1}
 .cm-add{display:flex;align-items:center;gap:8px}
 .cm-add .input{flex:1;min-width:0}
 .custom-provider .adv{position:relative}
@@ -465,6 +467,9 @@ button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(
  .custom-provider .f,.custom-provider .b{padding-inline:12px}
  .custom-provider .f [data-back],.cm-add .btn{min-width:0}
  .custom-provider .f .btn{padding-inline:10px}
+ .cm-row{padding-inline:10px}
+ .cm-line{gap:6px}
+ .cm-why,.cm-edit{padding-left:22px}
 }
 .btn[disabled]{opacity:.5;cursor:not-allowed}
 .tstat{margin-top:-4px}.tstat.tok{color:var(--ok,#4caf50)}
@@ -715,7 +720,19 @@ function sessions(){const many=S.sessions.length>6;
 document.addEventListener('click',e=>{if(e.target.closest('[data-introx]')){e.stopPropagation();S.introOff=true;renderPanel()}},true);
 document.addEventListener('change',e=>{if(e.target.matches&&e.target.matches('[data-custom-key]')){const w=e.target.closest('.field')?.querySelector('[data-newkey-wrap]');if(w){w.hidden=e.target.value!=='__new';if(!w.hidden)w.querySelector('input')?.focus()}e.target.dataset.selectedKey=e.target.value;}
  if(e.target.id==='pwon'){const field=activeLayer().querySelector('#pwfield');if(field)field.hidden=!e.target.checked;updateKeySave();}});
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches&&e.target.matches('[data-cm-in]')){e.preventDefault();cmAdd()}});
+document.addEventListener('keydown',e=>{
+ if(e.isComposing)return;
+ if(e.key==='Enter'&&e.target.matches?.('[data-cm-in]')){e.preventDefault();cmAdd()}
+ if(e.target.matches?.('[data-cm-edit-in]')){
+  if(e.key==='Enter'){e.preventDefault();cmSaveModel()}
+  if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();cmCancelModelEdit()}
+ }
+});
+document.addEventListener('input',e=>{
+ if(!e.target.matches?.('[data-cm-edit-in]'))return;
+ S.cm.edit.draft=e.target.value;
+ if(S.cm.edit.error){S.cm.edit.error='';cmRefresh()}
+});
 document.addEventListener('input',e=>{if(e.target.matches&&e.target.matches('[data-curl]')&&S.cm){S.cm.url=e.target.value;delete e.target.dataset.duplicate;cmReset();cmRefresh()}if(e.target.matches&&e.target.matches('.custom-provider [data-newkey]')){cmReset();cmRefresh()};if(e.target.matches&&e.target.matches('[data-cm-in]')){S.cm.draft=e.target.value;if(S.cm.err){S.cm.err='';cmRefresh()}return}const vq=e.target.closest?.('[data-vq]');if(vq){filterVoiceRows(vq.closest('.voice-picker'));return}
  if(e.target.matches('[data-voice-line]'))for(const button of activeLayer().querySelectorAll('[data-audition]'))button.disabled=!e.target.value.trim()&&button.dataset.audition!==S.voiceDraft?.audition;
  const mq=e.target.closest&&e.target.closest('[data-mq]');if(mq){const v=mq.value.trim().toLowerCase();let c=0;document.querySelectorAll('[data-mt]').forEach(x=>{const ok=!v||x.dataset.mt.includes(v);x.style.display=ok?'':'none';if(ok)c++});const z=document.getElementById('mnone');if(z)z.style.display=c?'none':'';return}
@@ -848,23 +865,37 @@ function preserveServerForm(){
  preserveDialogInputs();
 }
 function cmInit(server,first){return server?.models?structuredClone(server.models):server?.model?[{id:server.model,st:'untested',def:true}]:first?[{id:'llama-3.3-70b',st:'untested',def:true}]:[]}
-const cmLabel={testing:'Testing…',ready:'Ready',error:'Error'};
+const cmLabel={testing:'Testing…',ready:'Ready'};
+const cmFailureText={model:'This server has no model with this ID.',timeout:'The server took too long to respond.'};
 function cmHtml(){
- const {models,url,draft,err}=S.cm;
+ const {models,url,draft,err,edit}=S.cm;
  const testing=models.some(m=>m.st==='testing');
  const ready=models.filter(m=>m.st==='ready').length;
  const failed=models.some(m=>m.st==='error');
+ const showStatus=models.some(m=>m.st!=='untested');
  const rows=models.map((m,i)=>{
-  const defaultControl=models.length<2?'':m.def?'<span class="tag">Default</span>':`<button type="button" class="lnk" data-cm-def="${i}" aria-label="Set ${esc(m.id)} as default">Set as default</button>`;
+  const defaultControl=m.def?'<span class="tag">Default</span>':`<button type="button" class="lnk" data-cm-def="${i}" aria-label="Set ${esc(m.id)} as default">Set as default</button>`;
   const statusClass=m.st==='ready'?'tok':m.st==='error'?'terr':'t2';
   const icon=m.st==='ready'?ic('Check','i16'):m.st==='error'?ic('Info','i16'):m.st==='testing'?'<span class="cm-spin"></span>':'';
-  const status=cmLabel[m.st]?`<span class="caption ${statusClass}">${cmLabel[m.st]}</span>`:'';
-  const failure=m.st==='error'?`<div class="cm-why"><span class="helper terr fill">${esc(m.reason||'')}</span><button type="button" class="btn" data-cm-retry="${i}">Retry</button></div>`:'';
-  return `<div class="cm-row"><div class="cm-line">${icon?`<span class="${statusClass}" aria-hidden="true">${icon}</span>`:''}<span class="cm-id fill" title="${esc(m.id)}">${esc(m.id)}</span>${defaultControl}${status}<button type="button" class="iconbtn s24" data-cm-rm="${i}" aria-label="Remove ${esc(m.id)}">${ic('Close')}</button></div>${failure}</div>`;
+  const editing=edit?.model===m;
+  const action=m.failure==='timeout'?`<button type="button" class="btn" data-cm-retry="${i}">Retry</button>`:`<button type="button" class="btn" data-cm-edit="${i}">Edit model ID</button>`;
+  const failure=m.st==='error'?`<div class="cm-why"><span class="helper terr fill">${esc(m.reason||cmFailureText.model)}</span>${editing?'':action}</div>`:'';
+  const editor=editing?`<div class="cm-edit col g4">
+   <div class="row g8"><input class="input ${edit.error?'err':''}" data-cm-edit-in aria-label="Model ID" ${edit.error?'aria-invalid="true" aria-describedby="custom-model-edit-error"':''} value="${esc(edit.draft)}" autocomplete="off">
+   <button type="button" class="btn" data-cm-cancel-edit>Cancel</button><button type="button" class="btn pri" data-cm-save>Save</button></div>
+   ${edit.error?`<div class="helper terr" id="custom-model-edit-error" role="alert">${esc(edit.error)}</div>`:''}
+  </div>`:'';
+  return `<div class="cm-row"><div class="cm-line">
+   ${showStatus?`<span class="cm-marker ${statusClass}" aria-hidden="true">${icon}</span>`:''}
+   <span class="cm-id fill" title="${esc(m.id)}">${esc(m.id)}</span>
+   ${models.length>1?`<span class="cm-default">${defaultControl}</span>`:''}
+   ${showStatus?`<span class="cm-status caption ${statusClass}">${cmLabel[m.st]||''}</span>`:''}
+   <button type="button" class="iconbtn s24" data-cm-rm="${i}" aria-label="Remove ${esc(m.id)}">${ic('Close')}</button>
+  </div>${failure}${editor}</div>`;
  }).join('');
  return `<div class="col g8">
   <div class="row g8"><label class="mdb fill" for="custom-model-id">Models</label>
-   ${failed&&!testing?`<span class="caption terr" role="status">${ready} of ${models.length} ready</span>`:''}
+   ${failed&&!testing?`<span class="caption t2" role="status">${ready} of ${models.length} ready</span>`:''}
    ${models.length?`<button type="button" class="btn" data-cm-test ${testing||!urlValid(url)?'disabled':''}>${testing?'Testing…':'Test'}</button>`:''}</div>
   ${rows?`<div class="cm-list">${rows}</div>`:'<div class="cm-empty t2">Add at least one model ID your server can run.</div>'}
   <div class="cm-add"><input class="input ${err?'err':''}" id="custom-model-id" data-cm-in placeholder="Add a model ID, e.g. llama-3.3-70b" value="${esc(draft)}" autocomplete="off"><button type="button" class="btn m" data-cm-add>Add</button></div>
@@ -874,21 +905,21 @@ function cmHtml(){
 function cmRefresh(){
  const box=activeLayer()?.querySelector('[data-cmodels]');
  if(!box)return;
- const input=box.querySelector('[data-cm-in]');
- const hasFocus=document.activeElement===input;
- const start=input.selectionStart,end=input.selectionEnd;
+ const input=document.activeElement;
+ const selector=box.contains(input)&&['[data-cm-in]','[data-cm-edit-in]'].find(query=>input.matches(query));
+ const start=selector?input.selectionStart:null,end=selector?input.selectionEnd:null;
  box.innerHTML=cmHtml();
  syncCustomReady();
- if(hasFocus){
-  const next=box.querySelector('[data-cm-in]');
-  next.focus();
-  next.setSelectionRange(start,end);
+ if(selector){
+  const next=box.querySelector(selector);
+  next?.focus({preventScroll:true});
+  next?.setSelectionRange(start,end);
  }
 }
 function cmReset(){
  const c=S.cm;
  c.tests.clear();
- for(const m of c.models){m.st='untested';delete m.reason}
+ for(const m of c.models){m.st='untested';delete m.reason;delete m.failure}
 }
 function cmAdd(){
  const c=S.cm;
@@ -904,20 +935,47 @@ function cmAdd(){
  cmRefresh();
  activeLayer().querySelector('[data-cm-in]').focus();
 }
+function cmCancelModelEdit(){
+ const c=S.cm,i=c.models.indexOf(c.edit.model);
+ c.edit=null;
+ cmRefresh();
+ (activeLayer().querySelector(`[data-cm-edit="${i}"]`)||activeLayer().querySelector('[data-cm-in]')).focus();
+}
+function cmSaveModel(){
+ const c=S.cm,{model,draft}=c.edit,id=draft.trim();
+ if(!id||c.models.some(m=>m!==model&&m.id===id)){
+  c.edit.error=id?id+' is already in the list':'Enter a model ID.';
+  cmRefresh();
+  return activeLayer().querySelector('[data-cm-edit-in]').focus();
+ }
+ if(id===model.id)return cmCancelModelEdit();
+ model.id=id;
+ model.st='untested';
+ delete model.failure;
+ delete model.reason;
+ c.edit=null;
+ if(urlValid(c.url))cmTest(c.models.indexOf(model));
+ else cmRefresh();
+ activeLayer().querySelector('[data-cm-in]').focus({preventScroll:true});
+}
 function cmTest(only){
  const c=S.cm;
+ if(!urlValid(c.url))return;
  const targets=only==null?c.models:[c.models[only]];
  targets.forEach((m,i)=>{
+  if(!m||m.st==='testing')return;
+  const demoTimeout=m.id==='demo-timeout'&&m.st!=='ready'&&m.failure!=='timeout';
   const test=Symbol();
   c.tests.set(m,test);
   m.st='testing';
   delete m.reason;
+  delete m.failure;
   setTimeout(()=>{
    if(S.cm!==c||c.tests.get(m)!==test||!c.models.includes(m))return;
    c.tests.delete(m);
-   const bad=/nemo|bad/i.test(m.id);
-   m.st=bad?'error':'ready';
-   if(bad)m.reason='This server has no model with this ID.';
+   const failure=demoTimeout?'timeout':/nemo|bad/i.test(m.id)?'model':null;
+   m.st=failure?'error':'ready';
+   if(failure){m.failure=failure;m.reason=cmFailureText[failure]}
    cmRefresh();
   },700+i*600);
  });
@@ -926,7 +984,7 @@ function cmTest(only){
 function customDlg(server,{fromKey=false}={}){
  const first=!S.servers.length;
  const saved=server?.key?S.keys.find(k=>k.id===server.key):null;
- S.cm={models:cmInit(server,first),url:server?.endpoint??(first?'http://192.168.1.20:8080/v1':''),draft:'',err:'',tests:new Map()};
+ S.cm={models:cmInit(server,first),url:server?.endpoint??(first?'http://192.168.1.20:8080/v1':''),draft:'',err:'',edit:null,tests:new Map()};
  dlg(server?'Edit custom provider':'Add a custom provider',`<div class="content">
  <div class="field"><label class="mdb" for="custom-name">Name</label><input class="input" id="custom-name" data-cname value="${esc(server?.name??(first?'Studio LLM':''))}" placeholder="${esc(autoName(server?.id))}"></div>
  <div class="field"><label class="mdb" for="custom-url">Base URL</label><input class="input" id="custom-url" data-curl value="${esc(S.cm.url)}" placeholder="http://192.168.1.20:8080/v1"></div>
@@ -1181,7 +1239,7 @@ document.addEventListener('click',e=>{
  if(e.target.closest('[data-savesess]')){const i=activeLayer().querySelectorAll('.dlg input,.dlg textarea');{const idx=e.target.closest('[data-savesess]').dataset.savesess;const obj={n:i[0].value.trim()||'Untitled session',u:'Not used yet',p:'“'+((i[1]&&i[1].value)||'Write the character prompt here.').trim()+'”'};if(idx!==''){obj.u=S.sessions[+idx].u;S.sessions[+idx]=obj}else S.sessions.push(obj)}S.tab='sessions';toast('Session saved');return renderPanel()}
  if(km){S.kmenu=S.kmenu===km.dataset.kmenu?null:km.dataset.kmenu;return redrawConnections()}
  if(S.kmenu&&ov.querySelector('.win')){S.kmenu=null;redrawConnections()}
- const t=e.target.closest('[data-eye],[data-conn],[data-connback],[data-addwit],[data-savewit],[data-nai],[data-sx],[data-x],[data-back],[data-manage],[data-ext],[data-cm-add],[data-cm-reset],[data-cm-rm],[data-cm-def],[data-cm-test],[data-cm-retry],[data-rmserver],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-unset],[data-pu],[data-doun],[data-dokey],[data-addserver],[data-setupserver],[data-editserver],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dEmpty,#dLaunch,#dLaunch0,#dLConn,#dSettings,#dSeed,#dLaunchCustom,[data-lmanage],[data-ladd],[data-clear-search],[data-wrename],[data-remote],[data-remote-from-xrcc],[data-remote-return],[data-remote-stop],[data-remote-public],[data-remote-public-confirm],[data-remote-tab],[data-remote-power],[data-remote-copy],[data-removekey],[data-vchoose],[data-audition],[data-vprovider],[data-vretry],[data-vreset]');
+ const t=e.target.closest('[data-eye],[data-conn],[data-connback],[data-addwit],[data-savewit],[data-nai],[data-sx],[data-x],[data-back],[data-manage],[data-ext],[data-cm-add],[data-cm-reset],[data-cm-rm],[data-cm-def],[data-cm-test],[data-cm-retry],[data-cm-edit],[data-cm-save],[data-cm-cancel-edit],[data-rmserver],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-unset],[data-pu],[data-doun],[data-dokey],[data-addserver],[data-setupserver],[data-editserver],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dEmpty,#dLaunch,#dLaunch0,#dLConn,#dSettings,#dSeed,#dLaunchCustom,[data-lmanage],[data-ladd],[data-clear-search],[data-wrename],[data-remote],[data-remote-from-xrcc],[data-remote-return],[data-remote-stop],[data-remote-public],[data-remote-public-confirm],[data-remote-tab],[data-remote-power],[data-remote-copy],[data-removekey],[data-vchoose],[data-audition],[data-vprovider],[data-vretry],[data-vreset]');
  if(!t)return;const d=t.dataset;
  if('vretry' in d){captureVoice();return loadVoiceList()}
  if('vchoose' in d){captureVoice();S.voiceDraft.voice=d.vchoose;return newVoice('[data-vchoose="'+CSS.escape(d.vchoose)+'"]')}
@@ -1363,10 +1421,21 @@ document.addEventListener('click',e=>{
   pane.querySelector('#custom-header').value='';
   return;
  }
- if(d.cmRm!==undefined){const c=S.cm,i=+d.cmRm,was=c.models[i].def;c.tests.delete(c.models[i]);c.models.splice(i,1);if(was&&c.models.length)c.models[0].def=true;return cmRefresh()}
+ if(d.cmRm!==undefined){const c=S.cm,i=+d.cmRm,was=c.models[i].def;if(c.edit?.model===c.models[i])c.edit=null;c.tests.delete(c.models[i]);c.models.splice(i,1);if(was&&c.models.length)c.models[0].def=true;return cmRefresh()}
  if(d.cmDef!==undefined){S.cm.models.forEach((m,i)=>m.def=i===+d.cmDef);return cmRefresh()}
  if('cmTest' in d)return cmTest();
  if(d.cmRetry!==undefined)return cmTest(+d.cmRetry);
+ if(d.cmEdit!==undefined){
+  const model=S.cm.models[+d.cmEdit];
+  S.cm.edit={model,draft:model.id,error:''};
+  cmRefresh();
+  const input=activeLayer().querySelector('[data-cm-edit-in]');
+  input.focus();
+  input.select();
+  return;
+ }
+ if('cmSave' in d)return cmSaveModel();
+ if('cmCancelEdit' in d)return cmCancelModelEdit();
  if(d.rmserver){return toast('Remove provider is available from the Providers tab in this prototype')}
  if('savev' in d){
   captureVoice();const {edit,copy,query,listScroll,audition,auditionTimer,...draft}=S.voiceDraft;
