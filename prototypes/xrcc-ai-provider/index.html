@@ -739,7 +739,7 @@ document.addEventListener('change',event=>{
  }
  if(event.target.matches('[data-prov-key]')){
   const provider=S.providers.find(item=>item.id===event.target.dataset.provKey);
-  if(event.target.value==='__newkey'){event.target.value=provider.key;S.addSel=provider.pid;S.keyOrigin='provider';S.keyDraft=null;return keyDlg()}
+  if(event.target.value==='__newkey'){event.target.value=provider.key;S.addSel=provider.pid;S.keyOrigin='card';S.cardProv=provider.id;S.keyDraft=null;return keyDlg()}
   provider.key=event.target.value;const chosen=S.keys.find(item=>item.id===provider.key);
   return renderPanel(),toast(P[provider.pid].n+' now uses '+(chosen?chosen.name:'this key'));
  }
@@ -939,7 +939,7 @@ function redrawConnections(){
 }
 function keyAct(a,k){document.querySelectorAll('.menu.on').forEach(m=>m.remove());
  if(a==='pw')return dlg('Change password',`<div class="lg">Set a new password for this key. It is asked each time a project opens.</div><div class="content">${inp('New password','','Add a password','Passwords can’t be recovered, so pick one you’ll remember.',0,'password')}</div>`,`${cancel}<button class="btn pri" data-ksave="pw|${k.id}">Save password</button>`,'sub');
- if(a==='del')return dlg('Remove '+k.name+'?',`<div class="lg">Text chat and Speech to text will stop until you pick another key. Providers that use it show Needs key.</div><div class="note">${ic('Question')}<span>You can add the key again from Google AI Studio.</span></div>`,`${cancel}<button class="btn pri" data-ksave="del|${k.id}" style="background:var(--err,#c92e5f)">Remove key</button>`,'sub');
+ if(a==='del')return dlg('Remove '+k.name+'?',`<div class="lg">${(()=>{const inUse=S.providers.some(pr=>pr.key===k.id),other=S.keys.find(x=>x.prov===k.prov&&x.id!==k.id);return inUse?(other?'This key is in use. '+P[k.prov].n+' will switch to '+esc(other.name)+'.':'This key is in use. '+P[k.prov].n+' will show Needs key until you add another one.'):'This key is not in use, so nothing stops working.'})()}</div><div class="note">${ic('Question')}<span>You can add the key again from Google AI Studio.</span></div>`,`${cancel}<button class="btn pri" data-ksave="del|${k.id}" style="background:var(--err,#c92e5f)">Remove key</button>`,'sub');
  return dlg('Rename key',`<div class="lg">Only you see this name. Projects keep using the key.</div><div class="content">${inp('Key name',k.name)}</div>`,`${cancel}<button class="btn pri" data-ksave="ren|${k.id}">Save name</button>`,'sub')}
 function newSession(s0,i0,copy=false){dlg(copy?'Duplicate session':s0?'Edit session':'New session',`<div class="lg">A session is a saved system prompt. Characters, quizzes and behaviours pick one.</div><div class="content">${inp('Name',s0?s0.n:'','e.g. Museum guide')}<div class="field"><div class="lrow"><span class="mdb">Prompt</span></div><textarea class="input" rows="5" placeholder="You are a cheerful museum guide. Keep every answer under three sentences." style="height:auto;padding:12px;resize:none">${esc(s0?s0.p.replace(/[“”]/g,''):'')}</textarea></div></div>`,`${cancel}<button class="btn pri" data-savesess="${i0??''}">${copy?'Save copy':s0?'Save changes':'Save session'}</button>`,'sub')}
 function connBody(launcher=false){
@@ -1034,7 +1034,7 @@ document.addEventListener('click',e=>{
  if(ka){const [a,id]=ka.dataset.kact.split('|');S.kmenu=null;const k=(S.launchManage?S.launchKeys:S.keys).find(k=>k.id===id);
   return keyAct(a,k)}
  if(e.target.closest('[data-ksave]')){const [a,id]=e.target.closest('[data-ksave]').dataset.ksave.split('|');const list=S.launchManage?S.launchKeys:S.keys;const k=list.find(k=>k.id===id);const v=activeLayer().querySelector('.dlg input');
-  if(a==='del'){list.splice(list.indexOf(k),1);toast('Key removed')}
+  if(a==='del'){list.splice(list.indexOf(k),1);const swap=list.find(x=>x.prov===k.prov);let moved='';S.providers.forEach(pr=>{if(pr.key===k.id){pr.key=swap?swap.id:'';if(swap)moved=P[pr.pid].n+' now uses '+swap.name}});toast(moved||'Key removed')}
   else if(a==='pw'){if(!v||!v.value){v&&v.classList.add('err');return}k.pw=true;k.meta=P[k.prov].n+' · password updated today';toast('Password saved')}
   else{if(v&&v.value.trim())k.name=v.value.trim();toast('Key renamed')}
   return redrawConnections()}
@@ -1145,6 +1145,7 @@ document.addEventListener('click',e=>{
    meta:P[S.addSel].n+' · added today',pw:protectedKey,end:api.slice(-4)};
   list.push(key);S.keyDraft=null;
   if(S.keyOrigin==='launch')return launchDlg();
+  if(S.keyOrigin==='card'){const owner=S.providers.find(x=>x.id===S.cardProv);if(owner)owner.key=key.id;hide();toast(P[S.addSel].n+' now uses '+key.name);return renderPanel()}
   if(S.keyOrigin==='settings')return redrawConnections();
   S.addKey=key.id;pop();return addDlg();
  }
