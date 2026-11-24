@@ -632,7 +632,7 @@ function providers(){
   const tok=TOK[p.pid];const st=needsKey(p)?'<span class="sm t2">Needs key</span>':p.pid==='custom'&&!lk?`<span class="sm tok">Configured</span><span class="sm t2">· Custom · ${k?esc(k.name):'No key'}</span>`:lk?`<span class="t2">${ic('Lock')}</span><span class="sm t2">Password needed</span><span class="sm t2">· ${esc(k.name)}</span>`:failed?`<i class="dot8" style="background:var(--b-err)"></i><span class="sm terr">Test failed</span><span class="sm t2">· couldn't reach ${P[p.pid].n}</span>`:`<i class="dot8"></i><span class="sm tok">Connected</span><span class="sm t2">· ${esc(k.name)}</span><span class="sm t3" data-tip="${p.pid==='custom'?'Your server does not report usage':'Tokens used by this project this month'}">· ${tok}</span>`;
   const act=needsKey(p)?(p.pid==='custom'&&p.serverId?`<button class="btn" data-editserver="${p.serverId}">Edit custom provider</button>`:'<button class="btn" data-manage>Manage keys</button>'):lk?`<button class="btn out" data-unlock="${p.id}" data-tip="Enter the password you set for this key">Enter password</button>`:failed?`<button class="btn out" data-test="${p.id}" data-tip="Check your connection, then test again">Test again</button>`:(p.pid==='custom'?'':`<button class="btn" data-test="${p.id}" data-tip="Check your connection, then test again">Test</button>`);
   const head=`<div class="prow" data-prov="${p.id}">${lg(p.pid,40)}<div class="col g4 fill"><div class="mdb">${esc(p.name||P[p.pid].n)}</div><div class="row g8">${st}</div><div class="row g8 t3" style="margin-top:2px">${P[p.pid].caps.map(c=>`<span data-tip="${CNAME[c][0].toUpperCase()+CNAME[c].slice(1)}">${ic(CIC[c])}</span>`).join('')}</div></div>${S.open===p.id?'':act}<span class="chev t2" data-tip="${S.open===p.id?'Hide details':'Show details'}">${ic(S.open===p.id?'Down':'Chevron','i16')}</span></div>`;
-  if(S.open===p.id){return `<div class="pcard">${head}<div class="det"><div class="field"><div class="lrow"><span class="mdb fill">${p.pid==='custom'?'Saved server':'API key'}</span>${p.pid==='custom'?p.serverId?`<button class="lnk" data-editserver="${p.serverId}">Edit custom provider</button>`:'':'<button class="lnk" data-manage>Manage keys</button>'}</div><div class="sel" aria-readonly="true"><span>${esc(p.pid==='custom'?p.name:k?.name||'No key yet')}${p.pid!=='custom'&&k?.end?' · ends '+k.end:''}</span></div>${p.pid==='custom'?`<div class="helper">API key · ${k?esc(k.name):p.key?'Key no longer available':'No key'}</div>`:''}</div>
+  if(S.open===p.id){return `<div class="pcard">${head}<div class="det"><div class="field"><div class="lrow"><span class="mdb fill">${p.pid==='custom'?'Saved server':'Key in use'}</span>${p.pid==='custom'?p.serverId?`<button class="lnk" data-editserver="${p.serverId}">Edit custom provider</button>`:'':'<button class="lnk" data-manage>Manage keys</button>'}</div>${p.pid==='custom'?`<div class="sel" aria-readonly="true"><span>${esc(p.name)}</span></div>`:`<select class="sel" aria-label="Key in use" data-prov-key="${p.id}">${S.keys.filter(x=>x.prov===p.pid).map(x=>`<option value="${x.id}" ${x.id===p.key?'selected':''}>${esc(x.name)} · ends ${x.end}</option>`).join('')}<option value="__newkey">+ Add another key…</option></select>`}${p.pid==='custom'?`<div class="helper">API key · ${k?esc(k.name):p.key?'Key no longer available':'No key'}</div>`:''}</div>
    ${p.pid==='custom'?`<div class="note">${ic('Info')}<span>XRCC can't test this endpoint here. Run a task that uses it to check it responds.</span></div>`:`<div class="note tok">${ic('Check')}<span>Last test replied in 0.8 s · today 14:32</span></div>`}
    <div class="note">${ic('Chart')}<span>${tok}${p.pid==='custom'?'':' · resets 1 Dec'}</span></div>
    <div class="row g12">${p.pid==='custom'?'':`<button class="btn out" data-test="${p.id}" data-tip="Send a tiny test request to this provider">Test response</button>`}<span class="fill"></span><button class="btn des" data-remove="${p.id}">Remove provider</button></div></div></div>`}
@@ -727,12 +727,22 @@ const keySel=()=>{
  const custom=S.addSel==='custom';
  const value=custom
   ?`<div class="row g8"><select class="sel fill" aria-label="Saved server" data-select-server>${existing.map(k=>`<option value="${k.id}" ${k.id===S.addKey?'selected':''}>${esc(k.name)}</option>`).join('')}<option value="__add">+ Add a custom provider…</option></select>${current?`<button type="button" class="iconbtn" style="width:36px;height:36px;border-radius:8px" data-editserver="${current.id}" data-tip="Edit custom provider" aria-label="Edit custom provider">${ic('Pencil','i20')}</button>`:''}</div>${current?`<div class="helper" data-server-detail>${serverDetail(current.id)}</div>`:''}`
-  :`<div class="sel" aria-readonly="true"><span>${esc(current?.name)}</span></div>`;
+  :`<select class="sel fill" aria-label="API key" data-select-key>${existing.map(k=>`<option value="${k.id}" ${k.id===S.addKey?'selected':''}>${esc(k.name)} · ends ${k.end}</option>`).join('')}<option value="__newkey">+ Add another key…</option></select>`;
  return `<div class="field"><div class="lrow"><span class="mdb fill">${custom?'Saved server':'API key'}</span>${custom?'':'<button class="lnk" data-manage>Manage keys</button>'}</div>
   ${current?value:`<div class="missing-key row g12"><div class="tile">${ic('Key')}</div><b class="mdb fill">No ${P[S.addSel].n} keys here yet</b><button class="btn out" data-addkey>Add a key</button></div>`}
   ${custom&&!current?`<div class="row g12"><button class="lnk" data-addserver>Add a custom provider…</button></div>`:''}</div>`;
 };
 document.addEventListener('change',event=>{
+ if(event.target.matches('[data-select-key]')){
+  if(event.target.value==='__newkey'){event.target.value=S.addKey;S.keyOrigin='provider';S.keyDraft=null;return keyDlg()}
+  S.addKey=event.target.value;
+ }
+ if(event.target.matches('[data-prov-key]')){
+  const provider=S.providers.find(item=>item.id===event.target.dataset.provKey);
+  if(event.target.value==='__newkey'){event.target.value=provider.key;S.addSel=provider.pid;S.keyOrigin='provider';S.keyDraft=null;return keyDlg()}
+  provider.key=event.target.value;const chosen=S.keys.find(item=>item.id===provider.key);
+  return renderPanel(),toast(P[provider.pid].n+' now uses '+(chosen?chosen.name:'this key'));
+ }
  if(event.target.matches('[data-select-server]')){
   if(event.target.value==='__add'){event.target.value=S.addKey;S.menuOpen=false;return customDlg()}
   S.addKey=event.target.value;
@@ -810,8 +820,8 @@ function keyDlg(){
  const customSetup=S.addSel==='custom'&&S.keyOrigin==='settings'&&!S.launcher&&!S.launchManage&&!keys.includes('custom-provider');
  dlg('Add an AI key',`<div class="lg">Keys stay on this computer.</div><div class="content">
  <div class="col g8"><div class="mdb">Provider</div><div class="row g8" style="flex-wrap:wrap">${Object.entries(P).map(([i,v])=>{
-  const disabled=(S.keyOrigin==='launch'&&i!==S.addSel)||(i!=='custom'&&list.some(k=>k.prov===i));
-  return `<button class="chip ${S.addSel===i?'on':''}" data-ksel="${i}" ${disabled?'disabled':''} title="${disabled?(S.keyOrigin==='launch'&&i!==S.addSel?'Unavailable in this step':'A key already exists. Manage it in Connections → AI keys.'):'Key for '+v.n}">${lg(i,20)}${v.n}</button>`;
+  const disabled=(S.keyOrigin==='launch'&&i!==S.addSel);
+  return `<button class="chip ${S.addSel===i?'on':''}" data-ksel="${i}" ${disabled?'disabled':''} title="${disabled?'Unavailable in this step':'Key for '+v.n}">${lg(i,20)}${v.n}</button>`;
  }).join('')}</div></div>
  <div class="field"><div class="lrow"><label class="mdb fill" for="kv">API key</label>${customSetup?`<button type="button" class="lnk" data-setupserver>Set up a custom provider</button>`:docs[S.addSel]?`<a class="lnk" href="${docs[S.addSel]}" target="_blank" rel="noopener noreferrer" aria-label="Where do I find my ${selected.n} key?">Where to find it</a>`:''}</div>${pwwrap(`<input class="input" id="kv" type="password" value="${esc(draft.api)}" placeholder="Paste your key" autocomplete="off">`)}</div>
  <div class="field"><div class="lrow"><label class="mdb" for="kname">Key name</label><span class="sm t3">Optional</span></div><input class="input" id="kname" value="${esc(draft.name)}" placeholder="${selected.n} key"></div>
@@ -941,7 +951,7 @@ function connBody(launcher=false){
  const row=(key,icon,t,m)=>`<button class="krow connection-row" data-conn="${key}">${icon}<span class="col g4 fill"><b class="mdb">${t}</b><span class="sm t2">${m}</span></span>${ic('Chevron')}</button>`;
  const witIcon=`<span class="logo l32 connection-badge"><img src="./assets/wit-ai.svg" width="20" height="20" alt=""></span>`;
  const keyMenu=k=>S.kmenu===k.id?`<div class="menu on key-menu"><button data-kact="pw|${k.id}">${k.pw?'Change password':'Set password'}</button><button data-kact="ren|${k.id}">Rename</button><hr><button class="terr" data-kact="del|${k.id}">Remove key</button></div>`:'';
- const keyRows=list.map(k=>`<div class="krow" data-kt="${esc((k.name+' '+k.meta).toLowerCase())}">${lg(k.prov,32)}<div class="col g4 fill"><b class="mdb">${esc(k.name)}</b><span class="sm t2">${esc(k.meta)}</span></div><span class="row g4 sm ${k.pw?'tacc':'t2'}">${ic(k.pw?'Lock':'Key')}${k.pw?'Password set':'No password'}</span><span class="key-menu-anchor"><button class="iconbtn s28" data-kmenu="${k.id}" aria-label="More actions for ${esc(k.name)}">${ic('MoreH')}</button>${keyMenu(k)}</span></div>`).join('');
+ const keyRows=list.map(k=>`<div class="krow" data-kt="${esc((k.name+' '+k.meta).toLowerCase())}">${lg(k.prov,32)}<div class="col g4 fill"><b class="mdb">${esc(k.name)}</b><span class="sm t2">${esc(k.meta)} · ${S.providers.some(x=>x.key===k.id)?'In use':'Not in use'}</span></div><span class="row g4 sm ${k.pw?'tacc':'t2'}">${ic(k.pw?'Lock':'Key')}${k.pw?'Password set':'No password'}</span><span class="key-menu-anchor"><button class="iconbtn s28" data-kmenu="${k.id}" aria-label="More actions for ${esc(k.name)}">${ic('MoreH')}</button>${keyMenu(k)}</span></div>`).join('');
  const AI=`<section class="col g12"><div class="row g12"><div class="col g4 fill"><div class="lgb">${launcher?'AI keys':'Saved on this computer'}</div><div class="sm t2">Used by AI providers in every project on this computer.</div></div>${list.length?`<button class="btn pri" data-addkey2>Add key</button>`:''}</div>
   ${list.length?`<input class="input search-key" data-kq aria-label="Search keys" placeholder="Search keys">`:''}
   <div class="col g8">${keyRows||EM('Key','No AI keys yet','Add a key for Gemini, MiniMax, Poe, OpenRouter or a custom provider. It is encrypted and stays on this computer.','<button class="btn pri" data-addkey2>Add key</button>')}<div class="no-match" id="knone" hidden><b class="mdb"></b><div class="sm t2">Try the key name or the provider. Clear the search to see every key.</div><button class="btn" data-clear-search>Clear search</button></div></div></section>`;
@@ -1129,8 +1139,9 @@ document.addEventListener('click',e=>{
   const protectedKey=pane.querySelector('#pwon').checked;
   const password=read(pane,'#kpw');
   const list=S.keyOrigin==='launch'||S.launchManage?S.launchKeys:S.keys;
-  if(!api||(protectedKey&&!password)||(S.addSel!=='custom'&&list.some(k=>k.prov===S.addSel)))return;
-  const key={id:uniqueId('k'),name:read(pane,'#kname')||P[S.addSel].n+' key',prov:S.addSel,
+  if(!api||(protectedKey&&!password))return;
+  const baseName=read(pane,'#kname')||P[S.addSel].n+' key';let keyName=baseName,n=2;while(list.some(k=>k.name.toLowerCase()===keyName.toLowerCase()))keyName=baseName+' '+n++;
+  const key={id:uniqueId('k'),name:keyName,prov:S.addSel,
    meta:P[S.addSel].n+' · added today',pw:protectedKey,end:api.slice(-4)};
   list.push(key);S.keyDraft=null;
   if(S.keyOrigin==='launch')return launchDlg();
@@ -1176,7 +1187,7 @@ document.addEventListener('click',e=>{
    const task=S.ret;S.ret=null;S.tab=task?'tasks':'providers';renderPanel();
    if(task){S.pick={t:task,p:provider.id,m:0};return pickDlg(task);}return;
   }
-  const selectedKey=S.keys.find(k=>k.id===kid);if(needPw(selectedKey))return keyUnlockDlg(kid);let np=S.providers.find(p=>p.pid===S.addSel);if(!np){np={id:'p'+Date.now(),pid:S.addSel,key:kid};S.providers.push(np)}toast(P[S.addSel].n+' connected');const r=S.ret;S.ret=null;if(r){S.tab='tasks';renderPanel();S.pick={t:r,p:np.id,m:0};return pickDlg(r)}S.tab='providers';return renderPanel()}
+  const selectedKey=S.keys.find(k=>k.id===kid);if(needPw(selectedKey))return keyUnlockDlg(kid);let np=S.providers.find(p=>p.pid===S.addSel);if(np)np.key=kid;if(!np){np={id:'p'+Date.now(),pid:S.addSel,key:kid};S.providers.push(np)}toast(P[S.addSel].n+' connected');const r=S.ret;S.ret=null;if(r){S.tab='tasks';renderPanel();S.pick={t:r,p:np.id,m:0};return pickDlg(r)}S.tab='providers';return renderPanel()}
  if(d.task){S.pick=null;return pickDlg(d.task)}
  if(d.pu){S.pick.hint=d.pu;return pickDlg(S.pick.t)}
  if(d.pp){S.pick.p=d.pp;S.pick.m=0;S.pick.hint=null;return pickDlg(S.pick.t)}
