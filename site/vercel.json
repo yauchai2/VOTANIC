@@ -2,6 +2,17 @@
   "cleanUrls": false,
   "redirects": [
     {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "xrcc-remote-trigger.vercel.app"
+        }
+      ],
+      "destination": "/remote-trigger/",
+      "permanent": false
+    },
+    {
       "source": "/remote-trigger",
       "destination": "/remote-trigger/",
       "permanent": false
