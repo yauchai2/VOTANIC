@@ -34,18 +34,33 @@
   </div>
 </section>
 
-<!-- S3 First scene failed -->
+<!-- S3 Trying the next scene (first scene failed) -->
 <section class="screen" id="s3" data-screen="s3">
   <div class="menubar" data-menubar></div>
   <div class="splash">
     <div class="splash-content">
       <div class="loadlogo"><img alt="" src="assets/logo.png"></div>
-      <h3>Lobby didn’t load</h3>
-      <p class="file">LSC_1_1.jpg</p>
-      <p class="desc">The file may be missing or damaged. You can try again, or open the project and add a scene from the strip.</p>
+      <h3>This project is taking longer to load</h3>
+      <p class="file">LSC_1_1.jpg didn’t load</p>
+      <p class="desc">Trying the next scene so you can start working. The rest keeps loading in the background.</p>
+      <div class="bar"><i id="s3bar"></i></div>
+      <p class="file" id="s3count">Trying scene 2 of 16</p>
+    </div>
+  </div>
+</section>
+
+<!-- S3b Every scene failed -->
+<section class="screen" id="s3b" data-screen="s3b">
+  <div class="menubar" data-menubar></div>
+  <div class="splash">
+    <div class="splash-content">
+      <div class="loadlogo"><img alt="" src="assets/logo.png"></div>
+      <h3>This project couldn’t be loaded</h3>
+      <p class="file">None of the 16 scenes could be opened</p>
+      <p class="desc">The files may be missing or damaged. You can try again, or close the project and check the files.</p>
       <div class="actions">
-        <button class="sbtn pri" id="s3retry"><img alt="" src="assets/rotate.svg">Try again</button>
-        <button class="sbtn sec" id="s3open">Open without Lobby</button>
+        <button class="sbtn pri" id="s3bretry"><img alt="" src="assets/rotate.svg">Try again</button>
+        <button class="sbtn sec" id="s3bclose">Close project</button>
       </div>
     </div>
   </div>
@@ -81,7 +96,15 @@
   <div class="footer" id="footer"></div>
 
   <div id="loader"></div>
+  <div id="review"></div>
+  <div id="qload"></div>
+  <div id="phbox" data-act="phopen"></div>
+  <div id="ph"></div>
   <div id="toast"></div>
+  <div id="apanel"></div>
+  <div id="playView"></div>
+  <div id="playMenu"></div>
+  <div class="tip above" id="tipScene"></div>
   <div class="tip below" id="tipPlay"></div>
   <div class="tip above" id="tipNew"></div>
 </section>
@@ -90,8 +113,8 @@
 
 <div id="chrome" aria-label="Prototype controls">
   <span>S2:</span> <kbd>F</kbd> first scene fails
-  <span>Editor while loading:</span> <kbd>F</kbd> two scenes fail <kbd>A</kbd> all assets ready
-  <span>Click the pill or card to expand.</span>
+  <span>S3:</span> <kbd>A</kbd> next scene loads <kbd>F</kbd> every scene fails
+  <span>Editor:</span> <kbd>F</kbd> finish with missing files <kbd>A</kbd> all ready
   <button data-go="s1">Restart</button>
 </div>
 
