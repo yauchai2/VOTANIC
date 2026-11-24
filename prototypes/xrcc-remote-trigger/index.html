@@ -504,7 +504,7 @@ body.presentation .stage-play{min-height:100dvh}
 .ptop>.pill{position:relative;min-width:90px;height:28px;min-height:28px;display:flex;justify-content:center;gap:var(--xrcc-spacing-4);padding:0 var(--xrcc-spacing-8);background:var(--xrcc-surface-panel);border:1px solid var(--xrcc-border-default);border-radius:99px;color:var(--xrcc-text-primary);font:var(--xrcc-caption)}
 .ptop>.pill::after{inset:-8px 0}
 .ptop>.pill .dot{width:8px;height:8px;flex:none;background:var(--xrcc-status-ok)}.ptop>.pill .dot.warn{background:var(--warn)}
-.pdeck{grid-template-columns:repeat(var(--cols,3),var(--cell,100px))}
+.pdeck{grid-template-columns:repeat(var(--cols,3),var(--cell,100px));grid-auto-flow:dense}
 .key{border-radius:var(--xrcc-radius-lg);border-color:var(--xrcc-border-subtle)}
 .key-trigger,.key-toggle,.key-slider{background:var(--xrcc-surface-elevated);border-color:var(--xrcc-border-default)}
 .key-trigger[aria-disabled=false]:hover,.key-toggle[aria-disabled=false]:not(.on):hover{background:var(--key-hover-bg,rgba(255,255,255,.03))}
@@ -512,7 +512,8 @@ body.presentation .stage-play{min-height:100dvh}
 .key-trigger,.key-toggle{padding:var(--xrcc-spacing-8) var(--xrcc-spacing-12);gap:var(--xrcc-spacing-8)}
 .key-trigger .l,.key-toggle .l{width:100%;font:700 14px/17px Roboto,sans-serif;overflow-wrap:anywhere}
 .key.key-toggle.on{background:var(--xrcc-surface-row-hover);border-color:var(--xrcc-text-accent);box-shadow:none}
-.key-toggle.on .v{color:var(--xrcc-text-accent)}
+.key-toggle .v{display:inline-flex;align-items:center;justify-content:center;padding:2px 10px;border-radius:99px;border:1px solid var(--xrcc-border-default);background:rgba(255,255,255,.04);color:var(--xrcc-text-secondary)}
+.key-toggle.on .v{border-color:var(--xrcc-border-interactive);background:var(--xrcc-surface-accent-muted);color:var(--xrcc-text-accent)}
 .key .led{top:11px;right:11px;width:8px;height:8px}.key.on .led{background:var(--xrcc-status-ok)}
 .key .ic2{width:44px;height:44px;flex:none}
 .key .slider-icon{width:32px;height:32px;display:grid;place-items:center;border-radius:50%;flex:none}
@@ -522,8 +523,7 @@ body.presentation .stage-play{min-height:100dvh}
 @container (min-width:600px){
  .sb{display:none}
  .ptop{height:60px}
- .ptop>.pill{height:44px}
- .key-slider .n-unit{display:inline}
+ .ptop>.pill{height:28px}
 }
 .key-slider.wide .hd .l{font:var(--xrcc-body-md-bold);overflow-wrap:anywhere}
 .key-slider.wide .hd .n{font:700 18px/24px Roboto,sans-serif}
@@ -614,7 +614,7 @@ body.presentation .lstage{margin-inline:auto}
 .lni.on{box-shadow:none}
 .lver>svg{color:var(--xrcc-text-primary)}
 .launcher-import{right:24px}
-.vkb{position:absolute;left:0;right:0;bottom:0;z-index:30;background:var(--xrcc-surface-row-hover,#2a2a2c);padding:8px 6px 14px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--xrcc-border-default)}.vkb .r{display:flex;gap:5px;justify-content:center}.vkb button{flex:0 0 auto;min-width:30px;height:40px;border:0;border-radius:6px;background:var(--xrcc-surface-canvas);color:var(--xrcc-text-primary,#fff);font:var(--xrcc-body-md)}.vkb button.w{flex:1}.vkb button.go{min-width:76px;color:var(--xrcc-text-accent)}.pill .dot.err{background:var(--xrcc-text-error);animation:pdot 1s ease-in-out infinite alternate}.pill.bad{border-color:var(--xrcc-border-error);color:var(--xrcc-text-error)}@keyframes pdot{to{opacity:.35}}@media (prefers-reduced-motion:reduce){.pill .dot.err{animation:none}}.bn.e{background:rgba(163,41,41,.28);color:var(--text)}.scsel{display:inline-flex;align-items:center;gap:var(--xrcc-spacing-4);background:none;border:0;padding:0;color:var(--xrcc-text-secondary);font:inherit;cursor:pointer;min-height:24px}.scsel:hover{color:var(--xrcc-text-primary)}.scsel:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}.sens-h{font-size:12px;color:var(--xrcc-text-secondary);margin-top:var(--xrcc-spacing-4)}.sens-o{display:flex;align-items:center;gap:var(--xrcc-spacing-12);padding:10px 0;width:100%;background:none;border:0;color:var(--text);font:inherit;cursor:pointer;text-align:left}.sens-o b{flex:1;font-size:14px}.sens-o .n{font-size:12px;color:var(--xrcc-text-secondary)}.sens-o svg{transition:transform .12s}.sens-o[aria-expanded=false] svg{transform:rotate(-90deg)}.sens-empty{padding:10px 0;font-size:13px;color:var(--xrcc-text-secondary)}.scrow{display:flex;align-items:center;gap:var(--xrcc-spacing-12);padding:10px 0;width:100%;background:none;border:0;color:var(--text);font:inherit;cursor:pointer;text-align:left;min-height:44px}.scrow b{flex:1;font-size:14px}.scrow.cur b{color:var(--xrcc-text-accent)}.scrow .tag.play{color:var(--xrcc-text-accent);border-color:var(--xrcc-border-interactive)}.sqb{width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;flex:none;border-radius:4px}.sens-o:hover .sqb{background:var(--xrcc-surface-row-hover,#2a2a2c)}.sens-o .sqb svg{transition:transform .12s}.sens-o[aria-expanded=false] .sqb svg{transform:rotate(-90deg)}.grow2 .sw2.act{margin-left:auto;flex:none}.grow2 .sw2.act:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.sw2[disabled]{opacity:.5;cursor:default}.gblk.off .cs,.gblk.off .grow2 .nm,.gblk.off .items,.gblk.off .dh,.gblk.off .sw2.act{opacity:.45}.sw2.act::after{background:var(--xrcc-text-accent)}.sw2.act:not(.on){background:var(--xrcc-surface-canvas,#1a1a1c);box-shadow:inset 0 0 0 1px var(--xrcc-border-default)}.grow2 .ib.del{position:relative;margin-right:var(--xrcc-spacing-8)}.grow2 .ib.del::after{content:'';position:absolute;right:-11px;top:4px;width:1px;height:20px;background:var(--xrcc-border-default)}</style>
+.vkb{position:absolute;left:0;right:0;bottom:0;z-index:30;background:var(--xrcc-surface-row-hover,#2a2a2c);padding:8px 6px 14px;display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--xrcc-border-default)}.vkb .r{display:flex;gap:5px;justify-content:center}.vkb button{flex:0 0 auto;min-width:30px;height:40px;border:0;border-radius:6px;background:var(--xrcc-surface-canvas);color:var(--xrcc-text-primary,#fff);font:var(--xrcc-body-md)}.vkb button.w{flex:1}.vkb button.go{min-width:76px;color:var(--xrcc-text-accent)}.pill .dot.err{background:var(--xrcc-text-error);animation:pdot 1s ease-in-out infinite alternate}.pill.bad{border-color:var(--xrcc-border-error);color:var(--xrcc-text-error)}@keyframes pdot{to{opacity:.35}}@media (prefers-reduced-motion:reduce){.pill .dot.err{animation:none}}.bn.e{background:rgba(163,41,41,.28);color:var(--text)}.scsel{display:inline-flex;align-items:center;gap:var(--xrcc-spacing-4);background:rgba(255,255,255,.04);border:1px solid var(--xrcc-border-default);border-radius:99px;padding:3px 8px;margin-top:2px;color:var(--xrcc-text-secondary);font:inherit;cursor:pointer;min-height:26px}.scsel:hover{color:var(--xrcc-text-primary);border-color:var(--xrcc-border-interactive)}.scsel:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:99px}.rt.is-playing .dh{display:none}.project-status{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;font:var(--xrcc-caption)}.project-status.playing{background:rgba(46,160,67,.18);color:#4ec27d}.project-status.waiting{background:rgba(210,153,34,.18);color:#e5a93c}.pub-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.badge-warn{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;background:rgba(210,153,34,.18);color:#e5a93c;font:var(--xrcc-caption)}.badge-pri{display:inline-flex;align-items:center;padding:2px 8px;border-radius:99px;background:var(--xrcc-surface-accent-muted);color:var(--xrcc-text-accent);font:var(--xrcc-caption)}.replace-row{padding:4px 12px 10px}.sens-h{font-size:12px;color:var(--xrcc-text-secondary);margin-top:var(--xrcc-spacing-4)}.sens-o{display:flex;align-items:center;gap:var(--xrcc-spacing-12);padding:10px 0;width:100%;background:none;border:0;color:var(--text);font:inherit;cursor:pointer;text-align:left}.sens-o b{flex:1;font-size:14px}.sens-o .n{font-size:12px;color:var(--xrcc-text-secondary)}.sens-o svg{transition:transform .12s}.sens-o[aria-expanded=false] svg{transform:rotate(-90deg)}.sens-empty{padding:10px 0;font-size:13px;color:var(--xrcc-text-secondary)}.scrow{display:flex;align-items:center;gap:var(--xrcc-spacing-12);padding:10px 0;width:100%;background:none;border:0;color:var(--text);font:inherit;cursor:pointer;text-align:left;min-height:44px}.scrow b{flex:1;font-size:14px}.scrow.cur b{color:var(--xrcc-text-accent)}.scrow .tag.play{color:var(--xrcc-text-accent);border-color:var(--xrcc-border-interactive)}.sqb{width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;flex:none;border-radius:4px}.sens-o:hover .sqb{background:var(--xrcc-surface-row-hover,#2a2a2c)}.sens-o .sqb svg{transition:transform .12s}.sens-o[aria-expanded=false] .sqb svg{transform:rotate(-90deg)}.grow2 .sw2.act{margin-left:auto;flex:none}.grow2 .sw2.act:focus-visible{outline:2px solid var(--accent);outline-offset:2px}.sw2[disabled]{opacity:.5;cursor:default}.gblk.off .cs,.gblk.off .grow2 .nm,.gblk.off .items,.gblk.off .dh,.gblk.off .sw2.act{opacity:.45}.sw2.act::after{background:var(--xrcc-text-accent)}.sw2.act:not(.on){background:var(--xrcc-surface-canvas,#1a1a1c);box-shadow:inset 0 0 0 1px var(--xrcc-border-default)}.grow2 .ib.del{position:relative;margin-right:var(--xrcc-spacing-8)}.grow2 .ib.del::after{content:'';position:absolute;right:-11px;top:4px;width:1px;height:20px;background:var(--xrcc-border-default)}</style>
 </head>
 <body>
 <header class="top">
@@ -743,7 +743,7 @@ function stop(){publicGeneration++;const publicDevice=ph.via==='Public';st.playi
 const touch=()=>{save();if(st.playing)ph.changed=true};
 /* Active switch (Figma RT / Group row): Off keeps the section in the list but hides its control from remote devices. */
 const isOn=o=>o.active!==false;
-const activeSw=(o,label)=>h('button',{type:'button',class:'sw2 act'+(isOn(o)?' on':''),role:'switch','aria-checked':String(isOn(o)),'aria-label':'Active · '+label,title:isOn(o)?'Turn off to hide this control from remote devices':'Turn on to show this control on remote devices',disabled:st.playing?true:null,onclick:e=>{e.stopPropagation();o.active=!isOn(o);touch();render()}});
+const activeSw=(o,label,locked=false)=>h('button',{type:'button',class:'sw2 act'+(isOn(o)&&!locked?' on':''),role:'switch','aria-checked':String(isOn(o)&&!locked),'aria-label':'Active · '+label,title:locked?'Reconnect the missing target to resume':isOn(o)?'Turn off to hide this control from remote devices':'Turn on to show this control on remote devices',disabled:st.playing||locked?true:null,style:locked?'opacity:.35':null,onclick:e=>{e.stopPropagation();o.active=!isOn(o);touch();render()}});
 /* ---------- XRCC stage ---------- */
 function bar(){
   const sv=(d,w)=>{const e=document.createElementNS('http://www.w3.org/2000/svg','svg');e.setAttribute('viewBox','0 0 24 24');e.innerHTML=d;if(w){e.style.width=e.style.height=w+'px'}return e};
@@ -841,7 +841,7 @@ function groupHead(g,idx){
   if(st.rename!==g.id)r.append(
     h('button',{class:'ib tint',title:'Rename','aria-label':'Rename',onclick:e=>{e.stopPropagation();st.rename=g.id;render()}},ic('edit')),
     h('button',{class:'ib del',title:'Delete group','aria-label':'Delete group',onclick:e=>{e.stopPropagation();st.delG=g.id;render()}},ic('trash')));
-  r.append(activeSw(g,g.name));
+  r.append(activeSw(g,g.name,g.items.some(x=>x.issue)));
   r.prepend(dhandle(g.name));return r}
 function ctlPanel(g,it){
   const inst=IB[it.inst];const wrap=h('div',{class:'sett'},h('h5',{},`Choose what to control on ${inst.n}`));
@@ -875,21 +875,22 @@ function addTrigger(){const g={id:gid(),name:'New Remote Trigger'+(st.groups.len
 function addVar(){st.order=listOrder();st.open.menu=false;st.vpick={tab:'iv',inst:null,sel:null,q:''};st.open.vpick=true;render()}
 function rtDialog(){
   const list=h('div',{class:'list'});
-  const footEl=st.playing?h('div',{class:'foot'},ic('info',16),'Playing. The list is locked until you stop.'):null;
+  const playAlert=st.playing?h('div',{class:'foot',style:'margin-bottom:4px'},ic('info',16),'Playing — stop Play to edit controls.'):null;
   const cards = new Map();
-  st.groups.forEach((g,gi)=>{const blk=h('div',{class:'gblk'+(isOn(g)?'':' off'),style:'--gc:'+g.color}),its=h('div',{class:'items'});blk.append(groupHead(g,gi),its);dndWire(blk,'g',g.id);
+  st.groups.forEach((g,gi)=>{const hasIssue=g.items.some(x=>x.issue);const blk=h('div',{class:'gblk'+(isOn(g)?'':' off'),style:'--gc:'+g.color}),its=h('div',{class:'items'});blk.append(groupHead(g,gi),its);dndWire(blk,'g',g.id);
     g.items.forEach(it=>its.append(itemRow(g,it)));
+    if(hasIssue)its.append(h('div',{class:'replace-row'},h('button',{class:'btn pri sm',disabled:st.playing?true:null,onclick:()=>{st.pickFor=g.id;st.pickNew=null;st.pick.sel=[];st.open.pick=true;render()}},'Replace instance')));
     if(!g.items.length)its.append(h('div',{class:'slot'},ic('cube',18),h('div',{class:'t'},h('b',{},'No instance selected'),h('span',{},'Choose one instance for this trigger.')),h('button',{class:'btn pri sm',disabled:null,onclick:()=>{st.pickFor=g.id;st.pickNew=null;st.pick.sel=[];st.open.pick=true;render()}},'Select instance')));cards.set(blk.dataset.controlKey,blk)});
   if(!st.groups.length&&!st.vars.length)list.append(emptyState('No controls yet','Add a trigger or a variable control.'));
   for (const card of varBlock()) cards.set(card.dataset.controlKey, card);
   for (const key of listOrder()) list.append(cards.get(key));
-  if(footEl)list.append(footEl);
   const n=issues();
-  return h('div',{class:'dlg rt'},
+  return h('div',{class:'dlg rt'+(st.playing?' is-playing':'')},
     h('div',{class:'head'},ximg('rt-head',20),'Remote Triggers',st.playing?h('span',{class:'rt-playing'},h('i',{class:'dot'}),'Playing'):null,h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:()=>{st.open.rt=false;render()}},ic('close'))),h('div',{class:'acc'}),
     h('div',{class:'body'},
       (st.noIntro?null:h('div',{class:'intro'},h('div',{class:'ph'},ic('wifi')),h('div',{class:'grow'},h('h3',{},'Control Play from any device'),h('p',{},'A trigger starts one instance. A control changes one variable.'))
 ,h('button',{class:'ib','aria-label':'Dismiss',onclick:()=>{st.noIntro=true;render()}},ic('close')))),
+      playAlert,
       n?h('div',{class:'banner'},ic('info'),`${n} item${n>1?'s':''} need attention. Their controls are paused.`):null,
       h('div',{class:'lhead'},h('h2',{},'Remote List'),h('span',{class:'sp'}),connectDevicesButton(),h('div',{class:'addw'},h('button',{class:'btn pri big','aria-haspopup':'menu','aria-expanded':String(!!st.open.menu),disabled:null,onclick:()=>{st.open.menu=!st.open.menu;render()}},ic('plus'),'Add New'),st.open.menu?h('div',{class:'amenu',role:'menu'},h('button',{role:'menuitem',onclick:addTrigger},ic('rt',16),'Trigger button'),h('button',{role:'menuitem',onclick:addVar},ic('folder',16),'Variable control')):null)),
       list,
@@ -1032,7 +1033,7 @@ function picker(){
   const close=()=>{st.open.pick=false;st.preview=null;st.pick.q='';if(st.pickNew){const gg=st.groups.find(x=>x.id===st.pickNew);if(gg&&!gg.items.length)st.groups=st.groups.filter(x=>x!==gg);st.pickNew=null;touch()}render()};
   return h('div',{class:'dlg pk'},h('div',{class:'head'},ic('cube',18),'Select Instance',h('span',{class:'sp'}),h('button',{class:'ib','aria-label':'Close',onclick:close},ic('close'))),h('div',{class:'acc'}),
     h('div',{class:'body'},h('div',{class:'sr'},f,h('button',{class:'ib tint',style:'width:36px;height:36px','aria-label':'Search',onclick:()=>f.focus()},ic('search')),h('button',{class:'ib',style:'width:36px;height:36px;color:var(--accent)','aria-label':'Sort','aria-pressed':String(!!st.pick.sort),onclick:()=>{st.pick.sort=!st.pick.sort;render();$('.pk [aria-label=Sort]')?.focus()}},ic('sort')),h('button',{class:'ib',style:'width:36px;height:36px;color:var(--accent)','aria-label':'Filter','aria-pressed':String(!!st.pick.actionsOnly),title:'Show instances with Behaviour actions',onclick:()=>{st.pick.actionsOnly=!st.pick.actionsOnly;render();$('.pk [aria-label=Filter]')?.focus()}},ic('filter'))),tree,selectionStatus,
-      h('button',{class:'btn pri wide',disabled:st.pick.sel.length?null:true,onclick:()=>{const ids=st.pick.sel.slice(0,1);g.items=ids.map(id=>({inst:id,issue:'',ctl:{}}));st.pickNew=null;st.open.pick=false;st.pick.q='';touch();render();toast(ids.length+' instance'+(ids.length>1?'s':'')+' added to '+g.name)}},st.pick.sel.length?'Add trigger':'Select instance')))}
+      h('button',{class:'btn pri wide',disabled:st.pick.sel.length?null:true,onclick:()=>{const ids=st.pick.sel.slice(0,1);if(st.pickNew&&ids.length&&/^New Remote Trigger/.test(g.name))g.name=IB[ids[0]].n;g.items=ids.map(id=>({inst:id,issue:'',ctl:{}}));st.pickNew=null;st.open.pick=false;st.pick.q='';touch();render();toast(ids.length+' instance'+(ids.length>1?'s':'')+' added to '+g.name)}},st.pick.sel.length?'Add trigger':'Select instance')))}
 
 /* ---------- variable controls (one variable per section) ---------- */
 const VK=['Number','Text','Toggle'];
@@ -1064,7 +1065,9 @@ function varBlock(){
       h('button',{class:'ib tint',title:'Rename','aria-label':'Rename',onclick:e=>{e.stopPropagation();st.renameV=v.id;render()}},ic('edit')),
       h('button',{class:'ib del',title:'Remove control','aria-label':'Remove control',disabled:null,onclick:e=>{e.stopPropagation();st.delV=v.id;render()}},ic('trash')));
     head.append(activeSw(v,v.name));
-    const row=h('button',{type:'button','aria-expanded':String(on),'aria-label':'Settings for '+v.name,class:'irow vr'+(on?' sel':''),onclick:()=>{st.selV=on?null:v.id;render()}},h('span',{style:'display:flex;color:'+(proj?'var(--pvar)':'var(--text)')},proj?ximg('rt-projvar',20):ic('objvar',20)),h('div',{class:'nm'},v.bind||v.name),h('span',{class:'tag',title:vSum(v)},vSum(v)),h('span',{class:'chv'+(on?' expanded':''),'aria-hidden':'true'},ximg('rt-chev',20)));
+    const badRange=st.draft&&st.draft.id===v.id&&st.draft.min>=st.draft.max;
+    const subLabel=proj&&!(v.bind||'').startsWith('Project · ')?'Project · '+(v.bind||v.name):(v.bind||v.name);
+    const row=h('button',{type:'button','aria-expanded':String(on),'aria-label':'Settings for '+v.name,class:'irow vr'+(on?' sel':''),onclick:()=>{st.selV=on?null:v.id;render()}},h('span',{style:'display:flex;color:'+(proj?'var(--pvar)':'var(--text)')},proj?ximg('rt-projvar',20):ic('objvar',20)),h('div',{class:'nm'},subLabel),h('span',{class:'tag'+(badRange?' e':''),title:badRange?'Invalid range':vSum(v)},badRange?'Invalid range':vSum(v)),h('span',{class:'chv'+(on?' expanded':''),'aria-hidden':'true'},ximg('rt-chev',20)));
     const items=h('div',{class:'items'},row);if(on)items.append(varSettings(v));
     head.prepend(dhandle(v.name));const vb=h('div',{class:'gblk'+(isOn(v)?'':' off'),style:'--gc:'+v.color},head,items);dndWire(vb,'v',v.id);return vb})}
 function varPicker(){
@@ -1151,24 +1154,25 @@ function deviceArtwork(summary=false){
 }
 function deviceRows(){const rows=h('section',{class:'connected-devices','data-figma':'devices'},h('div',{class:'devices-heading'},h('b',{},'Devices'),h('span',{class:'muted'},String(st.phones.length))));
   if(!st.phones.length)rows.append(h('div',{class:'devices-empty','data-figma':'empty'},deviceArtwork(),h('div',{class:'empty-copy'},h('b',{},'No devices yet'),h('span',{class:'muted'},'Devices appear here when they join.'))));
-  st.phones.forEach(p=>rows.append(h('div',{class:'device-row'},h('div',{class:'av'},ic('user',20)),h('div',{class:'device-info'},h('b',{},p.name),h('small',{class:'muted'},p.joined)),h('span',{class:'connection-pill'},h('i',{class:'status-dot'}),'Connected'))));return rows;
+  st.phones.forEach(p=>rows.append(h('div',{class:'device-row'},h('div',{class:'av'},ic('user',20)),h('div',{class:'device-info'},h('b',{},p.name),h('small',{class:'muted'},p.joined+' · '+(p.via==='Public'?'Public link':'Local network')+(sensor.owner===p.name?' · Sensors active':''))),h('span',{class:'connection-pill'},h('i',{class:'status-dot'}),'Connected'))));return rows;
 }
 function sharingCard(){
   const on=st.srv==='on',busy=st.srv==='reloading',pub=st.prTab==='public';
   const ready=on&&(!pub||st.pub==='on');
-  const description=(title,hint)=>h('div',{class:'connection-description'},title?h('b',{},title):null,hint?h('span',{class:'muted'},hint):null);
+  const description=(title,hint,badge)=>h('div',{class:'connection-description'},title?(badge?h('div',{class:'pub-head'},h('b',{},title),badge):h('b',{},title)):null,hint?h('span',{class:'muted'},hint):null);
   const main=h('div',{class:'sharing-content'+(ready?'':' is-status')});
   if(ready){
     main.append(description(
       pub?'Public link is on':'Connect on the same network',
-      pub?'Anyone with the link can control this project.':st.playing?null:'Controls appear when Play starts.'
+      pub?'Anyone with the link can control this project. Link expires when Play stops or Launcher closes.':st.playing?null:'Controls appear when Play starts.',
+      pub?h('span',{class:'badge-warn'},'Temporary · Public'):null
     ),h('div',{class:'connection-link'},
       h('input',{class:'url',value:sharedURL(),readonly:'','aria-label':'Connection address'}),
       h('button',{class:'btn sec',onclick:copyLink},'Copy')));
     if(pub)main.append(h('div',{class:'connection-status-row'},h('button',{class:'btn ter',onclick:disablePublic},'Turn off link')));
   }else if(!on){
     if(busy)main.append(description(st.busyLbl,st.busyLbl==='Starting server…'?'Devices can join when the server is ready.':'Devices reconnect when the server is ready.'));
-    else if(st.srvErr)main.append(description('Could not start server','Check the port in Server, then turn it on.'));
+    else if(st.srvErr)main.append(description('Could not start server','Check the port in Server, then turn it on.'),h('div',{class:'connection-action'},h('button',{class:'btn sec',onclick:()=>{st.portDraft='3002';srvReload(true)}},'Use 3002')));
     else main.append(description('Start remote control','Start the server so devices can connect.'));
   }else if(st.pub==='opening'){
     main.append(h('span',{class:'connection-progress',role:'status'},h('i',{class:'spin','aria-hidden':'true'}),'Creating public link…'),description(null,'Keep this page open.'));
@@ -1207,7 +1211,7 @@ function serverCard(){
 }
 function remoteDetail(){
   return h('div',{class:'mpane remote-detail'},h('div',{class:'detail-breadcrumb','data-figma':'breadcrumb'},h('button',{class:'ib','aria-label':'Connections',onclick:()=>{st.lnDetail=false;render()}},ximg('back'),h('span',{class:'muted'},'Connections'))),
-    h('header',{class:'detail-heading','data-figma':'heading'},h('h2',{},'Remote control'),h('div',{class:'detail-context muted'},h('span',{},st.origin&&st.originAlive?'Pop-up Gallery · Scene: Intro':'All projects'),st.origin&&st.originAlive?h('span',{class:'project-status'},st.playing?'Playing':'Waiting for Play'):null)),serverCard(),sharingCard(),deviceRows());
+    h('header',{class:'detail-heading','data-figma':'heading'},h('h2',{},'Remote control'),h('div',{class:'detail-context muted'},h('span',{},st.origin&&st.originAlive?'Pop-up Gallery · Scene: Intro':'All projects'),st.origin&&st.originAlive?h('span',{class:'project-status '+(st.playing?'playing':'waiting')},st.playing?'Playing':'Waiting for Play'):null)),serverCard(),sharingCard(),deviceRows());
 }
 const AI_KEYS=[
   ['Office Key','Gemini · last used 3 Nov',true,'gemini'],
@@ -1315,8 +1319,8 @@ function disablePublic(){publicGeneration++;const me=st.phones.find(p=>p.me&&p.v
 const sensor={permission:'prompt',owner:null};
 const ph={scoped:true,via:'Local',screen:'connecting',dev:'phone',land:st.orient==='landscape',conn:'local',sheet:null,changed:false,pcScene:0,view:null};
 /* Scenes with Remote Trigger (demo). Intro uses the editor list; the others are fixed demo layouts. The phone follows the PC scene unless the user views another one. */
-const SCENES=[{n:'Intro',sens:['gyro','accel']},{n:'Gallery',sens:[],cells:[{key:'demo|g1',label:'Next artwork',kind:'Trigger',i:'play',s:{size:1,on:true,color:'#65a7ff'},issue:''},{key:'demo|g2',label:'Previous',kind:'Trigger',i:'play',s:{size:1,on:true,color:'#c0392b'},issue:''},{key:'demo|g3',label:'Spotlight',kind:'Toggle',i:'bulb',s:{size:1,on:true},issue:''}]},{n:'Finale',sens:['mic'],cells:[{key:'demo|f1',label:'Curtain call',kind:'Trigger',i:'play',s:{size:1,on:true,color:'#2e8b57'},issue:''},{key:'demo|f2',label:'Fireworks',kind:'Trigger',i:'play',s:{size:1,on:true,color:'#e8467c'},issue:''}]}];
-const SENS={gyro:['gyro','Gyroscope'],accel:['accel','Accelerometer'],mic:['mic','Microphone']};
+const SCENES=[{n:'Intro',sens:['gyro','accel','mic']},{n:'Gallery',sens:[],cells:[{key:'demo|g1',label:'Next artwork',kind:'Trigger',i:'play',s:{size:1,on:true,color:'#65a7ff'},issue:''},{key:'demo|g2',label:'Previous',kind:'Trigger',i:'play',s:{size:1,on:true,color:'#c0392b'},issue:''},{key:'demo|g3',label:'Spotlight',kind:'Toggle',i:'bulb',s:{size:1,on:true},issue:''}]},{n:'Finale',sens:['mic'],cells:[{key:'demo|f1',label:'Curtain call',kind:'Trigger',i:'play',s:{size:1,on:true,color:'#2e8b57'},issue:''},{key:'demo|f2',label:'Fireworks',kind:'Trigger',i:'play',s:{size:1,on:true,color:'#e8467c'},issue:''}]}];
+const SENS={gyro:['gyro','Gyroscope'],accel:['accel','Accelerometer'],mic:['mic','Sound volume (Mic)']};
 const viewIdx=()=>ph.view??ph.pcScene;const viewOnly=()=>viewIdx()!==ph.pcScene;
 function setPcScene(i){ph.pcScene=i;if(ph.view===i)ph.view=null;renderPhone();render()}
 const sceneSel=()=>h('button',{class:'scsel','aria-label':'Choose scene','aria-haspopup':'dialog',onclick:()=>{ph.sheet='scenes';renderPhone();$('.sheet [aria-label=Close]')?.focus()}},'Scene: '+SCENES[viewIdx()].n,ic('down',16));
@@ -1324,7 +1328,7 @@ const colsFor=(width)=>{const w=width||DIM[ph.dev][ph.land?'l':'p'][0];return w<
 function fit(g){g.style.setProperty('--cols',colsFor());const f=()=>{const x=g.clientWidth,c=colsFor(x);g.style.setProperty('--cols',c);if(x)g.style.setProperty('--cell',Math.floor((x-8*(c-1))/c)+'px')};f();requestAnimationFrame(f);try{new ResizeObserver(f).observe(g)}catch(e){}}
 function fb(msg,err){const f=$('.fb');if(!f)return;clearTimeout(fb.t);const close=()=>{clearTimeout(fb.t);f.classList.remove('show')};f.className='fb xrcc-notice show';noticeContent(f,msg,!!err,close);if(!err)fb.t=setTimeout(close,2000)}
 function press(c,val){
-  if(ph.nextResult){const result=ph.nextResult;ph.nextResult=null;return fb(result==='unknown'?'Confirmation unavailable. Check XRCC before trying again.':'Command rejected. The last confirmed value is unchanged.',1)}
+  if(ph.nextResult){const result=ph.nextResult;ph.nextResult=null;return fb(result==='unknown'?'Confirmation unavailable. Check XRCC before trying again.':(c?.label?c.label+" wasn't updated. Value unchanged.":'Command rejected. Value unchanged.'),1)}
   if(ph.conn!=='local'||st.srv!=='on'||ph.changed||!st.playing)return fb('Controls paused. Reconnect and refresh first.',1);
   if(c.issue)return fb(c.label+' needs attention in XRCC',1);
   if(c.s.ro&&c.kind!=='Trigger')return fb(c.label+' is read-only',1);
@@ -1354,7 +1358,7 @@ function keyEl(c){
     e.append(h('div',{class:'v'},c.label),x,rg);e.style.cursor='default';
     output=h('div',{class:'key-shell',style:`grid-column:span ${Math.min(spanOf(c),colsFor())}`},e,error);
   }
-  if(c.kind==='Number'&&s.control==='slider'){const number=h('span',{},(+v).toFixed(s.dec));const n=h('span',{class:'n'},number,s.min===0&&s.max===100?h('span',{class:'n-unit'},'%'):null);const r=h('input',{type:'range',min:s.min,max:s.max,step:Math.pow(10,-s.dec),value:v,disabled:dis?true:null,'aria-label':c.label});
+  if(c.kind==='Number'&&s.control==='slider'){const number=h('span',{},(+v).toFixed(s.dec));const n=h('span',{class:'n'},number);const r=h('input',{type:'range',min:s.min,max:s.max,step:Math.pow(10,-s.dec),value:v,disabled:dis?true:null,'aria-label':c.label});
     const showValue=()=>{number.textContent=(+r.value).toFixed(s.dec);r.style.setProperty('--level',((r.value-s.min)/Math.max(1,s.max-s.min)*100)+'%')};
     showValue();
     let last=0,confirmed=null;r.addEventListener('input',()=>{showValue();if(performance.now()-last>=50){last=performance.now();if(press(c,+r.value))confirmed=r.value}});r.addEventListener('change',()=>{if(confirmed!==r.value){if(!press(c,+r.value)){r.value=valOf(c.key);showValue();}}});
@@ -1364,7 +1368,7 @@ function keyEl(c){
   if(s.ro&&c.kind!=='Trigger')e.append(h('span',{class:'tag',style:'position:absolute;top:6px;left:6px;font-size:10px'},'Read only'));
   if(c.issue)e.append(h('span',{class:'tag w',style:'position:absolute;top:6px;left:6px;font-size:10px'},'Unavailable'));
   return output}
-const ptop=(t,s,back)=>h('div',{class:'ptop'},back?h('button',{class:'ib','aria-label':'Back',onclick:back,style:'transform:scaleX(-1)'},ic('arrow',20)):null,h('div',{class:'t'},h('b',{},t),h('small',{},s)),h('button',{class:'pill'+(ph.conn==='local'?'':' bad'),title:'This device','aria-label':'This device',onclick:()=>{ph.sheet='device';renderPhone();$('.sheet [aria-label=Close]')?.focus()}},h('span',{class:'dot'+(ph.conn==='local'?'':' err')}),ph.conn==='local'?'Connected':'Reconnecting…'));
+const ptop=(t,s,back)=>h('div',{class:'ptop'},back?h('button',{class:'ib','aria-label':'Back',onclick:back,style:'transform:scaleX(-1)'},ic('arrow',20)):null,h('div',{class:'t'},h('b',{},t),h('small',{},s)),h('button',{class:'pill'+(ph.conn==='local'?'':' bad'),title:'This device','aria-label':'This device',onclick:()=>{ph.sheet='device';renderPhone();$('.sheet [aria-label=Close]')?.focus()}},h('span',{class:'dot'+(ph.conn==='local'?'':' err')}),ph.conn==='local'?'Connected':'Reconnecting…',ph.conn==='local'?ic('down',12):null));
 const DIM={phone:{p:[390,844],l:[844,390]},ipad:{p:[820,1180],l:[1180,820]},desktop:{p:[1100,720],l:[1100,720]}};
 const DEVN={phone:'iPhone · Safari',ipad:'iPad · Safari',desktop:'PC · Chrome'};
 const joinedAt=()=>'Joined '+new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
@@ -1394,11 +1398,11 @@ function renderPhone(){
   if(['server-off','public-off'].includes(sc)){const info={'server-off':['Unable to connect','Check the link and network, then try again.','Try again','connecting'],'public-off':['Public link is off','Ask the host for a current link.',null,null]}[sc];s.classList.add('c');s.append(h('h2',{},info[0]),h('p',{class:'muted'},info[1]),info[2]?h('button',{class:'btn pri',onclick:()=>go(info[3])},info[2]):null)}
   if(sc==='ended'){s.classList.add('c');s.append(h('div',{class:'hero',style:'background:var(--elev)'},ic('info')),h('h2',{style:'margin:0'},'Play ended'),h('div',{class:'muted'},'Controls will return when the host starts this project again.'),h('button',{class:'btn pri',onclick:()=>go('projects')},'Back to projects'))}
   P_.append(s);
-  if(ph.sheet==='device'){const has=ph.capability?ph.capability==='motion':ph.dev!=='desktop';const ok=k=>k==='mic'||has;const need=SCENES[viewIdx()].sens;
+  if(ph.sheet==='device'){const has=ph.capability?ph.capability==='motion':ph.dev!=='desktop';const ok=()=>has;const need=SCENES[viewIdx()].sens;
     const row=(k,used)=>h('div',{class:'sensr'},ic(SENS[k][0],20),h('b',{},SENS[k][1]),h('span',{class:'tag'+(ok(k)&&used?' ok':'')},ok(k)?(used?'Connected':'Available'):'Not available'));
     const close=()=>{ph.sheet=null;ph.confirmTakeover=false;renderPhone();$('.ptop [aria-label="This device"]')?.focus()};
     const meta=DEVN[ph.dev]+' · '+(ph.conn!=='local'?'Reconnecting…':ph.via==='Public'?'Public link':'Local network');
-    P_.append(h('div',{class:'sh-s',onclick:close}),h('div',{class:'sheet',role:'dialog','aria-modal':'true','aria-label':'This device'},h('div',{style:'display:flex;align-items:center'},h('b',{style:'flex:1;font-size:20px'},'This device'),h('button',{class:'ib','aria-label':'Close',onclick:close},ic('close'))),h('div',{class:'muted',style:'font-size:12px'},meta),
+    P_.append(h('div',{class:'sh-s',onclick:close}),h('div',{class:'sheet',role:'dialog','aria-modal':'true','aria-label':'This device'},h('div',{style:'display:flex;align-items:center;gap:8px'},h('b',{style:'flex:1;font-size:20px'},'This device'),has&&need.length?h('span',{class:'badge-pri'},'Active sensor device'):null,h('button',{class:'ib','aria-label':'Close',onclick:close},ic('close'))),h('div',{class:'muted',style:'font-size:12px'},meta),
       need.length?h('div',{},h('div',{class:'sens-h'},'Needed by this scene'),need.map(k=>row(k,true))):h('div',{class:'sens-empty'},"This scene doesn't use any sensors."),
       (!has&&need.some(k=>k!=='mic'))?h('div',{class:'muted',style:'font-size:12px'},'This browser has no motion sensors. Use a phone or tablet for motion control.'):null))}
   if(ph.sheet==='scenes'){const close=()=>{ph.sheet=null;renderPhone();$('.scsel')?.focus()};
@@ -1416,7 +1420,7 @@ function reviewScreen(k){
   st.tab='editor';
   if(k==='A1'||k==='A2'){st.groups=[];st.vars=[];st.noIntro=false;st.open.menu=k==='A2'}
   if(['A3','A21','A22'].includes(k)){st.groups=[];st.vars=[];addTrigger();st.preview=k;st.pick.sel=k==='A3'?['spot']:[];st.pick.q=k==='A21'?'No matching object':''}
-  if(k==='A4'){st.groups=[{id:'g1',name:'New Remote Trigger',color:'#65a7ff',items:[{inst:'spot',issue:'',ctl:{}}]}];st.vars=[]}
+  if(k==='A4'){st.groups=[{id:'g1',name:'Spotlight A',color:'#65a7ff',items:[{inst:'spot',issue:'',ctl:{}}]}];st.vars=[]}
   if(k==='A5')st.colorFor='g2';
   if(k==='A7')st.held={key:'var|p.Spot intensity',order:listOrder()};else st.held=null;
   if(k==='A8')st.groups[1].items[0].issue='missing';
