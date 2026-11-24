@@ -120,6 +120,10 @@ svg{display:block}
 .input::placeholder{color:var(--t3)}.input:focus,.sel.open{border-color:var(--pc-hover)}
 .input.err{border-color:var(--b-err)}
 .helper{font-size:12px;line-height:18px;color:var(--t2)}
+select.sel{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none' stroke='%23c9c9c9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 4l4 4 4-4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding:8px 36px 8px 12px;cursor:pointer}
+.ddm{position:fixed;z-index:10000;background:var(--canvas);border:1px solid var(--b-dis);border-radius:8px;padding:4px;display:flex;flex-direction:column;gap:2px;box-shadow:0 8px 24px rgba(0,0,0,.5);max-height:288px;overflow:auto}
+.ddm button{height:36px;min-height:36px;padding:0 12px;border-radius:6px;display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:14px;color:var(--t1);text-align:left;width:100%}
+.ddm button:hover{background:var(--elevated)}.ddm button.on{background:var(--pbg);color:var(--pc)}.ddm button:disabled{color:var(--t3);cursor:not-allowed}
 .menu2{background:var(--canvas);border:1px solid var(--b-dis);border-radius:8px;padding:4px;display:flex;flex-direction:column}
 .menu2 .grp{padding:8px 12px 4px;font-size:11px;line-height:16px;color:var(--t3);text-transform:uppercase}
 .mitem{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;min-height:40px}
@@ -1248,6 +1252,25 @@ document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='0'){
  place();addEventListener('resize',place);
  const off=()=>{c.remove();b.classList.remove('pulse');removeEventListener('resize',place);try{sessionStorage.setItem('coachSeen','1')}catch(e){}};
  document.getElementById('coachOk').addEventListener('click',off);b.addEventListener('click',off);
+})();
+
+/* dropdown: XRCC dropdown-menu + menu-item look instead of the browser's list */
+(()=>{
+ const close=()=>{const m=document.getElementById('ddmenu');if(m){m.__sel&&m.__sel.classList.remove('open');m.remove()}};
+ const open=sel=>{
+  const had=document.getElementById('ddmenu');const same=had&&had.__sel===sel;close();if(same)return;
+  const r=sel.getBoundingClientRect(),m=document.createElement('div');m.id='ddmenu';m.className='ddm';m.setAttribute('role','listbox');m.__sel=sel;
+  m.style.left=r.left+'px';m.style.width=r.width+'px';
+  [...sel.options].forEach(o=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','option');b.textContent=o.textContent;b.disabled=o.disabled;if(o.value===sel.value&&!o.disabled)b.classList.add('on');
+   b.addEventListener('click',ev=>{ev.stopPropagation();close();if(sel.value!==o.value||o.value.startsWith('__')){sel.value=o.value;sel.dispatchEvent(new Event('change',{bubbles:true}))}});m.appendChild(b)});
+  document.body.appendChild(m);sel.classList.add('open');
+  const h=m.offsetHeight;m.style.top=(r.bottom+4+h>innerHeight?Math.max(8,r.top-4-h):r.bottom+4)+'px';
+ };
+ document.addEventListener('mousedown',e=>{const sel=e.target.closest('select.sel');if(sel&&!sel.disabled){e.preventDefault();sel.focus();open(sel);return}if(!e.target.closest('#ddmenu'))close()},true);
+ document.addEventListener('keydown',e=>{const sel=e.target.closest&&e.target.closest('select.sel');
+  if(sel&&(e.key==='Enter'||e.key===' '||(e.altKey&&e.key==='ArrowDown'))){e.preventDefault();open(sel);return}
+  if(e.key==='Escape'&&document.getElementById('ddmenu')){e.stopPropagation();e.preventDefault();close()}},true);
+ window.addEventListener('resize',close);
 })();
 </script>
 </body>
