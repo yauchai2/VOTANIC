@@ -1817,3 +1817,71 @@ Page Button, Library file. Three sets: `Button / Dark / 40px` (17463:54657, Stat
 - Remote Trigger · Components 內分 6 個子 Section 並網格排列：Phone keys、Phone status & library、Pairing · QR & devices、Editor · Rows & nodes、Icons、Empty states，另加 Launcher · Phone remote。
 - 待 Alan 決定（未刪）：AI Session Card（已被 AI Session Row 取代）、Drafts 內三個 exec-… 圖片占位 section、「(Test) Data Analytics & Connections」名稱。
 - 截圖：reports/20261120-components-before.png、reports/20261120-components-after.png
+
+## 2026-11-23 · Remote Trigger 手機端：連線狀態、Sensor 清單、多 Scene 切換 Demo（Alan 批准）
+- **Connection pill**（Components 頁 `Remote / Connection pill` 1493:4260，feature 元件，非 Library）：Local／Public 變體文字改為「Connected」（綠點，Public 的 world icon 換成綠點）；Reconnecting 改紅色（dot status/error/default、文字 status/error/text、外框 status/error/icon）。C11 文字覆寫已重設。Launcher 的延遲資料保留在 Launcher。
+- **C9 Reconnecting**：alert 由 warning 改為 critical，與紅色 pill 一致。
+- **This device**（C16、C30 改版，新增 C31 `3164:11030`）：連線方式與延遲移入此頁副標（如 iPhone · Safari · Local network · 6 ms）；先列「Needed by this scene」及狀態（Connected／Not available）；其餘收在可展開的「Other sensors」；Scene 不使用 Sensor 時顯示 "This scene doesn't use any sensors."。
+- **Flow 14 · 多 Scene 切換（Demo）** `3165:11106`（Lane 3 加高 1196，Lane 4 下移）：C32 Scene selector、C33 Choose a scene（只列有 Remote Trigger 的 Scene，Playing 標示）、C34 查看未播放的 Scene（控制停用，Back to Intro）、C35 PC 切換後自動跟隨。C5 標題 Scene 名稱亦可開啟清單。3 條連線（2 實線、1 虛線）及 6 個原生 Annotations。
+- Overview 第 3 點與 Spec · Micro-interactions 連線狀態列已更新。
+- Prototype（commit d4fdc88，PR #7）：同步以上全部；Remote device test controls 新增「PC scene」按鈕；新增檢視畫面 C31–C35（共 80）；smoke test 通過。
+- Library 沒有改動，不需 Publish；沒有新增 token。
+- 2026-11-23 補充（Alan 手改 C31）：「Other sensors」展開箭咀改用 Library `Button / Dark / Button Square`（Size 20px，Icon arrow-down）；C16、C30 收起狀態同樣換上（旋轉 90°）。Prototype 同步（commit 見 PR #7）。
+- 2026-11-23 再簡化（Alan）：This device 刪除整個「Other sensors」區（C16、C30、C31），只列此 Scene 需要的 Sensor 及狀態；C31 只顯示 "This scene doesn't use any sensors."（連「Needed by this scene」標題亦移除）。Sheet 高度隨內容收窄並貼底；相關 Annotations 與 Overview 已更新；Prototype 同步。
+- 2026-11-23 刪除所有延遲（ms）資料（Alan：「所有有關 6ms 這些都不要，包括整個 XRCC Remote Trigger design」）：
+  - P1 頁：刪除 16 個 Launcher「About N ms」文字（含隱藏層）；B6 公開連結狀態 pill 與標題「Public link is on」重複，已隱藏；C16／C30／C31 副標改為「iPhone · Safari · Local network」等；Overview「即時回饋」句刪除毫秒；兩個 Annotations 及 `Remote / Connection pill` 描述同步。
+  - P2（暫停）頁：4 個 Launcher 說明句與 3 段規格文字刪除延遲；`Remote / Feedback pill` Type=Sent 的「6 ms」已隱藏（元件與實例）。
+  - 保留：動畫時長（如 120ms、ease-out）屬動效規格，不是延遲。舊版頁 1454:2615（封存）未改。
+  - Prototype：Launcher 裝置列 pill 改為「Connected」；This device 副標只顯示連線方式。
+
+## 2026-11-23 · AI Provider · 刪除 My Setting 的 Remote control section
+- Figma（Workbench 1333:8666）：刪除 21 個 "Remote control summary" instance（My Setting Connections 內所有板及變體，含 D0 內 Frame 4815）；各板高度為 Auto，已自動收攏。主 component 2759:20517 保留（已無使用，待 Alan 決定是否移除）。
+- 保留 Launcher 的 Remote control（D3R、D3t、D3w、D3n、D0R），Remote Trigger Phone UI 未改動。
+- Annotation：D0 刪除 "Set up remote control" 一則；D0R 改為「Remote control 只存在於 Launcher，My Setting 不設入口」。
+- Prototype：Settings 的 Connections 頁移除 remoteSummary；Launcher 版本不變。
+
+## 2026-11-23 · Remote Trigger：Active / Inactive 開關（Alan）
+- Feature 元件 `RT / Group row`（Components 頁 2053:2139）加入 Library `Switch`（on/off，無 label，實例名 Active switch）置於列最右，所有 82 個實例同步；名稱輸入欄由 534 縮為 490。Library 沒有改動，沒有新 token。
+- 行為：Off＝區塊（Trigger 或 Variable control）保留在清單，但遙控端不顯示；Off 時名稱、色塊及其下項目列變暗（opacity 0.45）。預設 On。Play 時設定鎖定，開關為 Disabled（A9 六個開關已換成 Disabled 變體）。
+- 新畫板 A31 · Inactive control（Flow 03，3178:34155，位置 4240,72）：Stage 與 Spot intensity 設為 Off，含原生 Annotation；Flow 03 其他畫板為並列參考，A31 暫無連線。
+- Spec · Hover and tooltips 新增「區塊 · Active 開關」列；Overview 設計重點補一句。
+- Prototype：每個區塊標題右側有 Active 開關（Switch 樣式與 Figma 一致）；Off 的區塊不出現在遙控端 deck；新增檢視畫面 A31（共 81）；smoke test 通過。
+- 2026-11-23 防誤按刪除（Alan）：`RT / Group row` 的 hover 操作區（Add item／Rename／Remove）末端加分隔線（Divider，左右各 8、線高 20，綁 spacing 與 border/default），使 Remove 與 Active 開關相距約 25px；所有實例同步。刪除原本已有確認對話框（A14、A18），保留不變。Prototype 同步（Remove 右側加 8px 間距及分隔線）。
+- 2026-11-23 Off 時開關一併變暗（Alan）：A31 兩個 Off 區塊的 Active switch opacity 0.45；Prototype 同步（.gblk.off .sw2.act）。
+- 2026-11-23 Slider 最少佔 3 格（Alan）：先改 Figma，再改 Prototype。Figma：C 系列 18 個 deck 內 `Remote Key / Dial` 由 2 格寬改為 3 格寬（Phone 349、Landscape 397、iPad 385／421、Desktop 392.5，高度不變），畫板會自動換行；C5 加 Annotation「Slider 最少佔 3 格」；Overview 的 Key types 展示卡不變。Prototype：Slider 在遙控端與 XRCC 預覽一律 span 3（以欄數為上限），設定改為 Slider 時 size=3；Playwright 驗證 Phone/iPad/Desktop 寬度與 Figma 一致。
+
+## 2026-11-23 · AI Provider · Custom provider 可直接貼上 API key
+- Figma（Workbench 1333:8666）：7 個 Custom provider 對話框（A6、A6b、A6c、A6p、A6t、A6d、D2b）的 API key 下拉改為貼上輸入框（沿用 Input Placeholder=True 含 Show password 眼睛），helper：「Saved on this computer and listed in AI keys. Leave empty if no key is needed.」；D2b 移除無用的 Manage keys 連結。
+- 新增板（Section A）：A6k（已有儲存的 key，下拉）、A6n（選 Paste a new key…，顯示輸入框）；各附 annotation。A6 加 annotation。
+- 規則：欄位 Optional（留空 = No key）、遮蔽並可顯示/隱藏、自動 trim、相同 key 只存一次、按 Add provider 成功後才存入 AI keys，Cancel 捨棄。
+- Prototype：customDlg 無儲存 key 時顯示貼上輸入框；有 key 時下拉增加「Paste a new key…」；提交時 trim、去重並寫入 S.keys。
+- 沒有新增 token 或 component。
+
+## 2026-11-23 · AI Provider · Saved server（Add a provider 的 Custom）UI 優化
+- Figma：A3c 及 A4c 的 Saved server 欄位改為「下拉 + 編輯圖示按鈕（Button Square 36，icon/outline/edit）」同一行；下方一行說明 endpoint · model · key 狀態；移除與自訂供應商無關的 Manage keys 連結。「Add a custom provider…」只放在下拉選單底部（A4c 原有設計），不再另設文字連結。A4c 選單寬度對齊下拉。
+- Prototype：同步（下拉加入「+ Add a custom provider…」選項、鉛筆按鈕、動態詳情行）。
+- 沒有新增 token 或 component。
+
+## 2026-11-23 · AI Provider · 簡約化 Add an AI key / Custom provider / 語言欄位
+- Figma（Workbench 1333:8666）Add an AI key（7 個對話框）：說明縮短為「Keys stay on this computer.」；順序改為 Provider → API key → Key name（Optional）→ Protect；刪除「Only you see this name.」及「Add a password only if…」；API key 的輔助連結移到標籤列右側（Where to find it / Set up a custom provider），刪除「Save this key to use with a custom provider.」。
+- Custom provider（A6 系列 7 個板 + D2b）：刪除 Base URL 與 Model name 的 helper；API key 只留單一貼上欄位（helper 縮短）；A6k 改為「Edit custom provider · key saved」（Key saved · ends 0A55、Remove key、Save changes）；刪除 A6n 及先前的下拉方案；對話框重新置中。
+- 語言：5 個 New voice preset 對話框的 Voice 標題列隱藏重複的語言文字（Cantonese）。
+- Prototype：keyDlg、customDlg、語音選擇標題列同步；移除已儲存 key 的下拉；submit 邏輯保留 trim、去重、成功後才儲存。
+- 沒有新增 token 或 component。
+
+## 2026-11-23 · AI Provider · Custom provider 位址格式錯誤提示
+- 原因：Base URL 不是 http:// 或 https:// 開頭時 Add provider 停用，但沒有任何說明。
+- Figma：新增 A6e（Base URL 使用 Library Input 的 State=Error + Error Message「Start with http:// or https://」，Add provider 停用）及 annotation。
+- Prototype：離開 Base URL 欄位後（或已顯示錯誤時即時）顯示紅框與同一句說明；修正後自動消失。
+
+## 2026-11-24 · AI READ FIRST · Annotations 與 Spec 規則
+- Figma（Workbench 頁面 2160:7338，AI workflow guide 3033:2 的 E 節）：Annotation 一行改為「按需要使用，必須精簡，每則只談一件事，不寫廢話」，並新增一行 Spec（Dev Mode 量度與規格）按需要使用；沿用原有文字樣式，Alan 的 Flow 標準元件未改動。
+- 執行指南第 5 節新增同一規則（Alan 2026-11-24）。
+- 沒有新增 token 或 component，Library 沒有改動，不需要 Publish。
+
+## 2026-11-24 AI Provider: multiple keys per provider (one key in use)
+- Alan correction: a provider may hold several keys; only one key is in use at a time.
+- Figma: Add key dialogs (1366:1475, 2540:11408, 2707:31315, 2709:20032) no longer dim providers that already have a key; Key lists (36 boards) show "In use / Not in use" in Meta; D1/D3 gain a second Gemini key row ("Home Gemini key"); tooltip spec row 2542:11126 rewritten; B4 label "Key in use". No new tokens or components.
+- Prototype (branch claude/project-thread-9oawj5, NOT pushed to preview): API key field is a select with "+ Add another key…"; provider card has "Key in use" select; key list shows In use / Not in use; duplicate key names get " 2"; Connect updates the provider's key.
+- 2026-11-24 review fixes (multi-key): Figma Remove key dialog copy (I1467:3279;18202:450, I2540:12417;18202:450) now says the provider switches to its other key. Prototype commit 3b5f1a9 (not pushed): "+ Add another key…" from a provider card makes the new key in use and closes the dialog; removing an in-use key switches the provider to its other key of the same provider.
+- 2026-11-24 (Alan: connected provider could not add another key): Figma tooltip 2542:11114 now "Connected. Pick it to add keys or switch the key in use."; A3d button (I2060:10383;18194:3626;2060:10386;17463:54368) now "Use this key". Prototype: connected provider tile is selectable (was disabled), button "Use this key" when the provider is already connected. Local commit only, not pushed.

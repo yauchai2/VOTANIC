@@ -92,6 +92,7 @@
 ## 4. 工作順序（Alan 最強調的順序）
 
 1. **先做 Figma，全部畫板做完並自我檢查，之後才做 prototype**。Alan 2026-11-12 動氣重複、11-13 再說：「我講過所有東西先做Figma再做prototype.......」。同一回合內不可一邊改 Figma 一邊改 prototype；Figma 經 Alan 看過（或他說可以）才同步 prototype。（M：feedback-figma-fully-done-before-prototype）
+   - **2026-11-23 再次強調（Alan）**：「做任務更改先改 Figma，已講過多次」。**任何**更改（包括像 Slider 寬度這類小改動）都**先改 Figma、自查，再讓 prototype 跟隨**；收到更改要求時第一步是開 Figma，不是改 `index.html`。違反時 Alan 會直接指出，請在回覆中註明「已先改 Figma」。
 2. 當 Alan 要求收尾時的標準順序（Alan 2026-11-13 原話）：**先做未完成項目 → 詳細 review UI/UX → 在 Figma 加上連線、Annotations、執好全部 screen flow 排位 → prototype → 最後改 web prototype link**。
 3. Prototype 要**完全複刻 Figma**，做到自己逐項檢查後是一樣的（Alan 2026-11-13）。
 4. **所有 hover 與 tooltips 都要加上**（Alan 2026-11-13「記得加上所有hover和tooltips」），並在規格頁以表格列出（tooltip 為 spec table）。
@@ -114,6 +115,7 @@
 - 複製其他畫面時，**刪除不相關的 annotations**（Alan 2026-10-29：「如果你copy其他UI screens, 記得delete返啲不相關的annotation」）。
 - 新畫板要放進該 feature 的主 Section，並有 Flow lines、labels（trunk pattern）與 prototype 連結，不可散落在外（M：debug-feature-new-boards-rules）。
 - 重複的 annotations 只保留首次出現處（2026-11-12 AI Provider 由 48 則整理至 25 則的做法）。
+- **Annotations 與 Spec 按需要使用（Alan 2026-11-24）**：可按需要使用 Figma 的 Annotations 與 Spec（Dev Mode 量度與規格）功能。Annotations 必須精簡，每則只談一件事，不寫無用的廢話，也不重複畫面已有的內容；Spec 用於開發需要的間距、尺寸、對齊等數值，不用時不加，亦不以文字 Note 代替。Figma「AI READ FIRST」頁 AI workflow guide（`3033:2`）E 節已同步。
 
 **現況提醒（2026-11-13）**：Remote Trigger P1 已把 27 條箭咀改為參考頁樣式，並把 30 段 Note 轉為原生 Annotations；**尚缺**分支虛線（如 A3 到 A9）、畫板上方 Label、`Flow connectors` 分組、Overview；Remote Trigger thread 正在補做。
 
