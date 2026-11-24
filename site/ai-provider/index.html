@@ -416,6 +416,17 @@ button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(
 .toggle-track.on{background:var(--muted)}.toggle-track.on::after{margin-left:auto}
 .no-match .btn{align-self:center}
 @media(max-width:640px){.scol{width:140px}}
+
+/* spacing + hierarchy pass 2026-11-24 */
+.dlg .h{height:56px;padding:16px 12px 16px 24px}
+.dlg .b{padding:24px;gap:20px}
+.dlg .b .content{gap:20px}
+.dlg .b>.lg+*{margin-top:0}
+.dlg .f{padding:16px 24px}
+.dlg .f .btn{height:36px;padding:0 16px;font-size:14px;line-height:20px}
+.ptile{padding:16px 12px;gap:12px}
+.prow .col.g4{gap:6px}
+@media (max-width:760px){.dlg .b{padding:16px}.dlg .f{padding:12px 16px}}
 </style>
 </head>
 <body>
@@ -761,7 +772,7 @@ function addDlg(){
  const tile=(id,v)=>{const caps=v.caps;const cn=(id!=='custom'&&!!S.providers.find(p=>p.pid===id));const dn=(S.forCap&&id!=='custom'&&!cn&&!v.caps.includes(S.forCap));const shown=caps.slice(0,3);const more=caps.length-3;
   return `<button class="ptile ${S.addSel===id?'on':''}" ${dn?'style="opacity:.45;filter:grayscale(1);cursor:not-allowed;pointer-events:none" disabled aria-disabled="true"':`data-sel="${id}" ${cn?'data-tip="Connected. Pick it to add keys or switch the key in use."':''}`}>${lg(id,40)}<span class="mdb">${v.n}</span><span class="can">${S.providers.find(p=>p.pid===id)&&id!=='custom'?`<span class="sm tok" style="display:inline-flex;align-items:center;gap:4px">${ic('Check')}Connected</span>`:shown.map(c=>ic(CIC[c])).join('')}${S.providers.find(p=>p.pid===id)&&id!=='custom'?'':more>0?`<span class="sm ${S.addSel===id?'tacc':'t3'}" data-tip="Also: ${caps.slice(3).map(c=>CNAME[c]||c).join(', ')}">+${more}</span>`:''}</span></button>`};
  dlg('Add a provider',`<div class="lg">${S.addSel==='custom'?'Choose a saved server or add a custom provider.':"Pick a provider and a saved key. We'll test it right away."}</div><div class="content"><div class="col g12"><div class="mdb">Pick a provider</div><div class="row g8">${Object.entries(P).map(([i,v])=>tile(i,v)).join('')}</div>${S.forCap?`<div class="sm t2">Showing who can do ${CNAME[S.forCap]}. The others are dimmed.</div>`:''}</div>
- <div class="row g8 sm t2" style="align-items:flex-start">${ic('Info','i16')}<span>Icons under each name show what it can do. ${p.n}: ${({gemini:'chat, quiz, speech, images and speech to text',minimax:'chat, speech and music',poe:'chat, quiz, images and more',openrouter:'chat, quiz and images',custom:'whatever your server supports'})[S.addSel]}.</span></div>${keySel(p)}</div>`,
+ ${keySel(p)}</div>`,
  `${cancel}<button class="btn pri" data-connect ${ks.length?'':'disabled'}>${S.addSel!=='custom'&&S.providers.some(x=>x.pid===S.addSel)?'Use this key':'Connect '+p.n}</button>`);}
 const pwwrap=h=>`<div class="pw">${h}<button type="button" class="iconbtn s24 eye" data-eye data-tip="Show password" aria-label="Show password">${ic('Eye')}</button></div>`;
 const inp=(l,v,ph,h,opt,type)=>`<div class="field"><div class="lrow"><span class="mdb">${l}</span>${opt?'<span class="sm t3">Optional</span>':''}</div>${type==='password'?pwwrap(`<input class="input" value="${esc(v)}" placeholder="${ph||''}" type="password">`):`<input class="input" value="${esc(v)}" placeholder="${ph||''}" ${type?`type="${type}"`:''}>`}${h?`<div class="helper">${h}</div>`:''}</div>`;
@@ -958,7 +969,7 @@ function connBody(launcher=false){
  const keyRows=list.map(k=>`<div class="krow" data-kt="${esc((k.name+' '+k.meta).toLowerCase())}">${lg(k.prov,32)}<div class="col g4 fill"><b class="mdb">${esc(k.name)}</b><span class="sm t2">${esc(k.meta)} · ${S.providers.some(x=>x.key===k.id)?'In use':'Not in use'}</span></div><span class="row g4 sm ${k.pw?'tacc':'t2'}">${ic(k.pw?'Lock':'Key')}${k.pw?'Password set':'No password'}</span><span class="key-menu-anchor"><button class="iconbtn s28" data-kmenu="${k.id}" aria-label="More actions for ${esc(k.name)}">${ic('MoreH')}</button>${keyMenu(k)}</span></div>`).join('');
  const AI=`<section class="col g12"><div class="row g12"><div class="col g4 fill"><div class="lgb">${launcher?'AI keys':'Saved on this computer'}</div><div class="sm t2">Used by AI providers in every project on this computer.</div></div>${list.length?`<button class="btn pri" data-addkey2>Add key</button>`:''}</div>
   ${list.length?`<input class="input search-key" data-kq aria-label="Search keys" placeholder="Search keys">`:''}
-  <div class="col g8">${keyRows||EM('Key','No AI keys yet','Add a key for Gemini, MiniMax, Poe, OpenRouter or a custom provider. It is encrypted and stays on this computer.','<button class="btn pri" data-addkey2>Add key</button>')}<div class="no-match" id="knone" hidden><b class="mdb"></b><div class="sm t2">Try the key name or the provider. Clear the search to see every key.</div><button class="btn" data-clear-search>Clear search</button></div></div></section>`;
+  <div class="col g12">${keyRows||EM('Key','No AI keys yet','Add a key for Gemini, MiniMax, Poe, OpenRouter or a custom provider. It is encrypted and stays on this computer.','<button class="btn pri" data-addkey2>Add key</button>')}<div class="no-match" id="knone" hidden><b class="mdb"></b><div class="sm t2">Try the key name or the provider. Clear the search to see every key.</div><button class="btn" data-clear-search>Clear search</button></div></div></section>`;
  const tokenRows=S.witTokens.map(k=>`<div class="krow">${witIcon}<div class="col g4 fill"><b class="mdb">${esc(k.name)}</b><span class="sm t2">${esc(k.meta)}</span></div><button class="iconbtn s28" data-cm="wit|${k.id}" aria-label="More actions for ${esc(k.name)}">${ic('MoreH')}</button></div>`).join('');
  const WIT=`<section class="col g8"><div class="row g12"><div class="col g4 fill"><div class="lgb">${launcher?'Speech commands (Wit.ai)':'Tokens'}</div>${launcher?'':'<div class="sm t2">Used for speech commands in every project on this computer.</div>'}</div><button class="btn" data-addwit>Add token</button></div><div class="col g8">${tokenRows||'<span class="sm t2">No Wit.ai token yet.</span>'}</div></section>`;
  if(launcher)return head('Connections','AI keys and speech tokens stay on this computer.')+(S.launchManage?AI+WIT+remoteSummary():remoteSummary()+AI+WIT)+retentionControl();
