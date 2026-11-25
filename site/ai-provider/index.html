@@ -201,6 +201,9 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:10px;heigh
 .ptile{width:96px;flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;padding:12px;border-radius:8px;background:var(--canvas);border:1px solid var(--b-dis);cursor:pointer}
 .ptile:hover{border-color:var(--b-int)}.ptile.on{background:var(--pbg);border-color:var(--b-int)}
 .ptile .can{display:flex;gap:4px;align-items:center;color:var(--t2)}
+.provider-tiles{align-items:stretch}
+.ptile.custom-tile{justify-content:center}
+.ptile.custom-tile .provider-tile-name{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pick{display:flex;align-items:center;gap:12px;padding:12px;border-radius:8px;background:var(--canvas);border:1px solid var(--b-sub);cursor:pointer}
 .pick:hover{border-color:var(--b-int)}.pick.on{background:var(--pbg);border-color:var(--b-int)}
 .pick .pb{width:32px;height:32px;border-radius:50%;background:var(--muted);display:grid;place-items:center;flex:none}
@@ -419,6 +422,7 @@ button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(
 .dlg .f .btn{height:36px;padding:0 16px;font-size:14px;line-height:20px}
 .ptile{padding:16px 12px;gap:12px}
 .prow .col.g4{gap:6px}
+.prow.custom-provider-row .col.g4{gap:4px}
 @media (max-width:760px){.dlg .b{padding:16px}.dlg .f{padding:12px 16px}}
 .cm-sh{display:flex;align-items:center;gap:8px;margin-bottom:12px}.cm-n{min-width:20px;justify-content:center;padding:0 6px}.cm-done{display:inline-flex;color:var(--ok,#4caf50)}.cm-done svg{width:20px;height:20px}
 .cm-list{border:1px solid var(--b-def);border-radius:8px;background:var(--canvas);overflow:hidden;margin-bottom:12px}.cm-row{padding:12px 16px;display:flex;flex-direction:column;gap:4px}.cm-row+.cm-row{border-top:1px solid var(--b-def)}.cm-line{display:flex;align-items:center;gap:12px}.cm-id{font-size:14px;line-height:20px;min-width:0;overflow:hidden;text-overflow:ellipsis}.cm-ic{display:inline-flex;width:16px;height:16px}.cm-dash{width:16px;height:16px;border-radius:50%;border:1.5px dashed var(--t3)}.cm-spin{width:16px;height:16px;border-radius:50%;border:2px solid var(--t3);border-top-color:transparent;animation:cmspin 1s linear infinite}@keyframes cmspin{to{transform:rotate(360deg)}}.cm-why{display:flex;align-items:center;gap:8px;padding-left:28px}.cm-setdef{opacity:0}.cm-row:hover .cm-setdef,.cm-setdef:focus{opacity:1}
@@ -565,7 +569,17 @@ const needPw=k=>!!k&&!!k.locked;
 const isLocked=p=>{const k=keyOf(p);return k&&k.locked};
 const can=(p,t)=>{if(p.pid==='custom')return true;const pc=P[p.pid];const c=t.id==='tts'?'speech':t.cap;return pc.caps.includes(c)&&!(t.id==='quiz'&&!pc.pdf)};
 const defaultModel=(p,t)=>p.model||(P[p.pid].M[t.id]||[P[p.pid].n])[0];
-const modelsFor=(p,t)=>p.pid==='custom'&&p.models&&p.models.length?p.models.filter(m=>m.st!=='error').map(m=>[m.id,(m.st==='ready'?'Ready':'Not tested')+(m.def?' · Default':''),'']):(MODELS[t.id]?.[p.pid]||[[defaultModel(p,t),'','']]).filter(m=>!m[3]);
+function modelsFor(p,t){
+ if(p.pid!=='custom')return (MODELS[t.id]?.[p.pid]||[[defaultModel(p,t),'','']]).filter(m=>!m[3]);
+ const models=p.models??(p.model?[{id:p.model,def:true}]:[]);
+ return models.filter(m=>m.st!=='error').map(m=>[m.id,m.st==='ready'?'Ready':'Not tested',m.def?'Default':'']);
+}
+function taskModelIndex(provider,task,selected){
+ const models=modelsFor(provider,task);
+ const current=models.findIndex(([id])=>id===selected);
+ if(current>=0)return current;
+ return provider.pid==='custom'?Math.max(0,models.findIndex(([id])=>id===provider.model)):0;
+}
 const model=(p,t)=>S.assign[t.id]===p.id&&S.models[t.id]?S.models[t.id]:defaultModel(p,t);
 const extra=(p,t)=>t.id==='tts'&&S.voices.length?S.voices.length+' '+(S.voices.length===1?'voice':'voices'):'';
 const needsKey=p=>!keyOf(p)&&(p.pid!=='custom'||Boolean(p.key));
@@ -647,9 +661,13 @@ function providers(){
  return `${S.introOff?'':`<div class="intro"><img src="data:image/png;base64,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" width="48" height="48" alt="" style="display:block;border-radius:12px;flex:none"><div class="col g4 fill"><div class="mdb">Bring your own key</div><div class="sm t2">Connect a provider with your own key, then pick a model for each task. Your keys stay encrypted on this computer and never pass through VOTANIC.</div></div><button class="iconbtn s24" data-introx data-tip="Hide this tip" aria-label="Dismiss">${ic('Close','i16')}</button></div>`}
  <div class="col g16"><div class="row g16 head"><div class="col g4 fill"><div class="hsm">Providers</div><div class="sm t2">Connect an account once, then use it for any task.</div></div><button class="btn m" data-add>Add provider</button></div>
  <div class="pgrid">${S.providers.length?'':EM('Plug','No providers connected','Add one to start using AI in this project. Your key stays on this computer.','<button class="btn pri" data-add>Add a provider</button>')}${S.providers.map(p=>{const k=keyOf(p);const lk=isLocked(p);const failed=p.status==='failed';
-  const tok=TOK[p.pid];const st=needsKey(p)?'<span class="sm t2">Needs key</span>':p.pid==='custom'&&!lk?`<span class="sm tok">Configured</span><span class="sm t2">· Custom · ${k?esc(k.name):'No key'}</span>`:lk?`<span class="t2">${ic('Lock')}</span><span class="sm t2">Password needed</span><span class="sm t2">· ${esc(k.name)}</span>`:failed?`<i class="dot8" style="background:var(--b-err)"></i><span class="sm terr">Test failed</span><span class="sm t2">· couldn't reach ${P[p.pid].n}</span>`:`<i class="dot8"></i><span class="sm tok">Connected</span><span class="sm t2">· ${esc(k.name)}</span><span class="sm t3" data-tip="${p.pid==='custom'?'This provider does not report usage':'Tokens used by this project this month'}">· ${tok}</span>`;
+  const custom=p.pid==='custom';
+  const tok=TOK[p.pid];
+  const st=custom?`<span class="sm ${needsKey(p)||lk?'t2':'tok'}">${needsKey(p)?'Needs key':lk?'Password needed':'Configured'}</span><span class="sm t2">· Custom</span>`
+   :needsKey(p)?'<span class="sm t2">Needs key</span>':lk?`<span class="t2">${ic('Lock')}</span><span class="sm t2">Password needed</span><span class="sm t2">· ${esc(k.name)}</span>`:failed?`<i class="dot8" style="background:var(--b-err)"></i><span class="sm terr">Test failed</span><span class="sm t2">· couldn't reach ${P[p.pid].n}</span>`:`<i class="dot8"></i><span class="sm tok">Connected</span><span class="sm t2">· ${esc(k.name)}</span><span class="sm t3" data-tip="Tokens used by this project this month">· ${tok}</span>`;
   const act=needsKey(p)?(p.pid==='custom'&&p.serverId?`<button class="btn" data-editserver="${p.serverId}">Edit custom provider</button>`:'<button class="btn" data-manage>Manage keys</button>'):lk?`<button class="btn out" data-unlock="${p.id}" data-tip="Enter the password you set for this key">Enter password</button>`:failed?`<button class="btn out" data-test="${p.id}" data-tip="Check your connection, then test again">Test again</button>`:(p.pid==='custom'?'':`<button class="btn" data-test="${p.id}" data-tip="Check your connection, then test again">Test</button>`);
-  const head=`<div class="prow" data-prov="${p.id}">${lg(p.pid,40)}<div class="col g4 fill"><div class="mdb">${esc(p.name||P[p.pid].n)}</div><div class="row g8">${st}</div><div class="row g8 t3" style="margin-top:2px">${P[p.pid].caps.map(c=>`<span data-tip="${CNAME[c][0].toUpperCase()+CNAME[c].slice(1)}">${ic(CIC[c])}</span>`).join('')}</div></div>${S.open===p.id?'':act}<span class="chev t2" data-tip="${S.open===p.id?'Hide details':'Show details'}">${ic(S.open===p.id?'Down':'Chevron','i16')}</span></div>`;
+  const capabilities=custom?'':`<div class="row g8 t3" style="margin-top:2px">${P[p.pid].caps.map(c=>`<span data-tip="${CNAME[c][0].toUpperCase()+CNAME[c].slice(1)}">${ic(CIC[c])}</span>`).join('')}</div>`;
+  const head=`<div class="prow${custom?' custom-provider-row':''}" data-prov="${p.id}">${lg(p.pid,40)}<div class="col g4 fill"><div class="mdb">${esc(p.name||P[p.pid].n)}</div><div class="row g8">${st}</div>${capabilities}</div>${S.open===p.id?'':act}<span class="chev t2" data-tip="${S.open===p.id?'Hide details':'Show details'}">${ic(S.open===p.id?'Down':'Chevron','i16')}</span></div>`;
   if(S.open===p.id){
    const field=p.pid==='custom'
     ?`<div class="field"><div class="mdb">Saved provider</div>
@@ -661,7 +679,7 @@ function providers(){
    ${p.pid==='custom'?`<div class="note">${ic('Info')}<span>XRCC can't test this endpoint here. Run a task that uses it to check it responds.</span></div>`:`<div class="note tok">${ic('Check')}<span>Last test replied in 0.8 s · today 14:32</span></div>`}
    <div class="note">${ic('Chart')}<span>${tok}${p.pid==='custom'?'':' · resets 1 Dec'}</span></div>
    <div class="row g12">${p.pid==='custom'?'':`<button class="btn out" data-test="${p.id}" data-tip="Send a tiny test request to this provider">Test response</button>`}<span class="fill"></span><button class="btn des" data-remove="${p.id}">Remove provider</button></div></div></div>`}
-  return `<div class="col g12">${head.replace('class="prow"','class="prow"')}${failed?`<div class="warn">${ic('World')}<div class="col g4"><b class="mdb">Couldn't reach ${P[p.pid].n}</b><span class="sm">No response from ${P[p.pid].n}. Check your network connection and try again.</span></div></div>`:''}</div>`}).join('')}</div></div>`}
+  return `<div class="col g12">${head}${failed?`<div class="warn">${ic('World')}<div class="col g4"><b class="mdb">Couldn't reach ${P[p.pid].n}</b><span class="sm">No response from ${P[p.pid].n}. Check your network connection and try again.</span></div></div>`:''}</div>`}).join('')}</div></div>`}
 function voices(){
  if(!S.voices.length)return EM('Speech','No voice presets yet','A preset saves a voice, speed and tone so characters can reuse it. Create your first one.','<button class="btn pri" data-newv>New voice preset</button>');
  const vs=S.voices.filter(v=>S.vf==='all'||v.prov===S.vf);
@@ -761,6 +779,13 @@ const keySel=()=>{
   ${custom&&!current?`<div class="row g12"><button class="lnk" data-addserver>Add a custom provider…</button></div>`:''}</div>`;
 };
 document.addEventListener('change',event=>{
+ if(event.target.matches('[data-pick-custom]')){
+  const provider=prov(event.target.value);
+  if(!S.pick||provider?.pid!=='custom')return;
+  pickTaskProvider(S.pick.t,provider);
+  activeLayer()?.querySelector('[data-pick-custom]')?.focus({preventScroll:true});
+  return;
+ }
  if(event.target.matches('[data-select-key]')){
   if(event.target.value==='__newkey'){event.target.value=S.addKey;S.keyOrigin='provider';S.keyDraft=null;return keyDlg()}
   S.addKey=event.target.value;
@@ -782,9 +807,17 @@ document.addEventListener('change',event=>{
 });
 function addDlg(){
  const p=P[S.addSel];const ks=choicesForProvider();if(!ks.find(k=>k.id===S.addKey))S.addKey=ks[0]?ks[0].id:'';
- const tile=(id,v)=>{const caps=v.caps;const cn=(id!=='custom'&&!!S.providers.find(p=>p.pid===id));const dn=(S.forCap&&id!=='custom'&&!cn&&!v.caps.includes(S.forCap));const shown=caps.slice(0,3);const more=caps.length-3;
-  return `<button class="ptile ${S.addSel===id?'on':''}" ${dn?'style="opacity:.45;filter:grayscale(1);cursor:not-allowed;pointer-events:none" disabled aria-disabled="true"':`data-sel="${id}" ${cn?'data-tip="Connected. Pick it to add keys or switch the key in use."':''}`}>${lg(id,40)}<span class="mdb">${v.n}</span><span class="can">${S.providers.find(p=>p.pid===id)&&id!=='custom'?`<span class="sm tok" style="display:inline-flex;align-items:center;gap:4px">${ic('Check')}Connected</span>`:shown.map(c=>ic(CIC[c])).join('')}${S.providers.find(p=>p.pid===id)&&id!=='custom'?'':more>0?`<span class="sm ${S.addSel===id?'tacc':'t3'}" data-tip="Also: ${caps.slice(3).map(c=>CNAME[c]||c).join(', ')}">+${more}</span>`:''}</span></button>`};
- dlg('Add a provider',`<div class="lg">${S.addSel==='custom'?'Choose a saved provider or add a custom provider.':"Pick a provider and a saved key. We'll test it right away."}</div><div class="content"><div class="col g12"><div class="mdb">Pick a provider</div><div class="row g8">${Object.entries(P).map(([i,v])=>tile(i,v)).join('')}</div>${S.forCap?`<div class="sm t2">Showing who can do ${CNAME[S.forCap]}. The others are dimmed.</div>`:''}</div>
+ const tile=(id,v)=>{
+  const selected=S.addSel===id;
+  if(id==='custom')return `<button class="ptile custom-tile ${selected?'on':''}" aria-pressed="${selected}" data-sel="custom">${lg(id,40)}<span class="mdb">${v.n}</span></button>`;
+  const connected=S.providers.some(provider=>provider.pid===id);
+  const disabled=S.forCap&&!connected&&!v.caps.includes(S.forCap);
+  const more=v.caps.slice(3);
+  const capabilities=connected?`<span class="sm tok" style="display:inline-flex;align-items:center;gap:4px">${ic('Check')}Connected</span>`
+   :v.caps.slice(0,3).map(c=>ic(CIC[c])).join('')+(more.length?`<span class="sm ${selected?'tacc':'t3'}" data-tip="Also: ${more.map(c=>CNAME[c]||c).join(', ')}">+${more.length}</span>`:'');
+  return `<button class="ptile ${selected?'on':''}" aria-pressed="${selected}" ${disabled?'style="opacity:.45;filter:grayscale(1);cursor:not-allowed;pointer-events:none" disabled aria-disabled="true"':`data-sel="${id}" ${connected?'data-tip="Connected. Pick it to add keys or switch the key in use."':''}`}>${lg(id,40)}<span class="mdb">${v.n}</span><span class="can">${capabilities}</span></button>`;
+ };
+ dlg('Add a provider',`<div class="lg">${S.addSel==='custom'?'Choose a saved provider or add a custom provider.':"Pick a provider and a saved key. We'll test it right away."}</div><div class="content"><div class="col g12"><div class="mdb">Pick a provider</div><div class="row g8 provider-tiles">${Object.entries(P).map(([i,v])=>tile(i,v)).join('')}</div>${S.forCap?`<div class="sm t2">Showing who can do ${CNAME[S.forCap]}. The others are dimmed.</div>`:''}</div>
  ${keySel(p)}</div>`,
  `${cancel}<button class="btn pri" data-connect ${ks.length?'':'disabled'}>${S.addSel!=='custom'&&S.providers.some(x=>x.pid===S.addSel)?'Use this key':'Connect '+p.n}</button>`);}
 const pwwrap=h=>`<div class="pw">${h}<button type="button" class="iconbtn s24 eye" data-eye data-tip="Show password" aria-label="Show password">${ic('Eye')}</button></div>`;
@@ -991,24 +1024,57 @@ function newVoice(focus){const draft=S.voiceDraft||(S.voiceDraft={n:'',prov:'min
  }
  if(focus)layer.querySelector(focus)?.focus({preventScroll:true});
 }
-function pickDlg(id){const t=TASKS.find(x=>x.id===id);const ps=S.providers;
+function pickTaskProvider(id,provider,selected){
+ const task=TASKS.find(item=>item.id===id);
+ S.pick={t:id,p:provider.id,m:taskModelIndex(provider,task,selected)};
+ return pickDlg(id);
+}
+function pickDlg(id){
+ const t=TASKS.find(task=>task.id===id);
+ const ps=S.providers;
  if(!S.pick||S.pick.t!==id){
-  const first=prov(S.assign[id])||ps.find(p=>can(p,t)&&!isLocked(p));
-  const usable=first&&can(first,t)&&!isLocked(first)&& (first.pid==='custom'||keyOf(first));
-  S.pick={t:id,p:usable?first.id:null,m:usable?Math.max(0,modelsFor(first,t).findIndex(m=>m[0]===S.models[id])):0};
+  const assigned=prov(S.assign[id]);
+  const first=assigned&&can(assigned,t)?assigned:ps.find(p=>can(p,t)&&!needsKey(p)&&!isLocked(p));
+  const usable=first&&!needsKey(first)&&!isLocked(first);
+  S.pick={t:id,p:usable?first.id:null,m:usable?taskModelIndex(first,t,S.models[id]):0};
  }
  const sp=prov(S.pick.p);
- let models='';
- if(sp){const list=modelsFor(sp,t);const big=list.length>6;
-  models=`<div class="col g8"><div class="row"><span class="mdb fill">Model</span>${sp.pid==='custom'&&sp.serverId?`<button type="button" class="lnk" data-editserver="${sp.serverId}">Manage models</button>`:''}${big?`<span class="sm t3">${list.length} models</span>`:''}</div>${big?`<div class="input" style="width:100%;height:36px;display:flex;align-items:center;gap:8px;color:var(--t3)">${ic('Search')}<input data-mq placeholder="Search ${list.length} models" style="flex:1;background:none;border:0;outline:0;color:var(--t1);font:inherit"></div>`:''}<div class="col g8" ${big?'style="max-height:264px;overflow:auto;padding-right:4px"':''}>${list.map((m,i)=>`<button class="mdl ${S.pick.m===i?'on':''}" aria-pressed="${S.pick.m===i}" data-pm="${i}" data-mt="${m[0].toLowerCase()}"><span class="radio ${S.pick.m===i?'on':''}"></span><div class="col g4 fill"><b class="mdb t1">${m[0]}</b><span class="sm t2">${m[1]}</span></div><span class="caption t2">${m[2]||''}</span></button>`).join('')}<div class="md t2" id="mnone" style="display:none;padding:16px 0;text-align:center">No model matches that.</div></div></div>`}
- const mname=sp?(modelsFor(sp,t)[S.pick.m]?.[0]||defaultModel(sp,t)):'';
+ const customProviders=ps.filter(p=>p.pid==='custom');
+ const customSelected=sp?.pid==='custom';
+ const customChoice=customSelected?sp:customProviders.find(p=>!needsKey(p)&&!isLocked(p))??customProviders[0];
+ const customControl=customSelected&&customProviders.length>1?`<div class="field">
+  <label class="mdb" for="task-custom-provider">Custom provider</label>
+  <select class="sel" id="task-custom-provider" data-pick-custom>${customProviders.map(p=>`<option value="${p.id}" ${p.id===sp.id?'selected':''}>${esc(p.name||P.custom.n)}${isLocked(p)?' · Password needed':''}</option>`).join('')}</select>
+ </div>`:'';
+ const locked=customSelected&&isLocked(sp);
+ const missingKey=customSelected&&needsKey(sp);
+ const list=sp&&!locked&&!missingKey?modelsFor(sp,t):[];
+ const selected=list[S.pick.m];
+ const big=list.length>6;
+ const modelSearch=big?`<div class="input" style="width:100%;height:36px;display:flex;align-items:center;gap:8px;color:var(--t3)">${ic('Search')}<input data-mq placeholder="Search ${list.length} models" style="flex:1;background:none;border:0;outline:0;color:var(--t1);font:inherit"></div>`:'';
+ const modelChoices=list.length?`<div class="col g8" ${big?'style="max-height:264px;overflow:auto;padding-right:4px"':''}>${list.map(([name,description,tag],i)=>`<button class="mdl ${S.pick.m===i?'on':''}" aria-pressed="${S.pick.m===i}" data-pm="${i}" data-mt="${esc(name.toLowerCase())}"><span class="radio ${S.pick.m===i?'on':''}"></span><div class="col g4 fill"><b class="mdb t1">${esc(name)}</b><span class="sm t2">${esc(description)}</span></div><span class="caption t2">${esc(tag)}</span></button>`).join('')}<div class="md t2" id="mnone" style="display:none;padding:16px 0;text-align:center">No model matches that.</div></div>`
+  :locked?`<div class="row g8"><span class="sm t2 fill">Enter the key password to use this provider.</span><button class="btn out" data-unlock="${sp.id}">Enter password</button></div>`
+  :`<div class="sm t2">${missingKey?'Add an API key for this provider to use its models.':'No available models. Add a model or check the test results.'}</div>`;
+ const models=sp?`<div class="col g8"><div class="row"><span class="mdb fill">Model</span>${customSelected&&sp.serverId?`<button type="button" class="lnk" data-editserver="${sp.serverId}">Manage models</button>`:''}${big?`<span class="sm t3">${list.length} models</span>`:''}</div>${modelSearch}${modelChoices}</div>`:'';
  const hint=(h=>h&&!can(h,t)&&ps.some(q=>can(q,t)&&!isLocked(q))?`<div class="note" style="border-color:var(--warn)">${ic('Info')}<span>${P[h.pid].n} can't do ${CNAME[t.cap]}. ${ps.filter(q=>can(q,t)&&!isLocked(q)).map(q=>P[q.pid].n).join(' or ')} can.</span></div>`:'')(S.pick.hint&&prov(S.pick.hint));
  const none=`<div class="note">${ic('Question')}<span>None of your providers can do ${CNAME[t.cap]} yet. ${Object.entries(P).filter(([i,v])=>v.caps.includes(t.cap)&&!S.providers.find(p=>p.pid===i)).map(([i,v])=>v.n).join(' and ')||'No other provider'} can. Add one, then come back.</span></div>`;
- const body=ps.length?`<div class="lg">${sp?'Pick the provider and model for this task. You can change it later.':'Pick a provider that can run this task.'}</div><div class="col g8"><div class="mdb">Provider</div><div class="row g8">${Object.entries(P).map(([i,v])=>{const p=ps.find(q=>q.pid===i);const ok=can({pid:i},t);const lk=p&&isLocked(p);const on=p&&S.pick.p===p.id;const cons=v.caps.slice(0,3);const more=v.caps.length-3;
- const attr=!ok?'disabled aria-disabled="true"':!p?`data-add data-ret="${id}" data-for="${t.cap}" data-with="${i}" data-tip="${v.n} isn't connected yet. Add it first."`:lk?`data-unlock="${p.id}"`:`data-pp="${p.id}"`;
- return `<button class="ptile ${on?'on':''}" style="${ok?'':'opacity:.45;filter:grayscale(1);cursor:not-allowed;pointer-events:none;'}${ok&&!p?'border-style:dashed;':''}${p&&S.pick.hint===p.id?'border-color:var(--warn);':''}" ${attr}>${lg(i,40)}<span class="mdb ${on?'tacc':''}">${v.n}</span><span class="tstat caption ${ok&&p&&!lk?'tok':'t2'}">${!ok?'Unsupported':!p?'Not connected':lk?'Password needed':'Ready'}</span></button>`}).join('')}</div>${hint}</div>${models}${sp?'':none}`:`<div class="md">Add a provider first.</div>`;
- const foot=ps.length?`${S.assign[id]?`<button class="btn m" data-unset="${id}" data-tip="This task will have no provider until you pick one again">Turn off for this task</button>`:''}<span class="fill"></span><button class="btn m" data-back>Cancel</button>${sp?`<button class="btn pri m" data-set="${id}|${sp.id}">${id==='image'?'Use image model':'Use '+esc(mname)}</button>`:`<button class="btn pri m" data-add data-ret="${id}" data-for="${t.cap}">Add a provider</button>`}`:`<button class="btn pri m" data-add>Add a provider</button>`;
- push(`<div class="dlg"><div class="h"><span class="lgb fill">Who runs ${t.n}?</span><button class="iconbtn s24" data-back data-tip="Close" aria-label="Close">${ic('Close')}</button></div><div class="b">${body}</div><div class="f">${foot}</div></div>`,'pick')}
+ const tiles=Object.entries(P).map(([i,v])=>{
+  const custom=i==='custom';
+  const p=custom?customChoice:ps.find(q=>q.pid===i);
+  const ok=can({pid:i},t);
+  const lk=p&&isLocked(p);
+  const on=p&&S.pick.p===p.id;
+  const name=custom&&customProviders.length===1?p.name||v.n:v.n;
+  const attr=!ok?'disabled aria-disabled="true"':!p?`data-add data-ret="${id}" data-for="${t.cap}" data-with="${i}" data-tip="${v.n} isn't connected yet. Add it first."`:lk&&!custom?`data-unlock="${p.id}"`:`data-pp="${p.id}"`;
+  const status=custom&&p?'':`<span class="tstat caption ${ok&&p&&!lk?'tok':'t2'}">${!ok?'Unsupported':!p?'Not connected':lk?'Password needed':'Ready'}</span>`;
+  return `<button class="ptile ${custom?'custom-tile':''} ${on?'on':''}" aria-pressed="${Boolean(on)}" style="${ok?'':'opacity:.45;filter:grayscale(1);cursor:not-allowed;pointer-events:none;'}${ok&&!p?'border-style:dashed;':''}${p&&S.pick.hint===p.id?'border-color:var(--warn);':''}" ${attr}>${lg(i,40)}<span class="mdb provider-tile-name ${on?'tacc':''}" title="${esc(name)}">${esc(name)}</span>${status}</button>`;
+ }).join('');
+ const body=ps.length?`<div class="lg">${sp?'Pick the provider and model for this task. You can change it later.':'Pick a provider that can run this task.'}</div><div class="col g8"><div class="mdb">Provider</div><div class="row g8 provider-tiles">${tiles}</div>${customControl}${hint}</div>${models}${sp?'':none}`:`<div class="md">Add a provider first.</div>`;
+ const addButton=`<button class="btn pri m" data-add data-ret="${id}" data-for="${t.cap}">Add a provider</button>`;
+ const useModel=sp?`<button class="btn pri m" data-set="${id}|${sp.id}" ${selected?'':'disabled'}>${selected?(id==='image'?'Use image model':'Use '+esc(selected[0])):'Use model'}</button>`:addButton;
+ const foot=ps.length?`${S.assign[id]?`<button class="btn m" data-unset="${id}" data-tip="This task will have no provider until you pick one again">Turn off for this task</button>`:''}<span class="fill"></span><button class="btn m" data-back>Cancel</button>${useModel}`:addButton;
+ push(`<div class="dlg"><div class="h"><span class="lgb fill">Who runs ${t.n}?</span><button class="iconbtn s24" data-back data-tip="Close" aria-label="Close">${ic('Close')}</button></div><div class="b">${body}</div><div class="f">${foot}</div></div>`,'pick');
+}
 const launchRequirements=[['gemini','Text chat, Speech to text'],['minimax','Text to speech, Text to music']];
 function launchDlg(){
  hide();
@@ -1270,10 +1336,15 @@ document.addEventListener('click',e=>{
   const existing=S.servers.find(item=>item.id===d.customadd);
   const models=structuredClone(S.cm.models);const details={name:serverName,endpoint:endpoint.href,models,model:(models.find(m=>m.def)||models[0]).id,key};
   if(existing){
+   const fromTask=keys.includes('pick')&&S.pick;
+   const taskProvider=fromTask&&prov(fromTask.p);
+   const task=taskProvider&&TASKS.find(item=>item.id===fromTask.t);
+   const selected=task&&modelsFor(taskProvider,task)[fromTask.m]?.[0];
    Object.assign(existing,details);
    for(const provider of S.providers.filter(item=>item.serverId===existing.id))Object.assign(provider,details);
    pop();
    if(keys.at(-1)==='Add a provider')return addDlg();
+   if(keys.at(-1)==='pick'&&task)return pickTaskProvider(task.id,taskProvider,selected);
    return renderPanel();
   }
   const server={id:uniqueId('s'),...details};
@@ -1282,30 +1353,38 @@ document.addEventListener('click',e=>{
   S.providers.push(provider);
   if('fromKey' in d&&S.keyOrigin==='settings'&&!S.launcher&&!S.launchManage){S.keyDraft=null;S.ret=null;while(stack.length>1&&!['base','settings'].includes(keys.at(-1)))pop();toast(serverName+' added');return redrawConnections()}
   const task='fromKey' in d?null:S.ret;S.ret=null;S.tab=task?'tasks':'providers';renderPanel();
-  if(task){S.pick={t:task,p:provider.id,m:0};return pickDlg(task);}
+  if(task)return pickTaskProvider(task,provider);
   return;
  }
  if('connect' in d){const kid=S.addKey;if(!kid)return;
   if(S.addSel==='custom'){const server=S.servers.find(x=>x.id===kid);if(!server)return;const provider=S.providers.find(p=>p.serverId===kid)||{...server,id:uniqueId('p'),serverId:kid,pid:'custom'};
    if(!S.providers.includes(provider))S.providers.push(provider);
    const task=S.ret;S.ret=null;S.tab=task?'tasks':'providers';renderPanel();
-   if(task){S.pick={t:task,p:provider.id,m:0};return pickDlg(task);}return;
+   if(task)return pickTaskProvider(task,provider);return;
   }
   const selectedKey=S.keys.find(k=>k.id===kid);if(needPw(selectedKey))return keyUnlockDlg(kid);let np=S.providers.find(p=>p.pid===S.addSel);if(np)np.key=kid;if(!np){np={id:'p'+Date.now(),pid:S.addSel,key:kid};S.providers.push(np)}toast(P[S.addSel].n+' connected');const r=S.ret;S.ret=null;if(r){S.tab='tasks';renderPanel();S.pick={t:r,p:np.id,m:0};return pickDlg(r)}S.tab='providers';return renderPanel()}
  if(d.task){S.pick=null;return pickDlg(d.task)}
  if(d.pu){S.pick.hint=d.pu;return pickDlg(S.pick.t)}
- if(d.pp){S.pick.p=d.pp;S.pick.m=0;S.pick.hint=null;return pickDlg(S.pick.t)}
+ if(d.pp)return pickTaskProvider(S.pick.t,prov(d.pp));
  if(d.pm){S.pick.m=+d.pm;return pickDlg(S.pick.t)}
  if('sample' in d)return toast('Sample question: “Which room has the dinosaur?”');
  if(d.unset){delete S.assign[d.unset];delete S.models[d.unset];hide();S.tab='tasks';toast('Task turned off');return renderPanel()}
- if(d.set){const [tid,pid]=d.set.split('|');if(!pid)return;S.assign[tid]=pid;S.models[tid]=modelsFor(prov(pid),TASKS.find(t=>t.id===tid))[S.pick.m]?.[0];S.tab='tasks';return renderPanel()}
+ if(d.set){
+  const [tid,pid]=d.set.split('|');
+  const provider=prov(pid);
+  const task=TASKS.find(item=>item.id===tid);
+  if(!provider||!task||needsKey(provider)||isLocked(provider))return;
+  const model=modelsFor(provider,task)[S.pick.m];
+  if(!model)return;
+  S.assign[tid]=pid;S.models[tid]=model[0];S.tab='tasks';return renderPanel();
+ }
  if(d.test){const p=prov(d.test);toast('Testing '+P[p.pid].n+'…');setTimeout(()=>{p.status=P[p.pid].flaky&&p.status!=='failed'?'failed':'';renderPanel();toast(p.status?'Couldn\'t reach '+P[p.pid].n:'Connection test succeeded · 0.8 s')},900);return}
  if(d.unlock)return unlockDlg(d.unlock);
  if(d.doun){
   const v=read(activeLayer(),'#pw');
   if(v!=='xrcc')return unlockDlg(d.doun,true);
   const p=prov(d.doun);keyOf(p).locked=false;toast('Password accepted');
-  if(keys.includes('pick')&&S.pick){pop();S.pick.p=p.id;S.pick.m=0;return pickDlg(S.pick.t);}
+  if(keys.includes('pick')&&S.pick){pop();return pickTaskProvider(S.pick.t,p);}
   return renderPanel();
  }
  if(d.remove)return removeDlg(d.remove);
