@@ -427,6 +427,11 @@ button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(
 .ptile{padding:16px 12px;gap:12px}
 .prow .col.g4{gap:6px}
 @media (max-width:760px){.dlg .b{padding:16px}.dlg .f{padding:12px 16px}}
+.cm-sh{display:flex;align-items:center;gap:8px;margin-bottom:12px}.cm-n{min-width:20px;justify-content:center;padding:0 6px}.cm-done{display:inline-flex;color:var(--ok,#4caf50)}.cm-done svg{width:20px;height:20px}
+.cm-list{border:1px solid var(--b-def);border-radius:8px;background:var(--canvas);overflow:hidden;margin-bottom:12px}.cm-row{padding:12px 16px;display:flex;flex-direction:column;gap:4px}.cm-row+.cm-row{border-top:1px solid var(--b-def)}.cm-line{display:flex;align-items:center;gap:12px}.cm-id{font-size:14px;line-height:20px;min-width:0;overflow:hidden;text-overflow:ellipsis}.cm-ic{display:inline-flex;width:16px;height:16px}.cm-dash{width:16px;height:16px;border-radius:50%;border:1.5px dashed var(--t3)}.cm-spin{width:16px;height:16px;border-radius:50%;border:2px solid var(--t3);border-top-color:transparent;animation:cmspin 1s linear infinite}@keyframes cmspin{to{transform:rotate(360deg)}}.cm-why{display:flex;align-items:center;gap:8px;padding-left:28px}.cm-setdef{opacity:0}.cm-row:hover .cm-setdef,.cm-setdef:focus{opacity:1}
+.cm-empty{border:1px dashed var(--b-def);border-radius:8px;padding:20px 16px;text-align:center;margin-bottom:12px}.cm-add{display:flex;gap:8px}.cm-add .input{flex:1}.btn.big{height:36px;padding:0 16px;font-size:14px}.btn[disabled]{opacity:.5;cursor:not-allowed}
+.tstat{margin-top:-4px}.tstat.tok{color:var(--ok,#4caf50)}
+.sel-chev svg{flex:none}
 </style>
 </head>
 <body>
@@ -538,7 +543,7 @@ const KEYS0=[
 ];
 const WAVE=[6,12,18,10,16,20,8,14,18,6,12,16,10,20,14,8,16,12,6,18,10,14,6,12,18,10,16,20,8,14];
 const init=(demo=false)=>({tab:'tasks',providers:[],keys:[],assign:{},models:{},witTokens:[],servers:[],
- voices:demo?[{id:'v1',n:'Warm host',prov:'minimax',meta:'Cantonese',tag:'Used by 3 characters'},{id:'v2',n:'Museum guide',prov:'gemini',meta:'English · Kore',tag:'Used by 3 characters'},{id:'v3',n:'Quiz master',prov:'gemini',meta:'English · Puck',tag:'Default for AI quiz'}]:[],
+ voices:demo?[{id:'v1',n:'Warm host',prov:'minimax',meta:'Cantonese · Lyrical',tag:'Used by 2 characters'},{id:'v2',n:'Museum guide',prov:'gemini',meta:'English · Kore',tag:'Used by 3 characters'},{id:'v3',n:'Quiz master',prov:'gemini',meta:'English · Puck',tag:'Default for AI quiz'}]:[],
  playing:null,vstate:'ok',preview:'Welcome to the gallery! Mind the dinosaur, he bites.',vf:'all',
  sessions:demo?[{n:'Friendly docent',ex:['Where is the T. rex?','Right around the corner! Want a fun fact on the way?'],u:'Used in 3 places',p:'“You are a cheerful museum guide. Keep every answer under three sentences and end with a question.”'},{n:'Fire safety coach',ex:['What if I smell smoke?','Good question. First, where is the nearest exit?'],u:'Used in 1 place',p:'“Ask one question at a time. If the learner is wrong, explain why in plain words before moving on.”'}]:[],
  retention:'90 days',remoteStopped:!demo,remoteDevices:demo?1:0,
@@ -565,7 +570,7 @@ const needPw=k=>!!k&&!!k.locked;
 const isLocked=p=>{const k=keyOf(p);return k&&k.locked};
 const can=(p,t)=>{if(p.pid==='custom')return true;const pc=P[p.pid];const c=t.id==='tts'?'speech':t.cap;return pc.caps.includes(c)&&!(t.id==='quiz'&&!pc.pdf)};
 const defaultModel=(p,t)=>p.model||(P[p.pid].M[t.id]||[P[p.pid].n])[0];
-const modelsFor=(p,t)=>(MODELS[t.id]?.[p.pid]||[[defaultModel(p,t),'','']]).filter(m=>!m[3]);
+const modelsFor=(p,t)=>p.pid==='custom'&&p.models&&p.models.length?p.models.filter(m=>m.st!=='error').map(m=>[m.id,(m.st==='ready'?'Ready':'Not tested')+(m.def?' · Default':''),'']):(MODELS[t.id]?.[p.pid]||[[defaultModel(p,t),'','']]).filter(m=>!m[3]);
 const model=(p,t)=>S.assign[t.id]===p.id&&S.models[t.id]?S.models[t.id]:defaultModel(p,t);
 const extra=(p,t)=>t.id==='tts'&&S.voices.length?S.voices.length+' '+(S.voices.length===1?'voice':'voices'):'';
 const needsKey=p=>!keyOf(p)&&(p.pid!=='custom'||Boolean(p.key));
@@ -673,7 +678,8 @@ function sessions(){const many=S.sessions.length>6;
 document.addEventListener('click',e=>{if(e.target.closest('[data-introx]')){e.stopPropagation();S.introOff=true;renderPanel()}},true);
 document.addEventListener('change',e=>{if(e.target.matches&&e.target.matches('[data-custom-key]')){const w=e.target.closest('.field')?.querySelector('[data-newkey-wrap]');if(w){w.hidden=e.target.value!=='__new';if(!w.hidden)w.querySelector('input')?.focus()}e.target.dataset.selectedKey=e.target.value;}
  if(e.target.id==='pwon'){const field=activeLayer().querySelector('#pwfield');if(field)field.hidden=!e.target.checked;updateKeySave();}});
-document.addEventListener('input',e=>{const vq=e.target.closest?.('[data-vq]');if(vq){filterVoiceRows(vq.closest('.voice-picker'));return}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches&&e.target.matches('[data-cm-in]')){e.preventDefault();cmAdd()}});
+document.addEventListener('input',e=>{if(e.target.matches&&e.target.matches('[data-curl]')&&S.cm){S.cm.url=e.target.value;const pv=activeLayer().querySelector('[data-cm-prev]');if(pv)pv.textContent=cmPreview(e.target.value);cmReset();const h=activeLayer().querySelector('[data-cm-s1]');if(h)h.innerHTML=cmStep(1,'Connection',urlValid(e.target.value));const t=activeLayer().querySelector('[data-cm-test]');cmRefresh()}if(e.target.matches&&e.target.matches('[data-newkey]'))cmReset();if(e.target.matches&&e.target.matches('[data-cm-in]')){S.cm.draft=e.target.value;if(S.cm.err){S.cm.err='';cmRefresh()}return}const vq=e.target.closest?.('[data-vq]');if(vq){filterVoiceRows(vq.closest('.voice-picker'));return}
  if(e.target.matches('[data-voice-line]'))for(const button of activeLayer().querySelectorAll('[data-audition]'))button.disabled=!e.target.value.trim()&&button.dataset.audition!==S.voiceDraft?.audition;
  const mq=e.target.closest&&e.target.closest('[data-mq]');if(mq){const v=mq.value.trim().toLowerCase();let c=0;document.querySelectorAll('[data-mt]').forEach(x=>{const ok=!v||x.dataset.mt.includes(v);x.style.display=ok?'':'none';if(ok)c++});const z=document.getElementById('mnone');if(z)z.style.display=c?'none':'';return}
  const pl=e.target.closest?.('[data-pl]');
@@ -734,7 +740,7 @@ document.addEventListener('click',e=>{const d=e.target.closest('[data-cdel]');if
 function dlg(title,body,foot,cls='',id=title){push(`<div class="dlg ${cls}"><div class="h">${cls.includes('sub')?`<button class="iconbtn s24" data-back data-tip="Back" aria-label="Back">${ic('Left')}</button>`:''}<span class="lgb fill">${esc(title)}</span><button class="iconbtn s24" data-back data-tip="Close" aria-label="Close">${ic('Close')}</button></div><div class="b">${body}</div><div class="f">${foot}</div></div>`,id)}
 const cancel=`<button class="btn" data-back>Cancel</button>`;
 const choicesForProvider=()=>S.addSel==='custom'?S.servers:S.keys.filter(key=>key.prov===S.addSel);
-const serverDetail=id=>{const sv=S.servers.find(x=>x.id===id);if(!sv)return '';let host=sv.endpoint;try{host=new URL(sv.endpoint).host}catch{}const ky=S.keys.find(x=>x.id===sv.key);return esc(host)+' · '+esc(sv.model||'No model')+' · '+(ky?esc(ky.name):sv.key?'Key no longer available':'No key')};
+const serverDetail=id=>{const sv=S.servers.find(x=>x.id===id);if(!sv)return '';let host=sv.endpoint;try{host=new URL(sv.endpoint).host}catch{}const ky=S.keys.find(x=>x.id===sv.key);return esc(host)+' · '+esc(sv.models&&sv.models.length>1?sv.models.length+' models':sv.model||'No model')+' · '+(ky?esc(ky.name):sv.key?'Key no longer available':'No key')};
 const keySel=()=>{
  const existing=choicesForProvider();
  if(!existing.some(k=>k.id===S.addKey))S.addKey=existing[0]?.id||'';
@@ -804,23 +810,46 @@ function preserveServerForm(){
  select.dataset.selectedKey=select.value;
  preserveDialogInputs();
 }
+function cmInit(server,first){return server?.models?structuredClone(server.models):server?.model?[{id:server.model,st:'untested',def:true}]:first?[{id:'llama-3.3-70b',st:'untested',def:true}]:[]}
+const cmIcon=st=>st==='ready'?ic('Check','i16 tok'):st==='error'?ic('Info','i16 terr'):st==='testing'?'<span class="cm-spin"></span>':'<span class="cm-dash"></span>';
+const cmLabel={untested:'Not tested',testing:'Testing…',ready:'Ready',error:'Error'};
+const cmStep=(n,title,done,opt)=>`<div class="cm-sh">${done?`<span class="cm-done">${ic('Check','i16')}</span>`:`<span class="badge cm-n">${n}</span>`}<b class="mdb">${title}</b>${opt?'<span class="sm t3">Optional</span>':''}</div>`;
+function cmPreview(v){let u;try{u=new URL(v.trim());if(!['http:','https:'].includes(u.protocol))throw 0}catch{return ''}return 'Requests go to '+u.origin+u.pathname.replace(/\/+$/,'').replace(/\/chat\/completions$/,'')+'/chat/completions'}
+function cmHtml(){
+ const c=S.cm,ms=c.models,n=ms.length,ready=ms.filter(m=>m.st==='ready').length,testing=ms.some(m=>m.st==='testing'),failed=ms.filter(m=>m.st==='error').length;
+ const rows=ms.map((m,i)=>`<div class="cm-row ${m.st==='error'?'bad':''}"><div class="cm-line"><span class="cm-ic">${cmIcon(m.st)}</span><span class="cm-id fill">${esc(m.id)}</span>${m.def?'<span class="tag" style="align-self:center">Default</span>':`<button type="button" class="lnk cm-setdef" data-cm-def="${i}">Set as default</button>`}<span class="sm ${m.st==='ready'?'tok':m.st==='error'?'terr':'t2'}">${cmLabel[m.st]}</span><button type="button" class="iconbtn s24" data-cm-rm="${i}" aria-label="Remove ${esc(m.id)}" data-tip="Remove">${ic('Close')}</button></div>${m.st==='error'?`<div class="cm-why"><span class="helper terr fill">${esc(m.reason||'')}</span><button type="button" class="btn" data-cm-retry="${i}">Retry</button></div>`:''}</div>`).join('');
+ const urlOk=urlValid(c.url||'');
+ const note=!n||!urlOk?'Add a Base URL and at least one model first':ready===n&&n?`All ${n} model${n>1?'s':''} ready`:(ready||failed)&&!testing?`${ready} of ${n} models ready`:'';
+ const noteCls=ready===n&&n?'tok':failed?'terr':'t2';
+ return `${cmStep(2,'Models',n>0)}<div class="md t2" style="margin-bottom:12px">Add the model IDs your server can run. The first one is used by default.</div>
+ ${n?`<div class="cm-list">${rows}</div>`:`<div class="cm-empty md t2">Add at least one model ID your server can run.</div>`}
+ <div class="cm-add"><input class="input ${c.err?'err':''}" data-cm-in placeholder="Add a model ID, e.g. llama-3.3-70b" value="${esc(c.draft||'')}" autocomplete="off"><button type="button" class="btn big" data-cm-add>Add</button></div>${c.err?`<div class="helper terr" style="margin-top:8px">${esc(c.err)}</div>`:''}
+ <div style="height:24px"></div>${cmStep(3,'Test',n>0&&ready===n,true)}<div class="md t2" style="margin-bottom:12px">Send each model a short message to check the address, key and model ID. You can add the provider without testing.</div>
+ <div class="row g12" style="align-items:center"><button type="button" class="btn big" data-cm-test ${testing||!n||!urlOk?'disabled':''}>${testing?'Testing…':`Test all ${n||''} model${n===1?'':'s'}`.replace('  ',' ')}</button><span class="sm ${noteCls}">${note}</span></div>`;
+}
+function cmRefresh(){const l=activeLayer();const box=l&&l.querySelector('[data-cmodels]');if(!box)return;const keep=box.querySelector('[data-cm-in]');const had=document.activeElement===keep;S.cm.draft=keep?keep.value:'';box.innerHTML=cmHtml();const h=l.querySelector('[data-cm-s1]');if(h)h.innerHTML=cmStep(1,'Connection',urlValid(S.cm.url||''));syncCustomReady();if(had)box.querySelector('[data-cm-in]')?.focus()}
+function cmReset(){if(!S.cm)return;let ch=false;for(const m of S.cm.models)if(m.st!=='untested'){m.st='untested';delete m.reason;ch=true}if(ch)cmRefresh()}
+function cmAdd(){const l=activeLayer();const inp=l.querySelector('[data-cm-in]');const v=inp.value.trim();if(!v)return;const c=S.cm;if(c.models.some(m=>m.id===v)){c.err=v+' is already in the list';c.draft=v;return cmRefresh()}if(c.models.length>=20){c.err='A server can have up to 20 models';c.draft=v;return cmRefresh()}c.err='';c.draft='';c.models.push({id:v,st:'untested',def:!c.models.length});cmRefresh();l.querySelector('[data-cm-in]')?.focus()}
+function cmTest(only){const c=S.cm;const targets=only==null?c.models.map((m,i)=>i):[only];targets.forEach(i=>{c.models[i].st='testing';delete c.models[i].reason});cmRefresh();targets.forEach((i,k)=>setTimeout(()=>{if(S.cm!==c)return;const m=c.models[i];if(!m||m.st!=='testing')return;const bad=/nemo|bad/i.test(m.id);m.st=bad?'error':'ready';if(bad)m.reason='This server has no model with this ID.';else delete m.reason;if(activeLayer()?.querySelector('[data-cmodels]'))cmRefresh()},700+k*600))}
 function customDlg(server,{fromKey=false}={}){
  const first=!S.servers.length;const saved=server?.key?S.keys.find(k=>k.id===server.key):null;
+ S.cm={models:cmInit(server,first),url:server?.endpoint??(first?'http://192.168.1.20:8080/v1':''),draft:'',err:''};
  dlg(server?'Edit custom provider':'Add a custom provider',`<div class="lg">Connect to an existing OpenAI-compatible endpoint.</div><div class="content">
- ${inp('Name',server?.name??(first?'Studio LLM':''),autoName(server?.id),'',true)}
- ${inp('Base URL',server?.endpoint??(first?'http://192.168.1.20:8080/v1':''),'http://192.168.1.20:8080/v1','')}
+ <div data-cm-s1>${cmStep(1,'Connection',urlValid(S.cm.url))}</div>
+ <div class="field"><div class="lrow"><span class="mdb">Base URL</span></div><input class="input" data-curl value="${esc(S.cm.url)}" placeholder="http://192.168.1.20:8080/v1"><div class="helper" data-cm-prev>${esc(cmPreview(S.cm.url))}</div></div>
  <div class="field"><div class="lrow"><label class="mdb" for="custom-newkey">API key</label><span class="sm t3">Optional</span><span class="fill"></span>${saved?'<button type="button" class="lnk" data-removekey>Remove key</button>':''}</div>
  ${pwwrap(`<input class="input" id="custom-newkey" data-newkey type="password" placeholder="${saved?'Key saved · ends '+esc(saved.end||''):'Paste your API key'}" autocomplete="off">`)}<div class="helper" data-keyhelp>${saved?'Paste a new key to replace it.':'Saved on this computer. Leave empty if no key is needed.'}</div></div>
- ${inp('Model name',server?.model??(first?'llama-3.3-70b':''),'e.g. llama-3.3-70b','')}
+ <div class="field"><div class="lrow"><span class="mdb">Name</span><span class="sm t3">Optional</span></div><input class="input" data-cname value="${esc(server?.name??(first?'Studio LLM':''))}" placeholder="${esc(autoName(server?.id))}"></div>
  <div class="adv"><div class="top" data-cadv>${ic('Chevron')}<span class="md t2">Advanced</span><span class="fill"></span><span class="sm t2" data-csum>OpenAI format · 30 s timeout</span><button class="btn" data-creset style="display:none">Reset</button></div>
- <div data-cbody class="bot" style="display:none"><div class="field"><div class="lrow"><span class="mdb">Request format</span></div><div class="sel"><span class="md fill">OpenAI chat completions</span>${ic('Down','i12')}</div></div>${inp('Timeout','30 s')}${inp('Extra header','','Optional, e.g. X-Studio: lobby')}</div></div></div>`,`${cancel}<button class="btn pri" data-customadd="${server?.id||''}" ${fromKey?'data-from-key':''}>${server?'Save changes':'Add provider'}</button>`,'sub','custom-provider');
+ <div data-cbody class="bot" style="display:none"><div class="field"><div class="lrow"><span class="mdb">Request format</span></div><div class="sel"><span class="md fill">OpenAI chat completions</span>${ic('Down','i12')}</div></div>${inp('Timeout','30 s')}${inp('Extra header','','Optional, e.g. X-Studio: lobby')}</div></div>
+ <div data-cmodels>${cmHtml()}</div></div>`,`${server?`<button class="btn des" data-rmserver="${server.id}" style="margin-right:auto">Remove provider</button>`:''}${cancel}<button class="btn pri" data-customadd="${server?.id||''}" ${fromKey?'data-from-key':''}>${server?'Save changes':'Add provider'}</button>`,'sub','custom-provider');
  syncCustomReady();
 }
-function customReady(layer){const i=layer.querySelectorAll('.content input:not([data-newkey])');if(i.length<3)return true;let ok=false;try{ok=['http:','https:'].includes(new URL(i[1].value.trim()).protocol)}catch{}return ok&&!!i[2].value.trim()}
+function customReady(layer){const u=layer.querySelector('[data-curl]');if(!u)return true;return urlValid(u.value)&&!!(S.cm&&S.cm.models.length)}
 function autoVoiceName(editId){const used=new Set(S.voices.filter(v=>v.id!==editId).map(v=>v.n));if(!used.has('Voice preset'))return 'Voice preset';let n=1;while(used.has('Voice preset ('+n+')'))n++;return 'Voice preset ('+n+')'}
 function autoName(editId){const used=new Set(S.servers.filter(x=>x.id!==editId).map(x=>x.name));if(!used.has('Custom provider'))return 'Custom provider';let n=1;while(used.has('Custom provider ('+n+')'))n++;return 'Custom provider ('+n+')'}
 function urlValid(v){try{return ['http:','https:'].includes(new URL(v.trim()).protocol)}catch{return false}}
-function showUrlError(l,force){const u=l.querySelectorAll('.content input:not([data-newkey])')[1];if(!u)return;const v=u.value.trim();const bad=!!v&&!urlValid(v);const flagged=u.classList.contains('err');if(!force&&!flagged&&bad&&document.activeElement===u)return;u.classList.toggle('err',bad);let m=l.querySelector('[data-urlerr]');if(bad&&!m){m=document.createElement('div');m.className='helper terr';m.dataset.urlerr='';m.textContent='Start with http:// or https://';u.closest('.field').appendChild(m)}if(!bad&&m)m.remove()}
+function showUrlError(l,force){const u=l.querySelector('[data-curl]');if(!u)return;const v=u.value.trim();const bad=!!v&&!urlValid(v);const flagged=u.classList.contains('err');if(!force&&!flagged&&bad&&document.activeElement===u)return;u.classList.toggle('err',bad);let m=l.querySelector('[data-urlerr]');if(bad&&!m){m=document.createElement('div');m.className='helper terr';m.dataset.urlerr='';m.textContent='Start with http:// or https://';u.closest('.field').appendChild(m)}if(!bad&&m)m.remove()}
 function syncCustomReady(){const l=activeLayer();const b=l&&l.querySelector('[data-customadd]');if(!b)return;b.disabled=!customReady(l);showUrlError(l,false)}
 function witDlg(){dlg('Add a Wit.ai token',`<div class="lg">Speech commands use this token. It stays on this computer.</div><div class="content">${inp('Token name','Lobby kiosk token','Lobby kiosk token','Only you see this name.')}<div class="field"><div class="mdb">Server access token</div><input class="input" id="kv" type="password" placeholder="Paste your Wit.ai token"><div class="helper">Wit.ai tokens don't take a password.</div></div></div>`,`${cancel}<button class="btn pri" data-savewit disabled data-tip="Paste your token first">Save token</button>`,'sub')}
 function captureKeyDraft(){
@@ -850,11 +879,11 @@ function updateKeySave(){
  const protect=pane.querySelector('#pwon');
  button.disabled=!read(pane,'#kv')||Boolean(protect?.checked&&!read(pane,'#kpw'));
 }
-function removeDlg(id){const p=prov(id);const n=P[p.pid].n;dlg(`Remove ${n}?`,`<div class="row g20" style="gap:20px;align-items:flex-start"><span style="color:var(--t1)">${ic('Trash','i24','width:72px;height:72px;stroke-width:.75')}</span><div class="col g12 fill"><div class="lg">Text to speech and Text to music will stop until you pick another provider. Voice presets using ${n} will be unavailable until you choose a supported voice.</div><div class="note">${ic('Key')}<span>Your ${n} key stays in Key Management, so you can add it back any time.</span></div></div></div>`,`${cancel}<button class="btn des" data-rm="${id}">Remove ${n}</button>`,'md')}
+function removeDlg(id){const p=prov(id);const n=P[p.pid].n;dlg(`Remove ${n}?`,`<div class="row g20" style="gap:20px;align-items:flex-start"><span style="color:var(--t1)">${ic('Trash','i24','width:72px;height:72px;stroke-width:.75')}</span><div class="col g12 fill"><div class="lg">Text to speech and Text to music will stop until you pick another provider. Voice presets using ${n} will be unavailable until you choose a supported voice.</div><div class="note">${ic('Key')}<span>Your ${n} key stays in <button type="button" class="lnk" data-manage>Connections</button>, so you can add it back any time.</span></div></div></div>`,`${cancel}<button class="btn des" data-rm="${id}">Remove ${n}</button>`,'md')}
 function keyUnlockDlg(kid,err){const k=S.keys.find(x=>x.id===kid);dlg('Enter key password',`<div class="lg">${esc(k.name)} is protected by a password. Enter it to use this key.</div><div class="content"><div class="row g12" style="padding:12px;background:var(--canvas);border-radius:8px"><div class="tile" style="width:32px;height:32px;background:var(--muted)">${ic('Lock')}</div><div class="col g4 fill"><b class="mdb">${esc(k.name)}</b><span class="sm t2">${P[k.prov].n} · saved on this computer</span></div></div>
  <div class="field"><div class="mdb">Key password</div>${pwwrap(`<input class="input ${err?'err':''}" id="pw" type="password" value="${err?'••••••••':''}" placeholder="Password">`)}${err?`<div class="caption terr">That password doesn't match. Check Caps Lock and try again.</div>`:''}</div><div class="note">${ic('Question')}<span>Forgot it? Passwords can't be recovered. Remove the key and add it again. (Prototype password: xrcc)</span></div></div>`,`${cancel}<button class="btn pri" data-dokey="${kid}">Continue</button>`,'sub')}
 function unlockDlg(id,err){const p=prov(id);const k=keyOf(p);dlg(`Enter your ${P[p.pid].n} key password`,`<div class="lg">Enter the password you set when you saved this key.</div><div class="content"><div class="row g12" style="padding:12px;background:var(--canvas);border-radius:8px"><div class="tile" style="width:32px;height:32px;background:var(--muted)">${ic('Lock')}</div><div class="col g4 fill"><b class="mdb">${esc(k.name)}</b><span class="sm t2">${P[p.pid].n} · added 12 Oct 2026</span></div></div>
- <div class="field"><div class="mdb">Key password</div>${pwwrap(`<input class="input ${err?'err':''}" id="pw" type="password" value="${err?'••••••••':''}" placeholder="Password">`)}${err?`<div class="caption terr">That password doesn't match. Check Caps Lock and try again.</div>`:''}</div><div class="note">${ic('Question')}<span>Forgot it? Passwords can't be recovered. Remove the key and add it again in Key Management. (Prototype password: xrcc)</span></div></div>`,`${cancel}<button class="btn pri" data-doun="${id}">Continue</button>`,'md')}
+ <div class="field"><div class="mdb">Key password</div>${pwwrap(`<input class="input ${err?'err':''}" id="pw" type="password" value="${err?'••••••••':''}" placeholder="Password">`)}${err?`<div class="caption terr">That password doesn't match. Check Caps Lock and try again.</div>`:''}</div><div class="note">${ic('Question')}<span>Forgot it? Passwords can't be recovered. Remove the key and add it again in <button type="button" class="lnk" data-manage>Connections</button>. (Prototype password: xrcc)</span></div></div>`,`${cancel}<button class="btn pri" data-doun="${id}">Continue</button>`,'md')}
 const VLIST=[['Lyrical','Calm, mid pitch'],['Newsreader','Clear, steady'],['Auntie Mei','Warm, chatty'],['Young explorer','Bright, quick'],['Gentle teacher','Patient, soft'],['Tour captain','Upbeat, loud'],['Night radio','Low, slow'],['Little cousin','Young, playful'],['Shop owner','Friendly, fast'],['Grandma Wong','Warm, slow'],['Sports caster','Energetic'],['Calm doctor','Reassuring'],['Market seller','Lively, loud'],['Storyteller','Expressive'],['News anchor','Formal, clear'],['Temple guide','Quiet, calm'],['Ferry announcer','Crisp, clear'],['Teen vlogger','Casual, bright'],['Old professor','Deep, measured'],['Museum curator','Polished, warm'],['Chef Lam','Cheerful, quick'],['Lion dancer','Bold, rhythmic'],['Office assistant','Neutral, polite'],['Bedtime voice','Very soft'],['Game host','Excited'],['Safety officer','Firm, clear'],['Librarian','Hushed, kind'],['Taxi uncle','Gruff, funny'],['Choir singer','Light, airy'],['Radio DJ','Smooth, upbeat'],['Tea master','Slow, thoughtful'],['Hiker','Breathy, keen'],['Science host','Curious, bright'],['Ward nurse','Gentle, steady'],['Ship captain','Deep, steady'],['Street poet','Rhythmic'],['Kindergarten teacher','Sing-song'],['Bank clerk','Even, formal'],['Night guard','Low, careful'],['Festival MC','Big, warm']];
 function captureVoice(){
  const b=activeLayer();
@@ -928,7 +957,7 @@ function pickDlg(id){const t=TASKS.find(x=>x.id===id);const ps=S.providers;
  const none=`<div class="note">${ic('Question')}<span>None of your providers can do ${CNAME[t.cap]} yet. ${Object.entries(P).filter(([i,v])=>v.caps.includes(t.cap)&&!S.providers.find(p=>p.pid===i)).map(([i,v])=>v.n).join(' and ')||'No other provider'} can. Add one, then come back.</span></div>`;
  const body=ps.length?`<div class="lg">${sp?'Pick the provider and model for this task. You can change it later.':'Pick a provider that can run this task.'}</div><div class="col g8"><div class="mdb">Provider</div><div class="row g8">${Object.entries(P).map(([i,v])=>{const p=ps.find(q=>q.pid===i);const ok=can({pid:i},t);const lk=p&&isLocked(p);const on=p&&S.pick.p===p.id;const cons=v.caps.slice(0,3);const more=v.caps.length-3;
  const attr=!ok?'disabled aria-disabled="true"':!p?`data-add data-ret="${id}" data-for="${t.cap}" data-with="${i}" data-tip="${v.n} isn't connected yet. Add it first."`:lk?`data-unlock="${p.id}"`:`data-pp="${p.id}"`;
- return `<button class="ptile ${on?'on':''}" style="${ok?'':'opacity:.45;filter:grayscale(1);cursor:not-allowed;pointer-events:none;'}${ok&&!p?'border-style:dashed;':''}${p&&S.pick.hint===p.id?'border-color:var(--warn);':''}" ${attr}>${lg(i,40)}<span class="mdb ${on?'tacc':''}">${v.n}</span><span class="can">${lk?ic('Lock'):cons.map(c=>ic(CIC[c])).join('')}${!lk&&more>0?`<span class="sm t3" data-tip="Also: ${v.caps.slice(3).map(c=>CNAME[c]||c).join(', ')}">+${more}</span>`:''}</span></button>`}).join('')}</div>${hint}</div>${models}${sp?'':none}`:`<div class="md">Add a provider first.</div>`;
+ return `<button class="ptile ${on?'on':''}" style="${ok?'':'opacity:.45;filter:grayscale(1);cursor:not-allowed;pointer-events:none;'}${ok&&!p?'border-style:dashed;':''}${p&&S.pick.hint===p.id?'border-color:var(--warn);':''}" ${attr}>${lg(i,40)}<span class="mdb ${on?'tacc':''}">${v.n}</span><span class="tstat caption ${ok&&p&&!lk?'tok':'t2'}">${!ok?'Unsupported':!p?'Not connected':lk?'Password needed':'Ready'}</span></button>`}).join('')}</div>${hint}</div>${models}${sp?'':none}`:`<div class="md">Add a provider first.</div>`;
  const foot=ps.length?`${S.assign[id]?`<button class="btn m" data-unset="${id}" data-tip="This task will have no provider until you pick one again">Turn off for this task</button>`:''}<span class="fill"></span><button class="btn m" data-back>Cancel</button>${sp?`<button class="btn pri m" data-set="${id}|${sp.id}">${id==='image'?'Use image model':'Use '+esc(mname)}</button>`:`<button class="btn pri m" data-add data-ret="${id}" data-for="${t.cap}">Add a provider</button>`}`:`<button class="btn pri m" data-add>Add a provider</button>`;
  push(`<div class="dlg"><div class="h"><span class="lgb fill">Who runs ${t.n}?</span><button class="iconbtn s24" data-back data-tip="Close" aria-label="Close">${ic('Close')}</button></div><div class="b">${body}</div><div class="f">${foot}</div></div>`,'pick')}
 const launchRequirements=[['gemini','Text chat, Speech to text'],['minimax','Text to speech, Text to music']];
@@ -940,12 +969,12 @@ function launchDlg(){
  const rows=launchRequirements.map(([pid,tasks])=>{
   const key=available.find(k=>k.prov===pid);
   return `<div class="preflight-row"><div class="row g12">${lg(pid,32)}<div class="col g4 fill"><b class="mdb">${P[pid].n}</b><span class="sm t2">${tasks}</span></div><span class="row g4 caption ${key?'tok':'t2'}">${key?ic('Check')+'Key chosen':hasAny?'Needs key':'No key yet'}</span></div>
-  ${key?`<div class="sel" aria-readonly="true"><span>${esc(key.name)} · ends ${key.end}</span></div>`:hasAny?`<button class="btn launch-add" data-ladd="${pid}">Add ${P[pid].n} key</button>`:''}</div>`;
+  ${key?`<div class="sel sel-chev" aria-readonly="true"><span>${esc(key.name)} · ends ${key.end}</span>${ic('Down')}</div>`:hasAny?`<button class="btn launch-add" data-ladd="${pid}">Add ${P[pid].n} key</button>`:''}</div>`;
  }).join('');
  const blocked=available.some(k=>k.prov==='poe'&&k.locked);
  const lead=hasAny?'Check the keys required by this project. Saved keys stay on this computer.':'Add a key for each provider you want to use. Keys stay on this computer. You can also start without AI and add keys later.';
  const foot=hasAny?`<button class="btn m" data-lmanage>Manage keys</button><button class="btn out m" data-nai>Start without AI</button><button class="btn pri m" data-sx>${missing.length?'Start with available AI':'Start XRCC'}</button>`:`<button class="btn out m" data-nai>Start without AI</button><button class="btn pri m" data-ladd="${missing[0][0]}">Add a key</button>`;
- dlg(hasAny?'One more step before Lobby · Museum tour opens':'This project uses AI, but no keys are saved yet',`<div class="lg">${lead}</div><div class="content">${rows}${S.launchEndpoint?`<div class="preflight-row"><div class="row g12">${lg('custom',32)}<div class="col g4 fill"><b class="mdb">Studio LLM</b><span class="sm t2">Custom provider</span></div><span class="caption tok">No API key required</span></div><label class="field mdb">Server endpoint <input class="input" data-launch-endpoint value="${esc(S.launchEndpoint)}" type="url"></label><span class="sm t2">We can only check that this address answers.</span></div>`:''}${blocked?`<div class="note">${ic('Lock')}<span>Poe needs a password. Enter it after XRCC opens.</span></div>`:''}</div>`,foot);
+ dlg(hasAny?'One more step before Lobby · Museum tour opens':'This project uses AI, but no keys are saved yet',`<div class="lg">${lead}</div><div class="content">${rows}${S.launchEndpoint?`<div class="preflight-row"><div class="row g12">${lg('custom',32)}<div class="col g4 fill"><b class="mdb">Studio LLM</b><span class="sm t2">Custom provider</span></div><span class="caption tok">No API key required</span></div><label class="field mdb">Server endpoint <input class="input" data-launch-endpoint value="${esc(S.launchEndpoint)}" type="url"></label><span class="sm t2">We can only check that this address answers.</span></div>`:''}${blocked?`<div class="preflight-row"><div class="row g12">${lg('poe',32)}<div class="col g4 fill"><b class="mdb">Poe</b><span class="sm t2">Text to image</span></div><span class="row g4 caption t2">${ic('Lock')}Password needed</span></div>${pwwrap('<input class="input" data-launch-pw aria-label="Password for Team Poe key" type="password" placeholder="Password for Team Poe key" autocomplete="off">')}<span class="sm t2">Leave empty to enter it later inside XRCC.</span></div>`:''}</div>`,foot);
 }
 function redrawConnections(){
  const remaining=stack.length>1&&!['base','settings'].includes(keys.at(-1));
@@ -1056,7 +1085,7 @@ document.addEventListener('click',e=>{
  if(e.target.closest('[data-savesess]')){const i=activeLayer().querySelectorAll('.dlg input,.dlg textarea');{const idx=e.target.closest('[data-savesess]').dataset.savesess;const obj={n:i[0].value.trim()||'Untitled session',u:'Not used yet',p:'“'+((i[1]&&i[1].value)||'Write the character prompt here.').trim()+'”'};if(idx!==''){obj.u=S.sessions[+idx].u;S.sessions[+idx]=obj}else S.sessions.push(obj)}S.tab='sessions';toast('Session saved');return renderPanel()}
  if(km){S.kmenu=S.kmenu===km.dataset.kmenu?null:km.dataset.kmenu;return redrawConnections()}
  if(S.kmenu&&ov.querySelector('.win')){S.kmenu=null;redrawConnections()}
- const t=e.target.closest('[data-eye],[data-conn],[data-connback],[data-addwit],[data-savewit],[data-nai],[data-sx],[data-x],[data-back],[data-manage],[data-ext],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-unset],[data-pu],[data-doun],[data-dokey],[data-addserver],[data-setupserver],[data-editserver],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dEmpty,#dLaunch,#dLaunch0,#dLConn,#dSettings,#dSeed,#dLaunchCustom,[data-lmanage],[data-ladd],[data-clear-search],[data-wrename],[data-remote],[data-remote-from-xrcc],[data-remote-return],[data-remote-stop],[data-remote-public],[data-remote-public-confirm],[data-remote-tab],[data-remote-power],[data-remote-copy],[data-removekey],[data-vchoose],[data-audition],[data-vprovider],[data-vretry],[data-vreset],[data-creset]');
+ const t=e.target.closest('[data-eye],[data-conn],[data-connback],[data-addwit],[data-savewit],[data-nai],[data-sx],[data-x],[data-back],[data-manage],[data-ext],[data-cm-add],[data-cm-rm],[data-cm-def],[data-cm-test],[data-cm-retry],[data-rmserver],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-unset],[data-pu],[data-doun],[data-dokey],[data-addserver],[data-setupserver],[data-editserver],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dEmpty,#dLaunch,#dLaunch0,#dLConn,#dSettings,#dSeed,#dLaunchCustom,[data-lmanage],[data-ladd],[data-clear-search],[data-wrename],[data-remote],[data-remote-from-xrcc],[data-remote-return],[data-remote-stop],[data-remote-public],[data-remote-public-confirm],[data-remote-tab],[data-remote-power],[data-remote-copy],[data-removekey],[data-vchoose],[data-audition],[data-vprovider],[data-vretry],[data-vreset],[data-creset]');
  if(!t)return;const d=t.dataset;
  if('vretry' in d){captureVoice();return loadVoiceList()}
  if('vchoose' in d){captureVoice();S.voiceDraft.voice=d.vchoose;return newVoice('[data-vchoose="'+CSS.escape(d.vchoose)+'"]')}
@@ -1166,11 +1195,12 @@ document.addEventListener('click',e=>{
  }
  if('removekey' in d){const box=activeLayer().querySelector('[data-newkey]');box.dataset.removed='1';box.value='';box.placeholder='No key';activeLayer().querySelector('[data-keyhelp]').textContent='The key is removed when you save.';t.remove();return}
  if('customadd' in d){
-  const inputs=activeLayer().querySelectorAll('.content input:not([data-newkey])');
-  let endpoint;try{endpoint=new URL(inputs[1].value.trim());if(!['http:','https:'].includes(endpoint.protocol))throw new Error();}catch{inputs[1].classList.add('err');inputs[1].focus();return;}
+  const urlIn=activeLayer().querySelector('[data-curl]');
+  let endpoint;try{endpoint=new URL(urlIn.value.trim());if(!['http:','https:'].includes(endpoint.protocol))throw new Error();}catch{urlIn.classList.add('err');urlIn.focus();return;}
+  if(!S.cm.models.length)return;
   const same=S.servers.find(server=>server.id!==d.customadd&&server.endpoint===endpoint.href);
-  if(same){inputs[1].classList.add('err');inputs[1].focus();return toast('That address is already saved as '+same.name);}
-  const serverName=inputs[0].value.trim()||autoName(d.customadd);
+  if(same){urlIn.classList.add('err');urlIn.focus();return toast('That address is already saved as '+same.name);}
+  const serverName=activeLayer().querySelector('[data-cname]').value.trim()||autoName(d.customadd);
   const keyBox=activeLayer().querySelector('[data-newkey]');
   const secret=(keyBox?.value||'').trim();
   let key=S.servers.find(item=>item.id===d.customadd)?.key||'';
@@ -1181,7 +1211,7 @@ document.addEventListener('click',e=>{
    else{const saved={id:uniqueId('k'),name:serverName+' key',prov:'custom',meta:'Custom · added today',pw:false,end:secret.slice(-4),sec:secret};S.keys.push(saved);key=saved.id}
   }
   const existing=S.servers.find(item=>item.id===d.customadd);
-  const details={name:serverName,endpoint:endpoint.href,model:inputs[2].value.trim(),key};
+  const models=structuredClone(S.cm.models);const details={name:serverName,endpoint:endpoint.href,models,model:(models.find(m=>m.def)||models[0]).id,key};
   if(existing){
    Object.assign(existing,details);
    for(const provider of S.providers.filter(item=>item.serverId===existing.id))Object.assign(provider,details);
@@ -1228,6 +1258,12 @@ document.addEventListener('click',e=>{
  if(d.vf){S.vf=d.vf;return renderPanel()}
  if('newv' in d){S.advOpen=false;S.voiceDraft=null;return newVoice()}
  if('adv' in d){captureVoice();S.advOpen=!S.advOpen;return newVoice()}
+ if('cmAdd' in d)return cmAdd();
+ if(d.cmRm!==undefined){const c=S.cm,i=+d.cmRm,was=c.models[i].def;c.models.splice(i,1);if(was&&c.models.length)c.models[0].def=true;return cmRefresh()}
+ if(d.cmDef!==undefined){S.cm.models.forEach((m,i)=>m.def=i===+d.cmDef);return cmRefresh()}
+ if('cmTest' in d)return cmTest();
+ if(d.cmRetry!==undefined)return cmTest(+d.cmRetry);
+ if(d.rmserver){return toast('Remove provider is available from the Providers tab in this prototype')}
  if('cadv' in d){const box=t.closest('.dlg'),b=box.querySelector('[data-cbody]'),open=b.style.display==='none';b.style.display=open?'':'none';t.querySelector('svg,.ico,i')&&(t.firstElementChild.style.transform=open?'rotate(90deg)':'');box.querySelector('[data-csum]').style.display=open?'none':'';box.querySelector('[data-creset]').style.display=open?'':'none';return}
  if('savev' in d){
   captureVoice();const {edit,copy,query,listScroll,audition,auditionTimer,...draft}=S.voiceDraft;
@@ -1283,6 +1319,7 @@ document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='0'){
   if(e.key==='Escape'&&document.getElementById('ddmenu')){e.stopPropagation();e.preventDefault();close()}},true);
  window.addEventListener('resize',close);
 })();
+
 </script>
 </body>
 </html>
