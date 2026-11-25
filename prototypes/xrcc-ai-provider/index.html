@@ -524,7 +524,7 @@ button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(
   <div class="stage">Your project workspace</div>
 </div>
 <div class="hint-bar">Prototype of the XRCC AI Provider flow · Help › My Settings opens Settings
-  <button id="dLoad">Voices loading</button><button id="dFail">Voices failed</button><button id="dLaunch">Launcher gate</button><button id="dLaunch0">Gate: no keys</button><button id="dLaunchCustom">Gate: Custom provider</button><select id="dLaunchState" aria-label="Custom provider launch scenario"><option value="no-key">No API key required</option><option value="key">Needs key</option><option value="url">Cannot reach Base URL</option><option value="model">Model unavailable</option></select><button id="dLConn">Launcher keys</button><button id="dSettings">Settings Connections</button><button id="dSeed">Configured project</button><button id="dEmpty">Empty states</button><button id="reset">Reset</button></div>
+  <button id="dLoad">Voices loading</button><button id="dFail">Voices failed</button><button id="dLaunch">Launcher gate</button><button id="dLaunch0">Gate: no keys</button><button id="dLaunchCustom">Gate: Custom provider</button><button id="dLConn">Launcher keys</button><button id="dSettings">Settings Connections</button><button id="dSeed">Configured project</button><button id="dEmpty">Empty states</button><button id="reset">Reset</button></div>
 <div class="overlay" id="ov"></div>
 <div class="toast" id="toast" role="status"></div>
 
@@ -735,7 +735,8 @@ function providerCardKey(provider,key){
  const choices=custom?customKeys(provider.serverId):S.keys.filter(k=>k.prov===provider.pid);
  const owner=esc(provider.id);
  if(custom&&!customProvider(provider.serverId))return '';
- return apiKeyField(choices,key,custom?`data-card-custom-key="${owner}"`:`data-prov-key="${owner}"`,{
+ if(!custom)return `<div class="field"><div class="lrow"><span class="mdb fill">Key in use</span><button class="lnk" data-manage>Manage keys</button></div><select class="sel" aria-label="Key in use" data-prov-key="${owner}">${choices.map(k=>`<option value="${esc(k.id)}" ${k.id===provider.key?'selected':''}>${esc(k.name)} · ends ${esc(k.end)}</option>`).join('')}<option value="__newkey">+ Add another key…</option></select></div>`;
+ return apiKeyField(choices,key,`data-card-custom-key="${owner}"`,{
   add:custom?`data-key-for="${esc(provider.serverId)}" data-key-mode="card" data-card-owner="${owner}"`:`data-addkey data-card-owner="${owner}"`,
   optional:custom&&!requiresKey(provider), emptyName:esc(P[provider.pid].n),
   useSaved:keyId=>`data-use-provider-key="${esc(keyId)}" data-card-owner="${owner}"`
@@ -920,7 +921,8 @@ function keySel(){
   const edit=editProviderIcon('data-editserver="'+esc(current.id)+'"');
   return savedProviderField(current,existing,'data-select-server',add,edit)+projectKeyPicker(current);
  }
- return apiKeyField(existing,current,'data-select-key',{add:'data-addkey',emptyName:esc(P[S.addSel].n)});
+ return `<div class="field"><div class="lrow"><span class="mdb fill">API key</span><button class="lnk" data-manage>Manage keys</button></div>
+  ${current?`<select class="sel fill" aria-label="API key" data-select-key>${existing.map(k=>`<option value="${esc(k.id)}" ${k.id===S.addKey?'selected':''}>${esc(k.name)} · ends ${esc(k.end)}</option>`).join('')}<option value="__newkey">+ Add another key…</option></select>`:`<div class="missing-key row g12"><div class="tile">${ic('Key')}</div><b class="mdb fill">No ${P[S.addSel].n} keys here yet</b><button class="btn out" data-addkey>Add a key</button></div>`}</div>`;
 }
 document.addEventListener('change',event=>{
  if(event.target.matches('[data-impact-model]')){
@@ -928,9 +930,11 @@ document.addEventListener('change',event=>{
   layer.querySelector('[data-confirm-provider-impact]').disabled=[...layer.querySelectorAll('[data-impact-model]')].some(select=>select.selectedIndex===0);
  }
  if(event.target.matches('[data-select-key]')){
+  if(event.target.value==='__newkey'){event.target.value=S.addKey;S.keyOrigin='provider';S.keyDraft=null;return keyDlg()}
   S.addKey=event.target.value;
  }
  if(event.target.matches('[data-prov-key],[data-card-custom-key]')){
+  if(event.target.matches('[data-prov-key]')&&event.target.value==='__newkey'){const provider=prov(event.target.dataset.provKey);event.target.value=provider.key;S.addSel=provider.pid;S.keyOrigin='card';S.cardProv=provider.id;S.keyDraft=null;return keyDlg()}
   return useProviderKey(prov(event.target.dataset.provKey||event.target.dataset.cardCustomKey),event.target.value);
  }
  if(event.target.matches('[data-connection-key]')){
@@ -1125,7 +1129,6 @@ function removeConnectionKey(key){
   if(server?.key===key.id){server.key='';server.requiresKey=true;}
   for(const provider of S.providers.filter(p=>p.key===key.id)){provider.key='';provider.requiresKey=true;}
   if(S.launchCustom?.key===key.id){S.launchCustom.key='';S.launchCustom.issue='key';}
-  toast('Key removed');
   return;
  }
  const replacement=list.find(k=>k.prov===key.prov);
@@ -1223,7 +1226,7 @@ function commitCustomProvider(pending,replacements){
  if(origin==='settings'){
   pop();
   if(fromKey)pop();
-  toast(fromKey?'Provider and key saved':'Provider saved');
+  
   return redrawConnections();
  }
  if(!existing)return connectCustomProvider(server,server.key);
@@ -1643,7 +1646,7 @@ document.addEventListener('click',e=>{
  if(t.id==='dSeed')return sample();
  if(t.id==='dSettings'){sample(false);return openSettingsConnections()}
  if(t.id==='dLaunch'){S.launchCustom=null;S.launchManage=false;S.launchKeys=structuredClone(KEYS0);return launchDlg();}
- if(t.id==='dLaunchCustom')return openCustomLaunch($('#dLaunchState').value);
+ if(t.id==='dLaunchCustom')return openCustomLaunch('no-key');
  if(t.id==='dLaunch0'){S.launchCustom=null;S.launchManage=false;S.launchKeys=[];return launchDlg();}
  if(t.id==='dEmpty'){S.keys=[];S.servers=[];S.witTokens=[];S.models={};S.voices=[];S.sessions=[];S.providers=[];S.assign={};S.tab='providers';S.fromSettings=false;return renderPanel()}
  if(t.id==='dLConn'){S.remoteStopped=false;S.launchManage=false;S.fromSettings=true;S.launcher=true;S.conn=null;S.keys=S.keys.length?S.keys:structuredClone(KEYS0);if(!S.witTokens.length)S.witTokens=[{id:'wit-sample',name:'Lobby kiosk token',meta:'Wit.ai · last used 28 Oct',lastUsed:'2026-10-28'}];return settings(false,true)}
@@ -1776,7 +1779,7 @@ document.addEventListener('click',e=>{
    toast((owner?.name||P[S.addSel].n)+' now uses '+key.name);
    return renderPanel();
   }
-  if(S.keyOrigin==='settings'){toast('Key saved');return redrawConnections();}
+  if(S.keyOrigin==='settings')return redrawConnections();
   if(server){
    S.addSel='custom';S.addKey=server.id;S.addCredentialProvider=server.id;S.addCredential=key.id;
   }else S.addKey=key.id;
