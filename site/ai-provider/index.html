@@ -70,7 +70,7 @@ svg{display:block}
 .tb[data-tip]:hover::after{top:calc(100% - 2px)}
 [data-tip]:has([data-tip]:hover)::after{display:none!important}
 /* Overlay and containers */
-.overlay{position:fixed;inset:0;display:none;z-index:10}
+.overlay{position:fixed;inset:0;display:none;z-index:25}
 .overlay.on{display:block}
 .lay{position:fixed;inset:0;display:grid;place-items:center;padding:56px 24px;background:rgba(0,0,0,.55)}
 .panel{width:960px;max-width:100%;height:min(640px,82vh);background:var(--panel);border:1px solid var(--b-sub);border-radius:16px;display:flex;flex-direction:column;overflow:hidden}
@@ -509,7 +509,7 @@ const lg=(p,s)=>`<span class="logo l${s||40}"><svg viewBox="0 0 24 24"><use href
 const P={
  gemini:{n:'Gemini',caps:['chat','quiz','speech','image','stt'],flaky:true,pdf:true,
   M:{chat:['Gemini 3.1 Flash-Lite'],quiz:['Gemini 3.1 Flash'],tts:['Gemini 3.1 Flash TTS'],image:['Gemini Flash Image'],stt:['Gemini 3.1 Flash-Lite']}},
- minimax:{n:'MiniMax',caps:['chat','speech','music'],pdf:false,M:{chat:['MiniMax M2'],tts:['Speech 2.8 HD','4 voices'],music:['Music 1.5']}},
+ minimax:{n:'MiniMax',caps:['chat','speech','music'],pdf:false,M:{chat:['MiniMax M2'],tts:['Speech 2.8 HD','Speech 2.8 Turbo'],music:['Music 1.5']}},
  poe:{n:'Poe',caps:['chat','quiz','speech','music','image','stt'],pdf:true,M:{chat:['Claude via Poe'],quiz:['Claude via Poe'],tts:['Speech via Poe'],music:['Music via Poe'],image:['Image via Poe'],stt:['Transcribe via Poe']}},
  openrouter:{n:'OpenRouter',caps:['chat','quiz','image'],pdf:true,M:{chat:['Router auto'],quiz:['Router auto'],image:['Router image']}},
  custom:{n:'Custom',caps:['chat'],pdf:false,M:{chat:['Your server']}}
@@ -546,6 +546,7 @@ const init=(demo=false)=>({tab:'tasks',providers:[],keys:[],assign:{},models:{},
  playing:null,vstate:'ok',preview:'Welcome to the gallery! Mind the dinosaur, he bites.',vf:'all',
  sessions:demo?[{n:'Friendly docent',ex:['Where is the T. rex?','Right around the corner! Want a fun fact on the way?'],u:'Used in 3 places',p:'“You are a cheerful museum guide. Keep every answer under three sentences and end with a question.”'},{n:'Fire safety coach',ex:['What if I smell smoke?','Good question. First, where is the nearest exit?'],u:'Used in 1 place',p:'“Ask one question at a time. If the learner is wrong, explain why in plain words before moving on.”'}]:[],
  retention:'90 days',remoteStopped:!demo,remoteDevices:demo?1:0,
+ launchChoice:{},launchEndpoint:null,launchServerId:null,launchModel:'',
  open:null,fromSettings:false,addSel:'gemini',addKey:'k1',menuOpen:false,adv:false,advOpen:false,pick:null});
 let S=init();
 const $=s=>document.querySelector(s),ov=$('#ov');
@@ -583,7 +584,14 @@ function taskModelIndex(provider,task,selected){
 const model=(p,t)=>S.assign[t.id]===p.id&&S.models[t.id]?S.models[t.id]:defaultModel(p,t);
 const extra=(p,t)=>t.id==='tts'&&S.voices.length?S.voices.length+' '+(S.voices.length===1?'voice':'voices'):'';
 const needsKey=p=>!keyOf(p)&&(p.pid!=='custom'||Boolean(p.key));
-const isReady=t=>{const p=prov(S.assign[t.id]);return p&&!needsKey(p)&&!isLocked(p)&&p.status!=='failed'};
+function taskIssue(p,t){
+ if(isLocked(p))return 'Enter your '+P[p.pid].n+' key password';
+ if(needsKey(p))return 'Needs key';
+ if(p.status==='failed')return 'Test failed';
+ if(!modelsFor(p,t).some(([id])=>id===model(p,t)))return 'Choose a model';
+ return '';
+}
+const isReady=t=>{const p=prov(S.assign[t.id]);return Boolean(p&&!taskIssue(p,t))};
 let stack=[],keys=[],openerStack=[];
 let returnFocus;
 const paint=()=>{
@@ -627,12 +635,12 @@ const pop=()=>{
 /* header */
 $('#projName').innerHTML=ic('Bookmark','i24')+'<span class="md">Lobby · Museum tour</span>';
 $('#tabEdit').innerHTML=ic('Edit','i24')+'Edit';$('#tabBeh').innerHTML=ic('Beh','i24')+'Behaviour';
-$('#tools').innerHTML=`<button class="tb" data-tip="Debug">${ic('Bug','i24')}</button><button class="tb" id="openAI" data-tip="AI providers · Connect an AI service">${ic('Sparkle','i24')}<i class="dot"></i></button><button class="tb" data-tip="Inspector">${ic('Wrench','i24')}</button>`;
+$('#tools').innerHTML=`<button class="tb" data-tip="Debug">${ic('Bug','i24')}</button><button class="tb" id="openAI" aria-label="AI Provider" data-tip="AI providers · Connect an AI service">${ic('Sparkle','i24')}<i class="dot"></i></button><button class="tb" data-tip="Inspector">${ic('Wrench','i24')}</button>`;
 $('#playIc').innerHTML=ic('Play','i16','fill:currentColor')+'Play';$('#playCar').innerHTML=ic('Down','i16');$('#saveBtn').innerHTML=ic('Save','i20')+'Save*';
 /* tabs panel */
 const closeBtn=`<button class="iconbtn" data-x data-tip="Close" aria-label="Close">${ic('Close','i20')}</button>`;
 function openPanel(){S.tab=S.providers.length?(S.tab==='first'?'tasks':S.tab):'first';renderPanel()}
-function renderPanel(){S.providers.sort((a,b)=>Object.keys(P).indexOf(a.pid)-Object.keys(P).indexOf(b.pid));const _b=document.getElementById('openAI');if(_b)_b.setAttribute('data-tip',S.providers.length?'AI providers · Add or change providers':'AI providers · Connect an AI service');const _d=document.querySelector('#openAI .dot');if(_d)_d.style.display=S.providers.length?'none':'';
+function renderPanel(){dismissCoach();S.providers.sort((a,b)=>Object.keys(P).indexOf(a.pid)-Object.keys(P).indexOf(b.pid));const _b=document.getElementById('openAI');if(_b)_b.setAttribute('data-tip',S.providers.length?'AI providers · Add or change providers':'AI providers · Connect an AI service');const _d=document.querySelector('#openAI .dot');if(_d)_d.style.display=S.providers.length?'none':'';
  if(S.tab==='first'){
   return show(`<div class="panel first"><div class="phead">${ic('Sparkle','i20','color:var(--pc)')}<span class="lgb fill">AI Provider</span>${closeBtn}</div><div class="pbody">
   <img class="first-art" src="./assets/onboarding.png" width="440" height="253" alt="">
@@ -648,10 +656,10 @@ function tasks(){
  const n=TASKS.filter(isReady).length;
  const sel=TASKS.map(t=>t);
  return `<div class="row g16"><div class="col g4 fill"><div class="hsm">${n===6?'Who runs what':(n===1?'1 of 6 tasks is ready':n+' of 6 tasks are ready')}</div><div class="sm t2">${n===6?'Pick a card to change its provider or model.':'Pick a card to choose its provider and model. Keys stay encrypted on this computer.'}</div></div>${n===6?'':`<div class="prog">${TASKS.map((t,i)=>`<i class="${i<n?'on':''}"></i>`).join('')}</div>`}</div>
- <div class="grid3 task-grid">${TASKS.map(t=>{const p=prov(S.assign[t.id]);const bad=p&&!isReady(t);const cls=!p?'unset':bad?'blocked':'';
+ <div class="grid3 task-grid">${TASKS.map(t=>{const p=prov(S.assign[t.id]);const issue=p&&taskIssue(p,t);const cls=!p?'unset':issue?'blocked':'';
   const tile=timg(t,44);
-  const top=`<div class="row g8 task-top">${tile}<span class="fill"></span>${!p?'':bad?`<span class="t3">${ic('Lock')}</span>`:`<span class="row g4 caption tok"><i class="dot8"></i>Ready</span>`}</div>`;
-  const runs=!p?`<div class="runs cta sm tacc">${ic('Plus')}<span class="fill">Choose a provider</span>${ic('Chevron')}</div>`:bad?`<div class="runs sm">${lg(p.pid,20)}<span class="fill">${isLocked(p)?'Enter your '+P[p.pid].n+' key password':!keyOf(p)?'Needs key':'Test failed'}</span></div>`:`<div class="runs sm t1">${lg(p.pid,20)}<span class="fill">${model(p,t)}</span>${extra(p,t)?`<span class="caption t2">${extra(p,t)}</span>`:''}</div>`;
+  const top=`<div class="row g8 task-top">${tile}<span class="fill"></span>${!p?'':issue?`<span class="t3">${ic(isLocked(p)?'Lock':'Info')}</span>`:`<span class="row g4 caption tok"><i class="dot8"></i>Ready</span>`}</div>`;
+  const runs=!p?`<div class="runs cta sm tacc">${ic('Plus')}<span class="fill">Choose a provider</span>${ic('Chevron')}</div>`:issue?`<div class="runs sm">${lg(p.pid,20)}<span class="fill">${esc(issue)}</span></div>`:`<div class="runs sm t1">${lg(p.pid,20)}<span class="fill">${model(p,t)}</span>${extra(p,t)?`<span class="caption t2">${extra(p,t)}</span>`:''}</div>`;
   return `<button class="card task ${cls}" data-task="${t.id}">${top}<div class="col g4"><div class="lgb">${t.n}</div><div class="sm t2">${t.d}</div></div>${runs}</button>`}).join('')}</div>`}
 const EM=(i,t,b,btn)=>`<div class="emptyx"><div class="art"><div class="el"></div><div class="el in"></div><i style="left:22px;top:18px;width:6px;height:6px"></i><i style="left:150px;top:56px;width:8px;height:8px"></i><i style="left:160px;top:24px;width:4px;height:4px"></i><div class="ei">${ic(i,'i24')}</div></div><div class="mdb">${t}</div><div class="sm t2" style="max-width:380px">${b}</div>${btn||''}</div>`;
 function editCustomProviderButton(serverId){
@@ -667,12 +675,12 @@ function providers(){
    :needsKey(p)?'<span class="sm t2">Needs key</span>':lk?`<span class="t2">${ic('Lock')}</span><span class="sm t2">Password needed</span><span class="sm t2">· ${esc(k.name)}</span>`:failed?`<i class="dot8" style="background:var(--b-err)"></i><span class="sm terr">Test failed</span><span class="sm t2">· couldn't reach ${P[p.pid].n}</span>`:`<i class="dot8"></i><span class="sm tok">Connected</span><span class="sm t2">· ${esc(k.name)}</span><span class="sm t3" data-tip="Tokens used by this project this month">· ${tok}</span>`;
   const act=needsKey(p)?(p.pid==='custom'&&p.serverId?`<button class="btn" data-editserver="${p.serverId}">Edit custom provider</button>`:'<button class="btn" data-manage>Manage keys</button>'):lk?`<button class="btn out" data-unlock="${p.id}" data-tip="Enter the password you set for this key">Enter password</button>`:failed?`<button class="btn out" data-test="${p.id}" data-tip="Check your connection, then test again">Test again</button>`:(p.pid==='custom'?'':`<button class="btn" data-test="${p.id}" data-tip="Check your connection, then test again">Test</button>`);
   const capabilities=custom?'':`<div class="row g8 t3" style="margin-top:2px">${P[p.pid].caps.map(c=>`<span data-tip="${CNAME[c][0].toUpperCase()+CNAME[c].slice(1)}">${ic(CIC[c])}</span>`).join('')}</div>`;
-  const head=`<div class="prow${custom?' custom-provider-row':''}" data-prov="${p.id}">${lg(p.pid,40)}<div class="col g4 fill"><div class="mdb">${esc(p.name||P[p.pid].n)}</div><div class="row g8">${st}</div>${capabilities}</div>${S.open===p.id?'':act}<span class="chev t2" data-tip="${S.open===p.id?'Hide details':'Show details'}">${ic(S.open===p.id?'Down':'Chevron','i16')}</span></div>`;
+  const head=`<div class="prow${custom?' custom-provider-row':''}" data-prov="${p.id}">${lg(p.pid,40)}<div class="col g4 fill"><div class="mdb">${esc(p.name||P[p.pid].n)}</div><div class="row g8">${st}</div>${capabilities}</div>${S.open===p.id?'':act}<button type="button" class="chev t2" data-provider-toggle="${p.id}" aria-expanded="${S.open===p.id}" aria-label="${S.open===p.id?'Hide':'Show'} details for ${esc(p.name||P[p.pid].n)}">${ic(S.open===p.id?'Down':'Chevron','i16')}</button></div>`;
   if(S.open===p.id){
    const field=p.pid==='custom'
     ?`<div class="field"><div class="mdb">Saved provider</div>
       <div class="row g8"><div class="sel fill"><span>${esc(p.name)}</span></div>${p.serverId?editCustomProviderButton(p.serverId):''}</div>
-      <div class="helper">API key · ${k?esc(k.name):p.key?'Key no longer available':'No key'}</div></div>`
+      <div class="helper">API key · ${k?(k.nokey?'No key':esc(k.name)):p.key?'Key no longer available':'No key'}</div></div>`
     :`<div class="field"><div class="lrow"><span class="mdb fill">Key in use</span><button class="lnk" data-manage>Manage keys</button></div>
       <select class="sel" aria-label="Key in use" data-prov-key="${p.id}">${S.keys.filter(x=>x.prov===p.pid).map(x=>`<option value="${x.id}" ${x.id===p.key?'selected':''}>${esc(x.name)} · ends ${x.end}</option>`).join('')}<option value="__newkey">+ Add another key…</option></select></div>`;
    return `<div class="pcard">${head}<div class="det">${field}
@@ -680,18 +688,19 @@ function providers(){
    <div class="note">${ic('Chart')}<span>${tok}${p.pid==='custom'?'':' · resets 1 Dec'}</span></div>
    <div class="row g12">${p.pid==='custom'?'':`<button class="btn out" data-test="${p.id}" data-tip="Send a tiny test request to this provider">Test response</button>`}<span class="fill"></span><button class="btn des" data-remove="${p.id}">Remove provider</button></div></div></div>`}
   return `<div class="col g12">${head}${failed?`<div class="warn">${ic('World')}<div class="col g4"><b class="mdb">Couldn't reach ${P[p.pid].n}</b><span class="sm">No response from ${P[p.pid].n}. Check your network connection and try again.</span></div></div>`:''}</div>`}).join('')}</div></div>`}
+const voiceUnavailable=v=>v.gone||!S.providers.some(p=>p.pid===v.prov&&!needsKey(p)&&!isLocked(p)&&p.status!=='failed');
 function voices(){
  if(!S.voices.length)return EM('Speech','No voice presets yet','A preset saves a voice, speed and tone so characters can reuse it. Create your first one.','<button class="btn pri" data-newv>New voice preset</button>');
  const vs=S.voices.filter(v=>S.vf==='all'||v.prov===S.vf);
  const chip=(id,l,lgp)=>`<button class="chip ${lgp?'':'txt'} ${S.vf===id?'on':''}" data-vf="${id}" data-tip="${id==='all'?'Show all voices':'Show only '+l+' voices'}">${lgp?lg(lgp,20):''}${l}</button>`;
  const tp=prov(S.assign.tts);const tts=TASKS.find(x=>x.id==='tts');
  return `<div class="row g16 head"><div class="col g4 fill"><div class="hsm">Voices</div><div class="sm t2" id="vsub">${S.preview.trim()?'Saved voices for text to speech. Tap one to hear your preview line.':'Enter a preview line to play a voice.'}</div></div><button class="btn m" data-newv>New voice preset</button></div>
- <div class="voice-setup"><div class="field"><div class="mdb">Speech provider</div><div class="row g8 voice-provider">${tp?lg(tp.pid,20):`<span class="t3">${ic('Speech','i20')}</span>`}<span class="md fill">${tp?model(tp,tts):'No provider yet'}</span><button class="btn" data-task="tts" data-tip="Change the provider or model for speech">${tp?'Change':'Choose a provider'}</button></div></div>
+ <div class="voice-setup"><div class="field"><div class="mdb">Speech provider</div><div class="row g8 voice-provider">${tp?lg(tp.pid,20):`<span class="t3">${ic('Speech','i20')}</span>`}<span class="md fill">${tp?esc(taskIssue(tp,tts)||model(tp,tts)):'No provider yet'}</span><button class="btn" data-task="tts" data-tip="Change the provider or model for speech">${tp?'Change':'Choose a provider'}</button></div></div>
  <div class="field"><div class="mdb">Preview line</div><input class="input search-key" aria-label="Preview line" id="pl" value="${esc(S.preview)}" placeholder="Type a line to hear, like “Welcome to the gallery!”" data-pl></div></div>
  <div class="row g8">${chip('all','All '+S.voices.length)}${chip('gemini','Gemini','gemini')}${chip('minimax','MiniMax','minimax')}</div>
- <div class="grid3 voice-grid">${vs.map(v=>{const pl=S.playing===v.id;return `<div class="card voice ${pl?'play':''} ${v.gone?'gone':''}"><div class="row g12"><button class="pbtn" data-play="${v.id}" aria-label="${pl?'Stop preview':'Play preview'}" ${!S.preview.trim()||v.gone?'disabled':''} data-tip="${pl?'Stop preview':'Play the preview line.'}">${ic(pl?'Stop':'Play')}</button><div class="col g4 fill"><div class="mdb ${v.gone?'t2':''}">${esc(v.n)}</div><div class="row g8 sm t2">${lg(v.prov,16)}${v.meta}</div></div><button class="iconbtn s28" data-cm="voice|${v.id}" data-tip="More actions">${ic('MoreH','i16')}</button></div>
+ <div class="grid3 voice-grid">${vs.map(v=>{const pl=S.playing===v.id;const gone=voiceUnavailable(v);return `<div class="card voice ${pl?'play':''} ${gone?'gone':''}"><div class="row g12"><button class="pbtn" data-play="${v.id}" aria-label="${pl?'Stop preview':'Play preview'}" ${!S.preview.trim()||gone?'disabled':''} data-tip="${pl?'Stop preview':'Play the preview line.'}">${ic(pl?'Stop':'Play')}</button><div class="col g4 fill"><div class="mdb ${gone?'t2':''}">${esc(v.n)}</div><div class="row g8 sm t2">${lg(v.prov,16)}${v.meta}</div></div><button class="iconbtn s28" data-cm="voice|${v.id}" data-tip="More actions">${ic('MoreH','i16')}</button></div>
   ${S.asking===v.id?`<span class="caption t2">ASKING THE PROVIDER</span>`:''}${S.pfail===v.id?`<span class="caption terr">DIDN'T PLAY, TAP TO RETRY</span>`:''}${pl?`<div class="wave">${WAVE.map((h,i)=>`<i style="height:${h}px;animation-delay:${i*50}ms"></i>`).join('')}</div>`:`<div class="wave mini">${WAVE.slice(0,24).map(h=>`<i style="height:${Math.round(h*.7)}px"></i>`).join('')}</div>`}
-  ${S.pfail===v.id?`<div class="row g8 sm terr" style="align-items:flex-start">${ic('Warning')}<span>Could not play this voice. Try again.</span></div>`:v.gone?`<div class="row g8 sm twarn" style="align-items:flex-start">${ic('Warning')}<span>Voice no longer available</span></div>`:v.tag&&!pl?`<span class="tag">${v.tag}</span>`:''}</div>`}).join('')}
+  ${S.pfail===v.id?`<div class="row g8 sm terr" style="align-items:flex-start">${ic('Warning')}<span>Could not play this voice. Try again.</span></div>`:gone?`<div class="row g8 sm twarn" style="align-items:flex-start">${ic('Warning')}<span>Voice no longer available</span></div>`:v.tag&&!pl?`<span class="tag">${v.tag}</span>`:''}</div>`}).join('')}
  ${vs.length?'':`<div class="md t2" style="grid-column:1/-1;padding:16px 0;text-align:center">No ${S.vf==='minimax'?'MiniMax':'Gemini'} voices yet. Add a preset, or switch to All.</div>`}</div>`}
 const SAV=[['#7a4fd6','#4a2a9a'],['#e0763a','#a8431a'],['#2fa38a','#1a6a58'],['#d65a8f','#9a2f5f']];
 function sessions(){const many=S.sessions.length>6;
@@ -715,7 +724,7 @@ document.addEventListener('input',e=>{if(e.target.matches&&e.target.matches('[da
   if(disabled&&(S.playing||S.asking)){S.playing=null;S.asking=null;const cursor=pl.selectionStart;renderPanel();const next=$('#pl');next.focus();next.setSelectionRange(cursor,cursor);}
   return;
  }
-if(e.target.type==='range'&&e.target.dataset.voiceParam){const out=e.target.previousElementSibling.querySelector('output');out.value=e.target.dataset.voiceParam==='speed'?((Number(e.target.value)+50)/100).toFixed(1)+'×':Number(e.target.value)-50;return;}
+if(e.target.type==='range'&&e.target.dataset.voiceParam){const out=e.target.previousElementSibling.querySelector('output');out.value=e.target.dataset.voiceParam==='speed'?voiceSpeed(e.target.value)+'×':signedPitch(voicePitch(e.target.value));return;}
  if(e.target.matches('#kv,#kpw,#kpname')){updateKeySave();return;}
 const kq=e.target.closest?.('[data-kq]');
  if(kq){
@@ -779,6 +788,22 @@ const keySel=()=>{
   ${custom&&!current?`<div class="row g12"><button class="lnk" data-addserver>Add a custom provider…</button></div>`:''}</div>`;
 };
 document.addEventListener('change',event=>{
+ const control=event.target;
+ if(control.matches('[data-launch-key]')){
+  const pid=control.dataset.launchKey;
+  S.launchChoice[pid]=control.value;
+  if(pid==='poe'){
+   rememberLaunchEndpoint();launchDlg();
+   activeLayer()?.querySelector('[data-launch-key="poe"]')?.focus({preventScroll:true});
+  }
+  return;
+ }
+ if(control.matches('[data-launch-model]')){
+  S.launchModel=control.value;
+  const button=activeLayer().querySelector('[data-sx]');
+  if(button){button.disabled=false;button.textContent=launchRequirements.some(([pid])=>!launchKey(pid))?'Start with available AI':'Start XRCC';}
+  return;
+ }
  if(event.target.matches('[data-pick-custom]')){
   const provider=prov(event.target.value);
   if(!S.pick||provider?.pid!=='custom')return;
@@ -873,9 +898,21 @@ function cmHtml(){
 function cmRefresh(){const l=activeLayer();const box=l&&l.querySelector('[data-cmodels]');if(!box)return;const keep=box.querySelector('[data-cm-in]');const had=document.activeElement===keep;S.cm.draft=keep?keep.value:'';box.innerHTML=cmHtml();syncCustomReady();if(had)box.querySelector('[data-cm-in]')?.focus()}
 function cmReset(){if(!S.cm)return;let ch=false;for(const m of S.cm.models)if(m.st!=='untested'){m.st='untested';delete m.reason;ch=true}if(ch)cmRefresh()}
 function cmAdd(){const l=activeLayer();const inp=l.querySelector('[data-cm-in]');const v=inp.value.trim();if(!v)return;const c=S.cm;if(c.models.some(m=>m.id===v)){c.err=v+' is already in the list';c.draft=v;return cmRefresh()}if(c.models.length>=20){c.err='A provider can have up to 20 models';c.draft=v;return cmRefresh()}c.err='';c.draft='';inp.value='';c.models.push({id:v,st:'untested',def:!c.models.length});cmRefresh();l.querySelector('[data-cm-in]')?.focus()}
-function cmTest(only){const c=S.cm;const targets=only==null?c.models.map((m,i)=>i):[only];targets.forEach(i=>{c.models[i].st='testing';delete c.models[i].reason});cmRefresh();targets.forEach((i,k)=>setTimeout(()=>{if(S.cm!==c)return;const m=c.models[i];if(!m||m.st!=='testing')return;const bad=/nemo|bad/i.test(m.id);m.st=bad?'error':'ready';if(bad)m.reason='This provider has no model with this ID.';else delete m.reason;if(activeLayer()?.querySelector('[data-cmodels]'))cmRefresh()},700+k*600))}
+function cmTest(only){
+ const draft=S.cm;
+ const targets=only==null?[...draft.models]:draft.models.slice(only,only+1);
+ for(const model of targets){model.st='testing';delete model.reason;}
+ cmRefresh();
+ targets.forEach((model,index)=>setTimeout(()=>{
+  if(S.cm!==draft||!draft.models.includes(model)||model.st!=='testing')return;
+  const failed=/nemo|bad/i.test(model.id);
+  model.st=failed?'error':'ready';
+  if(failed)model.reason='This provider has no model with this ID.';
+  cmRefresh();
+ },500+index*240));
+}
 function customDlg(server,{fromKey=false}={}){
- const first=!S.servers.length;const saved=server?.key?S.keys.find(k=>k.id===server.key):null;
+ const first=!S.servers.length;const saved=(S.launchManage?S.launchKeys:S.keys).find(k=>k.id===server?.key&&!k.nokey);
  S.cm={models:cmInit(server,first),url:server?.endpoint??'',draft:'',err:''};
  dlg(server?'Edit custom provider':'Add a custom provider',`<div class="content">
  <div class="field"><div class="lrow"><label class="mdb" for="custom-provider-name">Provider Name</label></div><input class="input" id="custom-provider-name" data-cname value="${esc(server?.name??'')}" placeholder="${esc(autoName(server?.id))}"></div>
@@ -885,11 +922,11 @@ function customDlg(server,{fromKey=false}={}){
  ${saved?'':`<div class="col g8"><label class="row g8"><input type="checkbox" id="cpwon" data-cpwon>Protect this key with a password</label><div id="cpwfield" hidden>${pwwrap(`<input class="input" id="cpw" aria-label="Key password" type="password" placeholder="Add a password" autocomplete="new-password">`)}<div class="helper">Asked each time a project opens. It can't be recovered, so pick one you'll remember.</div></div></div>`}
  <div data-cmodels>${cmHtml()}</div>
  <div class="adv"><div class="top" data-cadv>${ic('Chevron')}<span class="md t2">More options</span><span class="fill"></span><span class="sm t2" data-csum>Format, timeout</span><button class="btn" data-creset style="display:none">Reset</button></div>
- <div data-cbody class="bot" style="display:none"><div class="field"><div class="lrow"><span class="mdb">Request format</span></div><div class="sel"><span class="md fill">OpenAI chat completions</span>${ic('Down','i12')}</div></div>${inp('Timeout','30 s')}${inp('Extra header','','Optional, e.g. X-Studio: lobby')}</div></div>
+ <div data-cbody class="bot" style="display:none"><div class="field"><div class="lrow"><span class="mdb">Request format</span></div><div class="sel"><span class="md fill">OpenAI chat completions</span>${ic('Down','i12')}</div></div><div class="field"><label class="mdb" for="custom-timeout">Timeout</label><input class="input" id="custom-timeout" value="${esc(server?.timeout??'30 s')}" placeholder="30 s"></div><div class="field"><label class="mdb" for="custom-extra-header">Extra header</label><input class="input" id="custom-extra-header" value="${esc(server?.extraHeader??'')}" placeholder="Optional, e.g. X-Studio: lobby"></div></div></div>
  </div>`,`${server?`<button class="btn des" data-rmserver="${server.id}" style="margin-right:auto">Remove provider</button>`:''}${cancel}<button class="btn pri" data-customadd="${server?.id||''}" ${fromKey?'data-from-key':''}>${server?'Save changes':'Add provider'}</button>`,'sub','custom-provider');
  syncCustomReady();
 }
-function customReady(layer){const u=layer.querySelector('[data-curl]');if(!u)return true;return urlValid(u.value)&&!!(S.cm&&S.cm.models.length)}
+function customReady(layer){const u=layer.querySelector('[data-curl]');if(!u)return true;return urlValid(u.value)&&Boolean(S.cm?.models.length)&&!S.cm.models.some(model=>model.st==='testing')}
 function autoVoiceName(editId){const used=new Set(S.voices.filter(v=>v.id!==editId).map(v=>v.n));if(!used.has('Voice preset'))return 'Voice preset';let n=1;while(used.has('Voice preset ('+n+')'))n++;return 'Voice preset ('+n+')'}
 function customProviderNames(editId){
  const ownKey=S.servers.find(server=>server.id===editId)?.key;
@@ -910,6 +947,7 @@ function completeBaseUrl(input){
  const scheme=value.match(/^https?:\/\//i);
  const address=scheme?value.slice(scheme[0].length):value;
  if(!address||/^[/?#]/.test(address))return '';
+ if(/\s/.test(address.split(/[/?#]/,1)[0]))return '';
  if(!scheme&&!/^(?:\[[^\]]+\]|[^:/?#@]+)(?::\d+)?(?:[/?#]|$)/.test(address))return '';
  try{
   const parsed=new URL(scheme?value:'https://'+address);
@@ -937,11 +975,10 @@ function captureKeyDraft(){
  S.keyDraft={pname:read(p,'#kpname'),name:read(p,'#kname'),api:read(p,'#kv'),password:read(p,'#kpw'),protect:p.querySelector('#pwon')?.checked};
 }
 function keyDlg(){
- const list=S.keyOrigin==='launch'||S.launchManage?(S.launchKeys||[]):S.keys;
+ const list=S.keyOrigin==='launch'||S.launchManage?launchKeys():S.keys;
  const draft=S.keyDraft||{};
  const docs={gemini:'https://aistudio.google.com/apikey',minimax:'https://platform.minimax.io/',poe:'https://poe.com/api_key',openrouter:'https://openrouter.ai/keys'};
  const selected=P[S.addSel];
- const customSetup=S.addSel==='custom'&&S.keyOrigin==='settings'&&!S.launcher&&!S.launchManage&&!keys.includes('custom-provider');
  const isCustom=S.addSel==='custom';
  dlg('Add an AI key',`${isCustom?'':'<div class="lg">Keys stay on this computer.</div>'}<div class="content">
  <div class="col g8"><div class="mdb">Provider</div><div class="row g8" style="flex-wrap:wrap">${Object.entries(P).map(([i,v])=>{
@@ -961,11 +998,37 @@ function updateKeySave(){
  const protect=pane.querySelector('#pwon');
  button.disabled=!read(pane,'#kv')||(pane.querySelector('#kpname')&&!read(pane,'#kpname'))||Boolean(protect?.checked&&!read(pane,'#kpw'));
 }
-function removeDlg(id){const p=prov(id);const n=P[p.pid].n;dlg(`Remove ${n}?`,`<div class="row g20" style="gap:20px;align-items:flex-start"><span style="color:var(--t1)">${ic('Trash','i24','width:72px;height:72px;stroke-width:.75')}</span><div class="col g12 fill"><div class="lg">Text to speech and Text to music will stop until you pick another provider. Voice presets using ${n} will be unavailable until you choose a supported voice.</div><div class="note">${ic('Key')}<span>Your ${n} key stays in <button type="button" class="lnk" data-manage>Connections</button>, so you can add it back any time.</span></div></div></div>`,`${cancel}<button class="btn des" data-rm="${id}">Remove ${n}</button>`,'md')}
+function removeProviders(ids){
+ S.providers=S.providers.filter(provider=>!ids.includes(provider.id));
+ for(const task of TASKS){
+  if(ids.includes(S.assign[task.id])){delete S.assign[task.id];delete S.models[task.id];}
+ }
+ if(ids.includes(S.open))S.open=null;
+ if(!S.voices.some(voice=>voice.id===S.playing&&!voiceUnavailable(voice)))S.playing=null;
+ if(!S.voices.some(voice=>voice.id===S.asking&&!voiceUnavailable(voice)))S.asking=null;
+}
+function removeDlg(id){
+ const p=prov(id);
+ const server=S.servers.find(item=>item.id===p.serverId);
+ if(server)return removeCustomDlg(server);
+ const name=p.name||P[p.pid].n;
+ const tasks=TASKS.filter(task=>S.assign[task.id]===id).map(task=>task.n);
+ const affected=tasks.length?tasks.join(', ')+' will need another provider.':'No tasks use this provider.';
+ const voices=S.voices.some(voice=>voice.prov===p.pid)&&!S.providers.some(other=>other.id!==id&&other.pid===p.pid);
+ const retained=keyOf(p)?'<div class="note">'+ic('Key')+'<span>The API key stays in Connections.</span></div>':'';
+ dlg('Remove '+name+'?',`<div class="lg">${esc(affected)}${voices?` Voice presets using ${esc(name)} will be unavailable until you choose a supported voice.`:''}</div>${retained}`,`${cancel}<button class="btn des" data-rm="${id}">Remove provider</button>`,'md');
+}
+function removeCustomDlg(server){
+ if(!server)return;
+ dlg('Remove '+server.name+'?',`<div class="lg">Tasks using ${esc(server.name)} will need another provider. Its saved endpoint, models, and any API key used only by ${esc(server.name)} will be removed.</div>`,`${cancel}<button class="btn des" data-rm-custom="${server.id}">Remove provider</button>`,'md','remove-custom-provider');
+}
 function keyUnlockDlg(kid,err){const k=S.keys.find(x=>x.id===kid);dlg('Enter key password',`<div class="lg">${esc(k.name)} is protected by a password. Enter it to use this key.</div><div class="content"><div class="row g12" style="padding:12px;background:var(--canvas);border-radius:8px"><div class="tile" style="width:32px;height:32px;background:var(--muted)">${ic('Lock')}</div><div class="col g4 fill"><b class="mdb">${esc(k.name)}</b><span class="sm t2">${P[k.prov].n} · saved on this computer</span></div></div>
  <div class="field"><div class="mdb">Key password</div>${pwwrap(`<input class="input ${err?'err':''}" id="pw" type="password" value="${err?'••••••••':''}" placeholder="Password">`)}${err?`<div class="caption terr">That password doesn't match. Check Caps Lock and try again.</div>`:''}</div><div class="note">${ic('Question')}<span>Forgot it? Passwords can't be recovered. Remove the key and add it again. (Prototype password: xrcc)</span></div></div>`,`${cancel}<button class="btn pri" data-dokey="${kid}">Continue</button>`,'sub')}
 function unlockDlg(id,err){const p=prov(id);const k=keyOf(p);dlg(`Enter your ${P[p.pid].n} key password`,`<div class="lg">Enter the password you set when you saved this key.</div><div class="content"><div class="row g12" style="padding:12px;background:var(--canvas);border-radius:8px"><div class="tile" style="width:32px;height:32px;background:var(--muted)">${ic('Lock')}</div><div class="col g4 fill"><b class="mdb">${esc(k.name)}</b><span class="sm t2">${P[p.pid].n} · added 12 Oct 2026</span></div></div>
  <div class="field"><div class="mdb">Key password</div>${pwwrap(`<input class="input ${err?'err':''}" id="pw" type="password" value="${err?'••••••••':''}" placeholder="Password">`)}${err?`<div class="caption terr">That password doesn't match. Check Caps Lock and try again.</div>`:''}</div><div class="note">${ic('Question')}<span>Forgot it? Passwords can't be recovered. Remove the key and add it again in <button type="button" class="lnk" data-manage>Connections</button>. (Prototype password: xrcc)</span></div></div>`,`${cancel}<button class="btn pri" data-doun="${id}">Continue</button>`,'md')}
+const voiceSpeed=value=>((Number(value??50)+50)/100).toFixed(1);
+const voicePitch=value=>Number(value??50)-50;
+const signedPitch=value=>value>0?'+'+value:String(value);
 const VLIST=[['Lyrical','Calm, mid pitch'],['Newsreader','Clear, steady'],['Auntie Mei','Warm, chatty'],['Young explorer','Bright, quick'],['Gentle teacher','Patient, soft'],['Tour captain','Upbeat, loud'],['Night radio','Low, slow'],['Little cousin','Young, playful'],['Shop owner','Friendly, fast'],['Grandma Wong','Warm, slow'],['Sports caster','Energetic'],['Calm doctor','Reassuring'],['Market seller','Lively, loud'],['Storyteller','Expressive'],['News anchor','Formal, clear'],['Temple guide','Quiet, calm'],['Ferry announcer','Crisp, clear'],['Teen vlogger','Casual, bright'],['Old professor','Deep, measured'],['Museum curator','Polished, warm'],['Chef Lam','Cheerful, quick'],['Lion dancer','Bold, rhythmic'],['Office assistant','Neutral, polite'],['Bedtime voice','Very soft'],['Game host','Excited'],['Safety officer','Firm, clear'],['Librarian','Hushed, kind'],['Taxi uncle','Gruff, funny'],['Choir singer','Light, airy'],['Radio DJ','Smooth, upbeat'],['Tea master','Slow, thoughtful'],['Hiker','Breathy, keen'],['Science host','Curious, bright'],['Ward nurse','Gentle, steady'],['Ship captain','Deep, steady'],['Street poet','Rhythmic'],['Kindergarten teacher','Sing-song'],['Bank clerk','Even, formal'],['Night guard','Low, careful'],['Festival MC','Big, warm']];
 function captureVoice(){
  const b=activeLayer();
@@ -1010,8 +1073,8 @@ function newVoice(focus){const draft=S.voiceDraft||(S.voiceDraft={n:'',prov:'min
  <div class="row g16"><div class="field fill"><div class="mdb">Model</div><select class="sel" aria-label="Model" data-voice-param="model">${(draft.prov==='gemini'?['Gemini 3.1 Flash TTS']:['Speech 2.8 HD','Speech 2.8 Turbo']).map(m=>`<option ${m===draft.model?'selected':''}>${m}</option>`).join('')}</select></div><div class="field fill"><div class="mdb">Language</div><select class="sel" aria-label="Language" data-voice-param="meta">${['Cantonese','English','Mandarin'].map(m=>`<option ${m===draft.meta?'selected':''}>${m}</option>`).join('')}</select></div></div>
  ${draft.state&&draft.state!=='ready'?voiceRecovery(draft.state):voiceChoices(draft)}
  <div class="field"><div class="mdb">Preview line</div><input class="input" aria-label="Preview line" data-voice-line value="${esc(draft.preview)}"><div class="helper">Use Preview to hear this line. Voices play one at a time.</div></div>
- <div class="adv"><div class="top" data-adv>${ic('Chevron','i16',S.advOpen?'transform:rotate(90deg)':'')}<span class="md t2">Advanced</span><span class="fill"></span>${S.advOpen?'<button class="btn" data-vreset>Reset</button>':'<span class="sm t2">Speed 1.0 · Pitch 0 · Emotion auto</span>'}</div>
- ${S.advOpen?`<div class="bot"><div class="col g8"><div class="row sm t2"><span class="fill">Speed</span><output class="t1">${((Number(draft.speed??50)+50)/100).toFixed(1)}×</output></div><input aria-label="Speed" type="range" min="0" max="100" data-voice-param="speed" value="${draft.speed||50}"></div><div class="col g8"><div class="row sm t2"><span class="fill">Pitch</span><output class="t1">${Number(draft.pitch??50)-50}</output></div><input aria-label="Pitch" type="range" min="0" max="100" data-voice-param="pitch" value="${draft.pitch||50}"></div><div class="col g8"><span class="sm t2">Emotion</span><select class="sel" aria-label="Emotion" data-voice-param="emotion">${['Auto','Neutral','Warm'].map(value=>`<option ${value===draft.emotion?'selected':''}>${value}</option>`).join('')}</select></div></div>`:''}</div></div>`,`${cancel}<button class="btn pri" data-savev ${draft.state&&draft.state!=='ready'?'disabled':''}>${draft.copy?'Save copy':draft.edit?'Save changes':'Save preset'}</button>`);
+ <div class="adv"><div class="top" data-adv>${ic('Chevron','i16',S.advOpen?'transform:rotate(90deg)':'')}<span class="md t2">Advanced</span><span class="fill"></span>${S.advOpen?'<button class="btn" data-vreset>Reset</button>':`<span class="sm t2">Speed ${voiceSpeed(draft.speed)} · Pitch ${signedPitch(voicePitch(draft.pitch))} · Emotion ${esc((draft.emotion||'Auto').toLowerCase())}</span>`}</div>
+ ${S.advOpen?`<div class="bot"><div class="col g8"><div class="row sm t2"><span class="fill">Speed</span><output class="t1">${voiceSpeed(draft.speed)}×</output></div><input aria-label="Speed" type="range" min="0" max="100" data-voice-param="speed" value="${draft.speed||50}"></div><div class="col g8"><div class="row sm t2"><span class="fill">Pitch</span><output class="t1">${signedPitch(voicePitch(draft.pitch))}</output></div><input aria-label="Pitch" type="range" min="0" max="100" data-voice-param="pitch" value="${draft.pitch||50}"></div><div class="col g8"><span class="sm t2">Emotion</span><select class="sel" aria-label="Emotion" data-voice-param="emotion">${['Auto','Neutral','Warm'].map(value=>`<option ${value===draft.emotion?'selected':''}>${value}</option>`).join('')}</select></div></div>`:''}</div></div>`,`${cancel}<button class="btn pri" data-savev ${draft.state&&draft.state!=='ready'?'disabled':''}>${draft.copy?'Save copy':draft.edit?'Save changes':'Save preset'}</button>`);
  const layer=activeLayer(),list=layer.querySelector('[data-voice-list]');
  if(list){
   filterVoiceRows(list.closest('.voice-picker'));
@@ -1075,21 +1138,115 @@ function pickDlg(id){
  const foot=ps.length?`${S.assign[id]?`<button class="btn m" data-unset="${id}" data-tip="This task will have no provider until you pick one again">Turn off for this task</button>`:''}<span class="fill"></span><button class="btn m" data-back>Cancel</button>${useModel}`:addButton;
  push(`<div class="dlg"><div class="h"><span class="lgb fill">Who runs ${t.n}?</span><button class="iconbtn s24" data-back data-tip="Close" aria-label="Close">${ic('Close')}</button></div><div class="b">${body}</div><div class="f">${foot}</div></div>`,'pick');
 }
-const launchRequirements=[['gemini','Text chat, Speech to text'],['minimax','Text to speech, Text to music']];
+const launchRequirements=[['gemini',['chat','stt']],['minimax',['tts','music']]];
+const launchKeys=()=>S.launchKeys??S.keys;
+function launchKey(pid){
+ const options=launchKeys().filter(key=>key.prov===pid);
+ return options.find(key=>key.id===S.launchChoice[pid])??options[0];
+}
+function launchKeyPicker(pid,chosen){
+ return `<select class="sel" aria-label="${P[pid].n} key" data-launch-key="${pid}">${launchKeys().filter(key=>key.prov===pid).map(key=>`<option value="${key.id}" ${key.id===chosen.id?'selected':''}>${esc(key.name)} · ends ${esc(key.end)}</option>`).join('')}</select>`;
+}
+function projectLaunchRows(){
+ return launchKey('poe')?[...launchRequirements,['poe',['image']]]:launchRequirements;
+}
+function launcherStudio(){
+ return S.servers.find(server=>server.id===S.launchServerId);
+}
+function launchModels(server){
+ return modelsFor({...server,pid:'custom'},TASKS.find(task=>task.id==='chat'));
+}
+function rememberLaunchEndpoint(){
+ const input=activeLayer()?.querySelector('[data-launch-endpoint]');
+ if(input)S.launchEndpoint=input.value.trim();
+}
+function ensureLauncherStudio(saved,withoutKey=false){
+ let studio=S.servers.find(server=>server.key==='k4');
+ const key=saved.find(item=>item.id==='k4');
+ if(key&&!studio){
+  studio={id:uniqueId('s'),name:'Studio LLM',endpoint:'http://192.168.1.20:8080/v1',key:key.id,model:'llama-3.3-70b',models:[
+   {id:'llama-3.3-70b',def:true,st:'untested'},{id:'qwen-2.5-7b',st:'untested'},{id:'mistral-small',st:'untested'}
+  ]};
+  S.servers.push(studio);
+ }
+ if(withoutKey&&key){key.nokey=true;key.end='';}
+ return studio;
+}
+function seedLauncher(saved,custom=false){
+ dismissCoach();
+ S.launchKeys=saved;S.launchChoice={};S.launchManage=false;
+ const studio=ensureLauncherStudio(saved,custom);
+ S.launchServerId=custom?studio?.id:null;
+ S.launchEndpoint=custom?studio?.endpoint:null;
+ S.launchModel=custom?studio?.model:'';
+ return launchDlg();
+}
 function launchDlg(){
+ dismissCoach();
  hide();
- const available=S.launchKeys||S.keys;
- const hasAny=launchRequirements.some(([pid])=>available.some(k=>k.prov===pid));
- const missing=launchRequirements.filter(([pid])=>!available.some(k=>k.prov===pid));
- const rows=launchRequirements.map(([pid,tasks])=>{
-  const key=available.find(k=>k.prov===pid);
-  return `<div class="preflight-row"><div class="row g12">${lg(pid,32)}<div class="col g4 fill"><b class="mdb">${P[pid].n}</b><span class="sm t2">${tasks}</span></div><span class="row g4 caption ${key?'tok':'t2'}">${key?ic('Check')+'Key chosen':hasAny?'Needs key':'No key yet'}</span></div>
-  ${key?`<div class="sel sel-chev" aria-readonly="true"><span>${esc(key.name)} · ends ${key.end}</span>${ic('Down')}</div>`:hasAny?`<button class="btn launch-add" data-ladd="${pid}">Add ${P[pid].n} key</button>`:''}</div>`;
+ const studio=launcherStudio();
+ const customModels=studio?launchModels(studio):[];
+ const customModel=customModels.some(([id])=>id===S.launchModel);
+ const hasSavedKeys=projectLaunchRows().some(([pid])=>launchKey(pid));
+ const hasAny=hasSavedKeys||Boolean(studio);
+ const missing=launchRequirements.filter(([pid])=>!launchKey(pid));
+ const rows=projectLaunchRows().map(([pid,tasks])=>{
+  const key=launchKey(pid);
+  const locked=needPw(key);
+  const names=tasks.map(id=>TASKS.find(task=>task.id===id).n).join(', ');
+  return `<div class="preflight-row"><div class="row g12">${lg(pid,32)}<div class="col g4 fill"><b class="mdb">${P[pid].n}</b><span class="sm t2">${names}</span></div><span class="row g4 caption ${key&&!locked?'tok':'t2'}">${locked?ic('Lock')+'Password needed':key?ic('Check')+'Key chosen':hasAny?'Needs key':'No key yet'}</span></div>
+  ${key?launchKeyPicker(pid,key):hasAny?`<button class="btn launch-add" data-ladd="${pid}">Add ${P[pid].n} key</button>`:''}
+  ${pid==='poe'&&locked?`${pwwrap('<input class="input" data-launch-pw aria-label="Password for '+esc(key.name)+'" type="password" placeholder="Password for '+esc(key.name)+'" autocomplete="off">')}<span class="sm t2">Leave empty to enter it later inside XRCC.</span><span class="sm terr" role="alert" data-launch-pw-error hidden>That password doesn't match.</span>`:''}</div>`;
  }).join('');
- const blocked=available.some(k=>k.prov==='poe'&&k.locked);
+ const customKey=studio&&launchKeys().find(key=>key.id===studio.key&&!key.nokey);
+ const custom=`<div class="preflight-row"><div class="row g12">${lg('custom',32)}<div class="col g4 fill"><b class="mdb">${esc(studio?.name)}</b><span class="sm t2">Custom provider · Text chat</span></div><span class="caption ${customModel?'tok':'t2'}">${customKey?'Key chosen':'No API key required'} · ${customModels.length} ${customModels.length===1?'model':'models'}</span></div>
+ <label class="field mdb">Provider endpoint <input class="input" data-launch-endpoint value="${esc(S.launchEndpoint??studio?.endpoint)}" autocomplete="off"></label>
+ <span class="sm terr" role="alert" data-launch-endpoint-error hidden>Enter a valid Base URL.</span>
+ ${customModels.length?`<label class="field mdb">Model<select class="sel" data-launch-model><option value="" ${customModel?'':'selected'} disabled>Choose an available model</option>${customModels.map(([id])=>`<option value="${esc(id)}" ${id===S.launchModel?'selected':''}>${esc(id)}</option>`).join('')}</select></label>`:`<span class="sm t2">No available models. Open Manage keys to edit this provider.</span>`}</div>`;
  const lead=hasAny?'Check the keys required by this project. <button type="button" class="lnk" data-lmanage>Manage keys</button>':'Add a key for each provider you want to use. Keys stay on this computer. You can also start without AI and add keys later.';
- const foot=hasAny?`<button class="btn m" data-nai data-tip="AI features stay off this time">Start without AI</button><button class="btn pri m" data-sx>${missing.length?'Start with available AI':'Start XRCC'}</button>`:`<button class="btn m" data-nai data-tip="AI features stay off this time">Start without AI</button><button class="btn pri m" data-ladd="${missing[0][0]}">Add a key</button>`;
- dlg(hasAny?'One more step before Lobby · Museum tour opens':'This project uses AI, but no keys are saved yet',`<div class="lg">${lead}</div><div class="content">${rows}${S.launchEndpoint?`<div class="preflight-row"><div class="row g12">${lg('custom',32)}<div class="col g4 fill"><b class="mdb">Studio LLM</b><span class="sm t2">Custom provider</span></div><span class="caption tok">No API key required · 3 models</span></div><label class="field mdb">Provider endpoint <input class="input" data-launch-endpoint value="${esc(S.launchEndpoint)}" type="url"></label><span class="sm t2">We can only check that this address answers.</span></div>`:''}${blocked?`<div class="preflight-row"><div class="row g12">${lg('poe',32)}<div class="col g4 fill"><b class="mdb">Poe</b><span class="sm t2">Text to image</span></div><span class="row g4 caption t2">${ic('Lock')}Password needed</span></div>${pwwrap('<input class="input" data-launch-pw aria-label="Password for Team Poe key" type="password" placeholder="Password for Team Poe key" autocomplete="off">')}<span class="sm t2">Leave empty to enter it later inside XRCC.</span></div>`:''}</div>`,foot);
+ const without='<button class="btn m" data-nai data-tip="AI features stay off this time">Start without AI</button>';
+ const foot=hasAny?`${without}<button class="btn pri m" data-sx ${hasSavedKeys||customModel?'':'disabled'}>${missing.length||studio&&!customModel?'Start with available AI':'Start XRCC'}</button>`:`${without}<button class="btn pri m" data-ladd="${missing[0][0]}">Add a key</button>`;
+ dlg(hasAny?'One more step before Lobby · Museum tour opens':'This project uses AI, but no keys are saved yet',`<div class="lg">${lead}</div><div class="content">${rows}${studio?custom:''}</div>`,foot);
+}
+function startProjectWithAI(){
+ const pane=activeLayer();
+ const poe=launchKey('poe');
+ const password=read(pane,'[data-launch-pw]');
+ if(needPw(poe)&&password&&password!=='xrcc'){
+  pane.querySelector('[data-launch-pw-error]').hidden=false;
+  const input=pane.querySelector('[data-launch-pw]');input.classList.add('err');input.focus();return;
+ }
+ const studio=launcherStudio();
+ const selectedModel=studio&&launchModels(studio).some(([id])=>id===S.launchModel)?S.launchModel:'';
+ const customAddress=selectedModel&&completeBaseUrl(pane.querySelector('[data-launch-endpoint]').value);
+ if(selectedModel&&!customAddress){
+  const error=pane.querySelector('[data-launch-endpoint-error]');
+  error.textContent='Enter a valid Base URL.';error.hidden=false;
+  const input=pane.querySelector('[data-launch-endpoint]');input.classList.add('err');input.focus();return;
+ }
+ if(selectedModel&&S.servers.some(server=>server.id!==studio.id&&server.endpoint===new URL(customAddress).href)){
+  const error=pane.querySelector('[data-launch-endpoint-error]');
+  error.textContent='That address is already saved for another provider.';
+  error.hidden=false;
+  const input=pane.querySelector('[data-launch-endpoint]');input.classList.add('err');input.focus();return;
+ }
+ if(needPw(poe)&&password==='xrcc')poe.locked=false;
+ S.keys=[...launchKeys()];S.providers=[];S.assign={};S.models={};S.open=null;
+ for(const [pid,tasks] of projectLaunchRows()){
+  const key=launchKey(pid);
+  if(!key)continue;
+  const provider={id:uniqueId('p'),pid,key:key.id};
+  S.providers.push(provider);
+  for(const id of tasks)S.assign[id]=provider.id;
+ }
+ if(selectedModel){
+  studio.endpoint=new URL(customAddress).href;
+  S.launchEndpoint=studio.endpoint;
+  const provider={...studio,id:uniqueId('p'),pid:'custom',serverId:studio.id};
+  S.providers.push(provider);S.assign.chat=provider.id;S.models.chat=selectedModel;
+ }
+ S.tab='tasks';S.launchManage=false;hide();
+ toast('XRCC started with available AI connections');
 }
 function redrawConnections(){
  const remaining=stack.length>1&&!['base','settings'].includes(keys.at(-1));
@@ -1097,8 +1254,9 @@ function redrawConnections(){
  return settings(Boolean(S.launchManage||keys.includes('settings')),S.launcher);
 }
 function keyAct(a,k){document.querySelectorAll('.menu.on').forEach(m=>m.remove());
+ if(!k)return;
  if(a==='pw')return dlg('Change password',`<div class="lg">Set a new password for this key. It is asked each time a project opens.</div><div class="content">${inp('New password','','Add a password','Passwords can’t be recovered, so pick one you’ll remember.',0,'password')}</div>`,`${cancel}<button class="btn pri" data-ksave="pw|${k.id}">Save password</button>`,'sub');
- if(a==='edit'){const srv=S.servers.find(x=>x.key===k.id);if(!srv)return toast('This key has no provider yet');hide();S.tab='providers';renderPanel();return customDlg(srv)}
+ if(a==='edit'){const server=S.servers.find(item=>item.key===k.id);return server?customDlg(server):toast('This key has no provider yet')}
  if(a==='del'&&k.prov==='custom')return dlg('Remove '+k.name+'?',`<div class="lg">${esc(k.name)} will stop working. Tasks using it will need another provider until you add a key and models again.</div><div class="note">${ic('Key')}<span>Open AI Provider to set it up again.</span></div>`,`${cancel}<button class="btn pri" data-ksave="del|${k.id}" style="background:var(--err,#c92e5f)">Remove key</button>`,'sub');
  if(a==='del')return dlg('Remove '+k.name+'?',`<div class="lg">${(()=>{const inUse=S.providers.some(pr=>pr.key===k.id),other=S.keys.find(x=>x.prov===k.prov&&x.id!==k.id);return inUse?(other?'This key is in use. '+P[k.prov].n+' will switch to '+esc(other.name)+'.':'This key is in use. '+P[k.prov].n+' will show Needs key until you add another one.'):'This key is not in use, so nothing stops working.'})()}</div><div class="note">${ic('Question')}<span>You can add the key again from Google AI Studio.</span></div>`,`${cancel}<button class="btn pri" data-ksave="del|${k.id}" style="background:var(--err,#c92e5f)">Remove key</button>`,'sub');
  return dlg('Rename key',`<div class="lg">Only you see this name. Projects keep using the key.</div><div class="content">${inp('Key name',k.name)}</div>`,`${cancel}<button class="btn pri" data-ksave="ren|${k.id}">Save name</button>`,'sub')}
@@ -1124,13 +1282,14 @@ function connBody(launcher=false){
  const lastUsed=S.witTokens.map(t=>t.lastUsed).filter(Boolean).sort().at(-1);
  const tokenSummary=S.witTokens.length?`${S.witTokens.length} ${S.witTokens.length===1?'token':'tokens'}${lastUsed?' · last used '+new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(lastUsed)):''}`:'No tokens yet';
  const keySummary=list.length?`${list.length} ${list.length===1?'key':'keys'}${protectedCount?' · '+protectedCount+' protected with a password':''}`:'No keys yet';
- return head('Connections','AI keys and speech tokens stay on this computer.')+(launcher?remoteSummary():'')+`<div class="col connections-list">${row('ai',`<div class="logo l32 connection-badge"><img src="./assets/connection-key.svg" width="20" height="20" alt=""></div>`,'AI keys',keySummary)}${row('wit',witIcon,'Speech commands (Wit.ai)',tokenSummary)}</div>`+retentionControl();
+ return head('Connections','AI keys and speech tokens stay on this computer.')+remoteSummary(!launcher)+`<div class="col connections-list">${row('ai',`<div class="logo l32 connection-badge"><img src="./assets/connection-key.svg" width="20" height="20" alt=""></div>`,'AI keys',keySummary)}${row('wit',witIcon,'Speech commands (Wit.ai)',tokenSummary)}</div>`+retentionControl();
 }
 function openSettingsConnections(){
  S.launcher=false;S.launchManage=false;S.conn=null;S.kmenu=null;S.fromSettings=true;
  return settings();
 }
 function settings(over,lch){
+ dismissCoach();
  if(lch)return launcherWin(over);
  const items=[['Display','Display'],['Control','Mouse'],['Edit','Pencil'],['Networking','Wifi'],['Sketchfab','Image'],['Security and Privacy','Shield'],['Licensing','Id'],['Devices','Head'],['Connections','Link']];
  (over?(h=>push(h,'settings')):show)(`<div class="win settings-window"><header class="settings-header sh">${ic('Set','i20')}<strong class="lgb fill">My Setting</strong><button class="iconbtn" data-x data-tip="Close" aria-label="Close">${ic('Close')}</button></header><div class="side"><div class="ml">${items.map(i=>`<div class="m ${i[0]==='Connections'?'on':''}" ${i[0]==='Connections'?'aria-current="page"':''} title="${i[0]}">${ic(i[1],'i20')}<span>${i[0]}</span></div>`).join('')}</div><div class="ver">Version 3.1.0</div></div>
@@ -1203,7 +1362,7 @@ document.addEventListener('click',e=>{
  if(e.target.closest('[data-savesess]')){const i=activeLayer().querySelectorAll('.dlg input,.dlg textarea');{const idx=e.target.closest('[data-savesess]').dataset.savesess;const obj={n:i[0].value.trim()||'Untitled session',u:'Not used yet',p:'“'+((i[1]&&i[1].value)||'Write the character prompt here.').trim()+'”'};if(idx!==''){obj.u=S.sessions[+idx].u;S.sessions[+idx]=obj}else S.sessions.push(obj)}S.tab='sessions';toast('Session saved');return renderPanel()}
  if(km){S.kmenu=S.kmenu===km.dataset.kmenu?null:km.dataset.kmenu;return redrawConnections()}
  if(S.kmenu&&ov.querySelector('.win')){S.kmenu=null;redrawConnections()}
- const t=e.target.closest('[data-eye],[data-conn],[data-connback],[data-addwit],[data-savewit],[data-nai],[data-sx],[data-x],[data-back],[data-manage],[data-ext],[data-cm-add],[data-cm-rm],[data-cm-def],[data-cm-test],[data-cm-retry],[data-rmserver],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-unset],[data-pu],[data-doun],[data-dokey],[data-addserver],[data-setupserver],[data-editserver],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dEmpty,#dLaunch,#dLaunch0,#dLConn,#dSettings,#dSeed,#dLaunchCustom,[data-lmanage],[data-ladd],[data-clear-search],[data-wrename],[data-remote],[data-remote-from-xrcc],[data-remote-return],[data-remote-stop],[data-remote-public],[data-remote-public-confirm],[data-remote-tab],[data-remote-power],[data-remote-copy],[data-removekey],[data-vchoose],[data-audition],[data-vprovider],[data-vretry],[data-vreset],[data-creset]');
+ const t=e.target.closest('[data-eye],[data-conn],[data-connback],[data-addwit],[data-savewit],[data-nai],[data-sx],[data-x],[data-back],[data-manage],[data-ext],[data-cm-add],[data-cm-rm],[data-cm-def],[data-cm-test],[data-cm-retry],[data-rmserver],[data-rm-custom],[data-provider-toggle],[data-tab],[data-add],[data-sel],[data-connect],[data-task],[data-set],[data-prov],[data-test],[data-unlock],[data-unset],[data-pu],[data-doun],[data-dokey],[data-addserver],[data-setupserver],[data-editserver],[data-remove],[data-rm],[data-play],[data-all],[data-vs],[data-vf],[data-newv],[data-savev],[data-addkey],[data-addkey2],[data-savekey],[data-news],[data-menu],[data-pickkey],[data-ksel],[data-customadd],[data-adv],[data-cadv],[data-ksave],[data-savesess],[data-pp],[data-pm],[data-sample],#openAI,#reset,#dLoad,#dFail,#dEmpty,#dLaunch,#dLaunch0,#dLConn,#dSettings,#dSeed,#dLaunchCustom,[data-lmanage],[data-ladd],[data-clear-search],[data-wrename],[data-remote],[data-remote-from-xrcc],[data-remote-return],[data-remote-stop],[data-remote-public],[data-remote-public-confirm],[data-remote-tab],[data-remote-power],[data-remote-copy],[data-removekey],[data-vchoose],[data-audition],[data-vprovider],[data-vretry],[data-vreset],[data-creset]');
  if(!t)return;const d=t.dataset;
  if('vretry' in d){captureVoice();return loadVoiceList()}
  if('vchoose' in d){captureVoice();S.voiceDraft.voice=d.vchoose;return newVoice('[data-vchoose="'+CSS.escape(d.vchoose)+'"]')}
@@ -1222,7 +1381,7 @@ document.addEventListener('click',e=>{
   return newVoice(focus);
  }
  if('vprovider' in d){captureVoice();S.voiceDraft.prov=d.vprovider;S.voiceDraft.state='ready';return newVoice()}
- if('creset' in d){for(const [name,value] of [['Timeout','30 s'],['Extra header','']]){const field=[...activeLayer().querySelectorAll('.field')].find(n=>n.querySelector('.mdb')?.textContent===name);if(field)field.querySelector('input').value=value;}return}
+ if('creset' in d){activeLayer().querySelector('#custom-timeout').value='30 s';activeLayer().querySelector('#custom-extra-header').value='';return}
  if('vreset' in d){captureVoice();Object.assign(S.voiceDraft,{speed:'50',pitch:'50',emotion:'Auto'});return newVoice()}
  if('eye' in d){const i=t.parentElement.querySelector('input');const show=i.type==='password';i.type=show?'text':'password';t.innerHTML=ic(show?'EyeOff':'Eye');t.dataset.tip=show?'Hide password':'Show password';t.setAttribute('aria-label',t.dataset.tip);return}
  if('conn' in d){S.conn=d.conn;redrawConnections();return activeLayer()?.querySelector('h2')?.focus()}
@@ -1238,11 +1397,11 @@ document.addEventListener('click',e=>{
  }
  if(t.id==='dSeed')return sample();
  if(t.id==='dSettings'){sample(false);return openSettingsConnections()}
- if(t.id==='dLaunch'){S.launchEndpoint=null;S.launchManage=false;S.launchKeys=structuredClone(KEYS0);return launchDlg();}
- if(t.id==='dLaunchCustom'){S.launchManage=false;S.launchKeys=structuredClone(KEYS0);S.launchEndpoint='http://192.168.1.20:8080/v1';return launchDlg()}
- if(t.id==='dLaunch0'){S.launchEndpoint=null;S.launchManage=false;S.launchKeys=[];return launchDlg();}
+ if(t.id==='dLaunch')return seedLauncher(structuredClone(KEYS0));
+ if(t.id==='dLaunchCustom')return seedLauncher(structuredClone(KEYS0),true);
+ if(t.id==='dLaunch0')return seedLauncher([]);
  if(t.id==='dEmpty'){S.keys=[];S.witTokens=[];S.models={};S.voices=[];S.sessions=[];S.providers=[];S.assign={};S.tab='providers';S.fromSettings=false;return renderPanel()}
- if(t.id==='dLConn'){S.remoteStopped=false;S.launchManage=false;S.fromSettings=true;S.launcher=true;S.conn=null;S.keys=S.keys.length?S.keys:structuredClone(KEYS0);if(!S.witTokens.length)S.witTokens=[{id:'wit-sample',name:'Lobby kiosk token',meta:'Wit.ai · last used 28 Oct',lastUsed:'2026-10-28'}];return settings(false,true)}
+ if(t.id==='dLConn'){S.remoteStopped=false;S.launchManage=false;S.fromSettings=true;S.launcher=true;S.conn=null;S.keys=S.keys.length?S.keys:structuredClone(KEYS0);ensureLauncherStudio(S.keys);if(!S.witTokens.length)S.witTokens=[{id:'wit-sample',name:'Lobby kiosk token',meta:'Wit.ai · last used 28 Oct',lastUsed:'2026-10-28'}];return settings(false,true)}
  if('manage' in d){preserveServerForm();S.fromSettings=true;S.conn='ai';S.launcher=false;return settings(true)}
  if('ext' in d)return toast('Opens aistudio.google.com/apikey in your browser');
  if('x' in d){if(S.launchManage&&keys.at(-1)==='settings'){S.launchManage=false;return launchDlg()}return stack.length>1?pop():hide();}
@@ -1251,8 +1410,8 @@ document.addEventListener('click',e=>{
  if('add' in d){S.ret=d.ret||null;S.forCap=d.for||null;const first=S.forCap?Object.entries(P).find(([i,v])=>v.caps.includes(S.forCap)&&!S.providers.find(p=>p.pid===i)):null;S.addSel=first?first[0]:((Object.keys(P).find(i=>i==='custom'||!S.providers.find(p=>p.pid===i)))||'custom');if(d.with&&P[d.with])S.addSel=d.with;const k0=S.keys.find(k=>k.prov===S.addSel);S.addKey=k0?k0.id:'';S.menuOpen=false;return addDlg()}
  if(d.sel){if(d.sel==='custom'&&!S.servers.length)return customDlg();S.addSel=d.sel;S.menuOpen=false;return addDlg()}
  if('menu' in d){S.menuOpen=!S.menuOpen;return addDlg()}
- if('nai' in d){hide();S.launchManage=false;S.providers=[];S.assign={};S.models={};return toast('XRCC started without AI. Add keys any time in Settings')}
- if('sx' in d){const saved=S.launchKeys||S.keys;S.keys=[...saved];S.providers=saved.filter(k=>k.prov!=='custom').map(k=>({id:uniqueId('p'),pid:k.prov,key:k.id}));S.assign={};S.models={};const endpoint=read(activeLayer(),'[data-launch-endpoint]');if(endpoint)S.providers.push({id:uniqueId('p'),pid:'custom',name:'Studio LLM',endpoint});S.launchManage=false;hide();return toast('XRCC started with available AI connections')}
+ if('nai' in d){S.keys=[...launchKeys()];hide();S.launchManage=false;S.providers=[];S.assign={};S.models={};S.open=null;return toast('XRCC started without AI. Add keys any time in Settings')}
+ if('sx' in d)return startProjectWithAI();
  if('addwit' in d)return witDlg();
  if('savewit' in d){
   const pane=activeLayer();
@@ -1288,26 +1447,27 @@ document.addEventListener('click',e=>{
   if(value!=='xrcc')return keyUnlockDlg(key.id,true);
   key.locked=false;S.addKey=key.id;pop();return activeLayer().querySelector('[data-connect]').click();
  }
- if('ladd' in d){S.keyOrigin='launch';S.keyDraft=null;S.addSel=d.ladd;return keyDlg()}
- if('lmanage' in d){S.launchEndpoint=read(activeLayer(),'[data-launch-endpoint]')||S.launchEndpoint;S.launchManage=true;S.launcher=true;S.conn=null;return settings(true,true)}
+ if('ladd' in d){rememberLaunchEndpoint();S.keyOrigin='launch';S.keyDraft=null;S.addSel=d.ladd;return keyDlg()}
+ if('lmanage' in d){rememberLaunchEndpoint();S.launchManage=true;S.launcher=true;S.conn=null;return settings(true,true)}
  if('addkey' in d||'addkey2' in d){
   S.keyOrigin='addkey2' in d?'settings':'provider';S.fromSettings='addkey2' in d;
   if(S.fromSettings)S.addSel=Object.keys(P).find(p=>p==='custom'||!(S.launchManage?S.launchKeys:S.keys).some(k=>k.prov===p));
-  S.keyDraft=null;S.menuOpen=false;return keyDlg();
+  S.keyDraft=null;S.menuOpen=false;
+  return S.fromSettings&&S.addSel==='custom'?customDlg(null,{fromKey:true}):keyDlg();
  }
- if(d.ksel){if(d.ksel==='custom'&&S.keyOrigin==='settings'&&!S.launcher&&!S.launchManage){S.addSel='custom';return customDlg(null,{fromKey:true})}captureKeyDraft();S.addSel=d.ksel;return keyDlg()}
+ if(d.ksel){if(d.ksel==='custom'&&S.keyOrigin==='settings'){S.addSel='custom';return customDlg(null,{fromKey:true})}captureKeyDraft();S.addSel=d.ksel;return keyDlg()}
  if('savekey' in d){
   const pane=activeLayer(), api=read(pane,'#kv');
   if(pane.querySelector('#kpname')&&!read(pane,'#kpname'))return;
   const protectedKey=pane.querySelector('#pwon').checked;
   const password=read(pane,'#kpw');
-  const list=S.keyOrigin==='launch'||S.launchManage?S.launchKeys:S.keys;
+  const list=S.keyOrigin==='launch'||S.launchManage?launchKeys():S.keys;
   if(!api||(protectedKey&&!password))return;
   const baseName=read(pane,'#kname')||(read(pane,'#kpname')?read(pane,'#kpname')+' key':P[S.addSel].n+' key');let keyName=baseName,n=2;while(list.some(k=>k.name.toLowerCase()===keyName.toLowerCase()))keyName=baseName+' '+n++;
   const key={id:uniqueId('k'),name:keyName,prov:S.addSel,
    meta:P[S.addSel].n+' · added today',pw:protectedKey,end:api.slice(-4)};
   list.push(key);S.keyDraft=null;
-  if(S.keyOrigin==='launch')return launchDlg();
+  if(S.keyOrigin==='launch'){S.launchChoice[key.prov]=key.id;return launchDlg();}
   if(S.keyOrigin==='card'){const owner=S.providers.find(x=>x.id===S.cardProv);if(owner)owner.key=key.id;hide();toast(P[S.addSel].n+' now uses '+key.name);return renderPanel()}
   if(S.keyOrigin==='settings')return redrawConnections();
   S.addKey=key.id;pop();return addDlg();
@@ -1323,26 +1483,34 @@ document.addEventListener('click',e=>{
   const same=S.servers.find(server=>server.id!==d.customadd&&server.endpoint===endpoint.href);
   if(same){urlIn.classList.add('err');urlIn.focus();return toast('That address is already saved as '+same.name);}
   const serverName=activeLayer().querySelector('[data-cname]').value.trim()||autoName(d.customadd);
+  const savedKeys=S.launchManage?launchKeys():S.keys;
+  const existing=S.servers.find(item=>item.id===d.customadd);
   const keyBox=activeLayer().querySelector('[data-newkey]');
   const secret=(keyBox?.value||'').trim();
-  let key=S.servers.find(item=>item.id===d.customadd)?.key||'';
+  let key=existing?.key||'';
   if(keyBox?.dataset.removed==='1')key='';
   if(secret){
-   const dup=S.keys.find(item=>item.prov==='custom'&&item.sec===secret);
+   const dup=savedKeys.find(item=>item.prov==='custom'&&item.sec===secret);
    if(dup)key=dup.id;
-   else{const saved={id:uniqueId('k'),name:serverName,prov:'custom',meta:'Custom',pw:Boolean(activeLayer().querySelector('#cpwon')?.checked),end:secret.slice(-4),sec:secret};S.keys.push(saved);key=saved.id}
-  }else if('fromKey' in d&&S.keyOrigin==='settings'&&!key){const saved={id:uniqueId('k'),name:serverName,prov:'custom',meta:'Custom',pw:false,end:'',nokey:true};S.keys.push(saved);key=saved.id}
-  {const lk=S.keys.find(x=>x.id===key);if(lk&&lk.prov==='custom')lk.name=serverName}
-  const existing=S.servers.find(item=>item.id===d.customadd);
-  const models=structuredClone(S.cm.models);const details={name:serverName,endpoint:endpoint.href,models,model:(models.find(m=>m.def)||models[0]).id,key};
+   else{const saved={id:uniqueId('k'),name:serverName,prov:'custom',meta:'Custom',pw:Boolean(activeLayer().querySelector('#cpwon')?.checked),end:secret.slice(-4),sec:secret};savedKeys.push(saved);key=saved.id}
+  }else if(!key&&('fromKey' in d||existing&&ov.querySelector('.win'))){const saved={id:uniqueId('k'),name:serverName,prov:'custom',meta:'Custom',pw:false,end:'',nokey:true};savedKeys.push(saved);key=saved.id}
+  const savedKey=savedKeys.find(item=>item.id===key);
+  if(savedKey&&!S.servers.some(item=>item.id!==existing?.id&&item.key===key))savedKey.name=serverName;
+  if(existing?.key&&existing.key!==key&&!S.servers.some(item=>item.id!==existing.id&&item.key===existing.key)){
+   const oldIndex=savedKeys.findIndex(item=>item.id===existing.key);
+   if(oldIndex>=0)savedKeys.splice(oldIndex,1);
+  }
+  const models=structuredClone(S.cm.models);const details={name:serverName,endpoint:endpoint.href,models,model:(models.find(m=>m.def)||models[0]).id,key,timeout:read(activeLayer(),'#custom-timeout')||'30 s',extraHeader:read(activeLayer(),'#custom-extra-header')};
   if(existing){
    const fromTask=keys.includes('pick')&&S.pick;
    const taskProvider=fromTask&&prov(fromTask.p);
    const task=taskProvider&&TASKS.find(item=>item.id===fromTask.t);
    const selected=task&&modelsFor(taskProvider,task)[fromTask.m]?.[0];
+   if(existing.id===S.launchServerId&&S.launchEndpoint===existing.endpoint)S.launchEndpoint=details.endpoint;
    Object.assign(existing,details);
    for(const provider of S.providers.filter(item=>item.serverId===existing.id))Object.assign(provider,details);
    pop();
+   if(activeLayer()?.querySelector('.win'))return redrawConnections();
    if(keys.at(-1)==='Add a provider')return addDlg();
    if(keys.at(-1)==='pick'&&task)return pickTaskProvider(task.id,taskProvider,selected);
    return renderPanel();
@@ -1350,8 +1518,8 @@ document.addEventListener('click',e=>{
   const server={id:uniqueId('s'),...details};
   S.servers.push(server);
   const provider={...server,id:uniqueId('p'),serverId:server.id,pid:'custom'};
-  S.providers.push(provider);
-  if('fromKey' in d&&S.keyOrigin==='settings'&&!S.launcher&&!S.launchManage){S.keyDraft=null;S.ret=null;while(stack.length>1&&!['base','settings'].includes(keys.at(-1)))pop();toast(serverName+' added');return redrawConnections()}
+  if(!S.launchManage)S.providers.push(provider);
+  if('fromKey' in d&&S.keyOrigin==='settings'){S.keyDraft=null;S.ret=null;while(stack.length>1&&!['base','settings'].includes(keys.at(-1)))pop();toast(serverName+' added');return redrawConnections()}
   const task='fromKey' in d?null:S.ret;S.ret=null;S.tab=task?'tasks':'providers';renderPanel();
   if(task)return pickTaskProvider(task,provider);
   return;
@@ -1388,9 +1556,31 @@ document.addEventListener('click',e=>{
   return renderPanel();
  }
  if(d.remove)return removeDlg(d.remove);
- if(d.rm){S.providers=S.providers.filter(p=>p.id!==d.rm);Object.keys(S.assign).forEach(k=>{if(S.assign[k]===d.rm)delete S.assign[k]});S.open=null;if(!S.providers.length)S.tab='first';return renderPanel()}
+ if(d.rm){removeProviders([d.rm]);return renderPanel()}
+ if(d.rmCustom){
+  const server=S.servers.find(item=>item.id===d.rmCustom);
+  if(!server)return;
+  removeProviders(S.providers.filter(p=>p.serverId===server.id).map(p=>p.id));
+  S.servers=S.servers.filter(item=>item.id!==server.id);
+  if(server.key&&!S.servers.some(item=>item.key===server.key)){
+   S.keys=S.keys.filter(key=>key.id!==server.key);
+   if(S.launchKeys)S.launchKeys=S.launchKeys.filter(key=>key.id!==server.key);
+  }
+  pop();
+  if(keys.at(-1)==='custom-provider')pop();
+  if(activeLayer()?.querySelector('.win'))return redrawConnections();
+  if(keys.at(-1)==='Add a provider')return addDlg();
+  if(keys.at(-1)==='pick'&&S.pick){const task=S.pick.t;S.pick=null;return pickDlg(task);}
+  return renderPanel();
+ }
+ if(d.providerToggle){
+  S.open=S.open===d.providerToggle?null:d.providerToggle;
+  renderPanel();
+  activeLayer()?.querySelector('[data-provider-toggle="'+CSS.escape(d.providerToggle)+'"]')?.focus({preventScroll:true});
+  return;
+ }
  if(d.prov&&!e.target.closest('button')){S.open=S.open===d.prov?null:d.prov;return renderPanel()}
- if(d.play){if(!S.preview.trim()){toast('Type a preview line first');return}const v=S.voices.find(v=>v.id===d.play);if(!v||v.gone)return;if(S.playing===v.id){S.playing=null;return renderPanel()}if(S.asking)return;S.playing=null;S.pfail=null;S.asking=v.id;renderPanel();setTimeout(()=>{if(S.asking!==v.id)return;S.asking=null;if(v.id==='v2'&&!S.v2tried){S.v2tried=true;S.pfail=v.id;if(ov.querySelector('.panel'))renderPanel();return}S.playing=v.id;if(ov.querySelector('.panel'))renderPanel();setTimeout(()=>{if(S.playing===v.id){S.playing=null;if(ov.querySelector('.wave'))renderPanel()}},4000)},700);return}
+ if(d.play){if(!S.preview.trim()){toast('Type a preview line first');return}const v=S.voices.find(v=>v.id===d.play);if(!v||voiceUnavailable(v))return;if(S.playing===v.id){S.playing=null;return renderPanel()}if(S.asking)return;S.playing=null;S.pfail=null;S.asking=v.id;renderPanel();setTimeout(()=>{if(S.asking!==v.id)return;S.asking=null;if(v.id==='v2'&&!S.v2tried){S.v2tried=true;S.pfail=v.id;if(ov.querySelector('.panel'))renderPanel();return}S.playing=v.id;if(ov.querySelector('.panel'))renderPanel();setTimeout(()=>{if(S.playing===v.id){S.playing=null;if(ov.querySelector('.wave'))renderPanel()}},4000)},700);return}
  if('all' in d){toast('Playing each voice with the same line');return}
  if(d.vf){S.vf=d.vf;return renderPanel()}
  if('newv' in d){S.advOpen=false;S.voiceDraft=null;return newVoice()}
@@ -1400,7 +1590,7 @@ document.addEventListener('click',e=>{
  if(d.cmDef!==undefined){S.cm.models.forEach((m,i)=>m.def=i===+d.cmDef);return cmRefresh()}
  if('cmTest' in d)return cmTest();
  if(d.cmRetry!==undefined)return cmTest(+d.cmRetry);
- if(d.rmserver){return toast('Remove provider is available from the Providers tab in this prototype')}
+ if(d.rmserver)return removeCustomDlg(S.servers.find(server=>server.id===d.rmserver));
  if('cadv' in d){const box=t.closest('.dlg'),b=box.querySelector('[data-cbody]'),open=b.style.display==='none';b.style.display=open?'':'none';t.querySelector('svg,.ico,i')&&(t.firstElementChild.style.transform=open?'rotate(90deg)':'');box.querySelector('[data-csum]').style.display=open?'none':'';box.querySelector('[data-creset]').style.display=open?'':'none';return}
  if('savev' in d){
   captureVoice();const {edit,copy,query,listScroll,audition,auditionTimer,...draft}=S.voiceDraft;
@@ -1421,6 +1611,13 @@ document.addEventListener('focusout',e=>{
  }
  showUrlError(layer,true);
 });
+document.addEventListener('input',e=>{
+ if(e.target.matches?.('[data-launch-pw], [data-launch-endpoint]')){
+  const error=e.target.closest('.preflight-row').querySelector('[role="alert"]');
+  if(error)error.hidden=true;
+  e.target.classList.remove('err');
+ }
+});
 document.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('[data-customadd]')===null&&activeLayer()?.querySelector('[data-customadd]'))syncCustomReady()});
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='0'){e.preventDefault();openSettingsConnections()}if(e.key==='Escape'){const menu=$('#cmenu');if(menu){const owner=menu.dataset.for;menu.remove();[...ov.querySelectorAll('[data-cm]')].find(b=>b.dataset.cm===owner)?.focus();return;}if(stack.length)pop();}
  if(e.key==='Tab'&&activeLayer()&&!$('#cmenu')){
@@ -1433,6 +1630,7 @@ document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='0'){
 
 
 /* first-visit coach mark (Figma A1 · First visit) */
+let dismissCoach=()=>{};
 (function(){const b=document.getElementById('openAI');if(!b)return;
  let seen=false;try{seen=sessionStorage.getItem('coachSeen')==='1'}catch(e){}
  if(seen||(S.providers&&S.providers.length))return;
@@ -1442,27 +1640,70 @@ document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='0'){
  document.body.appendChild(c);
  const place=()=>{const r=b.getBoundingClientRect();const w=300;const l=Math.min(Math.max(8,r.left+r.width/2-w+18),innerWidth-w-8);c.style.left=l+'px';c.style.top=(r.bottom+14)+'px';c.style.setProperty('--ax',Math.max(12,l+w-(r.left+r.width/2)-6)+'px')};
  place();addEventListener('resize',place);
- const off=()=>{c.remove();b.classList.remove('pulse');removeEventListener('resize',place);try{sessionStorage.setItem('coachSeen','1')}catch(e){}};
- document.getElementById('coachOk').addEventListener('click',off);b.addEventListener('click',off);
+ const off=()=>{dismissCoach=()=>{};c.remove();b.classList.remove('pulse');removeEventListener('resize',place);try{sessionStorage.setItem('coachSeen','1')}catch(e){}};
+ dismissCoach=off;
+ document.getElementById('coachOk').addEventListener('click',off);b.addEventListener('click',off,{once:true});
 })();
 
 /* dropdown: XRCC dropdown-menu + menu-item look instead of the browser's list */
 (()=>{
- const close=()=>{const m=document.getElementById('ddmenu');if(m){m.__sel&&m.__sel.classList.remove('open');m.remove()}};
- const open=sel=>{
-  const had=document.getElementById('ddmenu');const same=had&&had.__sel===sel;close();if(same)return;
-  const r=sel.getBoundingClientRect(),m=document.createElement('div');m.id='ddmenu';m.className='ddm';m.setAttribute('role','listbox');m.__sel=sel;
-  m.style.left=r.left+'px';m.style.width=r.width+'px';
-  [...sel.options].forEach(o=>{const b=document.createElement('button');b.type='button';b.setAttribute('role','option');b.textContent=o.textContent;b.disabled=o.disabled;if(o.value===sel.value&&!o.disabled)b.classList.add('on');
-   b.addEventListener('click',ev=>{ev.stopPropagation();close();if(sel.value!==o.value||o.value.startsWith('__')){sel.value=o.value;sel.dispatchEvent(new Event('change',{bubbles:true}))}});m.appendChild(b)});
-  document.body.appendChild(m);sel.classList.add('open');
-  const h=m.offsetHeight;m.style.top=(r.bottom+4+h>innerHeight?Math.max(8,r.top-4-h):r.bottom+4)+'px';
+ const close=(restoreFocus=false)=>{
+  const menu=document.getElementById('ddmenu');
+  if(!menu)return;
+  const select=menu.__sel;
+  select?.classList.remove('open');
+  select?.removeAttribute('aria-expanded');
+  menu.remove();
+  if(restoreFocus)select?.focus();
  };
- document.addEventListener('mousedown',e=>{const sel=e.target.closest('select.sel');if(sel&&!sel.disabled){e.preventDefault();sel.focus();open(sel);return}if(!e.target.closest('#ddmenu'))close()},true);
- document.addEventListener('keydown',e=>{const sel=e.target.closest&&e.target.closest('select.sel');
-  if(sel&&(e.key==='Enter'||e.key===' '||(e.altKey&&e.key==='ArrowDown'))){e.preventDefault();open(sel);return}
-  if(e.key==='Escape'&&document.getElementById('ddmenu')){e.stopPropagation();e.preventDefault();close()}},true);
- window.addEventListener('resize',close);
+ const open=(select,keyboard=false)=>{
+  const had=document.getElementById('ddmenu');
+  const same=had?.__sel===select;
+  close(same&&keyboard);
+  if(same)return;
+  const r=select.getBoundingClientRect(),menu=document.createElement('div');
+  menu.id='ddmenu';menu.className='ddm';menu.setAttribute('role','listbox');menu.__sel=select;
+  menu.style.left=r.left+'px';menu.style.width=r.width+'px';
+  for(const option of select.options){
+   const button=document.createElement('button');
+   button.type='button';button.setAttribute('role','option');button.textContent=option.textContent;button.disabled=option.disabled;
+   const selected=option.value===select.value;
+   button.setAttribute('aria-selected',selected);
+   if(selected&&!option.disabled)button.classList.add('on');
+   button.addEventListener('click',event=>{
+    event.stopPropagation();close(true);
+    if(!selected||option.value.startsWith('__')){
+     select.value=option.value;select.dispatchEvent(new Event('change',{bubbles:true}));
+    }
+   });
+   menu.appendChild(button);
+  }
+  document.body.appendChild(menu);
+  select.classList.add('open');select.setAttribute('aria-expanded','true');
+  const height=menu.offsetHeight;
+  menu.style.top=(r.bottom+4+height>innerHeight?Math.max(8,r.top-4-height):r.bottom+4)+'px';
+  if(keyboard)(menu.querySelector('.on')??menu.querySelector('button:not(:disabled)'))?.focus();
+ };
+ document.addEventListener('mousedown',e=>{
+  const select=e.target.closest('select.sel');
+  if(select&&!select.disabled){e.preventDefault();select.focus();open(select);return;}
+  if(!e.target.closest('#ddmenu'))close();
+ },true);
+ document.addEventListener('keydown',e=>{
+  const menu=document.getElementById('ddmenu');
+  if(menu&&e.key==='Escape'){e.stopPropagation();e.preventDefault();close(true);return;}
+  if(menu&&e.target.closest('#ddmenu')){
+   if(e.key==='Tab'){close(true);return;}
+   const options=[...menu.querySelectorAll('button:not(:disabled)')];
+   const current=options.indexOf(e.target);
+   const next={ArrowDown:(current+1)%options.length,ArrowUp:(current+options.length-1)%options.length,Home:0,End:options.length-1}[e.key];
+   if(next!==undefined){e.preventDefault();options[next]?.focus();}
+   return;
+  }
+  const select=e.target.closest('select.sel');
+  if(select&&!select.disabled&&['Enter',' ','ArrowDown','ArrowUp'].includes(e.key)){e.preventDefault();open(select,true);}
+ },true);
+ window.addEventListener('resize',()=>close());
 })();
 
 </script>
