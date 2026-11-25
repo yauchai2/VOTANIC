@@ -539,7 +539,7 @@ const KEYS0=[
  {id:'k1',name:'Office Key',prov:'gemini',meta:'Gemini · last used 3 Nov',pw:true,end:'4F2A'},
  {id:'k2',name:'Voice Lab key',prov:'minimax',meta:'MiniMax · last used today',pw:false,end:'91C7'},
  {id:'k3',name:'Team Poe key',prov:'poe',meta:'Poe · added 12 Oct',pw:true,locked:true,end:'7B10'},
- {id:'k4',name:'Studio LLM token',prov:'custom',meta:'Custom · 192.168.1.20',pw:false,end:'0A55'}
+ {id:'k4',name:'Studio LLM',prov:'custom',meta:'Custom',pw:false,end:'0A55'}
 ];
 const WAVE=[6,12,18,10,16,20,8,14,18,6,12,16,10,20,14,8,16,12,6,18,10,14,6,12,18,10,16,20,8,14];
 const init=(demo=false)=>({tab:'tasks',providers:[],keys:[],assign:{},models:{},witTokens:[],servers:[],
@@ -558,7 +558,7 @@ function sample(showPanel=true) {
  S=init(true);
  S.keys=structuredClone(KEYS0);
  S.witTokens=[{id:'wit-sample',name:'Lobby kiosk token',meta:'Wit.ai · last used 28 Oct',lastUsed:'2026-10-28'}];
- S.servers=[{id:'studio',name:'Studio LLM',endpoint:'http://192.168.1.20:8080/v1',model:'llama-3.3-70b'}];
+ S.servers=[{id:'studio',name:'Studio LLM',endpoint:'http://192.168.1.20:8080/v1',model:'llama-3.3-70b',key:'k4'}];
  S.providers=['gemini','minimax','poe'].map((pid,i)=>({id:'p'+(i+1),pid,key:S.keys[i].id}));
  S.assign={chat:'p1',tts:'p2',music:'p2',image:'p3',stt:'p1'};
  if(showPanel)renderPanel();
@@ -851,7 +851,9 @@ function autoVoiceName(editId){const used=new Set(S.voices.filter(v=>v.id!==edit
 function autoName(editId){const used=new Set(S.servers.filter(x=>x.id!==editId).map(x=>x.name));if(!used.has('Custom provider'))return 'Custom provider';let n=1;while(used.has('Custom provider ('+n+')'))n++;return 'Custom provider ('+n+')'}
 function urlValid(v){try{return ['http:','https:'].includes(new URL(v.trim()).protocol)}catch{return false}}
 function showUrlError(l,force){const u=l.querySelector('[data-curl]');if(!u)return;const v=u.value.trim();const bad=!!v&&!urlValid(v);const flagged=u.classList.contains('err');if(!force&&!flagged&&bad&&document.activeElement===u)return;u.classList.toggle('err',bad);let m=l.querySelector('[data-urlerr]');if(bad&&!m){m=document.createElement('div');m.className='helper terr';m.dataset.urlerr='';m.textContent='Start with http:// or https://';u.closest('.field').appendChild(m)}if(!bad&&m)m.remove()}
-function syncCustomReady(){const l=activeLayer();const b=l&&l.querySelector('[data-customadd]');if(!b)return;const po=l.querySelector('#cpwon');b.disabled=!customReady(l)||Boolean(po&&po.checked&&!(l.querySelector('#cpw')?.value||''));showUrlError(l,false)}
+function nameTaken(l){const n=l.querySelector('[data-cname]');if(!n)return false;const v=n.value.trim().toLowerCase();if(!v)return false;const id=l.querySelector('[data-customadd]')?.dataset.customadd||'';const own=S.servers.find(x=>x.id===id);return S.servers.some(x=>x.id!==id&&(x.name||'').trim().toLowerCase()===v)||S.keys.some(k=>k.prov==='custom'&&k.name.trim().toLowerCase()===v&&k.id!==(own&&own.key))}
+function showNameError(l){const n=l.querySelector('[data-cname]');if(!n)return;const bad=nameTaken(l);n.classList.toggle('err',bad);let m=l.querySelector('[data-nameerr]');if(bad&&!m){m=document.createElement('div');m.className='helper terr';m.dataset.nameerr='';m.textContent='That name is already used by another provider.';n.closest('.field').appendChild(m)}if(!bad&&m)m.remove()}
+function syncCustomReady(){const l=activeLayer();const b=l&&l.querySelector('[data-customadd]');if(!b)return;const po=l.querySelector('#cpwon');b.disabled=!customReady(l)||nameTaken(l)||Boolean(po&&po.checked&&!(l.querySelector('#cpw')?.value||''));showNameError(l);showUrlError(l,false)}
 function witDlg(){dlg('Add a Wit.ai token',`<div class="lg">Speech commands use this token. It stays on this computer.</div><div class="content">${inp('Token name','Lobby kiosk token','Lobby kiosk token','Only you see this name.')}<div class="field"><div class="mdb">Server access token</div><input class="input" id="kv" type="password" placeholder="Paste your Wit.ai token"><div class="helper">Wit.ai tokens don't take a password.</div></div></div>`,`${cancel}<button class="btn pri" data-savewit disabled data-tip="Paste your token first">Save token</button>`,'sub')}
 function captureKeyDraft(){
  const p=activeLayer();
@@ -986,6 +988,8 @@ function redrawConnections(){
 }
 function keyAct(a,k){document.querySelectorAll('.menu.on').forEach(m=>m.remove());
  if(a==='pw')return dlg('Change password',`<div class="lg">Set a new password for this key. It is asked each time a project opens.</div><div class="content">${inp('New password','','Add a password','Passwords can’t be recovered, so pick one you’ll remember.',0,'password')}</div>`,`${cancel}<button class="btn pri" data-ksave="pw|${k.id}">Save password</button>`,'sub');
+ if(a==='edit'){const srv=S.servers.find(x=>x.key===k.id);if(!srv)return toast('This key has no provider yet');hide();S.tab='providers';renderPanel();return customDlg(srv)}
+ if(a==='del'&&k.prov==='custom')return dlg('Remove '+k.name+'?',`<div class="lg">${esc(k.name)} will stop working. Tasks using it will need another provider until you add a key and models again.</div><div class="note">${ic('Key')}<span>Open AI Provider to set it up again.</span></div>`,`${cancel}<button class="btn pri" data-ksave="del|${k.id}" style="background:var(--err,#c92e5f)">Remove key</button>`,'sub');
  if(a==='del')return dlg('Remove '+k.name+'?',`<div class="lg">${(()=>{const inUse=S.providers.some(pr=>pr.key===k.id),other=S.keys.find(x=>x.prov===k.prov&&x.id!==k.id);return inUse?(other?'This key is in use. '+P[k.prov].n+' will switch to '+esc(other.name)+'.':'This key is in use. '+P[k.prov].n+' will show Needs key until you add another one.'):'This key is not in use, so nothing stops working.'})()}</div><div class="note">${ic('Question')}<span>You can add the key again from Google AI Studio.</span></div>`,`${cancel}<button class="btn pri" data-ksave="del|${k.id}" style="background:var(--err,#c92e5f)">Remove key</button>`,'sub');
  return dlg('Rename key',`<div class="lg">Only you see this name. Projects keep using the key.</div><div class="content">${inp('Key name',k.name)}</div>`,`${cancel}<button class="btn pri" data-ksave="ren|${k.id}">Save name</button>`,'sub')}
 function newSession(s0,i0,copy=false){dlg(copy?'Duplicate session':s0?'Edit session':'New session',`<div class="lg">A session is a saved system prompt. Characters, quizzes and behaviours pick one.</div><div class="content">${inp('Name',s0?s0.n:'','e.g. Museum guide')}<div class="field"><div class="lrow"><span class="mdb">Prompt</span></div><textarea class="input" rows="5" placeholder="You are a cheerful museum guide. Keep every answer under three sentences." style="height:auto;padding:12px;resize:none">${esc(s0?s0.p.replace(/[“”]/g,''):'')}</textarea></div></div>`,`${cancel}<button class="btn pri" data-savesess="${i0??''}">${copy?'Save copy':s0?'Save changes':'Save session'}</button>`,'sub')}
@@ -997,8 +1001,8 @@ function connBody(launcher=false){
  const head=(t,l)=>`<div class="col g4" style="gap:8px">${S.conn?back:''}${S.launchManage?`<button class="lnk row g4 back-link" data-back>${ic('Left')}Back to connection check</button>`:''}<h2 class="h2" tabindex="-1">${t}</h2><div class="md t2">${l}</div></div>`;
  const row=(key,icon,t,m)=>`<button class="krow connection-row" data-conn="${key}">${icon}<span class="col g4 fill"><b class="mdb">${t}</b><span class="sm t2">${m}</span></span>${ic('Chevron')}</button>`;
  const witIcon=`<span class="logo l32 connection-badge"><img src="./assets/wit-ai.svg" width="20" height="20" alt=""></span>`;
- const keyMenu=k=>S.kmenu===k.id?`<div class="menu on key-menu"><button data-kact="pw|${k.id}">${k.pw?'Change password':'Set password'}</button><button data-kact="ren|${k.id}">Rename</button><hr><button class="terr" data-kact="del|${k.id}">Remove key</button></div>`:'';
- const keyRows=list.map(k=>`<div class="krow" data-kt="${esc((k.name+' '+k.meta).toLowerCase())}">${lg(k.prov,32)}<div class="col g4 fill"><b class="mdb">${esc(k.name)}</b><span class="sm t2">${esc(k.meta)} · ${S.providers.some(x=>x.key===k.id)?'In use':'Not in use'}</span></div><span class="row g4 sm ${k.pw?'tacc':'t2'}">${ic(k.pw?'Lock':'Key')}${k.pw?'Password set':'No password'}</span><span class="key-menu-anchor"><button class="iconbtn s28" data-kmenu="${k.id}" aria-label="More actions for ${esc(k.name)}">${ic('MoreH')}</button>${keyMenu(k)}</span></div>`).join('');
+ const keyMenu=k=>S.kmenu===k.id?`<div class="menu on key-menu"><button data-kact="pw|${k.id}">${k.pw?'Change password':'Set password'}</button>${k.prov==='custom'?`<button data-kact="edit|${k.id}">Edit provider</button>`:`<button data-kact="ren|${k.id}">Rename</button>`}<hr><button class="terr" data-kact="del|${k.id}">Remove key</button></div>`:'';
+ const keyRows=list.map(k=>`<div class="krow" data-kt="${esc((k.name+' '+k.meta).toLowerCase())}">${lg(k.prov,32)}<div class="col g4 fill"><b class="mdb">${esc(k.name)}</b><span class="sm t2">${esc(k.meta)} · ${S.providers.some(x=>x.key===k.id)||S.servers.some(x=>x.key===k.id)?'In use':'Not in use'}</span></div><span class="row g4 sm ${k.pw?'tacc':'t2'}">${ic(k.pw?'Lock':'Key')}${k.pw?'Password set':'No password'}</span><span class="key-menu-anchor"><button class="iconbtn s28" data-kmenu="${k.id}" aria-label="More actions for ${esc(k.name)}">${ic('MoreH')}</button>${keyMenu(k)}</span></div>`).join('');
  const AI=`<section class="col g12"><div class="row g12"><div class="col g4 fill"><div class="lgb">${launcher?'AI keys':'Saved on this computer'}</div><div class="sm t2">Used by AI providers in every project on this computer.</div></div>${list.length?`<button class="btn pri" data-addkey2>Add key</button>`:''}</div>
   ${list.length?`<input class="input search-key" data-kq aria-label="Search keys" placeholder="Search keys">`:''}
   <div class="col g12">${keyRows||EM('Key','No AI keys yet','Add a key for Gemini, MiniMax, Poe, OpenRouter or a custom provider. It is encrypted and stays on this computer.','<button class="btn pri" data-addkey2>Add key</button>')}<div class="no-match" id="knone" hidden><b class="mdb"></b><div class="sm t2">Try the key name or the provider. Clear the search to see every key.</div><button class="btn" data-clear-search>Clear search</button></div></div></section>`;
@@ -1081,7 +1085,8 @@ document.addEventListener('click',e=>{
  if(ka){const [a,id]=ka.dataset.kact.split('|');S.kmenu=null;const k=(S.launchManage?S.launchKeys:S.keys).find(k=>k.id===id);
   return keyAct(a,k)}
  if(e.target.closest('[data-ksave]')){const [a,id]=e.target.closest('[data-ksave]').dataset.ksave.split('|');const list=S.launchManage?S.launchKeys:S.keys;const k=list.find(k=>k.id===id);const v=activeLayer().querySelector('.dlg input');
-  if(a==='del'){list.splice(list.indexOf(k),1);const swap=list.find(x=>x.prov===k.prov);let moved='';S.providers.forEach(pr=>{if(pr.key===k.id){pr.key=swap?swap.id:'';if(swap)moved=P[pr.pid].n+' now uses '+swap.name}});toast(moved||'Key removed')}
+  if(a==='del'&&k.prov==='custom'){list.splice(list.indexOf(k),1);const gone=S.servers.filter(x=>x.key===k.id).map(x=>x.id);const gp=S.providers.filter(pr=>gone.includes(pr.serverId)).map(pr=>pr.id);S.servers=S.servers.filter(x=>!gone.includes(x.id));S.providers=S.providers.filter(pr=>!gp.includes(pr.id));for(const t of Object.keys(S.assign))if(gp.includes(S.assign[t]))delete S.assign[t];toast(k.name+' removed')}
+  else if(a==='del'){list.splice(list.indexOf(k),1);const swap=list.find(x=>x.prov===k.prov);let moved='';S.providers.forEach(pr=>{if(pr.key===k.id){pr.key=swap?swap.id:'';if(swap)moved=P[pr.pid].n+' now uses '+swap.name}});toast(moved||'Key removed')}
   else if(a==='pw'){if(!v||!v.value){v&&v.classList.add('err');return}k.pw=true;k.meta=P[k.prov].n+' · password updated today';toast('Password saved')}
   else{if(v&&v.value.trim())k.name=v.value.trim();toast('Key renamed')}
   return redrawConnections()}
@@ -1180,7 +1185,7 @@ document.addEventListener('click',e=>{
   if(S.fromSettings)S.addSel=Object.keys(P).find(p=>p==='custom'||!(S.launchManage?S.launchKeys:S.keys).some(k=>k.prov===p));
   S.keyDraft=null;S.menuOpen=false;return keyDlg();
  }
- if(d.ksel){captureKeyDraft();S.addSel=d.ksel;return keyDlg()}
+ if(d.ksel){if(d.ksel==='custom'&&S.keyOrigin==='settings'&&!S.launcher&&!S.launchManage){S.addSel='custom';return customDlg(null,{fromKey:true})}captureKeyDraft();S.addSel=d.ksel;return keyDlg()}
  if('savekey' in d){
   const pane=activeLayer(), api=read(pane,'#kv');
   if(pane.querySelector('#kpname')&&!read(pane,'#kpname'))return;
@@ -1202,6 +1207,7 @@ document.addEventListener('click',e=>{
   const urlIn=activeLayer().querySelector('[data-curl]');
   let endpoint;try{endpoint=new URL(urlIn.value.trim());if(!['http:','https:'].includes(endpoint.protocol))throw new Error();}catch{urlIn.classList.add('err');urlIn.focus();return;}
   if(!S.cm.models.length)return;
+  if(nameTaken(activeLayer())){showNameError(activeLayer());activeLayer().querySelector('[data-cname]').focus();return}
   const same=S.servers.find(server=>server.id!==d.customadd&&server.endpoint===endpoint.href);
   if(same){urlIn.classList.add('err');urlIn.focus();return toast('That address is already saved as '+same.name);}
   const serverName=activeLayer().querySelector('[data-cname]').value.trim()||autoName(d.customadd);
@@ -1212,8 +1218,9 @@ document.addEventListener('click',e=>{
   if(secret){
    const dup=S.keys.find(item=>item.prov==='custom'&&item.sec===secret);
    if(dup)key=dup.id;
-   else{const saved={id:uniqueId('k'),name:serverName+' key',prov:'custom',meta:'Custom · added today',pw:Boolean(activeLayer().querySelector('#cpwon')?.checked),end:secret.slice(-4),sec:secret};S.keys.push(saved);key=saved.id}
-  }
+   else{const saved={id:uniqueId('k'),name:serverName,prov:'custom',meta:'Custom',pw:Boolean(activeLayer().querySelector('#cpwon')?.checked),end:secret.slice(-4),sec:secret};S.keys.push(saved);key=saved.id}
+  }else if('fromKey' in d&&S.keyOrigin==='settings'&&!key){const saved={id:uniqueId('k'),name:serverName,prov:'custom',meta:'Custom',pw:false,end:'',nokey:true};S.keys.push(saved);key=saved.id}
+  {const lk=S.keys.find(x=>x.id===key);if(lk&&lk.prov==='custom')lk.name=serverName}
   const existing=S.servers.find(item=>item.id===d.customadd);
   const models=structuredClone(S.cm.models);const details={name:serverName,endpoint:endpoint.href,models,model:(models.find(m=>m.def)||models[0]).id,key};
   if(existing){
@@ -1227,6 +1234,7 @@ document.addEventListener('click',e=>{
   S.servers.push(server);
   const provider={...server,id:uniqueId('p'),serverId:server.id,pid:'custom'};
   S.providers.push(provider);
+  if('fromKey' in d&&S.keyOrigin==='settings'&&!S.launcher&&!S.launchManage){S.keyDraft=null;S.ret=null;while(stack.length>1&&!['base','settings'].includes(keys.at(-1)))pop();toast(serverName+' added');return redrawConnections()}
   const task='fromKey' in d?null:S.ret;S.ret=null;S.tab=task?'tasks':'providers';renderPanel();
   if(task){S.pick={t:task,p:provider.id,m:0};return pickDlg(task);}
   return;
