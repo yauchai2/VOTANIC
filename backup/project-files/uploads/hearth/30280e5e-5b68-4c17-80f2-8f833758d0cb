@@ -1,0 +1,97 @@
+# XRCC AI Provider UI/UX Review 與優化規劃
+
+> [!NOTE]
+> **檢視範圍**：Figma `XRCC AI Workbench`（Page `1333:8666 · XRCC AI Provider` 共 22 張核心畫板與規格表），並交叉比對 Notion 唯讀文件（`XRCC AI Provider UI Requirement`、`XRCC AI Provider Implementation Spec`、`Research Team Meeting 2026-11-04`）。本報告未對任何 Figma 或 Notion 內容進行修改。
+
+---
+
+## 一、整體評價與核心亮點
+
+**XRCC AI Provider** 是整個 Workbench 的 Flow 與 Annotation 標準參考頁，整體視覺質感、資訊階層與任務導向設計已達相當高的水準：
+
+- **優點亮點**：
+  - **心理模型以「任務（Task）」為中心**：`B1 · Models` 用 6 張任務卡片（`4 of 6 tasks are ready`）搭配進度條，讓非技術使用者不必懂 API 細節就能掌握專案 AI 就緒度。
+  - **金鑰安全預期管理清晰**：反覆強化 `Keys stay encrypted on this computer and never pass through VOTANIC`，並涵蓋未設密碼、密碼解鎖、忘記密碼、Custom 無金鑰等完整情境。
+  - **語音試聽體驗直覺**：`C1 · Voices` 提供自訂 `Preview line` 與卡片內波形播放，大大降低挑選 TTS 語音的摩擦。
+
+- **核心待優化面向**：本次 Review 識別出 **4 項 P0 規格落差與視覺缺陷**、**8 項 P1 易用性與跨端一致性問題**，以及 **2 項 P2 規格表整理項目**。
+
+---
+
+## 二、P0｜關鍵規格落差、視覺裁切與狀態矛盾（建議優先處理）
+
+### 1. `C3a`（Voice Advanced）與 `A6b`（Custom Advanced）內容被彈窗底緣裁切
+- **現況問題**：
+  - `C3a · New voice preset · Advanced`（`2540:12460`）在 640px 彈窗內與 `C2 · New voice preset` **視覺完全相同**，Notion 規格要求的 `Pitch`、`Speed` 滑桿與動態設定欄位被整個裁切在折線以下，也沒有捲動暗示。
+  - `A6b · Custom provider · Advanced open`（`1472:3182`）展開後僅顯示 `Request format`，折疊摘要提到的 `30 s timeout` 欄位被底部按鈕區遮住。
+- **優化建議**：
+  - 調整 `C2`／`C3a` 的 Voice 清單預設高度（顯示 3 列 + 明確捲動提示），讓 `Advanced` 展開後的 `Pitch`／`Speed` 滑桿在 `C3a` 畫面中完整可見（或將 `C3a` 呈現為已捲動至 Advanced 區的視圖，並加上捲動條）。
+  - 調整 `A6b` 垂直間距或捲動位置，確保 `Request format` 與 `Timeout (s)` 兩項設定皆清晰呈現。
+
+### 2. `D1` 與 `D3` 金鑰清單的圖示狀態錯誤（`No password` 顯示紫色鎖頭）
+- **現況問題**：
+  - 在 `D1 · Settings · Connections`（`1387:24637`）與 `D3 · Launcher · Connections`（`1534:6437`）中，第 2 列 **`Home Gemini key`** 標示為 **`No password`**，卻錯誤套用了紫色鎖頭圖示（與 `Password set` 相同），而下方 `Voice Lab key`（`No password`）則使用灰色鑰匙圖示。
+- **優化建議**：
+  - 修正 `Home Gemini key` 的狀態變體，統一規則：`Password set` = 紫色鎖頭（`icon/accent`）；`No password` = 灰色鑰匙（`icon/secondary`），同步檢查所有 `D1*`／`D3*` 驗收畫板。
+
+### 3. Notion 關鍵限制提示缺席（Gemini VPN 提醒 & MiniMax 7 天閒置語音）
+- **規格對照**：
+  - `XRCC AI Provider UI Requirement` 明確註記：`Gemini (needs a VPN, might need to notify the user)`。
+  - `Research Team Meeting (2026-11-04)` 指出 MiniMax Voice Cloning **閒置 7 天會自動刪除**，需加入提示並提供預設語音 fallback。
+- **現況問題**：
+  - `A3 · Add provider` 選取 Gemini 時無任何地區／VPN 提示；`B7 · Test failed`（`Couldn't reach Gemini`）僅寫 `Check your network connection and try again.`，未引導使用者檢查 VPN。
+  - `C1`／`C2` 未區分「系統預設語音」與「帳號自訂／克隆語音」，亦無 7 天閒置失效與 fallback 提示。
+- **優化建議**：
+  - 於 `A3` 選取 Gemini 時在底部加一行輕量註記（`Gemini may require a VPN in some regions.`），並於 `B7` 失敗提示補強 `Check your network or VPN connection, then try again.`。
+  - 於 `C2` 語音清單區分 `Preset voices` 與 `My cloned voices`（或加 badge），對克隆語音加上精簡提示：`Unused cloned voices expire after 7 days and fall back to the default voice.`。
+
+### 4. `B1 · Models` 與 `C1 · Voices` 的「Speech provider」資料與心智模型衝突
+- **現況問題**：
+  - **資料打架**：`B1 · Models` 的 `Text to speech` 設為 **MiniMax `Speech 2.8 HD`**，但切到 `C1 · Voices` 時頂部 `Speech provider` 卻顯示 **`Gemini 3.1 Flash TTS`**。
+  - **概念重疊**：`C1` 下方每張語音卡片各自綁定不同 Provider（`Warm host` = MiniMax、`Museum guide` = Gemini），還有 `All 3 | Gemini | MiniMax` 篩選器；這會讓使用者困惑頂部 `Speech provider` + `Change` 到底會覆蓋所有 Preset，還是僅影響預設 TTS。
+- **優化建議**：
+  - 明確分工：`B1 · Models` 管理「專案預設 TTS 模型」，`C1 · Voices` 管理「各供應商的語音 Preset」。將 `C1` 頂部改為以 **`Preview line`** 為主（並同步 `Speech provider` 顯示為 `MiniMax · Speech 2.8 HD` 或改為唯讀摘要連回 `Models`），避免兩處設定互相矛盾。
+
+---
+
+## 三、P1｜跨端一致性、易用性與防呆優化
+
+| 領域 | 觀察位置 | 問題描述 | 優化方案 |
+| :--- | :--- | :--- | :--- |
+| **Lane A／B** | `A3`、`B2` | 供應商卡片下方的能力圖示（`💬 📄 🔊 +2`／`+3`）過於抽象；在 `B2 · Who runs AI quiz?`（單一任務選擇器）中，顯示無關任務的 `+2`/`+3` 反而干擾判斷，且未說明為何 MiniMax／Custom 變灰。 | `A3` 可保留能力圖示；但在 `B2` 單任務選擇器內，卡片底部改顯示該任務的明確狀態（`Ready`、`Not connected`、`Unsupported`），一眼分辨能否選取。 |
+| **Lane A** | `A6` vs `A6b` | `A6` 的 `Name` 標示為 `Optional`，`A6b` 卻拿掉了 `Optional` 標記，必填規則前後不一致。 | 對齊 Notion Spec（使用者需自行命名 Custom provider 以便辨識），統一 `Name` 為必填或一致標註 `Optional`（預設以 Host 自動命名）。 |
+| **Lane B** | `B6 · Unlock key` | 錯誤提示寫 `in Key Management`，但實際頁面名稱為 `Settings → Connections → AI keys`，且沒有快捷入口。 | 統一術語為 `Connections`（或 `AI keys`），並將其改為可點擊連結直接導向 `D1`，減少排錯步驟。 |
+| **Lane B** | `B3 · Providers` | 卡片顯示 `48.2k tokens this month`，但若同把 API key 在其他電腦或外部使用，本地統計會與帳單不符。 | 確認是否改標註 `48.2k tokens on this PC` 或以 `Last tested · Today` 取代，避免使用者誤當官方帳單額度。 |
+| **Lane C** | `C1 · Voices` | `Warm host` 與 `Museum guide` 皆顯示 `Used by 3 characters`（疑似重複範例）；`Warm host` 漏顯示語音名（對比 `English · Kore`），且英文 `Preview line` 無法準確試聽粵語。 | 補上真實差異化範例（如 `Warm host` → `Cantonese · Lyrical`、`Used by 2 characters`），並以 Annotation 說明依語音語系提供對應預設試聽句。 |
+| **Lane C** | `C9 · New session` | 空白 Prompt 撰寫門檻高，缺少快速起步輔助。 | 於 `Prompt` 欄下方新增 2～3 個輕量範本膠囊（如 `Museum guide`、`Quiz tutor`），點選即帶入可修改的範本。 |
+| **Lane D** | `D4`／`D4c` | 1) 啟動前對話框中 Key 欄位沒有下拉箭頭，看不出可切換其他 Key；<br>2) 底部提示 `Poe needs a password. Enter it after XRCC opens.`，與 Notion Implementation Spec 中 Launcher 透過 `-aiModelKey` 傳遞密碼的設計有落差。 | 1) 為可切換的 Key 欄位補上標準 Select 下拉箭頭；<br>2) 確認 Poe 密碼要在 `D4` 當場輸入（符合 `-aiModelKey`）或刻意延後至 XRCC 內輸入，兩端規格需對齊。 |
+| **Lane D** | `D0` vs `D3` | XRCC Settings（`D0`）將 `AI keys` 與 `Wit.ai` 收成總覽卡片；Launcher（`D3`）則全部攤平在同一頁，且少了 `Remote control` 區塊（與 Remote Trigger 頁的 Launcher Connections 總覽結構不一致）。此外 `D0`／`D1` 左下角仍顯示 `Version 3.1.0`。 | 統一 Launcher `Connections` 總覽架構（與 Remote Trigger 頁的 `D3R` 一致：總覽頁列出 `Remote control`、`AI keys`、`Speech commands`，點入子頁管理），並將 `D0`／`D1` 版本號更新為 `4.2`。 |
+
+---
+
+## 四、P2｜規格表整理與微互動補齊
+
+1. **`Tooltip spec`（`1411:1760`）清理**：
+   - 合併重複列：`+N`（第 8 列）與 `+N capability chip`（第 12 列）重複且文案不一致，保留一列並統一大小寫。
+   - 修正第 11 列 `Manage keys` 的 Tooltip 文案：`Open Key Management` → `Open Connections`。
+2. **補齊 `Micro-interactions` 規格表**：
+   - 參照 `XRCC Remote Trigger (P1)` 的 Section 4，補充連線 `Test` 載入狀態、`Loading voices` 骨架、語音試聽波形進度、以及複製／儲存／刪除的 Notification 時長規範。
+
+---
+
+## 五、分階段優化執行計畫（Roadmap）
+
+| 階段 | 重點任務 | 涵蓋畫板 | 預期成效 |
+| :--- | :--- | :--- | :--- |
+| **Phase 1：視覺 Bug 與元件修正** | 修正 `D1`/`D3` `Home Gemini key` 鎖頭圖示錯誤；修正 `C3a`/`A6b` 進階區塊裁切；統一 `B1`/`C1` Speech provider 資料與 `C1` 卡片文案；更新 `D0`/`D1` 版本號為 `4.2`；清理 `Tooltip spec` 重複列 | `D1`, `D3`, `C3a`, `A6b`, `C1`, `D0`, `1411:1760` | 消除畫面矛盾與實作歧義 |
+| **Phase 2：P0 規格對齊與提示補強** | 補上 Gemini VPN 提示（`A3`、`B7`）；補上 MiniMax 克隆語音 7 天閒置與 fallback 提示（`C2`）；釐清 `C1` `Speech provider` 與 `B1` 的職責分工 | `A3`, `B7`, `C1`, `C2` | 完整對齊 Notion 需求與研究會議決議 |
+| **Phase 3：P1 跨端體驗與 IA 統一** | 簡化 `B2` 單任務選擇器供應商狀態；統一 `B6` 術語並加 `Open Connections` 捷徑；修正 `D4`/`D4c` 下拉選單視覺與密碼時機；統一 `D3` Launcher Connections 與 Remote Trigger 總覽架構；補齊 `Micro-interactions` 規格 | `B2`, `B6`, `A6`, `C9`, `D3`, `D4`, `D4c`, Section 5 | 提升多模組間的操作一致性與交付品質 |
+| **Phase 4：同步 Web Prototype（待確認）** | Figma 全部畫板完成並視覺自查後，再同步更新 `prototype/xrcc-ai-provider` 分支的 Web Prototype | `yauchai2/VOTANIC`（`prototype/xrcc-ai-provider`） | 達成 Figma 與 Prototype 100% 對齊 |
+
+---
+
+## 六、開始修改前需先與你確認的 3 個決策
+
+1. **`D4` Launcher 啟動前密碼輸入時機**：`Poe` 等有設密碼的 Key，確定要維持「**進 XRCC 後再解鎖**」（現有 Figma 設計），還是改為「**在 Launcher `D4` 直接輸入密碼並透過 `-aiModelKey` 傳入**」（Notion Implementation Spec）？
+2. **`D3` Launcher Connections 頁架構**：是否要將 `D3` 統一改為與 Remote Trigger 頁一致的「**Connections 總覽（含 Remote control / AI keys / Speech commands）→ 點入子頁**」結構？
+3. **執行範圍**：是否要我直接依上述 **Phase 1 → Phase 2 → Phase 3** 實作到 Figma（使用 XRCC PC Library 元件與語意 Token），完成並截圖自查後再同步 `prototype/xrcc-ai-provider` 的 Web Prototype？

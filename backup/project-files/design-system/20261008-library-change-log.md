@@ -1885,3 +1885,62 @@ Page Button, Library file. Three sets: `Button / Dark / 40px` (17463:54657, Stat
 - Prototype (branch claude/project-thread-9oawj5, NOT pushed to preview): API key field is a select with "+ Add another key…"; provider card has "Key in use" select; key list shows In use / Not in use; duplicate key names get " 2"; Connect updates the provider's key.
 - 2026-11-24 review fixes (multi-key): Figma Remove key dialog copy (I1467:3279;18202:450, I2540:12417;18202:450) now says the provider switches to its other key. Prototype commit 3b5f1a9 (not pushed): "+ Add another key…" from a provider card makes the new key in use and closes the dialog; removing an in-use key switches the provider to its other key of the same provider.
 - 2026-11-24 (Alan: connected provider could not add another key): Figma tooltip 2542:11114 now "Connected. Pick it to add keys or switch the key in use."; A3d button (I2060:10383;18194:3626;2060:10386;17463:54368) now "Use this key". Prototype: connected provider tile is selectable (was disabled), button "Use this key" when the provider is already connected. Local commit only, not pushed.
+- 2026-11-24 dropdowns (Alan: use XRCC library components): Figma new board A3o (3254:22846, label 3254:22912) shows the Select open with library dropdown-menu + menu-item (selected / default); restored the chevron on 5 Key select instances in Add provider and B4 (resetOverrides), A3d button back to "Connect Gemini" (selected provider there is not connected). Native browser lists are replaced in the prototype by a custom dropdown with the same look (all select.sel); chevron icon instead of the native arrow. Local commit only.
+- 2026-11-24 spacing + hierarchy pass (Alan approved plan "全部同意"): Figma, 62 dialog instances on the AI Provider page: Body padding 24, Content/Text gap 20, Header 56 (title inset 24), Footer padding 16/24, footer buttons Size Medium 36 (destructive buttons resized to 36/14px). Dialogs with fixed 624 height or content that would pass 616 use compact tier (padding 20, gap 16, header 48, footer 12/20) and scroll inside. Hidden repeated hint "Icons under each name…" in Add provider. Key list gap 8 -> 12 (36 lists); provider card Info gap 4 -> 6 (37 rows). A3o dialog and dropdown re-aligned; annotation on A3d (2060:10383). No new tokens or components. Prototype follows (local commit only, not pushed).
+
+## 2026-11-24 · AI Provider · Review plan Phase 1 (Figma, XRCC AI Provider page 1333:8666)
+- D1 (1387:24677) / D3 (1658:5898): "Home Gemini key" row had a lock icon and purple text beside "No password" (clone error). Icon swapped to key icon, grey text/icon fills copied from the Voice Lab row (bound variables kept). No new tokens.
+- A6b (1472:3226): Name label now shows "Optional" (matches A6, Alan 2026-11-20).
+- A6b / C3a (2540:12503) / C2 (1366:1353): body content is taller than the 960x640 window allows; added a "Scroll thumb (state cue)" rectangle (fill bound to the existing input border token) on each board to show internal scrolling.
+- C1 (1354:3156): Speech provider now mirrors the B1 Text to speech card (Speech 2.8 HD, MiniMax logo). Rule: Voices tab "Speech provider" = the model chosen on the Models tab Text to speech card; single source is the Models tab.
+- Tooltip spec (1411:1760): merged duplicate "+N" rows (deleted 1485:3557); "Open Key Management" -> "Open Connections".
+- Skipped: version "4.2" (cannot verify against Notion/Launcher); VPN hint (removed by Alan 2026-11-13, open question).
+
+## 2026-11-24 · AI Provider · Review plan Phase 2 (Figma)
+- D4 (1366:1556), D4r (2629:18725), D4c (2629:18842), D4p (2623:16858): the deferred note "Poe needs a password. Enter it after XRCC opens." replaced by a Poe provider row (Poe logo, "Text to image", lock + "Password needed", Library password input "Password for Team Poe key", helper "Leave empty to enter it later inside XRCC."). Password is entered in the Launcher and passed via -aiModelKey (Notion Implementation Spec, Alan 2026-11-24 D4).
+- D4c is now fixed at 624 high with a scroll cue (content taller than the 960x640 window).
+- D4 Annotation rewritten (old text said passwords are unlocked inside XRCC).
+- NOT done: Gemini VPN wording (removed 2026-11-13, open question); MiniMax 7-day cloned-voice hint (no cloned-voice UI, open question).
+
+## 2026-11-24 · AI Provider · Review plan Phase 3 (Figma)
+- B2 (single-task picker, dialog 1587:5713): capability icons (+2/+3) hidden; new "Task status row" under provider tiles: Gemini Ready, MiniMax Unsupported, Poe Password needed, OpenRouter Not connected, Custom Ready. Tile height 120 -> 94. Text colours bound to existing tokens.
+- B5 / B6 / B6a / B6v: "Key Management" -> "Connections", underlined text/accent link (to D1).
+- C9 (dialog 1475:3400): "Start from a template" + 3 chips (Museum guide, Quiz tutor, Tour narrator), cloned from the C1 filter chip.
+- C1: Warm host card now "Cantonese · Lyrical", "Used by 2 characters" (was duplicate of Museum guide).
+- D4 / D4r / D4c / D4p: Key select instances now have the standard arrow-down in the end slot.
+- Launcher Connections: D3 renamed "D3 · Launcher · AI keys" (breadcrumb "< Connections", Speech commands + Clear unused hidden); new D3o overview (cloned from Remote Trigger B22, 5 keys · 2 protected) and D3w Speech commands sub-page, placed in section 4 at y=2160 with labels. D0 summary "5 keys · 2 protected" (was 4 keys; D1 lists 5).
+- Section 5: new "Spec · Micro-interactions" (6 rows) cloned from the Remote Trigger spec frame layout; Test loading, Voices skeleton, voice preview waveform, Notification timings, dialog stacking, Add key save.
+- Open question: B3 "48.2k tokens this month" wording (local count vs billing) - left unchanged.
+
+## 2026-11-24 · AI Provider · Prototype sync for review plan (local commit only, NOT pushed)
+- Launcher connection check: Poe row with password input replaces the deferred note; key selects show a chevron.
+- Task picker: capability icons replaced by Ready / Unsupported / Password needed / Not connected labels.
+- New session: "Start from a template" chips fill name and prompt. Voices sample data: Warm host "Cantonese · Lyrical", "Used by 2 characters".
+- Already matching Figma: Speech provider follows the Text to speech task; Launcher Connections overview with sub-pages.
+
+## 2026-11-24 · AI Provider · follow-up (Alan)
+- C9 template chips removed again (Alan: no templates), Figma first, then prototype (local commit, not pushed). Supersedes the Phase 3 C9 entry.
+- Overlap fix: section "4 · Connections" enlarged to 3200 high (new D3o/D3w row at y 2160 overlapped section 5); section "5 · Hover 與 Tooltip" moved down 1104.
+- Prototype alignment (local commit, not pushed): "Key Management" -> underlined "Connections" link in remove-provider and unlock dialogs (opens AI keys), matching Figma B5/B6.
+
+## 2026-11-24 · AI Provider · Custom provider multi-model flow (Figma; plan: reports/20261124-ai-provider-custom-multimodel-plan.md)
+- Custom provider dialog (A6 1366:1195 and variants A6b 1472:3226, A6c 1718:6877, A6p 2546:12343, A6t 2546:12533, A6d 3082:177, A6k 3218:22557, A6e 3223:22467, D2b 2709:20070) rebuilt as 3 steps: (1) Connection = Base URL + "Requests go to …/chat/completions" preview, API key, Name, Advanced; (2) Models = bordered model list (status icon, model ID, Default tag, status, remove) + "Add a model ID" input + Add; (3) Test (Optional) = "Test all N models". Old "Model name" group removed. Step numbers use the Badge component; done steps use the AI Icon / Check.
+- Dialogs fixed 600x624 (Body fill, clips), y=8 on the 960x640 board, scroll thumb cue added. Test is optional: Add provider needs a valid Base URL and at least one model only. No "Fetch from server", no templates.
+- New boards in section A (y 3194 / 4284): A6m models added, A6r test partly failed (Retry per row, "2 of 3 models ready"), A6x duplicate model ID, A6q testing, A6a all ready. Step-1 fields collapsed to the header on these to show steps 2-3 as scrolled.
+- A6d: empty model list (dashed box). A6k: "Remove provider" red text button in footer, "Save changes". A6e: disabled Add provider kept.
+- B2m (section B, 2440/1952): task picker with Custom selected, per-model status, Error row unselectable, "Manage models" link, "Use llama-3.3-70b". B3c Studio LLM card: "Custom · 3 models · 2 ready". D4c: "No API key required · 3 models". D4cm (new): "llama-3.3-70b isn't on this server anymore." + "Choose another model".
+- Annotations (native, Interaction): default model rule, optional test, reset on URL/key change, Retry, duplicate ID, disabled while testing, step 3 check, Manage models, launcher model check. A6d/A6k/A6e footer annotation rewritten (needs ≥1 model, not Model name).
+- Layout fix: section A resized to 5000 high (it overlapped section B before); sections B, C, D, E, M moved down 2170 with the 8 connector vectors that belong to them; Screen flow and Flow connectors frames enlarged by 2170.
+- Library: no new tokens or components. Retry / Choose another model use Button Tertiary Small; model rows are plain frames on the page (AI Provider specific).
+- Not done yet: B1 task card "Studio LLM · llama-3.3-70b" (card text already follows task selection), tooltip/micro spec rows for Test, prototype sync.
+
+## 2026-11-24 · AI Provider · Custom provider simplified (Alan: too complex)
+- A6 and all Custom variants (A6b/c/p/t/d/k/e, D2b) flattened: no step headers or check icons. Content = one-line intro, Base URL, API key (Optional), Models (header with small Test button, rows, add input), "More options" (Name, format, timeout; Name only appears when expanded). Removed: "Requests go to …" preview, "Saved on this computer" helper, Name field in main view.
+- Model rows show status icon/text only after a test, Default marker only when more than one model. Content now fits 624 without scroll in the common case; scroll thumb kept only on A6b (expanded options).
+- State boards rebuilt in the minimal form: A6m (several models), A6r (test partly failed, Retry), A6x (duplicate ID), A6q (testing). A6a (all ready) removed as redundant.
+- Annotations reduced to 7 short ones. B3c card now "· Custom · 3 models". Prototype synced locally (commit only, not pushed).
+
+## 2026-11-25 · AI Provider · Prototype realigned to Figma after Codex changes (Claude, review thread; Figma NOT edited)
+- Context: report reports/20261125-codex-ai-provider-review.md. Commits 565f5ef, 2b8704c, 86e2e84, a0170aa (11-24 08:01 UTC to 11-25 03:28 UTC, author "Alan YC Chan <yauchaichan@gmail.com>", inferred Codex) changed the prototype. Figma also gained a Codex-authored section "Custom provider · 統一連接流程" (about 60 boards, node 3366:24178) with no change log entry; Alan chose to keep it (2026-11-25) and have the prototype follow it.
+- Prototype (local branch claude/project-thread-00lm0h on top of a0170aa, not pushed, not published): (1) Add provider: built-in providers use the API key select + Manage keys again (Figma A3 3453:25017, A3d 2060:10339, A3o); no Add key button beside it. (2) Provider card: "Key in use" select restored for built-in providers (no Figma board for the expanded card; last approved behaviour). (3) Removed success toasts "Key removed", "Key saved", "Provider saved", "Provider and key saved". (4) New "Connection check" Launcher dialog for Custom-only projects with the five Figma states (nodes 3368:24527 to 3368:24583); the review-bar select lists the states.
+- Not yet checked against Figma: task-origin Add provider variants (3433:23991 to 3433:24042), Custom card boards (3442:24059 to 3442:24107), Protect key, Review provider changes, Edit custom provider, First Custom key setup, Launcher key boards. Library: no change; no Publish needed.
