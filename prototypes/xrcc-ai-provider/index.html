@@ -524,7 +524,7 @@ button:focus-visible,a:focus-visible,select:focus-visible{outline:2px solid var(
   <div class="stage">Your project workspace</div>
 </div>
 <div class="hint-bar">Prototype of the XRCC AI Provider flow · Help › My Settings opens Settings
-  <button id="dLoad">Voices loading</button><button id="dFail">Voices failed</button><button id="dLaunch">Launcher gate</button><button id="dLaunch0">Gate: no keys</button><button id="dLaunchCustom">Gate: Custom provider</button><button id="dLConn">Launcher keys</button><button id="dSettings">Settings Connections</button><button id="dSeed">Configured project</button><button id="dEmpty">Empty states</button><button id="reset">Reset</button></div>
+  <button id="dLoad">Voices loading</button><button id="dFail">Voices failed</button><button id="dLaunch">Launcher gate</button><button id="dLaunch0">Gate: no keys</button><button id="dLaunchCustom">Gate: Custom provider</button><select id="dLaunchState" aria-label="Connection check state"><option value="no-key">Local LLM · no API key</option><option value="ready">Studio LLM · Ready</option><option value="key">Needs key</option><option value="url">Cannot reach Base URL</option><option value="model">Model unavailable</option></select><button id="dLConn">Launcher keys</button><button id="dSettings">Settings Connections</button><button id="dSeed">Configured project</button><button id="dEmpty">Empty states</button><button id="reset">Reset</button></div>
 <div class="overlay" id="ov"></div>
 <div class="toast" id="toast" role="status"></div>
 
@@ -1432,7 +1432,14 @@ function openCustomLaunch(scenario){
   server={id,name:localhost?'Local LLM':'Studio LLM',endpoint,models,model:models[0].id,requiresKey:false,key:''};
   S.servers.push(server);
  }
- S.launchCustom={providerId:server.id,requiresKey:scenario==='key'||requiresKey(server),key:scenario==='key'?'':server.key,
+ let readyKey='';
+ if(scenario==='ready'){
+  let k=customKeys(server.id)[0];
+  if(!k){k={id:uniqueId('k'),prov:'custom',serverId:server.id,name:'Studio LLM key',end:'8D21',pw:false,meta:'Custom · In use · '+server.endpoint.replace(/^https?:\/\//,'').split(':')[0]};S.keys.push(k);}
+  readyKey=k.id;server.requiresKey=true;server.key=k.id;
+ }
+ S.launchOnly=true;
+ S.launchCustom={providerId:server.id,requiresKey:scenario==='key'||scenario==='ready'||requiresKey(server),key:scenario==='key'?'':(scenario==='ready'?readyKey:server.key),
   model:scenario==='model'?'legacy-chat':server.model,issue:scenario==='url'?'url':''};
  S.launchManage=false;
  S.launchKeys=structuredClone(KEYS0);
@@ -1473,9 +1480,20 @@ function launchKeyChoice(){
  <label class="field mdb">API key<select class="sel" data-launch-key-choice>${options}</select></label>
  <button class="btn out" data-key-for="${server.id}" data-key-mode="launch-custom">Add key</button></div>`,`${cancel}<button class="btn pri" data-activate-launch-key ${options?'':'disabled'}>Use this key</button>`,'sub');
 }
+function launchCheckDlg(){
+ const setup=S.launchCustom,server=customProvider(setup.providerId),issue=launchCustomIssue();
+ const actions={
+  key:customKeys(server.id).length?`<button class="btn m" data-choose-launch-key>Choose key</button>`:`<button class="btn m" data-key-for="${server.id}" data-key-mode="launch-custom">Add key</button>`,
+  url:editProviderIcon('data-launch-edit'),
+  model:`<button class="btn m" data-launch-model>Choose another model</button>`
+ };
+ const state=issue?{key:'Needs key',url:'Can’t reach Base URL',model:'Model unavailable'}[issue]:(setup.requiresKey?'Ready':'Ready · No API key required');
+ push(`<div class="dlg"><div class="h" style="padding:16px 20px"><div class="col g4 fill"><span class="sm t2">XRCC Launcher / Lobby · Museum tour</span><span class="lgb">Connection check</span></div></div><div class="b" style="padding:20px"><div class="preflight-row" style="background:var(--header);border:1px solid var(--b-def)"><div class="row g12"><div class="col g4 fill"><b class="mdb">Text chat</b><span class="sm t2">${esc(server.name)} · ${esc(setup.model)}</span><span class="sm ${issue?'terr':'tok'}">${state}</span></div>${actions[issue]||''}</div></div></div><div class="f"><button class="btn m" data-nai>Start without AI</button>${issue?'':'<button class="btn pri m" data-sx>Start XRCC</button>'}</div></div>`,'launch-check');
+}
 function launchDlg(){
  S.launchManage=false;
  hide();
+ if(S.launchOnly&&S.launchCustom)return launchCheckDlg();
  const available=S.launchKeys||S.keys;
  const customIssue=launchCustomIssue();
  const hasAny=launchRequirements.some(([pid])=>available.some(k=>k.prov===pid))||Boolean(S.launchCustom&&!customIssue);
@@ -1645,9 +1663,9 @@ document.addEventListener('click',e=>{
  }
  if(t.id==='dSeed')return sample();
  if(t.id==='dSettings'){sample(false);return openSettingsConnections()}
- if(t.id==='dLaunch'){S.launchCustom=null;S.launchManage=false;S.launchKeys=structuredClone(KEYS0);return launchDlg();}
- if(t.id==='dLaunchCustom')return openCustomLaunch('no-key');
- if(t.id==='dLaunch0'){S.launchCustom=null;S.launchManage=false;S.launchKeys=[];return launchDlg();}
+ if(t.id==='dLaunch'){S.launchOnly=false;S.launchCustom=null;S.launchManage=false;S.launchKeys=structuredClone(KEYS0);return launchDlg();}
+ if(t.id==='dLaunchCustom')return openCustomLaunch($('#dLaunchState').value);
+ if(t.id==='dLaunch0'){S.launchOnly=false;S.launchCustom=null;S.launchManage=false;S.launchKeys=[];return launchDlg();}
  if(t.id==='dEmpty'){S.keys=[];S.servers=[];S.witTokens=[];S.models={};S.voices=[];S.sessions=[];S.providers=[];S.assign={};S.tab='providers';S.fromSettings=false;return renderPanel()}
  if(t.id==='dLConn'){S.remoteStopped=false;S.launchManage=false;S.fromSettings=true;S.launcher=true;S.conn=null;S.keys=S.keys.length?S.keys:structuredClone(KEYS0);if(!S.witTokens.length)S.witTokens=[{id:'wit-sample',name:'Lobby kiosk token',meta:'Wit.ai · last used 28 Oct',lastUsed:'2026-10-28'}];return settings(false,true)}
  if('manage' in d){
