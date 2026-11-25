@@ -9,17 +9,33 @@
           "value": "xrcc-remote-trigger.vercel.app"
         }
       ],
-      "destination": "/remote-trigger/",
+      "destination": "https://votanic-proto.vercel.app/remote-trigger/",
+      "permanent": false
+    },
+    {
+      "source": "/ai-provider/index.html",
+      "destination": "https://votanic-proto.vercel.app/ai-provider/",
+      "permanent": true
+    },
+    {
+      "source": "/ai-provider",
+      "destination": "https://votanic-proto.vercel.app/ai-provider/",
+      "permanent": false
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "xrcc-remote-trigger.vercel.app"
+        }
+      ],
+      "destination": "https://votanic-proto.vercel.app/:path*",
       "permanent": false
     },
     {
       "source": "/remote-trigger",
       "destination": "/remote-trigger/",
-      "permanent": false
-    },
-    {
-      "source": "/ai-provider",
-      "destination": "/ai-provider/",
       "permanent": false
     },
     {

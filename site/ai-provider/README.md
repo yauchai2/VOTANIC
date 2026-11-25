@@ -1,8 +1,8 @@
 # XRCC AI Provider · interactive prototype
 
-[Open the web prototype](https://htmlpreview.github.io/?https://github.com/yauchai2/VOTANIC/blob/prototype/xrcc-ai-provider/prototypes/xrcc-ai-provider/index.html)
+[Open the web prototype](https://votanic-proto.vercel.app/ai-provider/)
 
-This is the permanent preview address. Publish verified prototype updates to the `prototype/xrcc-ai-provider` branch and keep this path unchanged.
+Publish verified AI Provider updates from `site/ai-provider/` through the Vercel production project.
 
 This web prototype follows the [XRCC AI Provider flow in Figma](https://www.figma.com/design/ZBOB48n4eLsZABCTnhh5kk/?node-id=1354-2549) using the existing HTML, CSS and JavaScript. Figma artwork and the Roboto font are bundled locally. No build step or external service is required.
 

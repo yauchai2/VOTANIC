@@ -1,19 +1,9 @@
 <!doctype html>
 <html lang="en">
 <head>
-<script>
-(() => {
-  if (location.hostname !== "htmlpreview.github.io") return;
-  const source = new URL(location.search.slice(1), location.href);
-  const path = "/yauchai2/VOTANIC/claude/project-thread-9oawj5/prototypes/xrcc-ai-provider/index.html";
-  const github = source.hostname === "github.com" &&
-    source.pathname === path.replace("/VOTANIC/", "/VOTANIC/blob/");
-  const raw = source.hostname === "raw.githubusercontent.com" && source.pathname === path;
-  if (github || raw) location.replace("https://htmlpreview.github.io/?https://github.com/yauchai2/VOTANIC/blob/prototype/xrcc-ai-provider/prototypes/xrcc-ai-provider/index.html" + location.hash);
-})();
-</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="canonical" href="https://votanic-proto.vercel.app/ai-provider/">
 <title>XRCC AI Provider · Interactive prototype</title>
 <style>
 @font-face{font-family:Roboto;font-style:normal;font-weight:400;font-display:swap;src:url("./assets/roboto-latin-400-normal.woff2") format("woff2")}
@@ -89,6 +79,9 @@ svg{display:block}
 .phead .hsm,.phead .lgb{flex:1;min-width:0}
 .iconbtn{width:40px;height:40px;display:grid;place-items:center;color:var(--t1);flex:none}
 .iconbtn:hover{background:var(--faded)}
+.iconbtn.edit-provider{width:36px;height:36px;color:#fff}
+.iconbtn.edit-provider:hover{background:#2a2531}
+.edit-provider[data-tip]:hover::after{left:auto;right:0;transform:none}
 .iconbtn.s28{width:28px;height:28px;border-radius:8px}.iconbtn.s24{width:24px;height:24px;border-radius:4px}
 .tabsrow{padding:12px 16px;background:var(--panel);flex:none}
 .tabs{display:flex;gap:2px;border-radius:8px;overflow:hidden}
@@ -504,7 +497,9 @@ const D={Chart:'M6 19V11M12 19V5M18 19v-5M3 19.5h18',
  Display:'M4 5H20V16H4V5ZM9 20H15M12 16V20',Mouse:'M8 4H16V16C16 18.2 14.2 20 12 20C9.8 20 8 18.2 8 16V4ZM12 4V10',Pencil:'M5 19L6 15L16 5L19 8L9 18L5 19Z',Wifi:'M3 9C8 4.5 16 4.5 21 9M6 12.5C9.5 9.5 14.5 9.5 18 12.5M9 16C10.7 14.7 13.3 14.7 15 16M12 19H12.01',
  Shield:'M12 3L20 6V12C20 16 16.5 19.5 12 21C7.5 19.5 4 16 4 12V6L12 3Z',Id:'M5 6H19V18H5V6ZM8 10H11M8 14H11M14 10H16M14 14H16',Head:'M4 14V12C4 7.6 7.6 4 12 4C16.4 4 20 7.6 20 12V14M4 14H7V19H4V14ZM17 14H20V19H17V14Z',Link:'M10 14L14 10M8 12L6 14C4.9 15.1 4.9 16.9 6 18C7.1 19.1 8.9 19.1 10 18L12 16M16 12L18 10C19.1 8.9 19.1 7.1 18 6C16.9 4.9 15.1 4.9 14 6L12 8',Set:'M4 8H20M4 16H20M9 6V10M15 14V18'
 };
-const FILLED={MoreH:'<circle cx="5.5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18.5" cy="12" r="1.5"/>'};
+const FILLED={
+ ProviderPencil:'<path transform="translate(2 2)" d="M19.754 3.619 16.381.246a.84.84 0 0 0-1.189 0L0 15.437V20h4.562L19.754 4.808a.84.84 0 0 0 0-1.189ZM.887 19.113v-3.308l.284-.283 3.307 3.308-.283.283H.887Zm4.219-.911-3.308-3.308L12.975 3.717l3.308 3.307L5.106 18.202ZM16.91 6.397l-3.308-3.307L15.786.906l3.308 3.308-2.184 2.183Z"/>',
+ MoreH:'<circle cx="5.5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="18.5" cy="12" r="1.5"/>'};
 const ic=(n,c='i16',st='')=>FILLED[n]?`<svg class="ic ${c}" viewBox="0 0 24 24" style="${st}"><g fill="currentColor" stroke="none">${FILLED[n]}</g></svg>`:`<svg class="ic ${c}" viewBox="0 0 24 24" style="${st}"><path d="${D[n]}"/></svg>`;
 const lg=(p,s)=>`<span class="logo l${s||40}"><svg viewBox="0 0 24 24"><use href="#lg-${p}"/></svg></span>`;
 const P={
@@ -645,6 +640,9 @@ function tasks(){
   const runs=!p?`<div class="runs cta sm tacc">${ic('Plus')}<span class="fill">Choose a provider</span>${ic('Chevron')}</div>`:bad?`<div class="runs sm">${lg(p.pid,20)}<span class="fill">${isLocked(p)?'Enter your '+P[p.pid].n+' key password':!keyOf(p)?'Needs key':'Test failed'}</span></div>`:`<div class="runs sm t1">${lg(p.pid,20)}<span class="fill">${model(p,t)}</span>${extra(p,t)?`<span class="caption t2">${extra(p,t)}</span>`:''}</div>`;
   return `<button class="card task ${cls}" data-task="${t.id}">${top}<div class="col g4"><div class="lgb">${t.n}</div><div class="sm t2">${t.d}</div></div>${runs}</button>`}).join('')}</div>`}
 const EM=(i,t,b,btn)=>`<div class="emptyx"><div class="art"><div class="el"></div><div class="el in"></div><i style="left:22px;top:18px;width:6px;height:6px"></i><i style="left:150px;top:56px;width:8px;height:8px"></i><i style="left:160px;top:24px;width:4px;height:4px"></i><div class="ei">${ic(i,'i24')}</div></div><div class="mdb">${t}</div><div class="sm t2" style="max-width:380px">${b}</div>${btn||''}</div>`;
+function editCustomProviderButton(serverId){
+ return `<button type="button" class="iconbtn edit-provider" data-editserver="${serverId}" data-tip="Edit custom provider" aria-label="Edit custom provider"><span aria-hidden="true">${ic('ProviderPencil','i20')}</span></button>`;
+}
 function providers(){
  return `${S.introOff?'':`<div class="intro"><img src="data:image/png;base64,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" width="48" height="48" alt="" style="display:block;border-radius:12px;flex:none"><div class="col g4 fill"><div class="mdb">Bring your own key</div><div class="sm t2">Connect a provider with your own key, then pick a model for each task. Your keys stay encrypted on this computer and never pass through VOTANIC.</div></div><button class="iconbtn s24" data-introx data-tip="Hide this tip" aria-label="Dismiss">${ic('Close','i16')}</button></div>`}
  <div class="col g16"><div class="row g16 head"><div class="col g4 fill"><div class="hsm">Providers</div><div class="sm t2">Connect an account once, then use it for any task.</div></div><button class="btn m" data-add>Add provider</button></div>
@@ -652,7 +650,14 @@ function providers(){
   const tok=TOK[p.pid];const st=needsKey(p)?'<span class="sm t2">Needs key</span>':p.pid==='custom'&&!lk?`<span class="sm tok">Configured</span><span class="sm t2">· Custom · ${k?esc(k.name):'No key'}</span>`:lk?`<span class="t2">${ic('Lock')}</span><span class="sm t2">Password needed</span><span class="sm t2">· ${esc(k.name)}</span>`:failed?`<i class="dot8" style="background:var(--b-err)"></i><span class="sm terr">Test failed</span><span class="sm t2">· couldn't reach ${P[p.pid].n}</span>`:`<i class="dot8"></i><span class="sm tok">Connected</span><span class="sm t2">· ${esc(k.name)}</span><span class="sm t3" data-tip="${p.pid==='custom'?'This provider does not report usage':'Tokens used by this project this month'}">· ${tok}</span>`;
   const act=needsKey(p)?(p.pid==='custom'&&p.serverId?`<button class="btn" data-editserver="${p.serverId}">Edit custom provider</button>`:'<button class="btn" data-manage>Manage keys</button>'):lk?`<button class="btn out" data-unlock="${p.id}" data-tip="Enter the password you set for this key">Enter password</button>`:failed?`<button class="btn out" data-test="${p.id}" data-tip="Check your connection, then test again">Test again</button>`:(p.pid==='custom'?'':`<button class="btn" data-test="${p.id}" data-tip="Check your connection, then test again">Test</button>`);
   const head=`<div class="prow" data-prov="${p.id}">${lg(p.pid,40)}<div class="col g4 fill"><div class="mdb">${esc(p.name||P[p.pid].n)}</div><div class="row g8">${st}</div><div class="row g8 t3" style="margin-top:2px">${P[p.pid].caps.map(c=>`<span data-tip="${CNAME[c][0].toUpperCase()+CNAME[c].slice(1)}">${ic(CIC[c])}</span>`).join('')}</div></div>${S.open===p.id?'':act}<span class="chev t2" data-tip="${S.open===p.id?'Hide details':'Show details'}">${ic(S.open===p.id?'Down':'Chevron','i16')}</span></div>`;
-  if(S.open===p.id){return `<div class="pcard">${head}<div class="det"><div class="field"><div class="lrow"><span class="mdb fill">${p.pid==='custom'?'Saved provider':'Key in use'}</span>${p.pid==='custom'?p.serverId?`<button class="lnk" data-editserver="${p.serverId}">Edit custom provider</button>`:'':'<button class="lnk" data-manage>Manage keys</button>'}</div>${p.pid==='custom'?`<div class="sel" aria-readonly="true"><span>${esc(p.name)}</span></div>`:`<select class="sel" aria-label="Key in use" data-prov-key="${p.id}">${S.keys.filter(x=>x.prov===p.pid).map(x=>`<option value="${x.id}" ${x.id===p.key?'selected':''}>${esc(x.name)} · ends ${x.end}</option>`).join('')}<option value="__newkey">+ Add another key…</option></select>`}${p.pid==='custom'?`<div class="helper">API key · ${k?esc(k.name):p.key?'Key no longer available':'No key'}</div>`:''}</div>
+  if(S.open===p.id){
+   const field=p.pid==='custom'
+    ?`<div class="field"><div class="mdb">Saved provider</div>
+      <div class="row g8"><div class="sel fill"><span>${esc(p.name)}</span></div>${p.serverId?editCustomProviderButton(p.serverId):''}</div>
+      <div class="helper">API key · ${k?esc(k.name):p.key?'Key no longer available':'No key'}</div></div>`
+    :`<div class="field"><div class="lrow"><span class="mdb fill">Key in use</span><button class="lnk" data-manage>Manage keys</button></div>
+      <select class="sel" aria-label="Key in use" data-prov-key="${p.id}">${S.keys.filter(x=>x.prov===p.pid).map(x=>`<option value="${x.id}" ${x.id===p.key?'selected':''}>${esc(x.name)} · ends ${x.end}</option>`).join('')}<option value="__newkey">+ Add another key…</option></select></div>`;
+   return `<div class="pcard">${head}<div class="det">${field}
    ${p.pid==='custom'?`<div class="note">${ic('Info')}<span>XRCC can't test this endpoint here. Run a task that uses it to check it responds.</span></div>`:`<div class="note tok">${ic('Check')}<span>Last test replied in 0.8 s · today 14:32</span></div>`}
    <div class="note">${ic('Chart')}<span>${tok}${p.pid==='custom'?'':' · resets 1 Dec'}</span></div>
    <div class="row g12">${p.pid==='custom'?'':`<button class="btn out" data-test="${p.id}" data-tip="Send a tiny test request to this provider">Test response</button>`}<span class="fill"></span><button class="btn des" data-remove="${p.id}">Remove provider</button></div></div></div>`}
@@ -749,7 +754,7 @@ const keySel=()=>{
  const current=existing.find(k=>k.id===S.addKey);
  const custom=S.addSel==='custom';
  const value=custom
-  ?`<div class="row g8"><select class="sel fill" aria-label="Saved provider" data-select-server>${existing.map(k=>`<option value="${k.id}" ${k.id===S.addKey?'selected':''}>${esc(k.name)}</option>`).join('')}<option value="__add">+ Add a custom provider…</option></select>${current?`<button type="button" class="iconbtn" style="width:36px;height:36px;border-radius:8px" data-editserver="${current.id}" data-tip="Edit custom provider" aria-label="Edit custom provider">${ic('Pencil','i20')}</button>`:''}</div>${current?`<div class="helper" data-server-detail>${serverDetail(current.id)}</div>`:''}`
+  ?`<div class="row g8"><select class="sel fill" aria-label="Saved provider" data-select-server>${existing.map(k=>`<option value="${k.id}" ${k.id===S.addKey?'selected':''}>${esc(k.name)}</option>`).join('')}<option value="__add">+ Add a custom provider…</option></select>${current?editCustomProviderButton(current.id):''}</div>${current?`<div class="helper" data-server-detail>${serverDetail(current.id)}</div>`:''}`
   :`<select class="sel fill" aria-label="API key" data-select-key>${existing.map(k=>`<option value="${k.id}" ${k.id===S.addKey?'selected':''}>${esc(k.name)} · ends ${k.end}</option>`).join('')}<option value="__newkey">+ Add another key…</option></select>`;
  return `<div class="field"><div class="lrow"><span class="mdb fill">${custom?'Saved provider':'API key'}</span>${custom?'':'<button class="lnk" data-manage>Manage keys</button>'}</div>
   ${current?value:`<div class="missing-key row g12"><div class="tile">${ic('Key')}</div><b class="mdb fill">No ${P[S.addSel].n} keys here yet</b><button class="btn out" data-addkey>Add a key</button></div>`}
@@ -816,7 +821,12 @@ function cmInit(server,first){return server?.models?structuredClone(server.model
 const cmIcon=st=>st==='ready'?ic('Check','i16 tok'):st==='error'?ic('Info','i16 terr'):st==='testing'?'<span class="cm-spin"></span>':'<span class="cm-dash"></span>';
 const cmLabel={untested:'Not tested',testing:'Testing…',ready:'Ready',error:'Error'};
 const cmStep=(n,title,done,opt)=>`<div class="cm-sh">${done?`<span class="cm-done">${ic('Check','i16')}</span>`:`<span class="badge cm-n">${n}</span>`}<b class="mdb">${title}</b>${opt?'<span class="sm t3">Optional</span>':''}</div>`;
-function cmPreview(v){let u;try{u=new URL(v.trim());if(!['http:','https:'].includes(u.protocol))throw 0}catch{return ''}return 'Requests go to '+u.origin+u.pathname.replace(/\/+$/,'').replace(/\/chat\/completions$/,'')+'/chat/completions'}
+function cmPreview(v){
+ const address=completeBaseUrl(v);
+ if(!address)return '';
+ const url=new URL(address);
+ return 'Requests go to '+url.origin+url.pathname.replace(/\/+$/,'').replace(/\/chat\/completions$/,'')+'/chat/completions';
+}
 function cmHtml(){
  const c=S.cm,ms=c.models,n=ms.length,ready=ms.filter(m=>m.st==='ready').length,testing=ms.some(m=>m.st==='testing'),failed=ms.filter(m=>m.st==='error').length;
  const rows=ms.map((m,i)=>`<div class="cm-row ${m.st==='error'?'bad':''}"><div class="cm-line">${m.st==='untested'?'':`<span class="cm-ic">${cmIcon(m.st)}</span>`}<span class="cm-id fill">${esc(m.id)}</span>${m.def?'<span class="tag" style="align-self:center">Default</span>':`<button type="button" class="lnk cm-setdef" data-cm-def="${i}">Set as default</button>`}${m.st==='untested'?'':`<span class="sm ${m.st==='ready'?'tok':m.st==='error'?'terr':'t2'}">${cmLabel[m.st]}</span>`}<button type="button" class="iconbtn s24" data-cm-rm="${i}" aria-label="Remove ${esc(m.id)}" data-tip="Remove">${ic('Close')}</button></div>${m.st==='error'?`<div class="cm-why"><span class="helper terr fill">${esc(m.reason||'')}</span><button type="button" class="btn" data-cm-retry="${i}">Retry</button></div>`:''}</div>`).join('');
@@ -835,8 +845,8 @@ function customDlg(server,{fromKey=false}={}){
  const first=!S.servers.length;const saved=server?.key?S.keys.find(k=>k.id===server.key):null;
  S.cm={models:cmInit(server,first),url:server?.endpoint??(first?'http://192.168.1.20:8080/v1':''),draft:'',err:''};
  dlg(server?'Edit custom provider':'Add a custom provider',`<div class="content">
- <div class="field"><div class="lrow"><span class="mdb">Provider Name</span></div><input class="input" data-cname value="${esc(server?.name??(first?'Studio LLM':''))}" placeholder="${esc(autoName(server?.id))}"></div>
- <div class="field"><div class="lrow"><span class="mdb">Base URL</span></div><input class="input" data-curl value="${esc(S.cm.url)}" placeholder="http://192.168.1.20:8080/v1"></div>
+ <div class="field"><div class="lrow"><label class="mdb" for="custom-provider-name">Provider Name</label></div><input class="input" id="custom-provider-name" data-cname value="${esc(server?.name??'')}" placeholder="${esc(autoName(server?.id))}"></div>
+ <div class="field"><div class="lrow"><label class="mdb" for="custom-base-url">Base URL</label></div><input class="input" id="custom-base-url" data-curl value="${esc(S.cm.url)}" placeholder="http://192.168.1.20:8080/v1"></div>
  <div class="field"><div class="lrow"><label class="mdb" for="custom-newkey">API key</label><span class="sm t3">Optional</span><span class="fill"></span>${saved?'<button type="button" class="lnk" data-removekey>Remove key</button>':''}</div>
  ${pwwrap(`<input class="input" id="custom-newkey" data-newkey type="password" placeholder="${saved?'Key saved · ends '+esc(saved.end||''):'Paste your API key'}" autocomplete="off">`)}</div>
  ${saved?'':`<div class="col g8"><label class="row g8"><input type="checkbox" id="cpwon" data-cpwon>Protect this key with a password</label><div id="cpwfield" hidden>${pwwrap(`<input class="input" id="cpw" aria-label="Key password" type="password" placeholder="Add a password" autocomplete="new-password">`)}<div class="helper">Asked each time a project opens. It can't be recovered, so pick one you'll remember.</div></div></div>`}
@@ -848,10 +858,44 @@ function customDlg(server,{fromKey=false}={}){
 }
 function customReady(layer){const u=layer.querySelector('[data-curl]');if(!u)return true;return urlValid(u.value)&&!!(S.cm&&S.cm.models.length)}
 function autoVoiceName(editId){const used=new Set(S.voices.filter(v=>v.id!==editId).map(v=>v.n));if(!used.has('Voice preset'))return 'Voice preset';let n=1;while(used.has('Voice preset ('+n+')'))n++;return 'Voice preset ('+n+')'}
-function autoName(editId){const used=new Set(S.servers.filter(x=>x.id!==editId).map(x=>x.name));if(!used.has('Custom provider'))return 'Custom provider';let n=1;while(used.has('Custom provider ('+n+')'))n++;return 'Custom provider ('+n+')'}
-function urlValid(v){try{return ['http:','https:'].includes(new URL(v.trim()).protocol)}catch{return false}}
-function showUrlError(l,force){const u=l.querySelector('[data-curl]');if(!u)return;const v=u.value.trim();const bad=!!v&&!urlValid(v);const flagged=u.classList.contains('err');if(!force&&!flagged&&bad&&document.activeElement===u)return;u.classList.toggle('err',bad);let m=l.querySelector('[data-urlerr]');if(bad&&!m){m=document.createElement('div');m.className='helper terr';m.dataset.urlerr='';m.textContent='Start with http:// or https://';u.closest('.field').appendChild(m)}if(!bad&&m)m.remove()}
-function nameTaken(l){const n=l.querySelector('[data-cname]');if(!n)return false;const v=n.value.trim().toLowerCase();if(!v)return false;const id=l.querySelector('[data-customadd]')?.dataset.customadd||'';const own=S.servers.find(x=>x.id===id);return S.servers.some(x=>x.id!==id&&(x.name||'').trim().toLowerCase()===v)||S.keys.some(k=>k.prov==='custom'&&k.name.trim().toLowerCase()===v&&k.id!==(own&&own.key))}
+function customProviderNames(editId){
+ const ownKey=S.servers.find(server=>server.id===editId)?.key;
+ const otherServers=S.servers.filter(server=>server.id!==editId);
+ const otherKeys=S.keys.filter(key=>key.prov==='custom'&&key.id!==ownKey);
+ return new Set([...otherServers,...otherKeys].map(item=>(item.name??'').trim().toLowerCase()));
+}
+function autoName(editId){
+ const base='Custom Provider';
+ const used=customProviderNames(editId);
+ let name=base;
+ for(let counter=1;used.has(name.toLowerCase());counter++)name=base+' ('+counter+')';
+ return name;
+}
+function completeBaseUrl(input){
+ const value=input.trim();
+ if(!value||/[\t\r\n\\]/.test(value))return '';
+ const scheme=value.match(/^https?:\/\//i);
+ const address=scheme?value.slice(scheme[0].length):value;
+ if(!address||/^[/?#]/.test(address))return '';
+ if(!scheme&&!/^(?:\[[^\]]+\]|[^:/?#@]+)(?::\d+)?(?:[/?#]|$)/.test(address))return '';
+ try{
+  const parsed=new URL(scheme?value:'https://'+address);
+  if(scheme)return value;
+  const host=parsed.hostname.replace(/\.$/,'');
+  const privateIpv4=/^(?:10\.|127\.|169\.254\.|192\.168\.|172\.(?:1[6-9]|2\d|3[01])\.)/.test(host)
+   &&/^\d+\.\d+\.\d+\.\d+$/.test(host);
+  const privateIpv6=/^\[(?:::1\]|f[cd][\da-f]{2}:|fe[89ab][\da-f]:)/i.test(host);
+  const local=host==='localhost'||host.endsWith('.localhost')||host.endsWith('.local')||privateIpv4||privateIpv6;
+  return (local?'http://':'https://')+address;
+ }catch{return ''}
+}
+function urlValid(v){return Boolean(completeBaseUrl(v))}
+function showUrlError(l,force){const u=l.querySelector('[data-curl]');if(!u)return;const v=u.value.trim();const bad=!!v&&!urlValid(v);const flagged=u.classList.contains('err');if(!force&&!flagged&&bad&&document.activeElement===u)return;u.classList.toggle('err',bad);let m=l.querySelector('[data-urlerr]');if(bad&&!m){m=document.createElement('div');m.className='helper terr';m.dataset.urlerr='';m.textContent='Enter a valid Base URL.';u.closest('.field').appendChild(m)}if(!bad&&m)m.remove()}
+function nameTaken(l){
+ const name=l.querySelector('[data-cname]')?.value.trim().toLowerCase();
+ const id=l.querySelector('[data-customadd]')?.dataset.customadd;
+ return Boolean(name&&customProviderNames(id).has(name));
+}
 function showNameError(l){const n=l.querySelector('[data-cname]');if(!n)return;const bad=nameTaken(l);n.classList.toggle('err',bad);let m=l.querySelector('[data-nameerr]');if(bad&&!m){m=document.createElement('div');m.className='helper terr';m.dataset.nameerr='';m.textContent='That name is already used by another provider.';n.closest('.field').appendChild(m)}if(!bad&&m)m.remove()}
 function syncCustomReady(){const l=activeLayer();const b=l&&l.querySelector('[data-customadd]');if(!b)return;const po=l.querySelector('#cpwon');b.disabled=!customReady(l)||nameTaken(l)||Boolean(po&&po.checked&&!(l.querySelector('#cpw')?.value||''));showNameError(l);showUrlError(l,false)}
 function witDlg(){dlg('Add a Wit.ai token',`<div class="lg">Speech commands use this token. It stays on this computer.</div><div class="content">${inp('Token name','Lobby kiosk token','Lobby kiosk token','Only you see this name.')}<div class="field"><div class="mdb">Server access token</div><input class="input" id="kv" type="password" placeholder="Paste your Wit.ai token"><div class="helper">Wit.ai tokens don't take a password.</div></div></div>`,`${cancel}<button class="btn pri" data-savewit disabled data-tip="Paste your token first">Save token</button>`,'sub')}
@@ -1205,7 +1249,9 @@ document.addEventListener('click',e=>{
  if('removekey' in d){const box=activeLayer().querySelector('[data-newkey]');box.dataset.removed='1';box.value='';box.placeholder='No key';const kh=activeLayer().querySelector('[data-keyhelp]');if(kh)kh.textContent='The key is removed when you save.';t.remove();return}
  if('customadd' in d){
   const urlIn=activeLayer().querySelector('[data-curl]');
-  let endpoint;try{endpoint=new URL(urlIn.value.trim());if(!['http:','https:'].includes(endpoint.protocol))throw new Error();}catch{urlIn.classList.add('err');urlIn.focus();return;}
+  const address=completeBaseUrl(urlIn.value);
+  if(!address){showUrlError(activeLayer(),true);urlIn.focus();return;}
+  const endpoint=new URL(address);
   if(!S.cm.models.length)return;
   if(nameTaken(activeLayer())){showNameError(activeLayer());activeLayer().querySelector('[data-cname]').focus();return}
   const same=S.servers.find(server=>server.id!==d.customadd&&server.endpoint===endpoint.href);
@@ -1287,7 +1333,15 @@ document.addEventListener('click',e=>{
  if('news' in d)return newSession();
 });
 ov.addEventListener('mousedown',e=>{if(e.target.classList.contains('lay'))pop()});
-document.addEventListener('focusout',e=>{const l=activeLayer();if(l&&l.querySelector('[data-customadd]')&&e.target.matches&&e.target.matches('.content input'))showUrlError(l,true)});
+document.addEventListener('focusout',e=>{
+ const layer=activeLayer();
+ if(!layer?.querySelector('[data-customadd]')||!e.target.matches?.('.content input'))return;
+ if(e.target.matches('[data-curl]')){
+  const address=completeBaseUrl(e.target.value);
+  if(address)e.target.value=S.cm.url=address;
+ }
+ showUrlError(layer,true);
+});
 document.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('[data-customadd]')===null&&activeLayer()?.querySelector('[data-customadd]'))syncCustomReady()});
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='0'){e.preventDefault();openSettingsConnections()}if(e.key==='Escape'){const menu=$('#cmenu');if(menu){const owner=menu.dataset.for;menu.remove();[...ov.querySelectorAll('[data-cm]')].find(b=>b.dataset.cm===owner)?.focus();return;}if(stack.length)pop();}
  if(e.key==='Tab'&&activeLayer()&&!$('#cmenu')){
