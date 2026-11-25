@@ -677,7 +677,9 @@ function sessions(){const many=S.sessions.length>6;
  <div class="slist" id="sgrid"><div class="srow shead"><span class="sm t2 scol">Session</span><span class="sm t2 fill">Prompt</span><span class="sgap"></span></div>${S.sessions.map((s,si)=>`<div class="srow sitem" data-st="${esc((s.n+' '+s.p).toLowerCase())}"><div class="col g4 scol"><div class="mdb">${esc(s.n)}</div><div class="sm t2">${s.u}</div></div><div class="sm t2 fill sprompt" data-tip="The saved prompt">${esc(s.p)}</div><button class="iconbtn s28" data-cm="sess|${si}" data-tip="More actions">${ic('MoreH')}</button></div>`).join('')}</div><div class="md t2" id="snone" style="display:none;padding:24px 0;text-align:center">No session matches that. Try a character name or a word from the prompt.</div>`}
 document.addEventListener('click',e=>{if(e.target.closest('[data-introx]')){e.stopPropagation();S.introOff=true;renderPanel()}},true);
 document.addEventListener('change',e=>{if(e.target.matches&&e.target.matches('[data-custom-key]')){const w=e.target.closest('.field')?.querySelector('[data-newkey-wrap]');if(w){w.hidden=e.target.value!=='__new';if(!w.hidden)w.querySelector('input')?.focus()}e.target.dataset.selectedKey=e.target.value;}
- if(e.target.id==='pwon'){const field=activeLayer().querySelector('#pwfield');if(field)field.hidden=!e.target.checked;updateKeySave();}});
+ if(e.target.id==='pwon'){const field=activeLayer().querySelector('#pwfield');if(field)field.hidden=!e.target.checked;updateKeySave();}
+ if(e.target.id==='cpwon'){const field=activeLayer().querySelector('#cpwfield');if(field)field.hidden=!e.target.checked;syncCustomReady();}});
+document.addEventListener('input',e=>{if(e.target.matches&&e.target.matches('[data-cm-in]')){const b=activeLayer().querySelector('[data-cm-add]');if(b)b.disabled=!e.target.value.trim()}if(e.target.id==='cpw')syncCustomReady()});
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.matches&&e.target.matches('[data-cm-in]')){e.preventDefault();cmAdd()}});
 document.addEventListener('input',e=>{if(e.target.matches&&e.target.matches('[data-curl]')&&S.cm){S.cm.url=e.target.value;const pv=activeLayer().querySelector('[data-cm-prev]');if(pv)pv.textContent=cmPreview(e.target.value);cmReset();const h=activeLayer().querySelector('[data-cm-s1]');if(h)h.innerHTML=cmStep(1,'Connection',urlValid(e.target.value));const t=activeLayer().querySelector('[data-cm-test]');cmRefresh()}if(e.target.matches&&e.target.matches('[data-newkey]'))cmReset();if(e.target.matches&&e.target.matches('[data-cm-in]')){S.cm.draft=e.target.value;if(S.cm.err){S.cm.err='';cmRefresh()}return}const vq=e.target.closest?.('[data-vq]');if(vq){filterVoiceRows(vq.closest('.voice-picker'));return}
  if(e.target.matches('[data-voice-line]'))for(const button of activeLayer().querySelectorAll('[data-audition]'))button.disabled=!e.target.value.trim()&&button.dataset.audition!==S.voiceDraft?.audition;
@@ -691,7 +693,7 @@ document.addEventListener('input',e=>{if(e.target.matches&&e.target.matches('[da
   return;
  }
 if(e.target.type==='range'&&e.target.dataset.voiceParam){const out=e.target.previousElementSibling.querySelector('output');out.value=e.target.dataset.voiceParam==='speed'?((Number(e.target.value)+50)/100).toFixed(1)+'×':Number(e.target.value)-50;return;}
- if(e.target.matches('#kv,#kpw')){updateKeySave();return;}
+ if(e.target.matches('#kv,#kpw,#kpname')){updateKeySave();return;}
 const kq=e.target.closest?.('[data-kq]');
  if(kq){
   const query=kq.value.trim().toLowerCase(), pane=activeLayer();
@@ -823,7 +825,7 @@ function cmHtml(){
  const noteCls=ready===n&&n?'tok':failed?'terr':'t2';
  return `<div class="cm-mh"><b class="mdb fill">Models</b><span class="sm ${noteCls}">${n&&urlOk&&(ready||failed)&&!testing?note:''}</span><button type="button" class="btn" data-cm-test ${testing||!n||!urlOk?'disabled':''}>${testing?'Testing…':'Test'}</button></div>
  ${n?`<div class="cm-list">${rows}</div>`:`<div class="cm-empty md t2">Add at least one model ID this provider can run.</div>`}
- <div class="cm-add"><input class="input ${c.err?'err':''}" data-cm-in placeholder="Add a model ID, e.g. llama-3.3-70b" value="${esc(c.draft||'')}" autocomplete="off"><button type="button" class="btn big" data-cm-add>Add</button></div>${c.err?`<div class="helper terr" style="margin-top:8px">${esc(c.err)}</div>`:''}`;
+ <div class="cm-add"><input class="input ${c.err?'err':''}" data-cm-in placeholder="Add a model ID, e.g. llama-3.3-70b" value="${esc(c.draft||'')}" autocomplete="off"><button type="button" class="btn big" data-cm-add ${c.draft?'':'disabled'}>Add</button></div>${c.err?`<div class="helper terr" style="margin-top:8px">${esc(c.err)}</div>`:''}`;
 }
 function cmRefresh(){const l=activeLayer();const box=l&&l.querySelector('[data-cmodels]');if(!box)return;const keep=box.querySelector('[data-cm-in]');const had=document.activeElement===keep;S.cm.draft=keep?keep.value:'';box.innerHTML=cmHtml();syncCustomReady();if(had)box.querySelector('[data-cm-in]')?.focus()}
 function cmReset(){if(!S.cm)return;let ch=false;for(const m of S.cm.models)if(m.st!=='untested'){m.st='untested';delete m.reason;ch=true}if(ch)cmRefresh()}
@@ -833,10 +835,11 @@ function customDlg(server,{fromKey=false}={}){
  const first=!S.servers.length;const saved=server?.key?S.keys.find(k=>k.id===server.key):null;
  S.cm={models:cmInit(server,first),url:server?.endpoint??(first?'http://192.168.1.20:8080/v1':''),draft:'',err:''};
  dlg(server?'Edit custom provider':'Add a custom provider',`<div class="content">
- <div class="field"><div class="lrow"><span class="mdb">Name</span></div><input class="input" data-cname value="${esc(server?.name??(first?'Studio LLM':''))}" placeholder="${esc(autoName(server?.id))}"></div>
+ <div class="field"><div class="lrow"><span class="mdb">Provider Name</span></div><input class="input" data-cname value="${esc(server?.name??(first?'Studio LLM':''))}" placeholder="${esc(autoName(server?.id))}"></div>
  <div class="field"><div class="lrow"><span class="mdb">Base URL</span></div><input class="input" data-curl value="${esc(S.cm.url)}" placeholder="http://192.168.1.20:8080/v1"></div>
  <div class="field"><div class="lrow"><label class="mdb" for="custom-newkey">API key</label><span class="sm t3">Optional</span><span class="fill"></span>${saved?'<button type="button" class="lnk" data-removekey>Remove key</button>':''}</div>
  ${pwwrap(`<input class="input" id="custom-newkey" data-newkey type="password" placeholder="${saved?'Key saved · ends '+esc(saved.end||''):'Paste your API key'}" autocomplete="off">`)}</div>
+ ${saved?'':`<div class="col g8"><label class="row g8"><input type="checkbox" id="cpwon" data-cpwon>Protect this key with a password</label><div id="cpwfield" hidden>${pwwrap(`<input class="input" id="cpw" aria-label="Key password" type="password" placeholder="Add a password" autocomplete="new-password">`)}<div class="helper">Asked each time a project opens. It can't be recovered, so pick one you'll remember.</div></div></div>`}
  <div data-cmodels>${cmHtml()}</div>
  <div class="adv"><div class="top" data-cadv>${ic('Chevron')}<span class="md t2">Advanced</span><span class="fill"></span><span class="sm t2" data-csum>OpenAI format · 30 s timeout</span><button class="btn" data-creset style="display:none">Reset</button></div>
  <div data-cbody class="bot" style="display:none"><div class="field"><div class="lrow"><span class="mdb">Request format</span></div><div class="sel"><span class="md fill">OpenAI chat completions</span>${ic('Down','i12')}</div></div>${inp('Timeout','30 s')}${inp('Extra header','','Optional, e.g. X-Studio: lobby')}</div></div>
@@ -848,11 +851,11 @@ function autoVoiceName(editId){const used=new Set(S.voices.filter(v=>v.id!==edit
 function autoName(editId){const used=new Set(S.servers.filter(x=>x.id!==editId).map(x=>x.name));if(!used.has('Custom provider'))return 'Custom provider';let n=1;while(used.has('Custom provider ('+n+')'))n++;return 'Custom provider ('+n+')'}
 function urlValid(v){try{return ['http:','https:'].includes(new URL(v.trim()).protocol)}catch{return false}}
 function showUrlError(l,force){const u=l.querySelector('[data-curl]');if(!u)return;const v=u.value.trim();const bad=!!v&&!urlValid(v);const flagged=u.classList.contains('err');if(!force&&!flagged&&bad&&document.activeElement===u)return;u.classList.toggle('err',bad);let m=l.querySelector('[data-urlerr]');if(bad&&!m){m=document.createElement('div');m.className='helper terr';m.dataset.urlerr='';m.textContent='Start with http:// or https://';u.closest('.field').appendChild(m)}if(!bad&&m)m.remove()}
-function syncCustomReady(){const l=activeLayer();const b=l&&l.querySelector('[data-customadd]');if(!b)return;b.disabled=!customReady(l);showUrlError(l,false)}
+function syncCustomReady(){const l=activeLayer();const b=l&&l.querySelector('[data-customadd]');if(!b)return;const po=l.querySelector('#cpwon');b.disabled=!customReady(l)||Boolean(po&&po.checked&&!(l.querySelector('#cpw')?.value||''));showUrlError(l,false)}
 function witDlg(){dlg('Add a Wit.ai token',`<div class="lg">Speech commands use this token. It stays on this computer.</div><div class="content">${inp('Token name','Lobby kiosk token','Lobby kiosk token','Only you see this name.')}<div class="field"><div class="mdb">Server access token</div><input class="input" id="kv" type="password" placeholder="Paste your Wit.ai token"><div class="helper">Wit.ai tokens don't take a password.</div></div></div>`,`${cancel}<button class="btn pri" data-savewit disabled data-tip="Paste your token first">Save token</button>`,'sub')}
 function captureKeyDraft(){
  const p=activeLayer();
- S.keyDraft={name:read(p,'#kname'),api:read(p,'#kv'),password:read(p,'#kpw'),protect:p.querySelector('#pwon')?.checked};
+ S.keyDraft={pname:read(p,'#kpname'),name:read(p,'#kname'),api:read(p,'#kv'),password:read(p,'#kpw'),protect:p.querySelector('#pwon')?.checked};
 }
 function keyDlg(){
  const list=S.keyOrigin==='launch'||S.launchManage?(S.launchKeys||[]):S.keys;
@@ -860,12 +863,14 @@ function keyDlg(){
  const docs={gemini:'https://aistudio.google.com/apikey',minimax:'https://platform.minimax.io/',poe:'https://poe.com/api_key',openrouter:'https://openrouter.ai/keys'};
  const selected=P[S.addSel];
  const customSetup=S.addSel==='custom'&&S.keyOrigin==='settings'&&!S.launcher&&!S.launchManage&&!keys.includes('custom-provider');
- dlg('Add an AI key',`<div class="lg">Keys stay on this computer.</div><div class="content">
+ const isCustom=S.addSel==='custom';
+ dlg('Add an AI key',`${isCustom?'':'<div class="lg">Keys stay on this computer.</div>'}<div class="content">
  <div class="col g8"><div class="mdb">Provider</div><div class="row g8" style="flex-wrap:wrap">${Object.entries(P).map(([i,v])=>{
   const disabled=(S.keyOrigin==='launch'&&i!==S.addSel);
   return `<button class="chip ${S.addSel===i?'on':''}" data-ksel="${i}" ${disabled?'disabled':''} title="${disabled?'Unavailable in this step':'Key for '+v.n}">${lg(i,20)}${v.n}</button>`;
  }).join('')}</div></div>
- <div class="field"><div class="lrow"><label class="mdb fill" for="kv">API key</label>${customSetup?`<button type="button" class="lnk" data-setupserver>Set up a custom provider</button>`:docs[S.addSel]?`<a class="lnk" href="${docs[S.addSel]}" target="_blank" rel="noopener noreferrer" aria-label="Where do I find my ${selected.n} key?">Where to find it</a>`:''}</div>${pwwrap(`<input class="input" id="kv" type="password" value="${esc(draft.api)}" placeholder="Paste your key" autocomplete="off">`)}</div>
+ ${isCustom?`<div class="field"><div class="lrow"><label class="mdb" for="kpname">Provider Name</label></div><input class="input" id="kpname" value="${esc(draft.pname)}" placeholder="Studio LLM" autocomplete="off"></div>`:''}
+ <div class="field"><div class="lrow"><label class="mdb fill" for="kv">API key</label>${docs[S.addSel]?`<a class="lnk" href="${docs[S.addSel]}" target="_blank" rel="noopener noreferrer" aria-label="Where do I find my ${selected.n} key?">Where to find it</a>`:''}</div>${pwwrap(`<input class="input" id="kv" type="password" value="${esc(draft.api)}" placeholder="Paste your key" autocomplete="off">`)}</div>
  <div class="field"><div class="lrow"><label class="mdb" for="kname">Key name</label><span class="sm t3">Optional</span></div><input class="input" id="kname" value="${esc(draft.name)}" placeholder="${selected.n} key"></div>
  <div class="col g8"><label class="row g8"><input type="checkbox" id="pwon" ${draft.protect?'checked':''}>Protect this key with a password</label><div id="pwfield" ${draft.protect?'':'hidden'}>${pwwrap(`<input class="input" id="kpw" aria-label="Key password" type="password" value="${esc(draft.password)}" placeholder="Add a password" autocomplete="new-password">`)}<div class="helper">Asked each time a project opens. It can't be recovered, so pick one you'll remember.</div></div></div></div>`,
  `${cancel}<button class="btn pri" data-savekey disabled>Save key</button>`,S.keyOrigin==='settings'?'':'sub');
@@ -875,7 +880,7 @@ function updateKeySave(){
  const pane=activeLayer(), button=pane?.querySelector('[data-savekey],[data-savewit]');
  if(!button)return;
  const protect=pane.querySelector('#pwon');
- button.disabled=!read(pane,'#kv')||Boolean(protect?.checked&&!read(pane,'#kpw'));
+ button.disabled=!read(pane,'#kv')||(pane.querySelector('#kpname')&&!read(pane,'#kpname'))||Boolean(protect?.checked&&!read(pane,'#kpw'));
 }
 function removeDlg(id){const p=prov(id);const n=P[p.pid].n;dlg(`Remove ${n}?`,`<div class="row g20" style="gap:20px;align-items:flex-start"><span style="color:var(--t1)">${ic('Trash','i24','width:72px;height:72px;stroke-width:.75')}</span><div class="col g12 fill"><div class="lg">Text to speech and Text to music will stop until you pick another provider. Voice presets using ${n} will be unavailable until you choose a supported voice.</div><div class="note">${ic('Key')}<span>Your ${n} key stays in <button type="button" class="lnk" data-manage>Connections</button>, so you can add it back any time.</span></div></div></div>`,`${cancel}<button class="btn des" data-rm="${id}">Remove ${n}</button>`,'md')}
 function keyUnlockDlg(kid,err){const k=S.keys.find(x=>x.id===kid);dlg('Enter key password',`<div class="lg">${esc(k.name)} is protected by a password. Enter it to use this key.</div><div class="content"><div class="row g12" style="padding:12px;background:var(--canvas);border-radius:8px"><div class="tile" style="width:32px;height:32px;background:var(--muted)">${ic('Lock')}</div><div class="col g4 fill"><b class="mdb">${esc(k.name)}</b><span class="sm t2">${P[k.prov].n} · saved on this computer</span></div></div>
@@ -1178,11 +1183,12 @@ document.addEventListener('click',e=>{
  if(d.ksel){captureKeyDraft();S.addSel=d.ksel;return keyDlg()}
  if('savekey' in d){
   const pane=activeLayer(), api=read(pane,'#kv');
+  if(pane.querySelector('#kpname')&&!read(pane,'#kpname'))return;
   const protectedKey=pane.querySelector('#pwon').checked;
   const password=read(pane,'#kpw');
   const list=S.keyOrigin==='launch'||S.launchManage?S.launchKeys:S.keys;
   if(!api||(protectedKey&&!password))return;
-  const baseName=read(pane,'#kname')||P[S.addSel].n+' key';let keyName=baseName,n=2;while(list.some(k=>k.name.toLowerCase()===keyName.toLowerCase()))keyName=baseName+' '+n++;
+  const baseName=read(pane,'#kname')||(read(pane,'#kpname')?read(pane,'#kpname')+' key':P[S.addSel].n+' key');let keyName=baseName,n=2;while(list.some(k=>k.name.toLowerCase()===keyName.toLowerCase()))keyName=baseName+' '+n++;
   const key={id:uniqueId('k'),name:keyName,prov:S.addSel,
    meta:P[S.addSel].n+' · added today',pw:protectedKey,end:api.slice(-4)};
   list.push(key);S.keyDraft=null;
@@ -1206,7 +1212,7 @@ document.addEventListener('click',e=>{
   if(secret){
    const dup=S.keys.find(item=>item.prov==='custom'&&item.sec===secret);
    if(dup)key=dup.id;
-   else{const saved={id:uniqueId('k'),name:serverName+' key',prov:'custom',meta:'Custom · added today',pw:false,end:secret.slice(-4),sec:secret};S.keys.push(saved);key=saved.id}
+   else{const saved={id:uniqueId('k'),name:serverName+' key',prov:'custom',meta:'Custom · added today',pw:Boolean(activeLayer().querySelector('#cpwon')?.checked),end:secret.slice(-4),sec:secret};S.keys.push(saved);key=saved.id}
   }
   const existing=S.servers.find(item=>item.id===d.customadd);
   const models=structuredClone(S.cm.models);const details={name:serverName,endpoint:endpoint.href,models,model:(models.find(m=>m.def)||models[0]).id,key};
