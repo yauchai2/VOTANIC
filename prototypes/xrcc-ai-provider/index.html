@@ -831,7 +831,12 @@ function cmInit(server,first){return server?.models?structuredClone(server.model
 const cmIcon=st=>st==='ready'?ic('Check','i16 tok'):st==='error'?ic('Info','i16 terr'):st==='testing'?'<span class="cm-spin"></span>':'<span class="cm-dash"></span>';
 const cmLabel={untested:'Not tested',testing:'Testing…',ready:'Ready',error:'Error'};
 const cmStep=(n,title,done,opt)=>`<div class="cm-sh">${done?`<span class="cm-done">${ic('Check','i16')}</span>`:`<span class="badge cm-n">${n}</span>`}<b class="mdb">${title}</b>${opt?'<span class="sm t3">Optional</span>':''}</div>`;
-function cmPreview(v){let u;try{u=new URL(v.trim());if(!['http:','https:'].includes(u.protocol))throw 0}catch{return ''}return 'Requests go to '+u.origin+u.pathname.replace(/\/+$/,'').replace(/\/chat\/completions$/,'')+'/chat/completions'}
+function cmPreview(v){
+ const address=completeBaseUrl(v);
+ if(!address)return '';
+ const url=new URL(address);
+ return 'Requests go to '+url.origin+url.pathname.replace(/\/+$/,'').replace(/\/chat\/completions$/,'')+'/chat/completions';
+}
 function cmHtml(){
  const c=S.cm,ms=c.models,n=ms.length,ready=ms.filter(m=>m.st==='ready').length,testing=ms.some(m=>m.st==='testing'),failed=ms.filter(m=>m.st==='error').length;
  const rows=ms.map((m,i)=>`<div class="cm-row ${m.st==='error'?'bad':''}"><div class="cm-line">${m.st==='untested'?'':`<span class="cm-ic">${cmIcon(m.st)}</span>`}<span class="cm-id fill">${esc(m.id)}</span>${m.def?'<span class="tag" style="align-self:center">Default</span>':`<button type="button" class="lnk cm-setdef" data-cm-def="${i}">Set as default</button>`}${m.st==='untested'?'':`<span class="sm ${m.st==='ready'?'tok':m.st==='error'?'terr':'t2'}">${cmLabel[m.st]}</span>`}<button type="button" class="iconbtn s24" data-cm-rm="${i}" aria-label="Remove ${esc(m.id)}" data-tip="Remove">${ic('Close')}</button></div>${m.st==='error'?`<div class="cm-why"><span class="helper terr fill">${esc(m.reason||'')}</span><button type="button" class="btn" data-cm-retry="${i}">Retry</button></div>`:''}</div>`).join('');
@@ -850,8 +855,8 @@ function customDlg(server,{fromKey=false}={}){
  const first=!S.servers.length;const saved=server?.key?S.keys.find(k=>k.id===server.key):null;
  S.cm={models:cmInit(server,first),url:server?.endpoint??(first?'http://192.168.1.20:8080/v1':''),draft:'',err:''};
  dlg(server?'Edit custom provider':'Add a custom provider',`<div class="content">
- <div class="field"><div class="lrow"><span class="mdb">Provider Name</span></div><input class="input" data-cname value="${esc(server?.name??(first?'Studio LLM':''))}" placeholder="${esc(autoName(server?.id))}"></div>
- <div class="field"><div class="lrow"><span class="mdb">Base URL</span></div><input class="input" data-curl value="${esc(S.cm.url)}" placeholder="http://192.168.1.20:8080/v1"></div>
+ <div class="field"><div class="lrow"><label class="mdb" for="custom-provider-name">Provider Name</label></div><input class="input" id="custom-provider-name" data-cname value="${esc(server?.name??'')}" placeholder="${esc(autoName(server?.id))}"></div>
+ <div class="field"><div class="lrow"><label class="mdb" for="custom-base-url">Base URL</label></div><input class="input" id="custom-base-url" data-curl value="${esc(S.cm.url)}" placeholder="http://192.168.1.20:8080/v1"></div>
  <div class="field"><div class="lrow"><label class="mdb" for="custom-newkey">API key</label><span class="sm t3">Optional</span><span class="fill"></span>${saved?'<button type="button" class="lnk" data-removekey>Remove key</button>':''}</div>
  ${pwwrap(`<input class="input" id="custom-newkey" data-newkey type="password" placeholder="${saved?'Key saved · ends '+esc(saved.end||''):'Paste your API key'}" autocomplete="off">`)}</div>
  ${saved?'':`<div class="col g8"><label class="row g8"><input type="checkbox" id="cpwon" data-cpwon>Protect this key with a password</label><div id="cpwfield" hidden>${pwwrap(`<input class="input" id="cpw" aria-label="Key password" type="password" placeholder="Add a password" autocomplete="new-password">`)}<div class="helper">Asked each time a project opens. It can't be recovered, so pick one you'll remember.</div></div></div>`}
@@ -863,10 +868,44 @@ function customDlg(server,{fromKey=false}={}){
 }
 function customReady(layer){const u=layer.querySelector('[data-curl]');if(!u)return true;return urlValid(u.value)&&!!(S.cm&&S.cm.models.length)}
 function autoVoiceName(editId){const used=new Set(S.voices.filter(v=>v.id!==editId).map(v=>v.n));if(!used.has('Voice preset'))return 'Voice preset';let n=1;while(used.has('Voice preset ('+n+')'))n++;return 'Voice preset ('+n+')'}
-function autoName(editId){const used=new Set(S.servers.filter(x=>x.id!==editId).map(x=>x.name));if(!used.has('Custom provider'))return 'Custom provider';let n=1;while(used.has('Custom provider ('+n+')'))n++;return 'Custom provider ('+n+')'}
-function urlValid(v){try{return ['http:','https:'].includes(new URL(v.trim()).protocol)}catch{return false}}
-function showUrlError(l,force){const u=l.querySelector('[data-curl]');if(!u)return;const v=u.value.trim();const bad=!!v&&!urlValid(v);const flagged=u.classList.contains('err');if(!force&&!flagged&&bad&&document.activeElement===u)return;u.classList.toggle('err',bad);let m=l.querySelector('[data-urlerr]');if(bad&&!m){m=document.createElement('div');m.className='helper terr';m.dataset.urlerr='';m.textContent='Start with http:// or https://';u.closest('.field').appendChild(m)}if(!bad&&m)m.remove()}
-function nameTaken(l){const n=l.querySelector('[data-cname]');if(!n)return false;const v=n.value.trim().toLowerCase();if(!v)return false;const id=l.querySelector('[data-customadd]')?.dataset.customadd||'';const own=S.servers.find(x=>x.id===id);return S.servers.some(x=>x.id!==id&&(x.name||'').trim().toLowerCase()===v)||S.keys.some(k=>k.prov==='custom'&&k.name.trim().toLowerCase()===v&&k.id!==(own&&own.key))}
+function customProviderNames(editId){
+ const ownKey=S.servers.find(server=>server.id===editId)?.key;
+ const otherServers=S.servers.filter(server=>server.id!==editId);
+ const otherKeys=S.keys.filter(key=>key.prov==='custom'&&key.id!==ownKey);
+ return new Set([...otherServers,...otherKeys].map(item=>(item.name??'').trim().toLowerCase()));
+}
+function autoName(editId){
+ const base='Custom Provider';
+ const used=customProviderNames(editId);
+ let name=base;
+ for(let counter=1;used.has(name.toLowerCase());counter++)name=base+' ('+counter+')';
+ return name;
+}
+function completeBaseUrl(input){
+ const value=input.trim();
+ if(!value||/[\t\r\n\\]/.test(value))return '';
+ const scheme=value.match(/^https?:\/\//i);
+ const address=scheme?value.slice(scheme[0].length):value;
+ if(!address||/^[/?#]/.test(address))return '';
+ if(!scheme&&!/^(?:\[[^\]]+\]|[^:/?#@]+)(?::\d+)?(?:[/?#]|$)/.test(address))return '';
+ try{
+  const parsed=new URL(scheme?value:'https://'+address);
+  if(scheme)return value;
+  const host=parsed.hostname.replace(/\.$/,'');
+  const privateIpv4=/^(?:10\.|127\.|169\.254\.|192\.168\.|172\.(?:1[6-9]|2\d|3[01])\.)/.test(host)
+   &&/^\d+\.\d+\.\d+\.\d+$/.test(host);
+  const privateIpv6=/^\[(?:::1\]|f[cd][\da-f]{2}:|fe[89ab][\da-f]:)/i.test(host);
+  const local=host==='localhost'||host.endsWith('.localhost')||host.endsWith('.local')||privateIpv4||privateIpv6;
+  return (local?'http://':'https://')+address;
+ }catch{return ''}
+}
+function urlValid(v){return Boolean(completeBaseUrl(v))}
+function showUrlError(l,force){const u=l.querySelector('[data-curl]');if(!u)return;const v=u.value.trim();const bad=!!v&&!urlValid(v);const flagged=u.classList.contains('err');if(!force&&!flagged&&bad&&document.activeElement===u)return;u.classList.toggle('err',bad);let m=l.querySelector('[data-urlerr]');if(bad&&!m){m=document.createElement('div');m.className='helper terr';m.dataset.urlerr='';m.textContent='Enter a valid Base URL.';u.closest('.field').appendChild(m)}if(!bad&&m)m.remove()}
+function nameTaken(l){
+ const name=l.querySelector('[data-cname]')?.value.trim().toLowerCase();
+ const id=l.querySelector('[data-customadd]')?.dataset.customadd;
+ return Boolean(name&&customProviderNames(id).has(name));
+}
 function showNameError(l){const n=l.querySelector('[data-cname]');if(!n)return;const bad=nameTaken(l);n.classList.toggle('err',bad);let m=l.querySelector('[data-nameerr]');if(bad&&!m){m=document.createElement('div');m.className='helper terr';m.dataset.nameerr='';m.textContent='That name is already used by another provider.';n.closest('.field').appendChild(m)}if(!bad&&m)m.remove()}
 function syncCustomReady(){const l=activeLayer();const b=l&&l.querySelector('[data-customadd]');if(!b)return;const po=l.querySelector('#cpwon');b.disabled=!customReady(l)||nameTaken(l)||Boolean(po&&po.checked&&!(l.querySelector('#cpw')?.value||''));showNameError(l);showUrlError(l,false)}
 function witDlg(){dlg('Add a Wit.ai token',`<div class="lg">Speech commands use this token. It stays on this computer.</div><div class="content">${inp('Token name','Lobby kiosk token','Lobby kiosk token','Only you see this name.')}<div class="field"><div class="mdb">Server access token</div><input class="input" id="kv" type="password" placeholder="Paste your Wit.ai token"><div class="helper">Wit.ai tokens don't take a password.</div></div></div>`,`${cancel}<button class="btn pri" data-savewit disabled data-tip="Paste your token first">Save token</button>`,'sub')}
@@ -1220,7 +1259,9 @@ document.addEventListener('click',e=>{
  if('removekey' in d){const box=activeLayer().querySelector('[data-newkey]');box.dataset.removed='1';box.value='';box.placeholder='No key';const kh=activeLayer().querySelector('[data-keyhelp]');if(kh)kh.textContent='The key is removed when you save.';t.remove();return}
  if('customadd' in d){
   const urlIn=activeLayer().querySelector('[data-curl]');
-  let endpoint;try{endpoint=new URL(urlIn.value.trim());if(!['http:','https:'].includes(endpoint.protocol))throw new Error();}catch{urlIn.classList.add('err');urlIn.focus();return;}
+  const address=completeBaseUrl(urlIn.value);
+  if(!address){showUrlError(activeLayer(),true);urlIn.focus();return;}
+  const endpoint=new URL(address);
   if(!S.cm.models.length)return;
   if(nameTaken(activeLayer())){showNameError(activeLayer());activeLayer().querySelector('[data-cname]').focus();return}
   const same=S.servers.find(server=>server.id!==d.customadd&&server.endpoint===endpoint.href);
@@ -1302,7 +1343,15 @@ document.addEventListener('click',e=>{
  if('news' in d)return newSession();
 });
 ov.addEventListener('mousedown',e=>{if(e.target.classList.contains('lay'))pop()});
-document.addEventListener('focusout',e=>{const l=activeLayer();if(l&&l.querySelector('[data-customadd]')&&e.target.matches&&e.target.matches('.content input'))showUrlError(l,true)});
+document.addEventListener('focusout',e=>{
+ const layer=activeLayer();
+ if(!layer?.querySelector('[data-customadd]')||!e.target.matches?.('.content input'))return;
+ if(e.target.matches('[data-curl]')){
+  const address=completeBaseUrl(e.target.value);
+  if(address)e.target.value=S.cm.url=address;
+ }
+ showUrlError(layer,true);
+});
 document.addEventListener('input',e=>{if(e.target.closest&&e.target.closest('[data-customadd]')===null&&activeLayer()?.querySelector('[data-customadd]'))syncCustomReady()});
 document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='0'){e.preventDefault();openSettingsConnections()}if(e.key==='Escape'){const menu=$('#cmenu');if(menu){const owner=menu.dataset.for;menu.remove();[...ov.querySelectorAll('[data-cm]')].find(b=>b.dataset.cm===owner)?.focus();return;}if(stack.length)pop();}
  if(e.key==='Tab'&&activeLayer()&&!$('#cmenu')){
