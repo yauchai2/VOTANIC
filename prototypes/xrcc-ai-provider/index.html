@@ -989,7 +989,7 @@ function connBody(launcher=false){
  const protectedCount=list.filter(k=>k.pw).length;
  const lead='Keys are encrypted and kept on this computer. Projects never contain them, and VOTANIC never sees them.';
  const back=`<button class="lnk row g4 back-link" data-connback>${ic('Left')}Connections</button>`;
- const head=(t,l)=>`<div class="col g4" style="gap:8px">${S.conn&&!launcher?back:''}${S.launchManage?`<button class="lnk row g4 back-link" data-back>${ic('Left')}Back to connection check</button>`:''}<h2 class="h2" tabindex="-1">${t}</h2><div class="md t2">${l}</div></div>`;
+ const head=(t,l)=>`<div class="col g4" style="gap:8px">${S.conn?back:''}${S.launchManage?`<button class="lnk row g4 back-link" data-back>${ic('Left')}Back to connection check</button>`:''}<h2 class="h2" tabindex="-1">${t}</h2><div class="md t2">${l}</div></div>`;
  const row=(key,icon,t,m)=>`<button class="krow connection-row" data-conn="${key}">${icon}<span class="col g4 fill"><b class="mdb">${t}</b><span class="sm t2">${m}</span></span>${ic('Chevron')}</button>`;
  const witIcon=`<span class="logo l32 connection-badge"><img src="./assets/wit-ai.svg" width="20" height="20" alt=""></span>`;
  const keyMenu=k=>S.kmenu===k.id?`<div class="menu on key-menu"><button data-kact="pw|${k.id}">${k.pw?'Change password':'Set password'}</button><button data-kact="ren|${k.id}">Rename</button><hr><button class="terr" data-kact="del|${k.id}">Remove key</button></div>`:'';
@@ -999,13 +999,13 @@ function connBody(launcher=false){
   <div class="col g12">${keyRows||EM('Key','No AI keys yet','Add a key for Gemini, MiniMax, Poe, OpenRouter or a custom provider. It is encrypted and stays on this computer.','<button class="btn pri" data-addkey2>Add key</button>')}<div class="no-match" id="knone" hidden><b class="mdb"></b><div class="sm t2">Try the key name or the provider. Clear the search to see every key.</div><button class="btn" data-clear-search>Clear search</button></div></div></section>`;
  const tokenRows=S.witTokens.map(k=>`<div class="krow">${witIcon}<div class="col g4 fill"><b class="mdb">${esc(k.name)}</b><span class="sm t2">${esc(k.meta)}</span></div><button class="iconbtn s28" data-cm="wit|${k.id}" aria-label="More actions for ${esc(k.name)}">${ic('MoreH')}</button></div>`).join('');
  const WIT=`<section class="col g8"><div class="row g12"><div class="col g4 fill"><div class="lgb">${launcher?'Speech commands (Wit.ai)':'Tokens'}</div>${launcher?'':'<div class="sm t2">Used for speech commands in every project on this computer.</div>'}</div><button class="btn" data-addwit>Add token</button></div><div class="col g8">${tokenRows||'<span class="sm t2">No Wit.ai token yet.</span>'}</div></section>`;
- if(launcher)return head('Connections','AI keys and speech tokens stay on this computer.')+(S.launchManage?AI+WIT+remoteSummary():remoteSummary()+AI+WIT)+retentionControl();
- if(S.conn==='ai')return head('AI keys',lead)+AI;
- if(S.conn==='wit')return head('Speech commands (Wit.ai)','A token lets people control the scene by voice. It is saved on this computer, never in a project.')+WIT;
+ const sub=(launcher&&S.launchManage)?'ai':S.conn;
+ if(sub==='ai')return head('AI keys',lead)+AI;
+ if(sub==='wit')return head(launcher?'Speech commands':'Speech commands (Wit.ai)',launcher?'Wit.ai tokens stay on this computer.':'A token lets people control the scene by voice. It is saved on this computer, never in a project.')+WIT;
  const lastUsed=S.witTokens.map(t=>t.lastUsed).filter(Boolean).sort().at(-1);
  const tokenSummary=S.witTokens.length?`${S.witTokens.length} ${S.witTokens.length===1?'token':'tokens'}${lastUsed?' · last used '+new Intl.DateTimeFormat('en-GB',{day:'numeric',month:'short',timeZone:'UTC'}).format(new Date(lastUsed)):''}`:'No tokens yet';
  const keySummary=list.length?`${list.length} ${list.length===1?'key':'keys'}${protectedCount?' · '+protectedCount+' protected with a password':''}`:'No keys yet';
- return head('Connections','AI keys and speech tokens stay on this computer.')+`<div class="col connections-list">${row('ai',`<div class="logo l32 connection-badge"><img src="./assets/connection-key.svg" width="20" height="20" alt=""></div>`,'AI keys',keySummary)}${row('wit',witIcon,'Speech commands (Wit.ai)',tokenSummary)}</div>`+retentionControl();
+ return head('Connections','AI keys and speech tokens stay on this computer.')+(launcher?remoteSummary():'')+`<div class="col connections-list">${row('ai',`<div class="logo l32 connection-badge"><img src="./assets/connection-key.svg" width="20" height="20" alt=""></div>`,'AI keys',keySummary)}${row('wit',witIcon,'Speech commands (Wit.ai)',tokenSummary)}</div>`+retentionControl();
 }
 function openSettingsConnections(){
  S.launcher=false;S.launchManage=false;S.conn=null;S.kmenu=null;S.fromSettings=true;
