@@ -843,7 +843,7 @@ function cmAdd(){const l=activeLayer();const inp=l.querySelector('[data-cm-in]')
 function cmTest(only){const c=S.cm;const targets=only==null?c.models.map((m,i)=>i):[only];targets.forEach(i=>{c.models[i].st='testing';delete c.models[i].reason});cmRefresh();targets.forEach((i,k)=>setTimeout(()=>{if(S.cm!==c)return;const m=c.models[i];if(!m||m.st!=='testing')return;const bad=/nemo|bad/i.test(m.id);m.st=bad?'error':'ready';if(bad)m.reason='This provider has no model with this ID.';else delete m.reason;if(activeLayer()?.querySelector('[data-cmodels]'))cmRefresh()},700+k*600))}
 function customDlg(server,{fromKey=false}={}){
  const first=!S.servers.length;const saved=server?.key?S.keys.find(k=>k.id===server.key):null;
- S.cm={models:cmInit(server,first),url:server?.endpoint??(first?'http://192.168.1.20:8080/v1':''),draft:'',err:''};
+ S.cm={models:cmInit(server,first),url:server?.endpoint??'',draft:'',err:''};
  dlg(server?'Edit custom provider':'Add a custom provider',`<div class="content">
  <div class="field"><div class="lrow"><label class="mdb" for="custom-provider-name">Provider Name</label></div><input class="input" id="custom-provider-name" data-cname value="${esc(server?.name??'')}" placeholder="${esc(autoName(server?.id))}"></div>
  <div class="field"><div class="lrow"><label class="mdb" for="custom-base-url">Base URL</label></div><input class="input" id="custom-base-url" data-curl value="${esc(S.cm.url)}" placeholder="http://192.168.1.20:8080/v1"></div>
