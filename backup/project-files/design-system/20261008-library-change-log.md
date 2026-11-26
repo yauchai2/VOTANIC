@@ -1944,3 +1944,53 @@ Page Button, Library file. Three sets: `Button / Dark / 40px` (17463:54657, Stat
 - Context: report reports/20261125-codex-ai-provider-review.md. Commits 565f5ef, 2b8704c, 86e2e84, a0170aa (11-24 08:01 UTC to 11-25 03:28 UTC, author "Alan YC Chan <yauchaichan@gmail.com>", inferred Codex) changed the prototype. Figma also gained a Codex-authored section "Custom provider · 統一連接流程" (about 60 boards, node 3366:24178) with no change log entry; Alan chose to keep it (2026-11-25) and have the prototype follow it.
 - Prototype (local branch claude/project-thread-00lm0h on top of a0170aa, not pushed, not published): (1) Add provider: built-in providers use the API key select + Manage keys again (Figma A3 3453:25017, A3d 2060:10339, A3o); no Add key button beside it. (2) Provider card: "Key in use" select restored for built-in providers (no Figma board for the expanded card; last approved behaviour). (3) Removed success toasts "Key removed", "Key saved", "Provider saved", "Provider and key saved". (4) New "Connection check" Launcher dialog for Custom-only projects with the five Figma states (nodes 3368:24527 to 3368:24583); the review-bar select lists the states.
 - Not yet checked against Figma: task-origin Add provider variants (3433:23991 to 3433:24042), Custom card boards (3442:24059 to 3442:24107), Protect key, Review provider changes, Edit custom provider, First Custom key setup, Launcher key boards. Library: no change; no Publish needed.
+
+## 2026-11-25 · AI Provider · Prototype reset to 11-24 afternoon version (supersedes the earlier 11-25 realign entry)
+- Trigger: Alan restored Figma (AI Provider) to the 2026-11-24 afternoon history version and asked the prototype to follow.
+- Matching prototype commit: 8293fa7 (spacing/hierarchy pass, 11-24 04:11 UTC); site counterpart de2aa4b. Not 840cf80: Figma lacks the later review-plan changes (B2 capability icons kept, D3 Launcher key list, D4c "Poe needs a password. Enter it after XRCC opens.", A6 single "Model name" form, A3c "Saved server" select) and the Codex Custom-flow section is gone.
+- Method: revert-style new commits, no force-push, no branch deleted. `prototypes/xrcc-ai-provider/index.html` restored from 8293fa7 on prototype/xrcc-ai-provider (524a1a2), claude/project-thread-9oawj5 (9f7aefa), claude/project-thread-00lm0h (53bcb19). `site/ai-provider/index.html` restored from de2aa4b on claude/project-thread-350cjh (04540be); Remote Trigger and Voyage 360 untouched.
+- Production redeployed from 04540be; https://votanic-proto.vercel.app/ai-provider/ verified identical to de2aa4b; /remote-trigger/ and /voyage360/ still 200.
+- Dropped by the reset (can be re-applied only if Alan asks): Launcher Poe password entry, task status labels, session templates removal, Connections link, multi-model Custom provider, unified apiKeyField, Launcher Custom-only check dialog.
+
+## 2026-11-25 · AI Provider · Prototype restored to 11-24 15:57 (HK) version with multi-model Custom provider (supersedes the 8293fa7 reset above)
+- Trigger: Alan switched Figma back to the version that has the multi-model Custom provider (A6m/A6r/A6x/A6q, B2m, D3o/D3w, D4c/D4cm, B3u/B6a; no Codex Custom-flow section, no "Add key" static text).
+- Timezone note: 4:00 PM HK = 08:00 UTC, so the matching prototype is 840cf80 (07:48 UTC) and site 8a395ac (07:49 UTC), just before Codex's af341d8 (16:02 HK).
+- Revert-style commits, no force-push: prototype/xrcc-ai-provider f84f094, claude/project-thread-9oawj5 60756b0, claude/project-thread-00lm0h 7d1d4a5 (prototypes/xrcc-ai-provider/index.html from 840cf80); claude/project-thread-350cjh 551f4c5 (site/ai-provider/index.html from 8a395ac). Remote Trigger and Voyage 360 untouched.
+- Production redeployed from 551f4c5; live /ai-provider/ identical to 8a395ac; /remote-trigger/ and /voyage360/ still 200.
+- Known gaps vs current Figma (prototype lagged Figma at that moment, not fixed yet): A6m is a single dialog Name, Base URL, API key, Models (Test), Advanced, while the prototype has 3 numbered steps with Name last; task picker lacks the "Manage models" link; launcher D4c shows "No API key required · 3 models" while prototype shows "No API key required".
+
+## 2026-11-25 · AI Provider · Prototype aligned to Figma (A6m, B2m, D4c) on top of the 840cf80 restore
+- Custom provider dialog is now a single page like Figma A6m: Name, Base URL, API key (Optional), Models header with Test, bordered model list (Default tag, X; status icon/label only after a test), Add row, collapsed Advanced. Numbered steps, intro line and helper lines removed.
+- Text chat model picker shows "Manage models" for a Custom server (B2m); Launcher Custom card reads "No API key required · 3 models" (D4c).
+- Small fix: model input clears after Add.
+- Commits (no force-push): prototype/xrcc-ai-provider 3fdce65, claude/project-thread-9oawj5 abaaab9, claude/project-thread-00lm0h abfcbb3, claude/project-thread-350cjh 04c83f8 (site/ai-provider only). Production redeployed; Remote Trigger and Voyage 360 untouched.
+
+## 2026-11-25 · AI Provider · "Server" wording changed to "Provider" (Figma first, prototype committed locally, not pushed)
+- Figma (page XRCC AI Provider) edited first: Launcher "Server endpoint" → "Provider endpoint" (D4c, D4cm); D4cm helper "isn't on this server anymore" → "isn't available from this provider anymore"; A3c "Saved server" → "Saved provider" and description; A4c "Saved server", "Choose a server", "CUSTOM SERVERS ON THIS COMPUTER", "Studio test server" → provider; A6d empty hint; A6r and B2m "This server has no model with this ID." → provider; 3346:31432 helper "your server expects" → "your provider expects"; B2m board number text; annotation on D4cm ("server 能否回應" → "provider 位址能否回應"); related layer/board names.
+- Kept as "Server": Launcher Remote control (Server, Server running, Server off, D0R, D3R, D3o), and Wit.ai "Server access token" (Wit.ai's own field name).
+- Prototype: same strings updated in prototypes/xrcc-ai-provider/index.html plus "A provider can have up to 20 models" and "This provider does not report usage". Local commit on claude/project-thread-00lm0h; push and Production redeploy waiting for Alan's approval.
+
+## 2026-11-25 · AI Provider · Launcher Connections boards moved to overview + sub-pages (Figma first)
+- Alan's design: Connections is a summary list with sub-pages. Launcher: D3o overview (Remote control, AI keys, Speech commands (Wit.ai)) → D3 AI keys → D3w Speech commands. Settings was already split (D0, D1, D1b).
+- Figma: 19 legacy Launcher boards that still showed the old combined single page now use the sub-page layout (cloned Head with back link and title from D3 or D3w, other group and "Clear unused" hidden). AI keys pages: D4k, D4mK, D4m, D2L, D5L, D6L, D7L, D8L, D3s, D3r, D3d, D3p. Speech commands pages: D5T, D2T, D7T, D8T, D3t, D3tr (was a second "D3w", renamed), D3n. D2f needed no change (its Launcher background is hidden). D2L annotation now says it returns to the AI keys page.
+- Prototype: Launcher Connections now renders the overview (Remote control + two rows + Clear unused) and the AI keys / Speech commands sub-pages with a back link; "Manage keys" from the connection check opens the AI keys sub-page. Local commit on claude/project-thread-00lm0h; push and Production redeploy waiting for Alan.
+- Note: the blue board names overlapping the labels in Alan's screenshot are Figma's selection overlay, not a defect.
+
+## 2026-11-25 · AI Provider · 跟 Alan 手畫的 A6 / D2a（Figma 先，prototype 後）
+- 參考：Alan 的 (edit) A6 · Custom provider（3473:24988）、(edit) D2a · Add key · Custom（3472:24650）；兩塊畫板保持原樣。
+- Figma：12 張 Custom provider 畫板（A6、A6b/c/d/e/m/q/r/x、A6p、A6t、D2b）標籤 Name → Provider Name；除 A6k（編輯，key 已存）外加入「Protect this key with a password」；Add（model）在輸入欄為空時改為 Disabled；A6 的 Test 設為 Disabled（同 Alan）。A6k 只改標籤。
+- Figma：D2a 與 D2b 底層 Add an AI key（Custom）改為 Alan 版：移除說明句與「Set up a custom provider」連結，加入 Provider Name。
+- Annotation：A6 增 1 條（Disabled／亮起規則與密碼 tick）；D2a 改寫為 Provider Name 規則。
+- Prototype（本地 commit，待推送）：Custom 對話框 Provider Name、密碼 tick（勾選才出密碼欄）、Add 無輸入時 dim；Add an AI key 選 Custom 時加 Provider Name、Save key 需 Provider Name + API key。
+- 2026-11-25 補充（Alan 確認四點）：Test 維持「有有效 Base URL 和至少一個模型」就亮，A6 與 (edit) A6 的 Test 由 Disabled 改回 Default；「More options」摘要 Name, format, timeout → Format, timeout（Figma 20 處）；prototype 同步（標題 More options、摘要 Format, timeout）；A6 Annotation 更新。
+
+## 2026-11-25 · AI Provider · Settings 與 AI Provider 統一 Custom provider 表單（Figma 先，prototype 後）
+- Figma：D2a 改為疊層（Add an AI key 在下，Add a custom provider 在上，返回箭頭回選 provider）；D2b 改名 D2d「name already used」（Provider Name 重複顯示錯誤、Add provider Disabled）；兩層的下層移除 Provider Name。
+- Figma：新增 D5c（Custom key 操作：Set password / Edit provider / Remove key）、D8c（Remove Studio LLM? ... will stop working）、D1c（Custom key 已新增，列表新列「Studio LLM · Custom」）。key 列「Studio LLM token / Custom · 192.168.1.20」全頁 23 處改為「Studio LLM / Custom · In use」。
+- Annotation：D2a、D2d、D5c、D8c、D1c 各 1 條，A6 增 1 條（共 4）。
+- Prototype（本地 commit）：Settings 揀 Custom 打開同一表單；Provider Name 即 key 名稱並保持唯一；儲存回 key 列表；Custom key 選單用 Edit provider（跳到 AI Provider 編輯）；刪除 Custom key 一併移除 provider。
+
+## 2026-11-25 · AI Provider · Launcher 連線檢查對話框按鈕層級與 Manage keys 連結（Figma 先，prototype 後）
+- Alan 要求：頁腳只留兩個按鈕，Start XRCC 為最強 Primary；Start without AI 為中性灰框（Tertiary），Tooltip「AI features stay off this time」；Manage keys 改為說明句旁的文字連結。只用 Library 現有按鈕與連結樣式，無新 token。
+- Figma：D4（1366:1556）、D4p（2623:16858）、D4r（2629:18725）、D4c（2629:18842）、D4cm（3336:24935）移除 Manage keys 按鈕，Start without AI 換為 Tertiary，說明句「Check the keys required by this project.」後接 Library 連結「Manage keys」；D4b（1668:5945）Start without AI 換為 Tertiary。Tooltip spec（1411:1760）新增列「Row · Start without AI」。Annotation：D4 與 D4b 各 2 條。
+- Prototype（本地 commit，待推送）：launchDlg 頁腳 Start without AI（btn，tooltip）+ Start XRCC / Start with available AI / Add a key（pri）；Manage keys 為說明句內連結，仍開啟 AI keys 子頁。
