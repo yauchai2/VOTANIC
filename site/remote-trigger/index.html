@@ -1510,7 +1510,7 @@ function render(){
   const fullPlay=st.tab==='editor'&&st.playing&&!showRt;
   const stage=h('div',{class:'xstage'+(showLn?' lstage':fullPlay?' stage-play':'')},showLn?lnShell():fullPlay?playView():bar());
   const choosing=showRt&&(st.open.pick||st.open.vpick);
-  if(showRt){stage.append(h('div',{class:'xscrim'}),h('div',{class:'xmain'+(choosing?' covered':'')},rtDialog()),colorPop())}
+  if(showRt){stage.append(h('div',{class:'xscrim'}),h('div',{class:'xmain'+(choosing?' covered':'')},rtDialog()));const cp=colorPop();if(cp)stage.append(cp)}
 
 
   if(showRt&&st.open.pick)stage.append(h('div',{class:'xscrim2 editor-picker'}),h('div',{class:'xpick'},picker()));
