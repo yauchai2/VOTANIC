@@ -1,0 +1,79 @@
+<!doctype html>
+<!-- @dsCard group="UI kit" -->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>XRCC Runtime Debug Panel</title>
+<link rel="stylesheet" href="../../colors_and_type.css"><link rel="stylesheet" href="xrcc-ui.css">
+<style>
+body{display:flex;justify-content:center;padding:var(--spacing-32) var(--spacing-16);min-height:100vh}
+.stage{position:relative;width:100%;max-width:680px}
+.cap{font:var(--text-body-md);color:var(--text-secondary);margin:0 0 var(--spacing-12)}
+.xr-panel{height:760px}
+.pbody{padding:var(--spacing-16);display:flex;flex-direction:column;gap:var(--spacing-12);overflow:auto;flex:1}
+.filters{display:flex;gap:var(--spacing-8);flex-wrap:wrap}
+.right{display:flex;align-items:center;gap:var(--spacing-8)}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;border-radius:var(--radius-lg)} .scrim.show{display:flex}
+.tabrow{display:flex;gap:var(--spacing-8);align-items:center} .tabrow .xr-tabs{flex:1}
+.entry{display:flex;gap:var(--spacing-12);padding:var(--spacing-12);border-top:1px solid var(--border-default)} .entry:first-child{border-top:0}
+.entry .t{margin-left:auto;font:var(--text-caption);color:var(--text-subtle);white-space:nowrap}
+.chg{font:var(--text-body-sm);color:var(--text-secondary)} .chg b{color:var(--text-primary);font-weight:500}
+</style></head><body>
+<div class="stage">
+<p class="cap">Runtime Debug · Manage debug items. Live demo: switch tabs, filter, toggle W and L, search, remove all.</p>
+<div class="xr-panel" id="panel">
+  <div class="xr-panel-head"><span>Debug Panel</span><button class="xr-iconbtn" aria-label="Close"><svg class="xr-i s20"><use href="#i-close"/></svg></button></div>
+  <div class="pbody">
+    <div class="tabrow">
+      <div class="xr-tabs" id="tabs">
+        <button class="xr-tab on" data-tab="items"><svg class="xr-i s20"><use href="#i-bug"/></svg>Debug items</button>
+        <button class="xr-tab" data-tab="log"><svg class="xr-i s20"><use href="#i-file"/></svg>Log</button>
+        <button class="xr-tab warn" data-tab="warn"><svg class="xr-i s20"><use href="#i-warning"/></svg>Warnings</button>
+      </div>
+      <button class="xr-iconbtn" aria-label="More" id="more"><svg class="xr-i"><use href="#i-more"/></svg></button>
+    </div>
+    <div id="view"></div>
+  </div>
+</div>
+<div class="scrim" id="scrim"><div class="xr-dialog" role="dialog" aria-label="Remove all items">
+  <div class="head"><span>Remove all items?</span><button class="xr-iconbtn" id="x" aria-label="Close"><svg class="xr-i s20"><use href="#i-close"/></svg></button></div>
+  <div class="body"><svg class="xr-i s48"><use href="#i-trash"/></svg><span>This clears all 8 debug items from the panel. Your variables and objects stay exactly as they are.</span></div>
+  <div class="foot"><button class="xr-btn secondary" id="cancel">Cancel</button><button class="xr-btn destructive" id="ok">Remove all</button></div>
+</div></div>
+</div>
+<script src="icons.js"></script>
+<script>
+let items=[
+ {g:'Exhibit Door',s:'Gallery Hall',n:'Door open',t:'Boolean',v:'True',w:1,l:0},
+ {g:'Exhibit Door',s:'Gallery Hall',n:'Spawn position',t:'Vector3',v:['0.00','1.53','-2.74'],w:1,l:1},
+ {g:'Exhibit Door',s:'Gallery Hall',n:'Last opened by',t:'String',v:'–',w:0,l:1},
+ {g:'Ticket Desk',s:'Lobby',n:'Ticket price',t:'Number',v:'12.50',w:1,l:0},
+ {g:'Ticket Desk',s:'Lobby',n:'Queue length',t:'Number',v:'–',w:0,l:1},
+ {g:'Ceiling Lights',s:'Lobby',n:'Tint',t:'Color',v:'#A71313',w:1,l:1},
+ {g:'Ceiling Lights',s:'Lobby',n:'Theme colour',t:'Color',v:'–',w:0,l:1},
+ {g:'Ceiling Lights',s:'Lobby',n:'Flicker rate',t:'Number',v:'0.4',w:1,l:1}];
+const log=[['Door open','Exhibit Door · Gallery Hall','False','True','10:42:08'],['Ticket price','Ticket Desk · Lobby','11.00','12.50','10:41:55'],['Tint','Ceiling Lights · Lobby','#A71313 100%','#A71313 80%','10:41:21']];
+const warns=[['This variable has no value yet. Set one in Inspector or a behaviour will read it as empty.','Queue length · Ticket Desk · Lobby','x3'],['The target object was deleted, so “Open interaction” cannot run.','Door open · Exhibit Door · Gallery Hall','x1']];
+let tab='items',flt='all',q='';const $=s=>document.querySelector(s),view=$('#view');
+const I=n=>'<svg class="xr-i s20"><use href="#i-'+n+'"/></svg>';
+function empty(icon,t,p,b){return `<div class="xr-empty">${I(icon).replace('s20','s48')}<h3>${t}</h3><p>${p}</p>${b||''}</div>`}
+function val(v){if(Array.isArray(v))return ['X','Y','Z'].map((a,i)=>`<span class="xr-chipval"><b>${a}</b>${v[i]}</span>`).join('');if(String(v).startsWith('#'))return `<span class="xr-val" style="display:inline-flex;gap:8px;align-items:center"><i style="width:16px;height:16px;border-radius:4px;background:${v};display:inline-block"></i>${v} <span style="color:var(--text-subtle)">100%</span></span>`;return `<span class="xr-val">${v}</span>`}
+function render(){
+ const all=items.length,wc=items.filter(i=>i.w).length,lc=items.filter(i=>i.l).length;
+ if(tab==='items'){
+  if(!all){view.innerHTML=empty('bug','No debug items yet','Pick a variable in the Inspector and choose Watch or Log. It will show up here.');return}
+  let list=items.filter(i=>(flt==='all'||(flt==='w'&&i.w)||(flt==='l'&&i.l))&&(i.n+i.g).toLowerCase().includes(q.toLowerCase()));
+  let h=`<input class="xr-input" id="q" placeholder="Search variables or objects" value="${q}"><div class="filters" style="margin-top:12px"><button class="xr-pill ${flt==='all'?'on':''}" data-f="all">All ${all}</button><button class="xr-pill ${flt==='w'?'on':''}" data-f="w">Watch ${wc}</button><button class="xr-pill ${flt==='l'?'on':''}" data-f="l">Log ${lc}</button></div>`;
+  if(!list.length)h+=empty('search',`No items match “${q||'this filter'}”`,'Try a variable name or an object. Filters apply to the search too.','<button class="xr-btn secondary sm" id="clr">Clear filters</button>');
+  else{let last='';list.forEach(i=>{const k=i.g+i.s;if(k!==last){if(last)h+='</div>';h+=`<div class="xr-group-title">${i.g}<small>${i.s}</small></div><div class="xr-list">`;last=k}
+   h+=`<div class="xr-row"><div class="main"><div class="name">${i.n}</div><div class="meta">${i.t}</div></div><div class="right">${val(i.v)}<button class="xr-wl ${i.w?'on':''}" data-w="${items.indexOf(i)}" title="Watch">W</button><button class="xr-wl ${i.l?'on':''}" data-l="${items.indexOf(i)}" title="Log">L</button><button class="xr-iconbtn" title="Locate in scene">${I('target')}</button></div></div>`});h+='</div>'}
+  view.innerHTML=h;
+ }else if(tab==='log'){view.innerHTML=`<div class="xr-list">`+log.map(e=>`<div class="entry"><div><div class="name">${e[0]}</div><div class="meta" style="font:var(--text-body-sm);color:var(--text-subtle)">${e[1]}</div><div class="chg"><b>${e[2]}</b> → <b>${e[3]}</b></div></div><span class="t">${e[4]}</span></div>`).join('')+`</div>`}
+ else{view.innerHTML=`<div class="xr-alert" style="margin-bottom:12px">${I('warning')}<span>2 warnings in this scene. They clear when the cause is fixed.</span></div><div class="xr-list">`+warns.map(e=>`<div class="entry"><div style="min-width:0"><div class="name" style="font:var(--text-body-md)">${e[0]}</div><div style="font:var(--text-body-sm);color:var(--text-subtle)">${e[1]}</div></div><span class="xr-badge warning t" style="margin-left:auto">${e[2]}</span></div>`).join('')+`</div>`}
+}
+document.addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
+ if(t.dataset.tab){tab=t.dataset.tab;document.querySelectorAll('.xr-tab').forEach(b=>b.classList.toggle('on',b===t));render()}
+ else if(t.dataset.f){flt=t.dataset.f;render()} else if(t.dataset.w){items[t.dataset.w].w^=1;render()} else if(t.dataset.l){items[t.dataset.l].l^=1;render()}
+ else if(t.id==='clr'){flt='all';q='';render()} else if(t.id==='more'){$('#scrim').classList.add('show')}
+ else if(t.id==='cancel'||t.id==='x'){$('#scrim').classList.remove('show')} else if(t.id==='ok'){items=[];$('#scrim').classList.remove('show');tab='items';document.querySelectorAll('.xr-tab').forEach(b=>b.classList.toggle('on',b.dataset.tab==='items'));render()}});
+document.addEventListener('input',e=>{if(e.target.id==='q'){q=e.target.value;const p=e.target.selectionStart;render();const n=$('#q');n.focus();n.setSelectionRange(p,p)}});
+render();
+</script></body></html>

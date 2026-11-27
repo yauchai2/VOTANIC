@@ -1,0 +1,10 @@
+<!doctype html>
+<!-- @dsCard group="Components" -->
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Empty state and list rows</title>
+<link rel="stylesheet" href="../colors_and_type.css"><link rel="stylesheet" href="../ui_kits/xrcc-pc/xrcc-ui.css">
+<style>body{padding:var(--spacing-24);background:var(--surface-canvas)}h2{font:var(--text-heading-sm);margin:0 0 var(--spacing-16)}.sub{font:var(--text-body-sm);color:var(--text-subtle);margin:var(--spacing-4) 0 var(--spacing-16)}
+.row{display:flex;flex-wrap:wrap;gap:var(--spacing-16);align-items:center}.sw{width:152px}.sw i{display:block;height:56px;border-radius:var(--radius-md);border:1px solid var(--border-faded)}.sw b{display:block;font:var(--text-body-sm);font-weight:500;margin-top:var(--spacing-8)}.sw span{font:var(--text-caption);color:var(--text-subtle)}
+.stack{display:flex;flex-direction:column;gap:var(--spacing-16)}.lbl{font:var(--text-caption);color:var(--text-subtle);text-transform:uppercase;margin-bottom:var(--spacing-8)}</style></head><body>
+<script src="../ui_kits/xrcc-pc/icons.js"></script>
+<div class="stack"><div class="xr-panel" style="max-width:520px"><div class="xr-empty"><svg class="xr-i s48"><use href="#i-bug"/></svg><h3>No debug items yet</h3><p>Pick a variable in the Inspector and choose Watch or Log. It will show up here.</p><button class="xr-btn secondary sm">Open Inspector</button></div></div><div class="xr-list" style="max-width:520px"><div class="xr-row"><div class="main"><div class="name">Door open</div><div class="meta">Boolean</div></div><span class="xr-val">True</span><button class="xr-wl on">W</button><button class="xr-wl">L</button></div><div class="xr-row"><div class="main"><div class="name">Spawn position</div><div class="meta">Vector3</div></div><span class="xr-chipval"><b>X</b>0.00</span><button class="xr-wl on">W</button><button class="xr-wl on">L</button></div></div></div>
+</body></html>
