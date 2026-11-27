@@ -1,4 +1,4 @@
-# 備份清單 (generated 2026-11-26 UTC)
+# 備份清單 (generated 2026-11-27 UTC)
 
 | 路徑 | bytes | sha256 (前 12 位) |
 |---|---|---|
@@ -6,7 +6,7 @@
 | `backup/project-files/UPGRADE-NOTES.md` | 673 | 8b037b053616 |
 | `backup/project-files/design-system/20261008-4.2-remote-control-qr-handoff.md` | 5515 | c2e55a8399ee |
 | `backup/project-files/design-system/20261008-claude-ui-workflow-playbook.md` | 16891 | 233d10795a50 |
-| `backup/project-files/design-system/20261008-library-change-log.md` | 334590 | 7a320045d684 |
+| `backup/project-files/design-system/20261008-library-change-log.md` | 350309 | cada6baf94f2 |
 | `backup/project-files/design-system/20261008-token-audit-and-proposal.md` | 7910 | 98d5e7ef1d89 |
 | `backup/project-files/design-system/20261008-typography-audit-and-proposal.md` | 6029 | ccecd32e8beb |
 | `backup/project-files/design-system/20261008-xrcc-design-system-study.md` | 28329 | ae09047815fd |
@@ -323,6 +323,7 @@
 | `backup/project-files/uploads/hearth/0fb89597-70f8-48f4-8e2a-cdbf67636ac1` | 96488 | 6f6ce7f5cf4e |
 | `backup/project-files/uploads/hearth/0fe9dd82-2438-4b41-ba38-1a92275a871c` | 54372 | e6dd8682ac7f |
 | `backup/project-files/uploads/hearth/102d0c45-c87c-4a1b-8dfa-f94718fa6156` | 53372 | 6b01a5a6801c |
+| `backup/project-files/uploads/hearth/10a4cf53-0f3d-45cb-8378-991786dd2dad` | 198605 | 2dd7af2198f2 |
 | `backup/project-files/uploads/hearth/10ef3662-aa71-4cfd-99a0-55a1ba8d8107` | 92201 | 2e8feb998057 |
 | `backup/project-files/uploads/hearth/1123c3e6-cfc6-4711-a1f2-46c482216392` | 69044 | 332a8d70780a |
 | `backup/project-files/uploads/hearth/116ba541-00d1-43b1-9013-687eed06f164` | 41243 | 2be2d96a660d |
@@ -354,6 +355,7 @@
 | `backup/project-files/uploads/hearth/199f1c96-0b99-4d1c-a40b-a920b1d40ce1` | 60674 | 48ec0aa7942c |
 | `backup/project-files/uploads/hearth/1a7bb204-0af2-46a7-a19c-0ec38bd6aeac` | 40922 | 9e420fd7b5aa |
 | `backup/project-files/uploads/hearth/1ab51d5f-b4e9-46c9-ac3c-43269c357de5` | 11858 | 758acc475f34 |
+| `backup/project-files/uploads/hearth/1b165afd-e2dd-4ae8-b161-a466cd88dfc7` | 11309 | d0813ab0a7c7 |
 | `backup/project-files/uploads/hearth/1b6ab896-de32-4202-917a-f532e1dac9dd` | 10039 | 6f930f4e9491 |
 | `backup/project-files/uploads/hearth/1b71e1ff-60b4-413d-9dce-0f57028d0d39` | 1003 | a2487b031712 |
 | `backup/project-files/uploads/hearth/1c66ad88-a619-488e-84a4-ab9146979a6f` | 5750 | 80182d816832 |
@@ -370,6 +372,7 @@
 | `backup/project-files/uploads/hearth/2108f2f8-cf6a-4824-b591-4d941260307a` | 43901 | da889242883d |
 | `backup/project-files/uploads/hearth/2112ca72-c41d-4ac2-8493-30c7163a3b57` | 32308 | 90a50298851f |
 | `backup/project-files/uploads/hearth/21324b9f-2170-4a02-8ef1-0dc6fcea5145` | 142830 | 15098062aa1a |
+| `backup/project-files/uploads/hearth/2239f1e0-f5c2-40d0-bdb1-edfddca5f102` | 39152 | d17a70baf4b8 |
 | `backup/project-files/uploads/hearth/22431fda-9cd8-4281-b135-bbd77e882695` | 252301 | 4c5392614f13 |
 | `backup/project-files/uploads/hearth/2246cfc6-4999-4410-8174-4a3f3b75643c` | 54807 | 16e187c58139 |
 | `backup/project-files/uploads/hearth/2298bbfd-19f1-4e1d-8860-1e172f1c6dd7` | 10556 | c9357791a00c |
@@ -424,6 +427,7 @@
 | `backup/project-files/uploads/hearth/3725d1fe-7c3a-49e1-b395-f399a49cf626` | 44518 | f62045f341ec |
 | `backup/project-files/uploads/hearth/373da617-01d5-4d59-afe4-8b346ddae9a0` | 6591 | 720632c49515 |
 | `backup/project-files/uploads/hearth/377f3551-316f-40be-958d-8cc55caa76b3` | 106583 | 354b86d5d1d2 |
+| `backup/project-files/uploads/hearth/3788083b-ad3f-44b2-b578-50ed6187f9b5` | 11446 | e72c0ee13a0d |
 | `backup/project-files/uploads/hearth/379a6092-7bdc-4742-a8c1-b815031b7ec1` | 5983 | c9fb42922721 |
 | `backup/project-files/uploads/hearth/388973ab-8b75-4514-ac14-71cf0a11f74e` | 9779 | 6478b8eb29dc |
 | `backup/project-files/uploads/hearth/38c31c7d-316f-4275-a752-277682ee52b2` | 6709 | cfe368a6514b |
@@ -611,6 +615,7 @@
 | `backup/project-files/uploads/hearth/772e54ec-4845-4de0-9112-aafbd13037de` | 4165 | 21534a06a398 |
 | `backup/project-files/uploads/hearth/7773c960-f663-442e-959c-3241591ba6e7` | 78855 | 178733249f11 |
 | `backup/project-files/uploads/hearth/777a6063-17b9-4541-bdf5-ceec6e793148` | 4035 | 06c52e30b499 |
+| `backup/project-files/uploads/hearth/7790176f-512b-4214-a494-1d8d7f440dca` | 169030 | 9ec27f24c7a0 |
 | `backup/project-files/uploads/hearth/77ae5be7-33b0-4408-b834-2b7ef6c290d1` | 78114 | aa3a4af23843 |
 | `backup/project-files/uploads/hearth/77ee9d32-731d-4ebc-98c2-46115b1a741c` | 55334 | 8f76298e38f6 |
 | `backup/project-files/uploads/hearth/77f167d0-4778-4b24-8826-643741d090fb` | 6678 | fd9beb357273 |
@@ -998,9 +1003,7 @@
 | `backup/project-files/xrcc-studio-feel/20261009-voice-pass-launcher.md` | 4013 | 378ffed82d42 |
 | `backup/project-files/xrcc-user-flow/20261012-xrcc-user-flow.html` | 189363 | ed3435dd2ab7 |
 | `backup/project-files/xrcc-user-flow/20261012-xrcc-user-flow.json` | 2218 | 6ab597ddcd6d |
-| `backup/team-memory/.memory-sync` | 67 | 0d2ad1e163e1 |
-| `backup/team-memory/.memory-sync-basis` | 8295 | 9da060f2bebd |
-| `backup/team-memory/MEMORY.md` | 12901 | a7c9b181c43f |
+| `backup/team-memory/MEMORY.md` | 12951 | 828fe59b9888 |
 | `backup/team-memory/ai-provider-capability-assumptions.md` | 931 | 316e52eb2f9e |
 | `backup/team-memory/ai-provider-no-vpn-no-clone-voice-hints.md` | 1077 | d263f0ba1545 |
 | `backup/team-memory/ai-provider-prototype-not-ux-reference.md` | 846 | ddf7a880ce12 |

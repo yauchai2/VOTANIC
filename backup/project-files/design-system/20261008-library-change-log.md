@@ -1994,3 +1994,96 @@ Page Button, Library file. Three sets: `Button / Dark / 40px` (17463:54657, Stat
 - Alan 要求：頁腳只留兩個按鈕，Start XRCC 為最強 Primary；Start without AI 為中性灰框（Tertiary），Tooltip「AI features stay off this time」；Manage keys 改為說明句旁的文字連結。只用 Library 現有按鈕與連結樣式，無新 token。
 - Figma：D4（1366:1556）、D4p（2623:16858）、D4r（2629:18725）、D4c（2629:18842）、D4cm（3336:24935）移除 Manage keys 按鈕，Start without AI 換為 Tertiary，說明句「Check the keys required by this project.」後接 Library 連結「Manage keys」；D4b（1668:5945）Start without AI 換為 Tertiary。Tooltip spec（1411:1760）新增列「Row · Start without AI」。Annotation：D4 與 D4b 各 2 條。
 - Prototype（本地 commit，待推送）：launchDlg 頁腳 Start without AI（btn，tooltip）+ Start XRCC / Start with available AI / Add a key（pri）；Manage keys 為說明句內連結，仍開啟 AI keys 子頁。
+
+## 2026-11-26 · XRCC AI Provider · UX 稽核收尾（Figma 先行，原型後驗）
+
+- 範圍：只限 AI Provider（Workbench 檔 ZBOB48n4eLsZABCTnhh5kk，flow 1354:2549）；Library 沒有改動，不需要 Publish。
+- Figma 核對（Codex 修正已存在）：B4c Remove provider → B5c；A6k Cancel／Save／Close 為 BACK；A3c、A4c 鉛筆 → A6k；B1 的 Text to speech、Text to music、Speech to text 卡片已連到 B2t、B2u、B2v；A6 停用的 Test／Add provider 已無點擊連線；全部 1,657 條 reaction 無失效目標。
+- Figma 修改：A6k「Testing models」與「Model test results」兩塊的 Back to edit、Done 改為 NODE → A6k · Edit custom provider · key saved（原為 CLOSE）；於「驗收 · AI Provider 流程修正」新增 3 條可見箭咀（D4 Gemini、D4 MiniMax、A6k 測試），複製既有實線 connector（border/interactive，2px，ARROW_LINES）。
+- 原型（branch claude/project-thread-350cjh，commit bb00328）：以本機 Chromium 重跑稽核項目，全部通過；未改動 site/ 檔案。
+
+## 2026-11-26 · Remote Trigger（手機端）· Scene 只顯示現正運行的 Scene（Figma 先行，prototype 後）
+
+- 範圍：只限 Remote Trigger P1（Workbench 檔 ZBOB48n4eLsZABCTnhh5kk，page 1481:10758）；沒有觸及 AI Provider 或 Voyage 360；Library 沒有改動，不需要 Publish。
+- Alan 決定：手機端 Scene 只需顯示 PC 現正運行的 Scene，不再有選擇器、不可切換、不可查看其他 Scene。取代 2026-11-23 的多 Scene Demo（Flow 14，C32–C35）。
+- Figma：刪除 Flow 14（C32–C35、3 條連線及其 5 則 Annotations）；C5 Deck 的 Scene 標籤移除箭咀圖示及指向 C33 的 prototype 連結，改名 Scene name，並加 1 則 Interaction Annotation；Section 03 高度收窄至 6908；Overview 第 3 點改寫「手機只顯示 PC 現正播放的 Scene 名稱並自動跟隨，不可切換或查看其他 Scene」。
+- 文案決定：Scene 標籤只在 Play 進行時以 "Scene: <名稱>" 顯示；Waiting for Play 等未 Play 畫面不顯示；Scene 沒有遙控項目時仍顯示名稱，內容區沿用既有 "No controls yet" 空狀態。
+- Prototype（本地 commit，待 Alan 批准推送）：branch claude/project-thread-350cjh，site/remote-trigger/index.html；Scene 標籤改為純文字，移除 Scenes 底部面板、view-only 橫額及 C32–C35 審閱畫面；PC scene 示範按鈕保留，Deck 跟隨變更。已用本機 Chromium 驗證 C5、C31，無錯誤。
+
+## 2026-11-26 · Remote Trigger（手機端）· PC 切換 Scene 時手機的過渡狀態（Figma 先行，prototype 後）
+
+- 範圍：只限 Remote Trigger P1（Workbench 檔 ZBOB48n4eLsZABCTnhh5kk，page 1481:10758）；沒有觸及 AI Provider 或 Voyage 360；Library 沒有改動，不需要 Publish；沒有新增 token。
+- Alan 已確認的行為：手機跟隨 PC，Scene 名稱即時更新、控制項換成新 Scene 的內容；過渡約 1 至 2 秒內控制項調暗、暫不可按，之後自動還原；新 Scene 沒有控制項時沿用 "No controls yet"；不彈 toast，畫面不顯示 ms 或延遲文字。
+- Figma：Section 03 新增 Flow 14 · Scene 切換（手機自動跟隨，3567:11755），含 C32 Scene running、C33 Scene changing（控制項 35% 不透明度）、C34 New scene controls、C35 New scene · No controls（Scene: Credits）；4 塊畫板複製自 C5／C15，帶 Label；C32→C33、C33→C34 為實線（border/interactive），C33→C35 為虛線折線（border/default），沿用 Flow 10 的連線樣式；C32→C33→C34 加 prototype 連結；3 則原生 Annotations（Interaction、Development、Content）。
+- Figma：Section 03 高度改為 8908，Section 04 下移至 y=32470；Overview 第 3 點補一句過渡說明。
+- Prototype（本地 commit，待 Alan 批准推送）：branch claude/project-thread-350cjh 之上，site/remote-trigger/index.html；「PC scene」示範按鈕切換時，手機 Scene 名稱即時更新，舊控制項以 paused 樣式調暗 1.5 秒後換成新 Scene（新增 Credits scene 作無控制項示範）；移除切換 toast；審閱畫面新增 C32–C35。已用本機 Chromium 驗證 4 塊審閱畫面及互動切換，無錯誤。
+
+## 2026-11-26 · XRCC AI Provider · Annotations 精簡（只動 Annotations，未改畫板、連線與設計；Library 無改動，不需 Publish）
+
+範圍：Workbench `ZBOB48n4eLsZABCTnhh5kk`，Section `1354:2549`。數量：**72 則 → 42 則**（刪除 30 則，另改寫 2 則）。先改 Figma，prototype 不需改動。
+還原方法：把下列文字貼回對應節點 id 的 Annotations（category 括號內）。
+
+### 改寫（2 則；舊文字）
+- `3082:177`→ Add provider 內 annotation（1:1）：舊「Base URL 有效且至少有一個模型時，Add provider 才啟用。Name 收在 More options，留空時自動命名。」→ 新「Base URL 有效且至少有一個模型時，Test 與 Add provider 才啟用。Name 收在 More options，留空時自動命名。」（合併 A6 的 Test 規則）
+- `1449:2043`（A6）#1：舊「API key 為單一貼上欄位（遮蔽、可顯示／隱藏）；留空即不使用 key。按 Add provider 成功後才存入 AI keys。」→ 新加上「Provider Name 同時是 key 名稱；Settings 的 Add an AI key（Custom）使用同一表單。」（合併 A6 #3）
+
+### 刪除：重複（同一句在多塊畫板出現，只保留首次出現處）
+- `1668:5945` #1（無分類）「Start without AI 為中性次要按鈕，Add a key 為主按鈕。」→ 與 D4 `1366:1556` #1 重複
+- `I3336:24935;18589:1064;3336:24962`（1:1）「此服務無需 API key。啟動前可編輯 endpoint，是否寫回專案仍待確認。」→ 保留 `I2629:18842;…`
+- `3078:458`（1:1）「紫點只在尚未連接首個 provider 時顯示。」→ 保留 `1428:2137`
+- `1449:2043` #0「編輯時，標題使用 Edit custom provider，主按鈕使用 Save changes。」；#2「Test 在有有效 Base URL 和至少一個模型時亮起；Add 在沒有輸入時為 Disabled。API key 下方可勾選 Protect this key with a password。」（已併入 `3082:177`；Add 規則以「有效 Base URL＋模型」為準）；#3「此表單也由 Settings 的 Add an AI key（Custom）打開；Provider Name 同時是 key 名稱。」（已併入 #1）
+- `3082:133`（A6d）、`3343:26110` #0／#1（A6m）、`3343:26345` #0／#1（A6r）、`3343:26606` #0／#1（A6x）、`3343:26834` #0／#1（A6q）：全部是 A6 複製畫板時帶來的「編輯時標題…」與「API key 為單一貼上欄位…」。
+- `I3218:22557;18589:1066;3218:22590`（Save changes，1:1）、`I3223:22467;18589:1066;3223:22498`（Add provider，1:1）：「Base URL 有效且至少有一個模型時，Add provider 才啟用。Name 收在 More options…」重複（Save changes 上更是寫錯按鈕名）。
+- `I3544:27148;18589:1064;3544:27198`（1:1）「失敗的模型顯示原因，可單獨 Retry。」；`I3544:26958;18589:1064;3544:26985`（1:1）「測試進行中，按鈕停用以免重複發送。」；`I3536:26145;18589:1064;3536:26166`（1:1）「Error 的模型不可選。Manage models 會打開 Custom 對話框的步驟 ②。」；`3536:26112`（B2n，1:1）與 `3336:24498`（B2m，1:1）「只列支援此任務的模型；超過六個時可搜尋及捲動。」（保留 B2c `1696:6011`）
+- `3536:26237`（無分類）「對話框最高 624，內容較長時在對話框內捲動；Footer 按鈕固定在底部。Name 選填…」重複，保留 `1366:1353`
+- `2627:18202`、`3315:35126`（1:1）「對話框保留來源；完成或取消後返回原來的 AI keys／Connections 頁。」，保留 `1658:5896`
+- `2540:12460`（C3a，1:1）「收合 Advanced 時保留輸入及所選聲音。」→ 保留 `2540:12503`
+
+### 刪除：過時、無關或低資訊量
+- `1718:6833`（A6c，1:1）「自訂供應商的重複判定規則仍待開發確認。」→ 已由 D2d `2709:19982`（Provider Name 不可重複，重複時顯示錯誤）取代
+- `3315:35376`（Spec · Micro-interactions）「實作依賴：目前 Launcher 僅在拒絕路徑回傳 remote.command.result…Trigger 成功 ACK…」→ Remote Trigger 內容，與 AI Provider 無關（複製畫面遺留）
+- `1354:3134`（Poe · Locked，1:1）「輸入 key 密碼後才可使用此 provider。」→ 畫面已寫 Password needed
+- `2633:20081`（Studio LLM · Configure，1:1）「已儲存服務設定。可用模型與任務能力須按實際連線結果確認。」→ 無具體規格
+
+## 2026-11-26 Remote Trigger P1 Annotations 精簡（只改 Annotations，沒有改畫面、連線、畫板；Library 無改動，不需 Publish）
+數量：51 → 35（刪除 15 則、合併後文字改寫 10 則，其中 1 則為 Overview 兩則合為一則）。Workbench page 1481:10758。
+刪除（節點 id：原文）：
+- 3567:11763、3567:11785、3567:11807（C33/C34/C35 重複的 Scene name）：僅顯示 PC 現正播放的 Scene 名稱，不可點擊或切換，隨 PC 自動更新。未 Play 時不顯示。（保留 3165:11465 首次出現處）
+- 3567:11770、3567:11792、3567:11814（重複的 Remote Key / Dial）：Slider 最少佔 3 格：Phone 直向即整行，橫向／iPad／Desktop 同樣 3 格寬，高度與其他格相同。（保留 2188:3379）
+- 3013:11309（拉起）、3013:11565（放下）：併入 A7 1497:4978。原文：拉起：列浮起並帶陰影與 accent 邊框，手柄轉 accent 色，原位以虛線框保留。Esc 取消並回到原位。／放下：列落入新位置，accent 邊框短暫保留後恢復；新順序自動儲存。
+- 3295:14286（Try next port）：併入 B15 2326:10072。原文：一鍵切換至下一個可用 Port（如 3002）並自動重新啟動 Server。
+- I2591:27632;1493:4457（Name）：併入 Connected device 2591:27632。原文：裝置名稱自動產生：裝置類型 · 瀏覽器；同類型多部時加序號，例如 iPhone · Safari (2)。暱稱編輯留待 P2。（類別 1:3）
+- 2393:11899（Sheet · This device）：併入 C16 2393:11880。原文：同時僅限 1 台手機傳送 Sensor 資料（Gyroscope、Accelerometer、Mic）。iOS Safari 初次進入需點按鈕觸發權限授權；若已被其他裝置佔用，此處改顯示佔用裝置名稱。
+- 2997:11234（No motion sensors）：併入 C16。原文：桌面瀏覽器沒有 Gyroscope 與 Accelerometer，此 Scene 需要時顯示 Not available；不提供授權或接管操作。（類別 1:0）
+- 2591:26722（B25 Public tab）：併入 B8 1501:6039。原文：Public 分頁保持可操作；Server 運行且有 Playing 專案時，才可 Turn on public link。（類別 1:1）
+- 3567:11822（C35）：畫面已顯示 "No controls yet"。原文：新 Scene 沒有遙控項目時，名稱照常更新，內容區沿用 "No controls yet" 空狀態。（類別 1:3）
+- 3164:11030（C31）：畫面已顯示文字。原文：Scene 不使用 Sensor 時只顯示 "This scene doesn't use any sensors."，不列出 Sensor。（類別 1:3）
+文字改寫（原文 → 新文，只列被刪減處）：
+- A8 1497:5389：刪除過時的「暫以刪除再新增修正，不提供 Change instance」（已有 Replace instance）。
+- C5 1507:6192：刪除「只在收到確認後顯示成功」（與 C6／C27 重複）。
+- C6 1507:6353、C10 1507:7092：縮短，意思不變。
+- Overview 1510:7722：兩則合為一則（原第二則：最新已確認架構：只有 Launcher 執行連線管理；XRCC 不再有獨立 Remote control QR 視窗或 Open 小面板。所有狀態共用 server／project／originWindow context；視窗切換不啟動、停止或重新播放專案。）
+- 其餘合併目標（A7、B15、Connected device、C16、B8）見上。還原：按上列原文用 node.annotations 加回即可。
+
+## 2026-11-26 · Remote Trigger P1 polish (Figma first, then prototype)
+- Library: no change, no Publish needed. No new tokens.
+- Workbench page XRCC Remote Trigger (P1), Flows 01–14: 46 connectors changed from drawn chevrons to the standard end cap ARROW_LINES (geometry and position unchanged).
+- Line style per standard: main path solid (accent), branch or failure dashed (grey). Flows 04, 10, 11, 13 main chains changed from dashed to solid; C8→C28, C11→C23, C25→C26, C26→C27, C29→C15 and A9→A27 stay dashed.
+- 23 connector labels that were English now follow the reference page (Chinese, UI terms in English).
+- Annotations: 3 had no category (Replace instance, Connected device, C10 Deck changed) and now carry Interaction or Content. Total 33.
+- Checked, no change needed: no overlapping boards; board root fills left as hand-edited masters.
+- Prototype (local commit only, not pushed): fixed a stray "null" text shown top-left of the XRCC editor canvas (colour popup returned null into append). Smoke tests at 1440/1024/390/320: no console errors, no horizontal scroll, all focusable controls show a focus ring, scene demo C32–C35 loads.
+
+## 2026-11-26 — XRCC AI Provider: boards, connectors and prototype polish (Workbench ZBOB48n4eLsZABCTnhh5kk, flow 1354:2549)
+Scope: AI Provider only. Figma edited first; Library not changed (no Publish needed); no new tokens.
+- Names: last section boards "D4 ·" x4 renamed D4go / D4gs / D4mo / D4ms; two "A6k ·" boards renamed A6kt / A6kr; Label "D3w" duplicate in 驗收 · Launcher 共用連線 renamed Label · D3tr; connectors renamed to match.
+- Labels: added Label · A6kt and Label · A6kr (cloned from Label · D4go, same offset).
+- Connectors (frame Flow connectors 1467:3818, style cloned from reference: width 2, ARROW_LINES, solid = border/interactive, dashed = border/default): added A6m to A6r, D2a to D2d (dashed), C9e to C8e, C2l to C2f, D3t to D3tr, D3tr to D3n, D3r to D3d, B2f to B1q, D4c to D4cm (dashed). Rerouted D0 to D1b below the board row (it ran through D1 and D2). Deleted stale hidden connector A3 to B1 (2559:12837).
+- Text: 20 all-text rows with mixed font sizes set to baseline alignment (D4k, D4mK, C2, D2, D2L, D2a, D2d, B2c, B2m, C2b, C3a, C2c, C2e, D2f, C2l, C2f, D3R, D0R, B2n, C3b).
+- Prototype (votanic-proto.vercel.app/ai-provider/): checked at 1440, 1024, 800, 390 wide: no console errors or warnings, no horizontal overflow, 2px focus outline on tab stops, .lrow label rows already baseline. No code change, so no push or deploy.
+
+## 2026-11-26 (2) — XRCC AI Provider: group titles, English section names, stray image removed (Alan approved "好，執行")
+Figma first; Library not changed; no new tokens; prototype unaffected (no push).
+- Group titles: added 28 text headings "Group · <title>" (clone of Overview "No" style, bound tokens) above each board row in sections A, B, C, D, E, M and the Acceptance sections Launcher pre-launch keys, Tasks/voices/sessions, Settings and Launcher, Launcher shared connections. No new connector lines for gallery states.
+- Section names now English: 1 · Connect services; 2 · Models and Providers; 3 · Voices and Sessions; 5 · Hover and tooltip; A–E, M renamed (e.g. "A · Connection states and entry points"); all 驗收 sections renamed "Acceptance · …" (Launcher pre-launch keys / Tasks, voices and sessions / Settings and Launcher / First connect and recovery / Voice loading and recovery / Launcher shared connections / First model and password / Service and password results / Flow fixes). Board and Label titles in Acceptance sections are still Chinese.
+- Removed pasted reference image "image 3" (was node 3319:39988, in section D · Key, token and Launcher states; x 3120, y 3440 in section, abs 4459,13063; 590 x 391; image fill hash 5edd357f39f9dde2388c3a2bee2f9154e52815f8, scale FILL). Restore via Figma version history or Cmd+Z history.
